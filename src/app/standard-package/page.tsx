@@ -11,7 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight, Clock, Star } from 'lucide-react';
 import ServiceList from '@/UI/components/services/ServiceList';
-import { getLegacyServicesByPackageType } from '@/utils/servicesUtils';
+import ServiceManager from '@/constants/services/ServiceManager';
 
 const StandardPackage = () => {
   const { packageType, setPackageType } = useBooking();
@@ -19,8 +19,8 @@ const StandardPackage = () => {
 
   const { t } = useTranslation();
 
-  // Get all standard services using the new data structure
-  const standardServices = getLegacyServicesByPackageType('standard');
+  // Get all standard services using the new ServiceManager
+  const standardServices = ServiceManager.getByPackageType('standard');
 
   // Ensure package type is set to 'standard'
   React.useEffect(() => {

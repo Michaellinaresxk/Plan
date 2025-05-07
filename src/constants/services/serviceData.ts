@@ -1,12 +1,13 @@
-// ================================================================
-// SERVICES DATA
-// ================================================================
-
 import { ServiceData } from '@/types/services';
-import { SERVICE_IDS } from './serviceId';
+import { PackageType } from '@/types/type';
+import { ServiceId, SERVICE_IDS } from './serviceId';
+import { ServiceCategory } from './serviceCategories';
 
-// Centralized object with all services information
-export const SERVICES_DATA: Record<string, ServiceData> = {
+/**
+ * Centralized object with all services information
+ * This is the source of truth for all service data
+ */
+export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   // CHEF SERVICE
   [SERVICE_IDS.CHEF]: {
     id: SERVICE_IDS.CHEF,
@@ -35,119 +36,6 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
             nameKey: 'services.chef.options.cuisineType.options.italian',
             price: 0,
           },
-          mexican: {
-            id: 'mexican',
-            nameKey: 'services.chef.options.cuisineType.options.mexican',
-            price: 0,
-          },
-          dominican: {
-            id: 'dominican',
-            nameKey: 'services.chef.options.cuisineType.options.dominican',
-            price: 0,
-          },
-        },
-      },
-      mealCount: {
-        id: 'mealCount',
-        nameKey: 'services.chef.options.mealCount.title',
-        subOptions: {
-          breakfast: {
-            id: 'breakfast',
-            nameKey: 'services.chef.options.mealCount.options.breakfast',
-            price: 40,
-          },
-          lunch: {
-            id: 'lunch',
-            nameKey: 'services.chef.options.mealCount.options.lunch',
-            price: 60,
-          },
-          dinner: {
-            id: 'dinner',
-            nameKey: 'services.chef.options.mealCount.options.dinner',
-            price: 80,
-          },
-          fullDay: {
-            id: 'fullDay',
-            nameKey: 'services.chef.options.mealCount.options.fullDay',
-            price: 150,
-          },
-        },
-      },
-    },
-    additionalInfoKeys: [
-      'services.chef.additionalInfo.1',
-      'services.chef.additionalInfo.2',
-      'services.chef.additionalInfo.3',
-    ],
-    includes: [
-      'services.chef.includes.1',
-      'services.chef.includes.2',
-      'services.chef.includes.3',
-      'services.chef.includes.4',
-    ],
-    relatedServices: [SERVICE_IDS.GROCERY],
-    tags: ['food', 'in-house'],
-    metaData: {
-      maxPeople: 10,
-      needsGroceries: true,
-      includedServices: 'shopping,cooking,cleaning',
-    },
-  },
-
-  // GOLF CART RENTALS
-  [SERVICE_IDS.GOLF_CART]: {
-    id: SERVICE_IDS.GOLF_CART,
-    titleKey: 'services.standard.golfCartRentals.name',
-    descriptionKey: 'services.standard.golfCartRentals.description',
-    fullDescriptionKey: 'services.standard.golfCartRentals.full',
-    basePrice: 65,
-    priceUnit: 'services.priceUnits.perDay',
-    category: 'transportation',
-    packageType: ['standard'],
-    imageUrl: '/images/golf-cart.jpg',
-    duration: 24,
-    isPopular: true,
-    bookingDuration: {
-      min: 1,
-      max: 30,
-      unit: 'days',
-    },
-    options: {
-      cartType: {
-        id: 'cartType',
-        nameKey: 'services.golfCart.options.cartType.title',
-        subOptions: {
-          standard: {
-            id: 'standard',
-            nameKey: 'services.golfCart.options.cartType.options.standard',
-            price: 0,
-          },
-          luxury: {
-            id: 'luxury',
-            nameKey: 'services.golfCart.options.cartType.options.luxury',
-            price: 25,
-          },
-          sixSeater: {
-            id: 'sixSeater',
-            nameKey: 'services.golfCart.options.cartType.options.sixSeater',
-            price: 30,
-          },
-        },
-      },
-      insurance: {
-        id: 'insurance',
-        nameKey: 'services.golfCart.options.insurance.title',
-        subOptions: {
-          basic: {
-            id: 'basic',
-            nameKey: 'services.golfCart.options.insurance.options.basic',
-            price: 5,
-          },
-          full: {
-            id: 'full',
-            nameKey: 'services.golfCart.options.insurance.options.full',
-            price: 10,
-          },
         },
       },
     },
@@ -174,7 +62,7 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
     priceUnit: 'services.priceUnits.perSession',
     category: 'wellness',
     packageType: ['standard'],
-    imageUrl: '/images/yoga.jpg',
+    imageUrl: '/img/bike.jpg',
     duration: 1,
     bookingDuration: {
       min: 1,
@@ -245,21 +133,257 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       equipmentProvided: true,
       languages: 'english,spanish',
       experienceLevel: 'beginner,intermediate,advanced',
-      yogaStyles: ['hatha', 'vinyasa', 'ashtanga', 'yin', 'restorative'],
-      includes: [
-        'Yoga Mats',
-        'Props & Supports (as needed)',
-        'Personalized Guidance',
-      ],
-      notIncluded: ['Gratuity (optional)'],
-      disclaimer:
-        'For your safety, consult with a physician before beginning any new activity.',
     },
   },
 
-  // Add other services from your original SERVICES_DATA...
+  // KARAOKE SERVICE
+  [SERVICE_IDS.KARAOKE]: {
+    id: SERVICE_IDS.KARAOKE,
+    titleKey: 'services.standard.karaoke.name',
+    descriptionKey: 'services.standard.karaoke.description',
+    fullDescriptionKey: 'services.standard.karaoke.full',
+    basePrice: 120,
+    priceUnit: 'services.priceUnits.perSession',
+    category: 'leisure',
+    packageType: ['standard'],
+    imageUrl:
+      'https://production-media-prisoner-of-payload.s3.amazonaws.com/media/Lucky-Voice-2021-Adults-Edited-AntTran-1935%20RESIZED-4-1920x1440.jpg',
+    duration: 3,
+    bookingDuration: {
+      min: 2,
+      max: 5,
+      unit: 'hours',
+    },
+    options: {
+      setupType: {
+        id: 'setupType',
+        nameKey: 'services.karaoke.options.setupType.title',
+        subOptions: {
+          basic: {
+            id: 'basic',
+            nameKey: 'services.karaoke.options.setupType.options.basic',
+            price: 0,
+          },
+          premium: {
+            id: 'premium',
+            nameKey: 'services.karaoke.options.setupType.options.premium',
+            price: 50,
+          },
+        },
+      },
+      hostIncluded: {
+        id: 'hostIncluded',
+        nameKey: 'services.karaoke.options.hostIncluded.title',
+        subOptions: {
+          yes: {
+            id: 'yes',
+            nameKey: 'services.karaoke.options.hostIncluded.options.yes',
+            price: 40,
+          },
+          no: {
+            id: 'no',
+            nameKey: 'services.karaoke.options.hostIncluded.options.no',
+            price: 0,
+          },
+        },
+      },
+    },
+    additionalInfoKeys: [
+      'services.karaoke.additionalInfo.1',
+      'services.karaoke.additionalInfo.2',
+    ],
+    specialRender: 'karaoke',
+    includes: [
+      'services.karaoke.includes.1',
+      'services.karaoke.includes.2',
+      'services.karaoke.includes.3',
+      'services.karaoke.includes.4',
+    ],
+    notIncluded: ['services.karaoke.notIncluded.1'],
+    itinerary: [
+      'services.karaoke.itinerary.1',
+      'services.karaoke.itinerary.2',
+      'services.karaoke.itinerary.3',
+      'services.karaoke.itinerary.4',
+    ],
+    disclaimer: 'services.karaoke.disclaimer',
+    tags: ['entertainment', 'party', 'music'],
+    metaData: {
+      songsAvailable: 5000,
+      languages: 'english,spanish,italian,french',
+      equipmentIncluded: 'microphones,speakers,screen,lights',
+    },
+  },
 
-  // Example of a premium service
+  // AIRPORT TRANSFERS
+  [SERVICE_IDS.AIRPORT_TRANSFER]: {
+    id: SERVICE_IDS.AIRPORT_TRANSFER,
+    titleKey: 'services.standard.airportTransfers.name',
+    descriptionKey: 'services.standard.airportTransfers.description',
+    fullDescriptionKey: 'services.standard.airportTransfers.full',
+    basePrice: 75,
+    priceUnit: 'services.priceUnits.perTrip',
+    category: 'transportation',
+    packageType: ['standard'],
+    imageUrl:
+      'https://denomades.imgix.net/destinos/santiago/8/vehiculo-transporte-pasajeros.jpg?w=907&h=494&fit=crop&q=100&auto=format,compress&fm=webp',
+    duration: 1,
+    specialRender: 'airport',
+    options: {
+      vehicleType: {
+        id: 'vehicleType',
+        nameKey: 'services.airportTransfer.options.vehicleType.title',
+        subOptions: {
+          sedan: {
+            id: 'sedan',
+            nameKey:
+              'services.airportTransfer.options.vehicleType.options.sedan',
+            price: 0,
+          },
+          suv: {
+            id: 'suv',
+            nameKey: 'services.airportTransfer.options.vehicleType.options.suv',
+            price: 20,
+          },
+          van: {
+            id: 'van',
+            nameKey: 'services.airportTransfer.options.vehicleType.options.van',
+            price: 40,
+          },
+        },
+      },
+      isRoundTrip: {
+        id: 'isRoundTrip',
+        nameKey: 'services.airportTransfer.options.isRoundTrip.title',
+        subOptions: {
+          oneWay: {
+            id: 'oneWay',
+            nameKey:
+              'services.airportTransfer.options.isRoundTrip.options.oneWay',
+            price: 0,
+          },
+          roundTrip: {
+            id: 'roundTrip',
+            nameKey:
+              'services.airportTransfer.options.isRoundTrip.options.roundTrip',
+            price: 60,
+          },
+        },
+      },
+    },
+    includes: [
+      'services.airportTransfer.includes.1',
+      'services.airportTransfer.includes.2',
+      'services.airportTransfer.includes.3',
+      'services.airportTransfer.includes.4',
+    ],
+    notIncluded: ['services.airportTransfer.notIncluded.1'],
+    itinerary: [
+      'services.airportTransfer.itinerary.1',
+      'services.airportTransfer.itinerary.2',
+      'services.airportTransfer.itinerary.3',
+      'services.airportTransfer.itinerary.4',
+    ],
+    relatedServices: [SERVICE_IDS.GOLF_CART],
+    tags: ['transport', 'airport'],
+    metaData: {
+      travelTime: '20-40 min',
+      availability: '24/7',
+      flightTracking: true,
+      childSeats: true,
+    },
+  },
+
+  // Add as many services as needed following the same pattern
+  // This is a starting point with key services
+
+  // BABYSITTER SERVICE
+  [SERVICE_IDS.BABYSITTER]: {
+    id: SERVICE_IDS.BABYSITTER,
+    titleKey: 'services.standard.babysitter.name',
+    descriptionKey: 'services.standard.babysitter.description',
+    fullDescriptionKey: 'services.standard.babysitter.full',
+    basePrice: 20,
+    priceUnit: 'services.priceUnits.perHour',
+    category: 'leisure',
+    packageType: ['standard'],
+    imageUrl:
+      'https://www.ymcalouisville.org/sites/default/files/styles/medium_landscape_4x3/public/2021-11/baby-sitter-training-2.jpg?h=140c1f52&itok=Xyr5JUxS',
+    duration: 1,
+    specialRender: 'babysitter',
+    bookingDuration: {
+      min: 3,
+      max: 12,
+      unit: 'hours',
+    },
+    options: {
+      timeSlot: {
+        id: 'timeSlot',
+        nameKey: 'services.babysitter.options.timeSlot.title',
+        subOptions: {
+          daytime: {
+            id: 'daytime',
+            nameKey: 'services.babysitter.options.timeSlot.options.daytime',
+            price: 0,
+          },
+          evening: {
+            id: 'evening',
+            nameKey: 'services.babysitter.options.timeSlot.options.evening',
+            price: 5,
+          },
+          overnight: {
+            id: 'overnight',
+            nameKey: 'services.babysitter.options.timeSlot.options.overnight',
+            price: 15,
+          },
+        },
+      },
+      childCount: {
+        id: 'childCount',
+        nameKey: 'services.babysitter.options.childCount.title',
+        subOptions: {
+          one: {
+            id: 'one',
+            nameKey: 'services.babysitter.options.childCount.options.one',
+            price: 0,
+          },
+          two: {
+            id: 'two',
+            nameKey: 'services.babysitter.options.childCount.options.two',
+            price: 10,
+          },
+          threePlus: {
+            id: 'threePlus',
+            nameKey: 'services.babysitter.options.childCount.options.threePlus',
+            price: 25,
+          },
+        },
+      },
+    },
+    includes: [
+      'services.babysitter.includes.1',
+      'services.babysitter.includes.2',
+      'services.babysitter.includes.3',
+      'services.babysitter.includes.4',
+    ],
+    notIncluded: ['services.babysitter.notIncluded.1'],
+    itinerary: [
+      'services.babysitter.itinerary.1',
+      'services.babysitter.itinerary.2',
+      'services.babysitter.itinerary.3',
+      'services.babysitter.itinerary.4',
+    ],
+    tags: ['childcare', 'family'],
+    metaData: {
+      minimumBooking: '3 hours',
+      ageRange: '6 months to 12 years',
+      safetyStandards: 'CPR-trained,First-aid certified,Background-checked',
+      availability: 'Day & evening; overnight upon request',
+    },
+  },
+
+  // Premium services section
+  // LUXE YACHT
   [SERVICE_IDS.LUXE_YACHT]: {
     id: SERVICE_IDS.LUXE_YACHT,
     titleKey: 'services.premium.luxeYacht.name',
@@ -278,7 +402,43 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       unit: 'days',
     },
     options: {
-      // Add options specific to the yacht service
+      menuOption: {
+        id: 'menuOption',
+        nameKey: 'services.luxeYacht.options.menuOption.title',
+        subOptions: {
+          classic1: {
+            id: 'classic1',
+            nameKey: 'services.luxeYacht.options.menuOption.options.classic1',
+            price: 0,
+          },
+          classic2: {
+            id: 'classic2',
+            nameKey: 'services.luxeYacht.options.menuOption.options.classic2',
+            price: 100,
+          },
+          premium: {
+            id: 'premium',
+            nameKey: 'services.luxeYacht.options.menuOption.options.premium',
+            price: 300,
+          },
+        },
+      },
+      duration: {
+        id: 'duration',
+        nameKey: 'services.luxeYacht.options.duration.title',
+        subOptions: {
+          halfDay: {
+            id: 'halfDay',
+            nameKey: 'services.luxeYacht.options.duration.options.halfDay',
+            price: -500,
+          },
+          fullDay: {
+            id: 'fullDay',
+            nameKey: 'services.luxeYacht.options.duration.options.fullDay',
+            price: 0,
+          },
+        },
+      },
     },
     specialRender: 'yacht',
     includes: [
@@ -301,4 +461,280 @@ export const SERVICES_DATA: Record<string, ServiceData> = {
       menuOptions: 'classic1,classic2,premium',
     },
   },
+
+  // Add additional premium services as needed
+  [SERVICE_IDS.LUXE_YOGA]: {
+    id: SERVICE_IDS.LUXE_YOGA,
+    titleKey: 'services.premium.luxeYoga.name',
+    descriptionKey: 'services.premium.luxeYoga.description',
+    fullDescriptionKey: 'services.premium.luxeYoga.full',
+    basePrice: 120,
+    priceUnit: 'services.priceUnits.perSession',
+    category: 'wellness',
+    packageType: ['premium'],
+    imageUrl:
+      'https://www.guardian.in/cdn/shop/articles/yoga-asans-for-weight-loss.jpg?v=1705486602&width=1000',
+    duration: 1.5,
+    bookingDuration: {
+      min: 1,
+      max: 7,
+      unit: 'hours',
+    },
+    options: {
+      yogaStyle: {
+        id: 'yogaStyle',
+        nameKey: 'services.luxeYoga.options.yogaStyle.title',
+        subOptions: {
+          hatha: {
+            id: 'hatha',
+            nameKey: 'services.luxeYoga.options.yogaStyle.options.hatha',
+            price: 0,
+          },
+          vinyasa: {
+            id: 'vinyasa',
+            nameKey: 'services.luxeYoga.options.yogaStyle.options.vinyasa',
+            price: 0,
+          },
+          aerial: {
+            id: 'aerial',
+            nameKey: 'services.luxeYoga.options.yogaStyle.options.aerial',
+            price: 50,
+          },
+          couples: {
+            id: 'couples',
+            nameKey: 'services.luxeYoga.options.yogaStyle.options.couples',
+            price: 80,
+          },
+        },
+      },
+      location: {
+        id: 'location',
+        nameKey: 'services.luxeYoga.options.location.title',
+        subOptions: {
+          beach: {
+            id: 'beach',
+            nameKey: 'services.luxeYoga.options.location.options.beach',
+            price: 30,
+          },
+          pool: {
+            id: 'pool',
+            nameKey: 'services.luxeYoga.options.location.options.pool',
+            price: 0,
+          },
+          indoors: {
+            id: 'indoors',
+            nameKey: 'services.luxeYoga.options.location.options.indoors',
+            price: 0,
+          },
+        },
+      },
+    },
+    specialRender: 'yoga',
+    includes: [
+      'services.luxeYoga.includes.1',
+      'services.luxeYoga.includes.2',
+      'services.luxeYoga.includes.3',
+    ],
+    relatedServices: [SERVICE_IDS.LUXE_FITNESS, SERVICE_IDS.LUXE_MASSEUSE],
+    tags: ['wellness', 'fitness', 'premium', 'relaxation'],
+    metaData: {
+      equipmentProvided: true,
+      languages: 'english,spanish,french',
+      experienceLevel: 'beginner,intermediate,advanced',
+      yogaStyles: ['hatha', 'vinyasa', 'power', 'aerial', 'meditation'],
+      refreshmentsIncluded: true,
+    },
+  },
+
+  [SERVICE_IDS.PRIVATE_CATAMARAN]: {
+    id: SERVICE_IDS.PRIVATE_CATAMARAN,
+    titleKey: 'services.standard.privateCatamaran.name',
+    descriptionKey: 'services.standard.privateCatamaran.description',
+    fullDescriptionKey: 'services.standard.privateCatamaran.full',
+    basePrice: 450,
+    priceUnit: 'services.priceUnits.perTrip',
+    category: 'water-activities',
+    packageType: ['standard', 'premium'],
+    imageUrl:
+      'https://moonshadow-tqc.com.au/wp-content/uploads/sites/5204/2022/01/MSTQC-Boats-slide-into-clear-waters.png?resize=360%2C240&zoom=2',
+    duration: 3,
+    bookingDuration: {
+      min: 3,
+      max: 6,
+      unit: 'hours',
+    },
+    options: {
+      catering: {
+        id: 'catering',
+        nameKey: 'services.privateCatamaran.options.catering.title',
+        subOptions: {
+          standard: {
+            id: 'standard',
+            nameKey:
+              'services.privateCatamaran.options.catering.options.standard',
+            price: 0,
+          },
+          premium: {
+            id: 'premium',
+            nameKey:
+              'services.privateCatamaran.options.catering.options.premium',
+            price: 150,
+          },
+        },
+      },
+      openBar: {
+        id: 'openBar',
+        nameKey: 'services.privateCatamaran.options.openBar.title',
+        subOptions: {
+          soft: {
+            id: 'soft',
+            nameKey: 'services.privateCatamaran.options.openBar.options.soft',
+            price: 0,
+          },
+          standard: {
+            id: 'standard',
+            nameKey:
+              'services.privateCatamaran.options.openBar.options.standard',
+            price: 100,
+          },
+          premium: {
+            id: 'premium',
+            nameKey:
+              'services.privateCatamaran.options.openBar.options.premium',
+            price: 200,
+          },
+        },
+      },
+    },
+    specialRender: 'special',
+    includes: [
+      'services.privateCatamaran.includes.1',
+      'services.privateCatamaran.includes.2',
+      'services.privateCatamaran.includes.3',
+    ],
+    relatedServices: [SERVICE_IDS.CATAMARAN, SERVICE_IDS.PRIVATE_YACHT],
+    tags: ['water', 'activity', 'group'],
+    metaData: {
+      capacity: '20 people',
+      waterSlide: true,
+      snorkelIncluded: true,
+      privateGroup: true,
+    },
+  },
+
+  // Add more services as needed
 };
+
+/**
+ * Gets the service data by ID
+ * @param id The ID of the service
+ * @returns The service data for the specified ID, or undefined if not found
+ */
+export function getServiceDataById(id: string): ServiceData | undefined {
+  return SERVICES_DATA[id as ServiceId];
+}
+
+/**
+ * Gets all service data as an array
+ * @returns An array of all service data
+ */
+export function getAllServiceData(): ServiceData[] {
+  return Object.values(SERVICES_DATA);
+}
+
+/**
+ * Gets all service data for a specific category
+ * @param category The category to filter by
+ * @returns An array of service data for the specified category
+ */
+export function getServiceDataByCategory(
+  category: ServiceCategory
+): ServiceData[] {
+  return Object.values(SERVICES_DATA).filter(
+    (service) => service.category === category
+  );
+}
+
+/**
+ * Gets all service data for a specific package type
+ * @param packageType The package type to filter by
+ * @returns An array of service data for the specified package type
+ */
+export function getServiceDataByPackageType(
+  packageType: PackageType
+): ServiceData[] {
+  return Object.values(SERVICES_DATA).filter((service) =>
+    service.packageType.includes(packageType)
+  );
+}
+
+/**
+ * Gets all popular service data
+ * @returns An array of popular service data
+ */
+export function getPopularServiceData(): ServiceData[] {
+  return Object.values(SERVICES_DATA).filter((service) => service.isPopular);
+}
+
+/**
+ * Gets related service data for a specific service
+ * @param serviceId The ID of the service
+ * @param limit The maximum number of related services to return
+ * @returns An array of related service data
+ */
+export function getRelatedServiceData(
+  serviceId: string,
+  limit?: number
+): ServiceData[] {
+  const service = getServiceDataById(serviceId);
+  if (
+    !service ||
+    !service.relatedServices ||
+    service.relatedServices.length === 0
+  ) {
+    return [];
+  }
+
+  let related = service.relatedServices
+    .map((id) => getServiceDataById(id))
+    .filter((service): service is ServiceData => !!service);
+
+  if (limit && limit > 0 && related.length > limit) {
+    related = related.slice(0, limit);
+  }
+
+  return related;
+}
+
+/**
+ * Calculates the price of a service with the selected options
+ * @param serviceId The ID of the service
+ * @param selectedOptions The selected options for the service
+ * @param duration The duration of the service
+ * @returns The calculated price
+ */
+export function calculateServicePrice(
+  serviceId: string,
+  selectedOptions: Record<string, string>,
+  duration: number = 1
+): number {
+  const service = getServiceDataById(serviceId);
+  if (!service) return 0;
+
+  let totalPrice = service.basePrice * duration;
+
+  // Add the price of each selected option
+  Object.entries(selectedOptions).forEach(
+    ([optionCategory, selectedOptionId]) => {
+      const categoryOptions = service.options?.[optionCategory];
+      if (categoryOptions?.subOptions) {
+        const option = categoryOptions.subOptions[selectedOptionId];
+        if (option && typeof option.price === 'number') {
+          totalPrice += option.price * duration;
+        }
+      }
+    }
+  );
+
+  return totalPrice;
+}

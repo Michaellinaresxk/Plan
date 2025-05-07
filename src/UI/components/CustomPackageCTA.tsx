@@ -84,9 +84,6 @@ const CustomPackageCTA = () => {
   return (
     <section className='relative overflow-hidden'>
       <div className='absolute inset-0 bg-gradient-to-b from-gray-900 via-black to-gray-900 z-0'></div>
-      <div className='w-[90%] md:w-[80%] mx-auto mt-10'>
-        <LuxeGallery />
-      </div>
       {/* Decorative elements */}
       <div className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-30'></div>
       <div className='absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-30'></div>
@@ -261,6 +258,9 @@ const CustomPackageCTA = () => {
             <div className='absolute -top-8 -left-8 h-16 w-16 rounded-full border-4 border-blue-500/20 backdrop-blur-md'></div>
           </motion.div>
         </motion.div>
+      </div>
+      <div className='w-[90%] md:w-[80%] mx-auto mt-10'>
+        <LuxeGallery />
       </div>
     </section>
   );
