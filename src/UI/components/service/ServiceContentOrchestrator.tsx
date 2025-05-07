@@ -16,6 +16,7 @@ import ScheduleBlock from './blocks/ScheduleBlock';
 import TagsBlock from './blocks/TagsBlock';
 import MetadataBlock from './blocks/MetadataBlock';
 import DisclaimerBlock from './blocks/DisclaimerBlock';
+import GroceryBlock from './blocks/GroceryBlock';
 
 // Block types supported by the orchestrator - define as string literals for simplicity
 export enum BlockType {
@@ -29,6 +30,7 @@ export enum BlockType {
   TAGS = 'tags',
   METADATA = 'metadata',
   DISCLAIMER = 'disclaimer',
+  GROCERY = 'grocery',
 }
 
 // Block configuration type
@@ -162,6 +164,12 @@ const RenderBlock: React.FC<{
           <ItineraryBlock {...commonProps} />
         </motion.div>
       );
+    case BlockType.GROCERY:
+      return (
+        <motion.div {...blockAnimation}>
+          <GroceryBlock {...commonProps} />
+        </motion.div>
+      );
     case BlockType.LOCATIONS:
       return (
         <motion.div {...blockAnimation}>
@@ -232,6 +240,16 @@ const getServiceBlocksConfig = (
       priority: 20,
       data: getServiceFeatures(service.id, serviceData, extendedDetails),
     });
+  }
+
+  if (service.id === 'grocery-shopping') {
+    blocks.push({
+      type: BlockType.GROCERY,
+      priority: 20,
+    });
+
+    // For grocery service, we don't need other blocks
+    return blocks;
   }
 
   // Options block - if service has options

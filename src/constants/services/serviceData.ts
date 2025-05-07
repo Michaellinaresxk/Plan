@@ -294,6 +294,27 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
+  [SERVICE_IDS.GROCERY]: {
+    id: SERVICE_IDS.GROCERY,
+    titleKey: 'services.standard.groceryShopping.name',
+    descriptionKey: 'services.standard.groceryShopping.description',
+    fullDescriptionKey: 'services.standard.groceryShopping.full',
+    basePrice: 50, // Adjust as needed
+    priceUnit: 'services.priceUnits.perService',
+    category: 'leisure',
+    packageType: ['standard'],
+    imageUrl: '/images/grocery-shopping.jpg',
+    duration: 0,
+    specialRender: 'grocery', // Indicates special rendering is needed
+    isPopular: false,
+    // Add other standard service properties as needed
+    tags: ['convenience', 'food', 'shopping'],
+    metaData: {
+      deliveryTime: '24-48 hours',
+      minimumOrder: '$50',
+    },
+  },
+
   // Add as many services as needed following the same pattern
   // This is a starting point with key services
 
