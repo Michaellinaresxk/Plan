@@ -16,6 +16,7 @@ import TagsBlock from './TagsBlock';
 import MetadataBlock from './MetadataBlock';
 import DisclaimerBlock from './DisclaimerBlock';
 import LocationsBlock from './LocationBlock';
+import GroceryBlock from './GroceryBlock';
 
 // Export all block components
 export { default as DescriptionBlock } from './DescriptionBlock';
@@ -41,6 +42,7 @@ const ContentBlocks = {
   tags: TagsBlock,
   metadata: MetadataBlock,
   disclaimer: DisclaimerBlock,
+  grocery: GroceryBlock,
 };
 
 export default ContentBlocks;
