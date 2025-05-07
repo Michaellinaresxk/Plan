@@ -1,0 +1,819 @@
+{
+  "common": {
+    "nav": {
+      "home": "Inicio",
+      "packages": "Paquetes",
+      "custom-package": "Personaliza Tu Paquete",
+      "book": "Reservar",
+      "contact": "Contacto",
+      "about": "Nosotros",
+      "menu": "Menu",
+      "selectLanguage": "Idiomas",
+      "needHelp": "Necesitas ayuda?"
+    },
+    "gallery": {
+      "title": "Galeria de Experiencias",
+      "subtitle": "Explora nuestra exclusiva colección de experiencias y momentos de lujo en Punta Cana"
+    },
+    "consierge": {
+      "title": "¿Necesita ayuda? Nuestro equipo de conserjería está preparado",
+      "subtitle": "¿No está seguro de qué servicios elegir? Nuestro experimentado equipo de conserjería está a su disposición para guiarle en la creación del paquete perfecto adaptado a sus preferencias.",
+      "option1": "Expert advice on selecting the perfect mix of services",
+      "option2": "Personalized suggestions based on your preferences",
+      "option3": "Assistance with special requests and arrangements",
+      "button": "Contacte con nuestro equipo de conserjería",
+      "testimonial": "Nuestro equipo se dedica a crear la experiencia vacacional perfecta para usted. Estamos aquí para hacer realidad las vacaciones de sus sueños."
+    },
+    "footer": {
+      "rights": "Todos los derechos reservados",
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio",
+      "slogan": "Disfrute de unas vacaciones de lujo en la hermosa Punta Cana, República Dominicana.",
+      "quickLinks": "Enlaces rápidos",
+      "aboutUs": "Quiénes somos",
+      "packages": "Paquetes",
+      "custom": "Paquete Personalizado",
+      "bookNow": "Reserve ahora",
+      "contact": "Información de contacto"
+    },
+    "button": {
+      "explore": "Explorar Paquetes",
+      "contactUs": "Contactanos"
+    },
+    "package-standard": {
+      "title": "Elige tu experiencia",
+      "subtitle": "Seleccione el paquete que se adapte a sus necesidades vacacionales. Cada opción ofrece servicios únicos para mejorar su estancia.",
+      "standard": "Nuestro paquete estándar ofrece una experiencia vacacional completa con todos los servicios esenciales.",
+      "transfers": "Traslados al aeropuerto",
+      "golfCart": "Alquiler de carritos de golf",
+      "trips": "Viajes en catamarán",
+      "chef": "Servicio de chef privado"
+    },
+    "package-luxe": {
+      "subtitle": "Nuestro paquete premium ofrece una experiencia elevada con servicios de lujo exclusivos.",
+      "yacht": "Yates de lujo",
+      "culinarie": "Servicio culinario de lujo",
+      "massage": "Servicio de masajista",
+      "suv": "Luxe Arrival - Servicio todoterreno"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Punta Cana Plan",
+      "subtitle": "Eleve su estancia con experiencias Premium",
+      "exploreButton": "Explorar Paquetes",
+      "learnMoreButton": "Conocer Más"
+    },
+    "packages": {
+      "title": "Elija Su Experiencia",
+      "subtitle": "Seleccione el paquete que se adapte a sus necesidades vacacionales. Cada opción ofrece servicios únicos para mejorar su estadía."
+    }
+  },
+  "services": {
+    "title": {
+      "standard": "Servicios Plan Punta Cana",
+      "premium": "Servicios Luxe Punta Cana"
+    },
+    "subtitle": "Seleccione los servicios que desea incluir en su reserva.",
+    "actions": {
+      "search": "Buscar servicios...",
+      "details": "Ver Detalles",
+      "includes": "Incluye",
+      "menuOptions": "Opciones de Menu",
+      "addToBooking": "Añadir a la Reserva",
+      "selected": "Seleccionado",
+      "selectDates": "Seleccionar Fechas",
+      "removeFromBooking": "Quitar de la Reserva",
+      "backToServices": "Volver a Servicios",
+      "backToHome": "Volver al Inicio",
+      "relatedServices": "Servicios Relacionados",
+      "openBarOptions": "Opciones de barra libre",
+      "timeSlots": "Horarios disponibles",
+      "contact": "Contactanos"
+    },
+    "standard": {
+      "yoga": {
+        "name": "Yoga",
+        "short": "Sesiones relajantes de yoga en nuestro pabellón frente a la playa",
+        "full": "Sumérgete en la armonía de la naturaleza y despierta tu equilibrio interior en Punta Cana. Nuestras clases —aptas para todos los niveles— son impartidas por instructores certificados en escenarios de ensueño: playas, jardines tropicales o terrazas. Inhala paz, exhala estrés y renueva tu energía. Reserva hoy mismo tu experiencia de yoga y vive el bienestar en el paraíso.",
+        "tagline": "Tu Espacio. Tu Ritmo.",
+        "slogan": "EXPERIMENTA UNA PRÁCTICA PERSONALIZADA",
+        "options": {
+          "title": "Elige entre:",
+          "items": [
+            "Hatha",
+            "Vinyasa",
+            "Ashtanga",
+            "Yin (Estiramientos)",
+            "Restaurativo"
+          ]
+        },
+        "includes": {
+          "title": "Incluye:",
+          "items": [
+            "Esterillas de yoga",
+            "Accesorios & soportes (según necesidad)",
+            "Instrucción personalizada por profesionales certificados"
+          ]
+        },
+        "notIncluded": {
+          "title": "No incluye:",
+          "items": ["Propina (opcional, se agradece)"]
+        },
+        "itinerary": {
+          "title": "Itinerario:",
+          "steps": [
+            "El instructor llega & prepara el espacio",
+            "Breve bienvenida & conversación sobre tus objetivos",
+            "Muévete, respira & fluye",
+            "Finaliza con una relajación profunda y guiada"
+          ]
+        },
+        "whyChoose": {
+          "title": "¿Por qué nosotros?",
+          "description": "Esto no es solo una clase de yoga, es una experiencia de bienestar personalizada. Ya sea que busques mejorar tu flexibilidad, fuerza, conciencia plena, movilidad o cuidados prenatales, cada detalle se adapta a tu viaje personal.",
+          "extraInfo": "A diferencia de clases grupales o aplicaciones impersonales, nuestras sesiones ofrecen atención personalizada, retroalimentación en tiempo real y apoyo continuo de profesionales que se preocupan por tu experiencia.",
+          "tagline": "Déjanos llevar el bienestar hasta tu puerta."
+        },
+        "details": {
+          "title": "Información Útil",
+          "overview": {
+            "title": "Descripción",
+            "duration": {
+              "label": "Duración",
+              "value": "60 minutos"
+            },
+            "meetingPoint": {
+              "label": "Punto de encuentro",
+              "value": "Su alquiler de vacaciones"
+            },
+            "cancellations": {
+              "label": "Cancelaciones",
+              "value": "Se permiten cancelaciones realizadas más de 24 horas antes de la hora de inicio. Sin embargo, durante la temporada de vacaciones (20 de diciembre - 4 de enero), todas las reservas son definitivas y no reembolsables."
+            },
+            "age": {
+              "label": "Edad",
+              "value": "9+"
+            }
+          },
+          "timeInfo": {
+            "label": "Horario:",
+            "value": "Comienza y termina puntual según lo programado"
+          },
+          "wearInfo": {
+            "label": "Vestimenta:",
+            "value": "Ropa cómoda & elástica"
+          },
+          "agePolicy": {
+            "label": "Política de Edad:",
+            "value": "Menores pueden participar con la supervisión de un adulto"
+          },
+          "adaptability": {
+            "label": "Adaptabilidad:",
+            "value": "Las sesiones pueden adaptarse para embarazadas o movilidad reducida"
+          }
+        },
+        "disclaimer": "Por tu seguridad y tranquilidad, recomendamos consultar con tu médico antes de comenzar cualquier nueva actividad física, especialmente si estás embarazada, en proceso de recuperación o tienes alguna condición médica. La participación es bajo tu propia responsabilidad.",
+        "finalMessage": "Escucha a tu cuerpo. Este es tu momento. Tu espacio. Tu ritmo."
+      },
+      "bikeRentals": {
+        "name": "Alquiler de Bicicletas",
+        "short": "Explore el resort en nuestras cómodas bicicletas",
+        "full": "Explora Punta Cana sobre dos ruedas con nuestras bicicletas de alquiler. Perfectas para recorrer la playa, el entorno natural o la ciudad de manera cómoda y ecológica. Pedalea, descubre y vive cada rincón. ¡Reserva tu bicicleta hoy y comienza tu aventura!"
+      },
+      "airportTransfers": {
+        "name": "Traslados al Aeropuerto",
+        "short": "Transporte conveniente hacia y desde el Aeropuerto de Punta Cana",
+        "full": "Disfruta de un traslado cómodo y seguro desde y hacia el aeropuerto con nuestro servicio de transporte privado. Te llevamos directamente a tu destino, para que comiences tu experiencia en Punta Cana sin preocupaciones. Reserva tu traslado hoy y viaja con tranquilidad."
+      },
+      "catamaranTrips": {
+        "name": "Viajes en Catamarán",
+        "short": "Aventuras escénicas de navegación a lo largo de la costa",
+        "full": "Vive una experiencia única en el mar con nuestras excursiones en catamarán. Disfruta de paisajes impresionantes, aguas cristalinas y la tranquilidad de navegar por las costas de Punta Cana. Reserva tu excursión hoy y navega hacia el paraíso."
+      },
+      "golfCartRentals": {
+        "name": "Alquiler de Carritos de Golf",
+        "short": "Transporte conveniente dentro del resort",
+        "full": "Disfruta de la libertad de recorrer Punta Cana a tu propio ritmo con nuestros carritos de golf de alquiler. Ideales para moverte cómodamente por resorts, playas y senderos locales. Conduce, explora y disfruta a tu ritmo. Reserva tu carrito hoy y explora Punta Cana."
+      },
+      "personalTraining": {
+        "name": "Entrenamiento Personal",
+        "short": "Sesiones de fitness individuales con entrenadores certificados",
+        "full": "Mantente en forma durante tus vacaciones con nuestras sesiones de entrenamiento personal. Entrena con profesionales certificados que se adaptan a tu nivel, tus objetivos y tu horario. Reserva hoy y alcanza tu mejor versión en Punta Cana."
+      },
+      "babysitter": {
+        "name": "Niñera",
+        "short": "Servicios profesionales de cuidado infantil",
+        "full": "Confía el cuidado de tus pequeños a nuestros profesionales calificados. Nuestros babysitters, cuidadosamente seleccionados por su experiencia y cariño, velarán por la seguridad y diversión de tus hijos en el entorno de tu resort, villa o apartamento. Relájate, disfruta y crea recuerdos mientras nosotros cuidamos de ellos. Reserva hoy mismo tu servicio de babysitting y vive Punta Cana a tu medida."
+      },
+      "horsebackRiding": {
+        "name": "Paseos a Caballo",
+        "short": "Recorridos guiados a caballo por senderos escénicos",
+        "full": "Descubre la belleza natural de Punta Cana a caballo. Disfruta de un paseo guiado por playas, senderos y paisajes únicos, ideal para todos los niveles de experiencia. Reserva tu aventura a caballo y vive una experiencia inolvidable."
+      },
+      "deepSeaFishing": {
+        "name": "Pesca en Alta Mar",
+        "short": "Emocionantes excursiones de pesca en el Mar Caribe",
+        "full": "Embárcate en una emocionante aventura de pesca en alta mar con nuestros capitanes expertos. Descubre aguas profundas, lucha contra especies exóticas y disfruta de la adrenalina que solo el océano Caribe puede ofrecer. Zarpa, pesca y crea recuerdos inolvidables. Reserva tu pesca en alta mar hoy y siente la emoción de la captura."
+      },
+      "privateChef": {
+        "name": "Servicio de Chef Privado",
+        "short": "Experiencias culinarias personalizadas en tu alojamiento",
+        "full": "Deleita tu paladar con creaciones gourmet personalizadas por un chef privado en tu villa, apartamento o yate. Nuestro equipo elabora menús a tu medida, usando ingredientes frescos y sabores locales para convertir cada comida en un momento inolvidable. Reserva tu chef privado hoy y disfruta de una experiencia culinaria única en Punta Cana."
+      },
+      "customDecorations": {
+        "name": "Decoraciones Personalizadas",
+        "short": "Decoraciones especiales para eventos y celebraciones",
+        "full": "Embellece tus eventos con decoraciones personalizadas que reflejan tu estilo y temática. Desde arreglos florales hasta ambientaciones completas, nuestro equipo crea espacios únicos y memorables. Sorprende, emociona y celebra a lo grande. Reserva tu decoración a medida hoy y convierte cada detalle en una ocasión extraordinaria."
+      },
+      "adventureExcursions": {
+        "name": "Excursiones de Aventura",
+        "short": "Actividades emocionantes y recorridos por Punta Cana",
+        "full": "Vive la emoción de la aventura con nuestras excursiones. Experiencias únicas rodeado de la naturaleza exuberante de Punta Cana. Atrévete, explora y supera tus límites. Reserva tu excursión de aventura hoy y desafía tus límites."
+      },
+      "karaoke": {
+        "name": "Sesiones Privadas de Karaoke",
+        "short": "Divertido montaje de karaoke en tu alojamiento",
+        "full": "Disfruta de una noche llena de música y diversión con nuestro servicio de karaoke. Canta tus canciones favoritas y crea recuerdos inolvidables con amigos y familiares en un ambiente animado. ¡Canta, ríe y haz de cada momento una fiesta! Reserva tu sesión de karaoke hoy y vive la diversión al máximo."
+      },
+      "liveMusic": {
+        "name": "Entretenimiento con Música en Vivo",
+        "short": "Músicos locales actuando en tu evento",
+        "full": "Dale un toque especial a tu celebración con entretenimiento de música en vivo. Desde ritmos caribeños hasta clásicos internacionales, contamos con talentosos músicos que crearán el ambiente perfecto para tu evento. Reserva hoy y haz que la música transforme tu noche en una experiencia inolvidable."
+      },
+      "groceryShopping": {
+        "name": "Asistencia para Compras de Supermercado",
+        "short": "Compramos víveres y los entregamos en tu alojamiento",
+        "full": "Olvídate de las filas y el tiempo perdido. Con nuestro servicio de compras de supermercado, llenamos tu despensa con todo lo que necesitas antes o durante tu estancia. Productos frescos, locales e importados, entregados directamente a tu alojamiento. Haz tu pedido hoy y disfruta más de tus vacaciones."
+      }
+    },
+    "premium": {
+      "luxeYacht": {
+        "name": "Yate de Lujo",
+        "short": "Alquiler de yate de lujo privado con tripulación",
+        "full": "Experimenta el máximo lujo con nuestro chárter privado de yate. Navega por las prístinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades. Disfruta de comidas gourmet, bebidas premium y actividades acuáticas exclusivas."
+      },
+      "luxeEBikes": {
+        "name": "Bicicletas Eléctricas de Lujo",
+        "short": "Bicicletas eléctricas premium para una exploración sin esfuerzo",
+        "full": "Descubre Punta Cana con estilo con nuestras bicicletas eléctricas premium. Disfruta de una exploración sin esfuerzo de playas, senderos y atracciones locales con e-bikes de primera línea que cuentan con batería de larga duración y ergonomía confortable."
+      },
+      "luxeGolfCart": {
+        "name": "Carrito de Golf de Lujo",
+        "short": "Carrito de golf premium con características extendidas",
+        "full": "Viaja con estilo con nuestros carritos de golf de lujo con asientos de cuero premium, batería de mayor autonomía y características mejoradas. Perfectos para explorar resorts y áreas locales con elegancia y comodidad."
+      },
+      "luxeYoga": {
+        "name": "Sesiones de Yoga de Lujo",
+        "short": "Yoga privado frente a la playa con amenidades premium",
+        "full": "Eleva tu camino de bienestar con nuestras exclusivas sesiones privadas de yoga realizadas en lugares impresionantes. Experimenta instrucción personalizada, colchonetas y equipos premium, y refrigerios orgánicos después de la sesión."
+      },
+      "luxeFitness": {
+        "name": "Sesiones de Fitness de Lujo",
+        "short": "Entrenamiento personal de élite con equipo especializado",
+        "full": "Transforma tu rutina de fitness con nuestras sesiones de entrenamiento de élite. Trabaja con entrenadores personales de primer nivel utilizando equipos premium y técnicas de vanguardia adaptadas específicamente a tus objetivos y nivel de condición física."
+      },
+      "luxeCulinary": {
+        "name": "Servicio Culinario de Lujo",
+        "short": "Experiencia de chef gourmet con ingredientes premium",
+        "full": "Disfruta de la experiencia gastronómica definitiva con nuestro servicio de chef gourmet. Disfruta de exquisitas comidas de varios platos preparadas con los mejores ingredientes locales e importados, combinadas con vinos premium y servidas en la comodidad de tu alojamiento."
+      },
+      "luxeMasseuse": {
+        "name": "Servicio de Masajes de Lujo",
+        "short": "Tratamientos de spa premium en tu alojamiento",
+        "full": "Relájate con nuestra experiencia de spa de lujo llevada directamente a tu alojamiento. Nuestros terapeutas de masaje de élite proporcionan tratamientos premium utilizando aceites orgánicos y técnicas de primer nivel, complementados con aromaterapia y música ambiental."
+      },
+      "luxeArrival": {
+        "name": "Llegada Lujosa - Servicio SUV",
+        "short": "Traslado al aeropuerto en SUV de lujo con amenidades premium",
+        "full": "Comienza tu experiencia de lujo desde el momento en que aterrizas con nuestro servicio premium de traslado al aeropuerto en SUV. Disfruta de asientos de cuero de lujo, control de clima, refrescos de cortesía y un chófer profesional listo para garantizar una llegada perfecta a tu destino."
+      }
+    },
+    "hours": {
+      "one": "hora",
+      "multiple": "horas",
+      "duration": "Duración"
+    },
+    "price": "Precio"
+  },
+  "customPackagePage": {
+    "title": "Crea tu propio paquete",
+    "subtitle": "Seleccione entre nuestra colección de servicios premium para crear una experiencia Punta Cana a su medida, diseñada exclusivamente para usted.",
+    "title2": "Empiece a crear su paquete",
+    "description": "Elija cómo quiere crear su experiencia perfecta en Punta Cana",
+    "cardGuide1Title": "Experiencia guiada",
+    "cardGuide1Description": "Responda a algunas preguntas sobre sus preferencias y déjenos recomendarle los servicios perfectos para sus vacaciones.",
+    "cardGuideBtn": "Recomendaciones personalizadas",
+    "cardGuide2Title": "Constructor a medida",
+    "cardGuide2Description": "Explore todos los servicios disponibles y construya su paquete desde cero, seleccionando exactamente lo que desea.",
+    "cardGuideBtn2": "Diseñe su propio paquete",
+    "btn": "Empiece a crear su paquete",
+    "whyCustomPackage": "¿Por qué crear un paquete personalizado?",
+    "slogan": "Disfrute del equilibrio perfecto entre lujo y personalización con nuestros paquetes a medida",
+    "card1": "Flexibilidad total",
+    "card1Text": "Seleccione sólo los servicios que desee, cuando los desee, sin comprometer la calidad ni la experiencia.",
+    "card2": "Optimización del valor",
+    "card2Text": "Pague sólo por lo que le importa. Nuestros paquetes personalizados le garantizan el máximo valor por cada dólar gastado.",
+    "card3": "Excelencia curada",
+    "card3Text": "Todos nuestros servicios cumplen los más altos estándares de lujo y calidad, garantizando una experiencia de primera independientemente de sus selecciones.",
+    "createCustomPackageTitle": "Crea Tu Paquete Personalizado",
+    "createCustomPackageSubTitle": "Selecciona servicios para crear tu experiencia personalizada",
+    "services": "Servicios Disponibles",
+    "ready": "Listo para crear las vacaciones de sus sueños?",
+    "readyText": "Construya ahora su experiencia a medida en Punta Cana y deje que nos encarguemos de todos los detalles. Sus vacaciones perfectas le esperan."
+  },
+  "dayByDayPlanner": {
+    "title": "¿Cuándo planeas visitar Punta Cana?",
+    "subTitle": "Selecciona las fechas de tu estancia para que podamos ayudarte a planificar cada día."
+  },
+  "customPackage": {
+    "title": "Crea Tu Paquete Personalizado",
+    "subtitle": "Selecciona servicios para crear tu experiencia personalizada",
+    "availableServices": "Servicios Disponibles",
+    "yourPackage": "Tu Paquete",
+    "emptyPackage": "Tu paquete está vacío",
+    "selectServices": "Selecciona servicios de la izquierda para añadirlos a tu paquete",
+    "dragToReorder": "Arrastra los elementos para reordenarlos en tu paquete",
+    "totalServices": "Total Servicios",
+    "estimatedTotal": "Total Estimado",
+    "savePackage": "Guarda este paquete para más tarde",
+    "packageName": "Nombre del paquete",
+    "save": "Guardar",
+    "savedPackages": "Paquetes Guardados",
+    "services": "servicios",
+    "service": "servicio",
+    "proceedToBooking": "Proceder a la Reserva",
+    "select": "Añadir",
+    "selected": "Seleccionado",
+    "allServices": "Todos los Servicios",
+    "waterActivities": "Actividades Acuáticas",
+    "tours": "Tours",
+    "transportation": "Transporte",
+    "wellness": "Bienestar",
+    "foodDrinks": "Comida y Bebidas",
+    "leisure": "Ocio",
+    "noServicesFound": "No se encontraron servicios. Intenta ajustar tus filtros.",
+    "clearAll": "Limpiar todo",
+    "confirmClear": "¿Estás seguro de que quieres eliminar todos los servicios seleccionados?"
+  },
+  "customPackageCTA": {
+    "title": "Diseña Tu Experiencia Vacacional Perfecta",
+    "description": "Crea un paquete personalizado que se adapte perfectamente a tus sueños de vacaciones. Selecciona exactamente lo que quieres, cuando lo quieres.",
+    "buildButton": "Crear Paquete Personalizado",
+    "exploreButton": "Explorar Todos los Servicios",
+    "feature1": "Elige entre una amplia gama de servicios",
+    "feature2": "Personaliza cada detalle de tu viaje",
+    "feature3": "Crea experiencias memorables",
+    "personalized": "Personalizado",
+    "yourWay": "A Tu Manera",
+    "pageTitle": "Construye Tu Paquete Personalizado",
+    "pageSubtitle": "Combina y selecciona entre nuestra selección de servicios para crear tu experiencia perfecta en Punta Cana.",
+    "backToHome": "Volver al Inicio"
+  },
+  "faqs": {
+    "title": "Preguntas frecuentes",
+    "subtitle": "Respuestas a preguntas frecuentes sobre nuestros paquetes personalizados",
+    "btn": "¿Tiene más preguntas? "
+  },
+  "contact": {
+    "headerChip": "Estamos aquí para ayudarle",
+    "headerTitle": "Contacte con Nuestro Equipo Premium",
+    "headerSubTitle": "Nuestros especialistas en experiencias vacacionales están listos para asistirle y convertir su estancia en Punta Cana en un recuerdo inolvidable.",
+    "multipleChanelChip": "Múltiples Canales",
+    "multipleChanelTitle": "Cómo Puede Contactarnos",
+    "multipleChanelSubTitle": "Seleccione el método de contacto que mejor se adapte a sus necesidades",
+    "channel1Title": "Llámenos",
+    "channel1SubTitle": "Disponibles para asistirle telefónicamente con todas sus consultas",
+    "channel2Title": "Escríbanos",
+    "channel2SubTitle": "Envíenos un email y le responderemos a la brevedad posible",
+    "channel3Title": "Visítenos",
+    "channel3SubTitle": "Acérquese a nuestras oficinas para una atención personalizada",
+    "channel4Title": "Chat en Vivo",
+    "channel4SubTitle": "Converse con nuestros agentes en tiempo real a través de chat",
+    "title": "Contáctenos",
+    "subtitle": "Estamos aquí para responder a sus preguntas y ayudarle a planificar su estancia perfecta en Punta Cana.",
+    "form": {
+      "title": "Envíenos un Mensaje",
+      "subTitle": "Complete el formulario y nuestro equipo le contactará pronto",
+      "name": "Nombre Completo",
+      "email": "Correo Electrónico",
+      "subject": "Asunto",
+      "selectSubject": "Seleccionar tema",
+      "subject1": "Reservaciones",
+      "subject2": "Información de servicios",
+      "subject3": "Ayuda",
+      "subject4": "Comentarios",
+      "subject5": "Other",
+      "message": "Mensaje",
+      "sending": "Enviando...",
+      "submitButton": "Enviar Mensaje",
+      "success": "¡Mensaje Enviado!",
+      "successText": "Gracias por contactarnos. Nuestro equipo se pondrá en contacto con usted lo antes posible."
+    },
+    "contactInformation": {
+      "title": "Información de Contacto",
+      "ourLocation": "Nuestra Ubicación",
+      "email": "Email",
+      "phone": "Teléfono",
+      "date": "Horario de Atención",
+      "monday": "Lunes - Viernes",
+      "sábado": "Sábado",
+      "sunday": "Domingo",
+      "follow": "Síguenos"
+    },
+    "Cta": {
+      "title": "Estamos Listos para Crear su Experiencia de Ensueño",
+      "subTitle": "Nuestro equipo de especialistas está comprometido a convertir sus vacaciones en una experiencia inolvidable y personalizada.",
+      "btn1": "Llámenos Ahora",
+      "btn2": "Enviar Mensaje",
+      "visitUs": "Visit us",
+      "visitUsTitle": "Nuestra Ubicación",
+      "visitUsSubTitle": "Disfrute de nuestras modernas instalaciones en el centro del paraíso"
+    },
+    "map": {
+      "seeOnGoogle": "Ver en Google Maps",
+      "book": "Schedule a visit"
+    }
+  },
+  "about": {
+    "aboutChip": "Nuestra Historia",
+    "title": "Sobre Punta Cana Plan",
+    "subTitle": "Descubra la historia detrás de nuestras exclusivas casas vacacionales y nuestro compromiso con experiencias de lujo en Punta Cana.",
+    "card1": "Años de Experiencia",
+    "card2": "Propiedades Exclusivas",
+    "card3": "Clientes Satisfechos",
+    "card4": "Servicios Premium",
+    "from": "Desde",
+    "stars": "Creando experiencias de lujo excepcionales en Punta Cana desde nuestros inicios.",
+    "ourHistory": {
+      "aboutChip": "Nuestra Historia",
+      "title": "Una Trayectoria de Excelencia en Turismo de Lujo",
+      "p1": "Punta Cana Plan nació en 2010 con una visión clara: ofrecer experiencias vacacionales de lujo que combinen la privacidad de un hogar con los servicios de un resort de cinco estrellas.",
+      "p2": "Fundada por un grupo de entusiastas del turismo dominicano, nuestra empresa comenzó con apenas tres propiedades en la zona de Punta Cana. A lo largo de los años, hemos crecido hasta gestionar más de 25 exclusivas residencias vacacionales en las áreas más prestigiosas de República Dominicana.",
+      "p3": "Lo que nos distingue no es solo la calidad de nuestras propiedades, sino nuestro enfoque en el servicio personalizado. Creemos que cada huésped merece una experiencia única, adaptada a sus preferencias particulares."
+    },
+    "difference": {
+      "differentChip": "Nuestra Diferencia",
+      "differentTitle": "¿Por Qué Elegir Punta Cana Plan?",
+      "list1": "Servicio Personalizado",
+      "list1Text": "Cada experiencia es adaptada a las preferencias únicas de nuestros huéspedes, creando vacaciones verdaderamente a medida.",
+      "list2": "Propiedades Exclusivas",
+      "list2Text": "Nuestras residencias son cuidadosamente seleccionadas por su ubicación privilegiada, diseño y comodidades premium.",
+      "list3": "Equipo Local Experto",
+      "list3Text": "Nuestro equipo de profesionales locales conoce Punta Cana a la perfección y está disponible 24/7 para garantizar su satisfacción.",
+      "list4": "Servicios de Concierge Premium",
+      "list4Text": "Desde chefs privados hasta excursiones exclusivas, nuestro equipo de concierge se encarga de todos los detalles.",
+      "answer": "Respuesta",
+      "answerText": "Siempre disponibles",
+      "answer2": "Ubicaciones Premium",
+      "answer2Text": " Las mejores zonas"
+    }
+  },
+  "cartSide": {
+    "title": "Tu selección",
+    "selectedPackage:": "Paquete seleccionado",
+    "services": "Servicios Plan Punta Cana",
+    "selectedServices:": "Servicios seleccionados",
+    "selectedDates": "Fechas seleccionadas",
+    "selectDate": "Seleccione la fecha",
+    "checkout": "Proceder al pago",
+    "continueShopping": "Continuar explorando"
+  },
+  "payment": {
+    "title": "Completar tu Reserva",
+    "subtitle": "Completa tus datos y realiza el pago para confirmar tu reserva.",
+    "personalDetails": "Datos Personales",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "phone": "Teléfono",
+    "specialRequests": "Solicitudes Especiales",
+    "specialRequestsPlaceholder": "Cualquier requisito o solicitud especial para tu reserva...",
+    "paymentDetails": "Detalles de Pago",
+    "paymentMethod": "Método de Pago",
+    "securePayment": "Tu información de pago está segura. Utilizamos encriptación para proteger tus datos.",
+    "cardNumber": "Número de Tarjeta",
+    "expiryDate": "Fecha de Vencimiento",
+    "cvv": "CVV",
+    "nameOnCard": "Nombre en la Tarjeta",
+    "agreeToTerms": "Acepto los Términos y Condiciones y la Política de Privacidad",
+    "processing": "Procesando...",
+    "confirmPayment": "Confirmar y Pagar",
+    "successTitle": "¡Pago Exitoso!",
+    "successMessage": "Gracias por tu reserva. Hemos enviado un correo electrónico de confirmación con todos los detalles.",
+    "backToHome": "Volver al Inicio",
+    "orderSummary": "Resumen del Pedido",
+    "bookingDates": "Fechas de Reserva",
+    "guests": "Huéspedes",
+    "selectedServices": "Servicios Seleccionados",
+    "subtotal": "Subtotal",
+    "taxes": "Impuestos y Tasas",
+    "total": "Total",
+    "needHelp": "¿Necesitas Ayuda?",
+    "helpText": "Si tienes alguna pregunta sobre tu reserva, contáctanos."
+  },
+  "standardPage": {
+    "chip": "EXPERIENCIA ESTÁNDAR",
+    "tilte": "Punta Cana Plan",
+    "subTitle": "Nuestro paquete estándar ofrece una experiencia vacacional completa con servicios esenciales para que su estancia en Punta Cana sea memorable y sin complicaciones, con la mezcla perfecta de aventura y relajación.",
+    "rating": "Valoración",
+    "rastingText": "Experiencia estándar",
+    "btn1": "Explorar los servicios Premium",
+    "btn2": "Personalice su paquete",
+    "tab1": "Panorama general",
+    "tab2": "Servicios incluidos",
+    "tab3": "Opiniones",
+    "tab4": "Preguntas Frecuentes",
+    "services": {
+      "title": "Servicios incluidos",
+      "subtitle": "Nuestro paquete estándar incluye los siguientes servicios de primera calidad para garantizar que su experiencia en Punta Cana sea cómoda, emocionante y memorable."
+    },
+    "testimonial": {
+      "title": "Testimonios de invitados",
+      "subtitle": "No se fíe sólo de nuestra palabra. Aquí está lo que nuestros huéspedes tienen que decir acerca de su experiencia Punta Cana Plan.",
+      "testimonial1": "El Plan Punta Cana hizo que nuestras vacaciones en familia fueran tan fáciles y agradables. Los traslados al aeropuerto se realizaron sin problemas, el carrito de golf fue perfecto para desplazarnos y el viaje en catamarán fue lo mejor para los niños. Tener un chef en nuestra villa por una noche fue una experiencia tan especial. Muy recomendable.",
+      "testimonial2": "Mi marido y yo celebramos nuestro aniversario con el paquete Punta Cana Plan y fue perfecto. La comodidad de tener el transporte organizado y la libertad del carrito de golf hizo explorar mucho más fácil. El viaje en catamarán fue absolutamente impresionante - el mejor snorkeling que he hecho nunca. Lo único que cambiaría es añadir más opciones de comida al paquete.",
+      "testimonial3": "Como grupo de amigos que celebrábamos un cumpleaños importante, no podíamos haber pedido una organización mejor. El chef privado fue increíble, preparó un auténtico festín dominicano del que todavía estamos hablando. El viaje en catamarán fue la mezcla perfecta de relajación y diversión. Tener el carrito de golf hizo que la comida tarde en la noche se ejecuta una brisa. Sin duda volveremos a reservar."
+    },
+    "standardPageCTA": {
+      "title": "¿Listo para su aventura dominicana?",
+      "subtitle": "Reserve ahora su paquete Punta Cana Plan y prepárese para vivir una experiencia caribeña inolvidable con todos los servicios esenciales incluidos.",
+      "btn1": "Reservar paquete estándar",
+      "btn2": "Ver Paquete Premium"
+    }
+  },
+  "premiumPage": {
+    "chip": "UNA EXPERIENCIA DE LUJO",
+    "rating": "Valoración",
+    "experince": "Experiencia exclusiva",
+    "subtitle": "Disfrute de la mejor experiencia en la República Dominicana con nuestro paquete Premium. Eleve sus vacaciones con lujos exclusivos, servicio personalizado y momentos inolvidables desde su llegada hasta su partida.",
+    "btn1": "Explore los servicios Premium",
+    "btn2": "Personalice su experiencia",
+    "tab1": "Visión general",
+    "tab2": "Servicios Premium",
+    "tab3": "Testimonios",
+    "tab4": "Preguntas Frecuentes"
+  },
+
+  "grocery": {
+    "service": {
+      "title": "Servicio de Compras de Supermercado",
+      "subtitle": "Seleccione los artículos que desea incluir en su lista de compras",
+      "clearSelection": "Limpiar selección",
+      "itemsSelected": "artículos seleccionados",
+      "submit": "Enviar Lista de Compras",
+      "specialRequests": "Solicitudes Especiales",
+      "specialRequestsPlaceholder": "Por favor, indique aquí cualquier solicitud específica o alergias alimentarias...",
+      "tabs": {
+        "grocery": "Supermercado",
+        "spirits": "Licores y Vinos"
+      },
+      "howItWorks": "Cómo Funciona",
+      "step1": "Seleccione sus alimentos y bebidas de nuestra lista completa a continuación.",
+      "step2": "Envíe su lista de compras a través de nuestro sistema al menos 48 horas antes de la entrega deseada.",
+      "step3": "Nuestro equipo comprará sus alimentos y los entregará en su alojamiento a la hora programada.",
+      "step4": "Disfrute de sus vacaciones con una cocina completamente abastecida y sus bebidas y aperitivos favoritos.",
+      "additionalInfo": "Información Adicional",
+      "info1": "La tarifa de entrega está incluida en el servicio.",
+      "info2": "El costo de los comestibles se cobrará por separado en el momento de la entrega.",
+      "info3": "Las solicitudes especiales o marcas específicas se pueden indicar en la sección de solicitudes especiales.",
+      "info4": "Atendemos restricciones dietéticas y alergias alimentarias."
+    },
+    "features": {
+      "title": "Sobre Nuestro Servicio de Compras",
+      "convenience": {
+        "title": "Conveniencia",
+        "description": "Abasteceremos su cocina antes de su llegada o durante su estancia, para que pueda concentrarse en disfrutar de sus vacaciones."
+      },
+      "quality": {
+        "title": "Productos de Calidad",
+        "description": "Seleccionamos los productos locales más frescos y artículos importados de la más alta calidad para su completa satisfacción."
+      },
+      "selection": {
+        "title": "Selección Premium",
+        "description": "Desde artículos esenciales diarios hasta vinos y licores premium, ofrecemos una amplia selección para satisfacer todas sus necesidades."
+      }
+    },
+    "categories": {
+      "vegetables": "Verduras",
+      "fruits": "Frutas",
+      "breads": "Panes",
+      "refrigerated": "Refrigerados",
+      "cheese": "Quesos y Embutidos",
+      "snacks": "Aperitivos",
+      "drinks": "Bebidas",
+      "water": "Agua",
+      "dryFoods": "Alimentos Secos",
+      "meats": "Carnes y Aves",
+      "seafood": "Pescados y Mariscos",
+      "condiments": "Condimentos y Especias",
+      "supplies": "Suministros",
+      "miscellaneous": "Varios y Otros"
+    },
+    "items": {
+      "lettuce": "Lechuga",
+      "avocado": "Aguacate",
+      "carrots": "Zanahorias",
+      "celery": "Apio",
+      "tomatoes": "Tomates",
+      "peppers": "Pimientos",
+      "potatoes": "Patatas",
+      "broccoli": "Brócoli",
+      "cucumber": "Pepino",
+      "mushrooms": "Champiñones",
+      "zucchini": "Calabacín",
+      "arugula": "Rúcula",
+      "spinach": "Espinacas",
+      "onion": "Cebolla",
+      "pineapple": "Piña",
+      "apples": "Manzanas",
+      "bananas": "Plátanos",
+      "papaya": "Papaya",
+      "watermelon": "Sandía/Melón",
+      "mango": "Mango",
+      "berries": "Bayas (de temporada)",
+      "lemons": "Limones",
+      "bagels": "Bagels",
+      "croissants": "Croissants",
+      "frenchBread": "Pan Francés",
+      "hamburgerBuns": "Pan de Hamburguesa/Hot Dog",
+      "whiteBread": "Pan Blanco",
+      "glutenFreeBread": "Pan Sin Gluten",
+      "wholeWheatBread": "Pan Integral",
+      "wholeMilk": "Leche Entera",
+      "skimMilk": "Leche Desnatada",
+      "almondMilk": "Leche de Almendras",
+      "soyMilk": "Leche de Soja",
+      "yogurt": "Yogur",
+      "eggs": "Huevos",
+      "creamCheese": "Queso Crema",
+      "smokedSalmon": "Salmón Ahumado",
+      "goudaCheese": "Queso Gouda",
+      "goatCheese": "Queso de Cabra",
+      "swissCheese": "Queso Suizo",
+      "cheddarCheese": "Queso Cheddar",
+      "prosciutto": "Prosciutto/Salami/Serrano",
+      "turkeyHam": "Jamón de Pavo",
+      "porkHam": "Jamón de Cerdo",
+      "chipsSalsa": "Chips y Salsa",
+      "mixedNuts": "Frutos Secos Mixtos",
+      "almonds": "Almendras",
+      "pistachios": "Pistachos",
+      "crackers": "Galletas Saladas",
+      "pitaChips": "Chips de Pita",
+      "oreos": "Oreos",
+      "doritos": "Doritos",
+      "granolaBars": "Barras de Granola",
+      "potatoChips": "Patatas Fritas",
+      "popcorn": "Palomitas",
+      "orangeJuice": "Zumo de Naranja",
+      "cranberryJuice": "Zumo de Arándanos",
+      "appleJuice": "Zumo de Manzana",
+      "coffeeRegular": "Café (normal)",
+      "coffeeDecaf": "Café Descafeinado",
+      "tea": "Té",
+      "cocaCola": "Coca Cola",
+      "dietCoke": "Coca Cola Light",
+      "dasaniWater": "Agua Dasani",
+      "evianWater": "Agua Evian",
+      "sanPellegrino": "San Pellegrino",
+      "perrier": "Perrier",
+      "cereal": "Cereal",
+      "granolaMuesli": "Granola o Muesli",
+      "rice": "Arroz",
+      "quinoa": "Quinoa",
+      "oatmeal": "Avena",
+      "pasta": "Pasta",
+      "cousCous": "Cuscús",
+      "whiteSugar": "Azúcar Blanca",
+      "brownSugar": "Azúcar Morena",
+      "splenda": "Splenda",
+      "stevia": "Stevia",
+      "pancakeMix": "Mezcla para Panqueques",
+      "churrasco": "Churrasco (falda)",
+      "tenderloin": "Solomillo",
+      "ribEye": "Costilla",
+      "porkRibs": "Costillas de Cerdo",
+      "porkChops": "Chuletas de Cerdo",
+      "chickenBreast": "Pechuga de Pollo",
+      "chickenDrumsticks": "Muslos de Pollo",
+      "hotDogsHamburgers": "Salchichas/Hamburguesas",
+      "redSnapper": "Pargo Rojo",
+      "grouper": "Mero",
+      "mahiMahi": "Dorado",
+      "salmon": "Salmón",
+      "shrimp": "Camarones",
+      "lobster": "Langosta",
+      "crab": "Cangrejo",
+      "ketchup": "Ketchup",
+      "mustard": "Mostaza",
+      "mayonnaise": "Mayonesa",
+      "soySauce": "Salsa de Soja",
+      "jamJelly": "Mermelada o Jalea",
+      "peanutButter": "Mantequilla de Maní",
+      "nutella": "Nutella",
+      "honey": "Miel",
+      "oliveOil": "Aceite de Oliva",
+      "canolaOil": "Aceite de Canola",
+      "balsamicVinegar": "Vinagre Balsámico",
+      "sherryVinegar": "Vinagre de Jerez",
+      "salt": "Sal o Sal Marina",
+      "cinnamon": "Canela",
+      "shampoo": "Champú",
+      "bugRepellent": "Repelente de Insectos",
+      "soap": "Jabón",
+      "sunscreen": "Protector Solar",
+      "toothbrush": "Cepillo de Dientes",
+      "toothpaste": "Pasta de Dientes",
+      "iceCream": "Helado",
+      "chocolateChips": "Chips de Chocolate"
+    }
+  },
+  "spirits": {
+    "categories": {
+      "whiskies": "Whiskies",
+      "vodka": "Vodka",
+      "gin": "Ginebra",
+      "rum": "Ron",
+      "tequila": "Tequila",
+      "liquors": "Licores",
+      "cognac": "Cognac",
+      "wineSparkling": "Vinos Espumosos y Champagne",
+      "wineWhite": "Vinos Blancos",
+      "wineRed": "Vinos Tintos",
+      "wineRose": "Vinos Rosados",
+      "beerSeltzer": "Cerveza y Seltzer"
+    },
+    "items": {
+      "macallan12y": "Macallan DBL CSK 12Y",
+      "johnnieWalkerBlack": "Johnnie Walker Black Label",
+      "makersMark": "Maker's Mark",
+      "buffaloTrace": "Buffalo Trace",
+      "absolutMagnum": "Absolut Original Magnum",
+      "absolutOriginal": "Absolut Original",
+      "titosLarge": "Tito's 1.75L",
+      "titosSmall": "Tito's 750ml",
+      "belvedere750": "Belvedere 750ml",
+      "belvedereMagnum": "Belvedere Magnum",
+      "bombayGin": "Bombay Gin",
+      "hendricksGin": "Hendrick's Gin",
+      "theBotanist": "The Botanist",
+      "brugalWhite": "Brugal Premium White Rum",
+      "brugalExtraViejo": "Brugal Extra Viejo",
+      "brugalLeyenda": "Brugal Leyenda",
+      "brugal1888": "Brugal 1888",
+      "joseCuervoSilver": "Jose Cuervo Silver",
+      "joseCuervoReposado": "Jose Cuervo Reposado",
+      "1800Silver": "1800 Silver",
+      "1800Reposado": "1800 Reposado",
+      "1800Anejo": "1800 Añejo",
+      "casamigosSilver": "CasaMigos Silver",
+      "casamigosReposado": "CasaMigos Reposado",
+      "casamigosAnejo": "CasaMigos Añejo",
+      "maestroDobel": "Maestro Dobel Diamante",
+      "claseAzulSilver": "Clase Azul Silver",
+      "claseAzulReposado": "Clase Azul Reposado",
+      "grandMarnier": "Grand Marnier Cordon Rouge",
+      "cointreau": "Cointreau",
+      "aperol": "Aperol",
+      "campari": "Campari",
+      "amarettoDisaronno": "Amaretto Disaronno",
+      "cinzanoVermouth": "Cinzano Vermouth",
+      "hennessyVS": "Hennessy V.S.",
+      "hennessyPureWhite": "Hennessy Pure White",
+      "hennessyVSOP": "Hennessy V.S.O.P.",
+      "chandonExtraBrut": "Chandon Extra Brut",
+      "chandonDemiSec": "Chandon Demi Sec",
+      "chandonRose": "Chandon Rose",
+      "cavitProseccoBrut": "Cavit Prosecco Brut",
+      "cavitProseccoRose": "Cavit Prosecco Rose",
+      "monistrolBrut": "Marques de Monistrol Brut",
+      "monistrolRose": "Marques de Monistrol Rose",
+      "moetChandonBrut": "Moet & Chandon Brut Imperial",
+      "veuveClicquotBrut": "Veuve Clicquot Brut",
+      "santaCarolinaChardonnay": "Santa Carolina Chardonnay",
+      "santaCarolinaSauvignon": "Santa Carolina Sauvignon Blanc",
+      "catenaAltaChardonnay": "Catena Alta Chardonnay",
+      "joshChardonnay": "Josh Chardonnay",
+      "joshSauvignon": "Josh Sauvignon Blanc",
+      "cloudyBaySauvignon": "Cloudy Bay Sauvignon Blanc",
+      "kimCrawfordSauvignon": "Kim Crawford Sauvignon Blanc",
+      "cavitPinotGrigio": "Cavit Pinot Grigio",
+      "catenaMalbec": "Catena Malbec",
+      "mondaviMerlot": "Robert Mondavi Merlot",
+      "joshCabernet": "Josh Cabernet Sauvignon",
+      "joshPinotNoir": "Josh Pinot Noir",
+      "caymusCabernet": "Caymus Cabernet Sauvignon",
+      "belleGlosPinotNoir": "Belle Glos Pinot Noir",
+      "thePrisoner": "The Prisoner",
+      "seghesioZinfandel": "Seghesio Zinfandel",
+      "whisperingAngel": "Whispering Angel",
+      "marquesCaceresRosado": "Marques de Caceres Rosado",
+      "sutterHomeZinfandel": "Sutter Home White Zinfandel",
+      "perrierWater": "Perrier Agua con Gas",
+      "sanPellegrino750": "San Pellegrino 750ml",
+      "highNoonVodka": "High Noon Vodka Seltzer",
+      "highNoonTequila": "High Noon Tequila Seltzer"
+    }
+  }
+}

@@ -1,8 +1,11 @@
 @import "tailwindcss";
+@import 'react-day-picker/dist/style.css';
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  /* --foreground: #171717; */
+  --foreground: #050E18;
+  --primary: #FFCD61;
 }
 
 @theme inline {
@@ -24,3 +27,273 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.hero-img {
+  background-image: url("https://images.pexels.com/photos/6572963/pexels-photo-6572963.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+}
+
+.standard-bg {
+  background-image: url("/img/bike.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+
+/* Estilos para el calendario */
+.rdp-custom .rdp {
+  margin: 0;
+  width: 100%;
+}
+
+.rdp-custom .rdp-month {
+  width: 100%;
+}
+
+.rdp-custom .rdp-caption {
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+}
+
+.rdp-custom .rdp-head_cell {
+  font-weight: 600;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.rdp-custom .rdp-day {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.rdp-custom .rdp-day_selected {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.rdp-custom .rdp-day_today {
+  background-color: #f3f4f6;
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+.rdp-custom .rdp-day:hover:not(.rdp-day_outside):not(.rdp-day_disabled) {
+  background-color: #e5e7eb;
+}
+
+.rdp-custom .rdp-button:focus:not([disabled]),
+.rdp-custom .rdp-button:active:not([disabled]) {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+/* Estilos para el indicador de pasos */
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.step-label {
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.step-connector {
+  flex-grow: 1;
+  height: 2px;
+  background-color: #e5e7eb;
+  margin: 0 10px;
+  margin-bottom: 40px;
+  transition: background-color 0.3s ease;
+}
+
+.step-connector.active {
+  background-color: #3b82f6;
+}
+
+/* Animaciones para el carrito */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce-animation {
+  animation: bounce 1s ease infinite;
+}
+
+/* Transiciones suaves */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Estilos para slots de tiempo seleccionados */
+.time-slot {
+  transition: all 0.2s ease;
+}
+
+.time-slot:hover {
+  transform: translateY(-2px);
+}
+
+.time-slot.selected {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Animación para notificaciones */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s forwards;
+}
+
+.footer {
+  background-color: var(--foreground);
+}
+
+.footerBtn {
+  background-color: var(--primary);
+}
+
+
+
+
+
+
+
+/* Estilos para la funcionalidad de drag-and-drop */
+.sortable-item {
+  transition: transform 150ms ease;
+}
+
+.sortable-item.dragging {
+  z-index: 1000;
+  cursor: grabbing;
+  opacity: 0.8;
+  transform: scale(1.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.sortable-item.dragging:active {
+  cursor: grabbing;
+}
+
+/* Animaciones para el constructor de paquetes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.package-item-enter {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.package-card {
+  transition: all 0.3s ease;
+}
+
+.package-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos para scrollbar en listas */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 20px;
+}
+
+/* Estilos para placeholder al arrastrar */
+.sortable-placeholder {
+  background-color: rgba(243, 244, 246, 0.7);
+  border: 2px dashed #e5e7eb;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Animaciones de feedback para selección de servicios */
+@keyframes pulse-animation {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes shake-animation {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.pulse-animation {
+  animation: pulse-animation 0.6s ease-in-out;
+}
+
+.shake-animation {
+  animation: shake-animation 0.3s ease-in-out;
+}
+
+

@@ -1,0 +1,578 @@
+{
+  "common": {
+    "nav": {
+      "home": "Home",
+      "packages": "Packages",
+      "custom-package": "Your Custom Plan",
+      "book": "Book Now",
+      "contact": "Contact",
+      "about": "About Us",
+      "menu": "Menu",
+      "selectLanguage": "Languages",
+      "needHelp": "Need Help"
+    },
+    "gallery": {
+      "title": "Our Luxury Gallery",
+      "subtitle": "Explore our exclusive collection of luxury experiences and moments in Punta Cana"
+    },
+    "footer": {
+      "rights": "All rights reserved",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "slogan": "Experience luxury vacations in the beautiful Punta Cana, Dominican Republic.",
+      "quickLinks": "Quick Links",
+      "aboutUs": "About Us",
+      "packages": "Packages",
+      "custom": "Custom Package",
+      "bookNow": "Book Now",
+      "contact": "Contact Us"
+    },
+    "button": {
+      "explore": "Explore Packages",
+      "contactUs": "Contact us"
+    },
+    "package-standard": {
+      "title": "Choose Your Experience",
+      "subtitle": "Select the package that fits your vacation needs. Each option offers unique services to enhance your stay.",
+      "standard": "Our standard package offers a complete vacation experience with all the essential services.",
+      "transfers": "Airport Transfers",
+      "golfCart": "Golf Cart Rentals",
+      "trips": "Catamaran Trips",
+      "chef": "Private Chef Service"
+    },
+    "package-luxe": {
+      "subtitle": "Our premium package offers an elevated experience with exclusive luxury services.",
+      "yacht": "Luxe Yacht",
+      "culinarie": "Luxe Culinary Service",
+      "massage": "Luxe Masseuse Service",
+      "suv": "Luxe Arrival - SUV Service"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Punta Cana Plan",
+      "subtitle": "Elevate Your Stay with Premium Experiences",
+      "exploreButton": "Explore Packages",
+      "learnMoreButton": "Learn More"
+    },
+    "packages": {
+      "title": "Choose Your Experience",
+      "subtitle": "Select the package that fits your vacation needs. Each option offers unique services to enhance your stay."
+    },
+
+    "consierge": {
+      "title": "Need Help? Our Concierge Team Is Ready",
+      "subtitle": "Not sure which services to select? Our experienced concierge team is available to guide you through creating the perfect package tailored to your preferences.",
+      "option1": "Expert advice on selecting the perfect mix of services",
+      "option2": "Personalized suggestions based on your preferences",
+      "option3": "Assistance with special requests and arrangements",
+      "button": "Contact Our Concierge Team",
+      "testimonial": "Our team is dedicated to crafting the perfect vacation experience for you. We're here to make your dream vacation a reality."
+    }
+  },
+
+  "services": {
+    "title": {
+      "standard": "Punta Cana Plan Services",
+      "premium": "Punta Cana Luxe Services"
+    },
+    "subtitle": "Select the services you would like to include in your booking.",
+    "actions": {
+      "search": "Search services...",
+      "details": "View Details",
+      "includes": "Includes",
+      "menuOptions": "Menu Options",
+      "addToBooking": "Add to Booking",
+      "selected": "Selected",
+      "selectDates": "Select Dates",
+      "removeFromBooking": "Remove from Booking",
+      "backToServices": "Back to Services",
+      "backToHome": "Back to Home",
+      "relatedServices": "Related Services",
+      "openBarOptions": "Open Bar Options",
+      "timeSlots": "Available Time Slots",
+      "contact": "Contact us"
+    },
+    "standard": {
+      "yoga": {
+        "name": "Yoga",
+        "short": "PCP yoga sessions at our beachfront pavilion",
+        "full": "Immerse yourself in the harmony of nature and awaken your inner balance in Punta Cana. Our classes — suitable for all levels — are led by certified instructors in dreamlike settings: beaches, tropical gardens, or scenic terraces. Inhale peace, exhale stress, and renew your energy. Book your yoga experience today and embrace wellness in paradise.",
+        "tagline": "Your Space. Your Flow.",
+        "slogan": "EXPERIENCE A PERSONALIZED PRACTICE",
+        "options": {
+          "title": "Choose from:",
+          "items": [
+            "Hatha",
+            "Vinyasa",
+            "Ashtanga",
+            "Yin (Stretching)",
+            "Restorative"
+          ]
+        },
+        "includes": {
+          "title": "What's Included:",
+          "items": [
+            "Yoga Mats",
+            "Props & Supports (as needed)",
+            "Personalized Guidance from Certified Instructors"
+          ]
+        },
+        "notIncluded": {
+          "title": "Not Included:",
+          "items": ["Gratuity (optional, appreciated)"]
+        },
+        "itinerary": {
+          "title": "What to Expect:",
+          "steps": [
+            "Instructor arrives & sets the space",
+            "Quick welcome and goal discussion",
+            "Move, breathe, and flow",
+            "Finish with a grounding relaxation"
+          ]
+        },
+        "whyChoose": {
+          "title": "Why Choose Us?",
+          "description": "This isn't just a yoga class—it's a customized wellness experience designed around you. Whether you're focusing on flexibility, strength, mindfulness, mobility, or prenatal care, every detail is thoughtfully adapted to your unique journey.",
+          "extraInfo": "Unlike large group sessions or impersonal apps, our sessions offer real-time feedback, adjustments, and encouragement from professionals who care deeply about your experience.",
+          "tagline": "Let us bring wellness to your door."
+        },
+        "details": {
+          "title": "Good to Know",
+          "overview": {
+            "title": "Overview",
+            "duration": {
+              "label": "Duration",
+              "value": "60 minutes"
+            },
+            "meetingPoint": {
+              "label": "Meeting point",
+              "value": "Your Vacation Rental"
+            },
+            "cancellations": {
+              "label": "Cancellations",
+              "value": "Cancellations made more than 24 hours before the start time are allowed. However, during the holiday season (Dec 20th - Jan 4th), all bookings are final and non-refundable."
+            },
+            "age": {
+              "label": "Age",
+              "value": "9+"
+            }
+          },
+          "timeInfo": {
+            "label": "Start & End Time:",
+            "value": "Promptly at the scheduled hour"
+          },
+          "wearInfo": {
+            "label": "What to Wear:",
+            "value": "Stretch-friendly clothing"
+          },
+          "agePolicy": {
+            "label": "Age Policy:",
+            "value": "Minors are welcome with adult supervision"
+          },
+          "adaptability": {
+            "label": "Adaptability:",
+            "value": "Sessions can be adapted for pregnancy or mobility needs"
+          }
+        },
+        "disclaimer": "For your safety and peace of mind, we recommend consulting with your physician before beginning any new physical activity—especially if pregnant, recovering from an injury, or managing a health condition. Participation is at your own discretion.",
+        "finalMessage": "Listen to your body. This is your time. Your space. Your pace."
+      },
+      "bikeRentals": {
+        "name": "Bike Rentals",
+        "short": "Explore the resort on our comfortable bicycles",
+        "full": "Explore Punta Cana on two wheels with our bike rentals. Perfect for cruising along the beach, through natural surroundings, or around the city in a comfortable and eco-friendly way. Pedal, discover, and experience every corner. Book your bike today and start your adventure!"
+      },
+      "airportTransfers": {
+        "name": "Airport Transfers",
+        "short": "Convenient transportation to and from Punta Cana Airport",
+        "full": "Enjoy a comfortable and safe transfer to and from the airport with our private transportation service. We take you directly to your destination, so you can start your Punta Cana experience worry-free. Book your transfer today and travel with peace of mind."
+      },
+      "catamaranTrips": {
+        "name": "Catamaran Trips",
+        "short": "Scenic sailing adventures along the coastline",
+        "full": "Experience a unique adventure on the sea with our catamaran trips. Enjoy stunning landscapes, crystal-clear waters, and the tranquility of sailing along the coast of Punta Cana. Book your trip today and sail to paradise."
+      },
+      "golfCartRentals": {
+        "name": "Golf Cart Rentals",
+        "short": "Convenient transportation within the resort",
+        "full": "Enjoy the freedom to explore Punta Cana at your own pace with our golf cart rentals. Perfect for getting around resorts, beaches, and local trails in comfort. Drive, explore, and enjoy at your own pace. Book your cart today and discover Punta Cana."
+      },
+      "personalTraining": {
+        "name": "Personal Training",
+        "short": "One-on-one fitness sessions with certified trainers",
+        "full": "Stay in shape during your vacation with our personal training sessions. Work out with certified professionals who tailor each session to your level, goals, and schedule. Book today and become your best self in Punta Cana."
+      },
+      "babysitter": {
+        "name": "Babysitter",
+        "short": "Professional childcare services",
+        "full": "Trust your little ones with our qualified childcare professionals. Our babysitters are carefully selected for their experience and warmth, ensuring your children's safety and enjoyment in the comfort of your resort, villa, or apartment. Relax, enjoy, and make memories while we take care of them. Book your babysitting service today and experience Punta Cana your way."
+      },
+      "horsebackRiding": {
+        "name": "Horseback Riding",
+        "short": "Guided tours on horseback through scenic trails",
+        "full": "Discover the natural beauty of Punta Cana on horseback. Enjoy a guided ride along beaches, trails, and breathtaking landscapes—perfect for all experience levels. Book your horseback adventure and live an unforgettable experience."
+      },
+      "deepSeaFishing": {
+        "name": "Deep-Sea Fishing",
+        "short": "Exciting fishing excursions in the Caribbean Sea",
+        "full": "Embark on an exciting deep-sea fishing adventure with our expert captains. Explore deep waters, battle exotic species, and feel the thrill only the Caribbean Sea can offer. Set sail, fish, and create unforgettable memories. Book your deep-sea fishing trip today and feel the excitement of the catch."
+      },
+      "privateChef": {
+        "name": "Private Chef Service",
+        "short": "Personalized culinary experiences in your accommodation",
+        "full": "Delight your palate with personalized gourmet creations by a private chef in your villa, apartment, or yacht. Our team crafts custom menus using fresh ingredients and local flavors, turning every meal into an unforgettable experience. Book your private chef today and enjoy a unique culinary experience in Punta Cana."
+      },
+      "customDecorations": {
+        "name": "Custom Decorations",
+        "short": "Special event decorations for celebrations",
+        "full": "Enhance your events with custom decorations that reflect your style and theme. From floral arrangements to full setups, our team creates unique and memorable spaces. Surprise, delight, and celebrate in style. Book your personalized décor today and turn every detail into an extraordinary occasion."
+      },
+      "adventureExcursions": {
+        "name": "Adventure Excursions",
+        "short": "Thrilling activities and tours around Punta Cana",
+        "full": "Experience the thrill of adventure with our excursions. Unique experiences surrounded by the lush nature of Punta Cana. Dare, explore, and push your limits. Book your adventure excursion today and challenge your limits."
+      },
+      "karaoke": {
+        "name": "Private Karaoke Sessions",
+        "short": "Fun karaoke setup in your accommodation",
+        "full": "Enjoy a night full of music and fun with our karaoke service. Sing your favorite songs and create unforgettable memories with friends and family in a lively atmosphere. Sing, laugh, and turn every moment into a party! Book your karaoke session today and enjoy maximum fun."
+      },
+      "liveMusic": {
+        "name": "Live Music Entertainment",
+        "short": "Local musicians performing at your event",
+        "full": "Add a special touch to your celebration with live music entertainment. From Caribbean rhythms to international classics, our talented musicians will set the perfect mood for your event. Book today and let the music turn your night into an unforgettable experience."
+      },
+      "groceryShopping": {
+        "name": "Grocery Shopping Assistance",
+        "short": "We shop for groceries and deliver to your accommodation",
+        "full": "Forget the lines and wasted time. With our grocery shopping service, we stock your kitchen with everything you need before or during your stay. Fresh, local, and imported products delivered straight to your accommodation. Place your order today and enjoy more of your vacation."
+      }
+    },
+    "premium": {
+      "luxeYacht": {
+        "name": "Luxe Yacht",
+        "short": "Private luxury yacht charter with crew",
+        "full": "Experience ultimate luxury with our private yacht charter. Cruise the pristine Caribbean waters with a professional crew catering to your every need. Indulge in gourmet meals, premium beverages, and exclusive water activities."
+      },
+      "luxeEBikes": {
+        "name": "Luxe E-Bikes",
+        "short": "Premium electric bikes for effortless exploration",
+        "full": "Discover Punta Cana in style with our premium electric bikes. Enjoy effortless exploration of beaches, trails, and local attractions with top-of-the-line e-bikes featuring extended battery life and comfortable ergonomics."
+      },
+      "luxeGolfCart": {
+        "name": "Luxe Golf Cart",
+        "short": "Premium golf cart with extended features",
+        "full": "Travel in style with our luxury golf carts featuring premium leather seats, extended battery range, and upgraded features. Perfect for exploring resorts and local areas with elegance and comfort."
+      },
+      "luxeYoga": {
+        "name": "Luxe Yoga Sessions",
+        "short": "Private beachfront yoga with premium amenities",
+        "full": "Elevate your wellness journey with our exclusive private yoga sessions held in breathtaking locations. Experience personalized instruction, premium mats and equipment, and post-session organic refreshments."
+      },
+      "luxeFitness": {
+        "name": "Luxe Fitness Sessions",
+        "short": "Elite personal training with specialized equipment",
+        "full": "Transform your fitness routine with our elite training sessions. Work with top-tier personal trainers using premium equipment and cutting-edge techniques tailored specifically to your goals and fitness level."
+      },
+      "luxeCulinary": {
+        "name": "Luxe Culinary Service",
+        "short": "Gourmet chef experience with premium ingredients",
+        "full": "Indulge in the ultimate dining experience with our gourmet chef service. Enjoy exquisite multi-course meals prepared with the finest local and imported ingredients, paired with premium wines and served in the comfort of your accommodation."
+      },
+      "luxeMasseuse": {
+        "name": "Luxe Masseuse Service",
+        "short": "Premium spa treatments in your accommodation",
+        "full": "Unwind with our luxury spa experience brought directly to your accommodation. Our elite massage therapists provide premium treatments using organic oils and top-tier techniques, complete with aromatherapy and ambient music."
+      },
+      "luxeArrival": {
+        "name": "Luxe Arrival - SUV Service",
+        "short": "Luxury SUV airport transfer with premium amenities",
+        "full": "Begin your luxury experience from the moment you land with our premium SUV airport transfer. Enjoy plush leather seating, climate control, complimentary refreshments, and a professional chauffeur ready to ensure a seamless arrival to your destination."
+      }
+    },
+    "hours": {
+      "one": "hour",
+      "multiple": "hours",
+      "duration": "Duration"
+    },
+    "price": "Price"
+  },
+  "customPackagePage": {
+    "title": "Create Your Custom Package",
+    "subtitle": "Select from our collection of premium services to create a bespoke Punta Cana experience tailored exclusively for you.",
+    "title2": "Start creating your package",
+    "description": "Choose how you want to create your perfect Punta Cana experience",
+    "cardGuide1Title": "Guided Experience",
+    "cardGuide1Description": "Answer a few questions about your preferences and let us recommend the perfect services for your vacation.",
+    "cardGuideBtn": "Get Personalized Recommendations",
+    "btn": "Start Building Your Package",
+    "cardGuide2Title": "Guided Experience",
+    "cardGuide2Description": "Browse all available services and build your package from scratch, selecting exactly what you want.",
+    "cardGuideBtn2": "Get Personalized Recommendations",
+    "whyCustomPackage": "Why Create a Custom Package?",
+    "slogan": "Enjoy the perfect balance of luxury and personalization with our custom packages",
+    "card1": "Complete Flexibility",
+    "card1Text": "Select only the services you want, when you want them, with no compromises on quality or experience.",
+    "card2": "Value Optimization",
+    "card2Text": "Pay only for what matters to you. Our custom packages ensure you get the most value from every dollar spent.",
+    "card3": "Curated Excellence",
+    "card3Text": "All our services meet the highest standards of luxury and quality, ensuring a premium experience regardless of your selections.",
+    "createCustomPackageTitle": "Create Your Custom Package",
+    "createCustomPackageSubTitle": "Select services to create your personalized experience",
+    "services": "Services Available",
+    "ready": "Ready to Create Your Dream Vacation?",
+    "readyText": "Build your bespoke Punta Cana experience now and let us take care of every detail. Your perfect vacation awaits."
+  },
+  "faqs": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about our custom packages",
+    "btn": "Have more questions? Contact us"
+  },
+  "customPackage": {
+    "title": "Create Your Custom Package",
+    "subtitle": "Select services to create your personalized experience package",
+    "availableServices": "Available Services",
+    "yourPackage": "Your Package",
+    "emptyPackage": "Your package is empty",
+    "selectServices": "Select services from the left to add them to your package",
+    "dragToReorder": "Drag items to reorder them in your package",
+    "totalServices": "Total Services",
+    "estimatedTotal": "Estimated Total",
+    "savePackage": "Save this package for later",
+    "packageName": "Package name",
+    "save": "Save",
+    "savedPackages": "Saved Packages",
+    "services": "services",
+    "service": "service",
+    "proceedToBooking": "Proceed to Booking",
+    "select": "Add",
+    "selected": "Selected",
+    "allServices": "All Services",
+    "waterActivities": "Water Activities",
+    "tours": "Tours",
+    "transportation": "Transportation",
+    "wellness": "Wellness",
+    "foodDrinks": "Food & Drinks",
+    "leisure": "Leisure",
+    "noServicesFound": "No services found. Try adjusting your filters.",
+    "clearAll": "Clear all",
+    "confirmClear": "Are you sure you want to clear all selected services?"
+  },
+  "dayByDayPlanner": {
+    "title": "When do you plan to visit Punta Cana?",
+    "subTitle": "Select the dates of your stay so we can help you plan each day."
+  },
+  "customPackageCTA": {
+    "title": "Design Your Perfect Vacation Experience",
+    "description": "Create a custom package that perfectly fits your vacation dreams. Select exactly what you want, when you want it.",
+    "buildButton": "Create Custom Package",
+    "exploreButton": "Explore All Services",
+    "feature1": "Choose from a wide range of services",
+    "feature2": "Customize every detail of your trip",
+    "feature3": "Create memorable experiences",
+    "personalized": "Personalized",
+    "yourWay": "Your Way",
+    "pageTitle": "Build Your Custom Package",
+    "pageSubtitle": "Mix and match from our selection of services to create your perfect Punta Cana experience.",
+    "backToHome": "Back to Home"
+  },
+
+  "contact": {
+    "headerChip": "We are here to help you",
+    "headerTitle": "Contact Our Premium Team",
+    "headerSubTitle": "Our vacation experience specialists are ready to assist ready to assist you and make your stay in Punta Cana an unforgettable memory. an unforgettable memory.",
+    "title": "Contact Us",
+    "subtitle": "We're here to answer your questions and help you plan your perfect stay in Punta Cana.",
+    "multipleChanelChip": "Multiple Channels",
+    "multipleChanelTitle": "How to Contact Us",
+    "multipleChanelSubTitle": "Select the method of contact that best suits your needs",
+    "channel1Title": "Call us at",
+    "channel1SubTitle": "Available to assist you by telephone with all your inquiries.",
+    "channel2Title": "Write to us at",
+    "channel2SubTitle": "Send us an email and we will get back to you as soon as possible.",
+    "channel3Title": "Visit us at",
+    "channel3SubTitle": "Come to our offices for a personalized attention.",
+    "channel4Title": "Live Chat",
+    "channel4SubTitle": "Chat with our agents in real time via live chat.",
+
+    "form": {
+      "title": "Send us a Message",
+      "subTitle": "Complete the form below and our team will contact you soon.",
+      "name": "Full Name",
+      "email": "Email",
+      "subject": "Subject",
+      "selectSubject": "Select Subject",
+      "subject1": "Reservations",
+      "subject2": "Service Information ",
+      "subject3": "Support",
+      "subject4": "Comments",
+      "subject5": "Other",
+      "message": "Message",
+      "sending": "Sending...",
+      "submitButton": "Send Message",
+      "success": "Message Sent!",
+      "successText": "Thank you for contacting us. Our team will get back to you as soon as possible."
+    },
+    "contactInformation": {
+      "title": "Contact information",
+      "ourLocation": "Our Location",
+      "email": "Email",
+      "phone": "Phone",
+      "date": "Hours of Operation",
+      "monday": "Monday - Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "follow": "Follow us"
+    },
+    "Cta": {
+      "title": "We are Ready to Create Your Dream Experience",
+      "subTitle": "Our team of specialists is committed to making your vacation an unforgettable and personalized experience.",
+      "btn1": "Call us now",
+      "btn2": "Send Message",
+      "visitUs": "Visit us",
+      "visitUsTitle": "Our Location",
+      "visitUsSubTitle": "Enjoy our modern facilities in the heart of paradise."
+    },
+    "map": {
+      "seeOnGoogle": "View on Google Maps",
+      "book": "Visit us"
+    }
+  },
+  "about": {
+    "aboutChip": "Our History",
+    "title": "About Punta Cana Plan",
+    "subTitle": "Discover the story behind our exclusive vacation homes and our commitment to luxury experiences in Punta Cana.",
+    "card1": "Years of Experience",
+    "card2": "Exclusive Properties",
+    "card3": "Satisfied Customers",
+    "card4": "Premium Services",
+    "from": "From",
+    "stars": "Creating exceptional luxury experiences in Punta Cana since our inception.",
+    "ourHistory": {
+      "aboutChip": "Our History",
+      "title": "A Track Record of Excellence in Luxury Tourism",
+      "p1": "Punta Cana Plan was born in 2010 with a clear vision: to offer luxury vacation experiences that combine the privacy of a home with the services of a five-star resort.",
+      "p2": "Founded by a group of Dominican tourism enthusiasts, our company started with just three properties in the Punta Cana area. Over the years, we have grown to manage more than 25 exclusive vacation homes in the most prestigious areas of the Dominican Republic.",
+      "p3": "What sets us apart is not only the quality of our properties, but our focus on personalized service. We believe that each guest deserves a unique experience, tailored to their particular preferences."
+    },
+    "difference": {
+      "differentChip": "Our Difference",
+      "differentTitle": "Why Choose Punta Cana Plan?",
+      "list1": "Personalized Service",
+      "list1Text": "Each experience is tailored to the unique preferences of our guests, creating a truly tailor-made vacation.",
+      "list2": "Exclusive Properties",
+      "list2Text": "Our residences are carefully selected for their privileged location, design and premium amenities.",
+      "list3": "Local Expert Team",
+      "list3Text": "Our team of local professionals knows Punta Cana inside out and is available 24/7 to guarantee your satisfaction.",
+      "list4": "Premium Concierge Services",
+      "list4Text": "From private chefs to exclusive excursions, our concierge team takes care of every detail.",
+      "answer": "Answer",
+      "answerText": "Always available",
+      "answer2": "Locations Premium",
+      "answer2Text": "The best areas"
+    }
+  },
+  "cartSide": {
+    "title": "Your Selection",
+    "selectedPackage:": "Selected Package:",
+    "services": "Services Plan Punta Cana",
+    "selectedServices:": "Selected Services",
+    "selectedDates": "Selected Dates",
+    "selectDate": "Select date",
+    "checkout": "Proceed to Checkout",
+    "continueShopping": "Continue Shopping"
+  },
+  "payment": {
+    "title": "Complete Your Booking",
+    "subtitle": "Fill in your details and complete payment to confirm your reservation.",
+    "personalDetails": "Personal Details",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "specialRequests": "Special Requests",
+    "specialRequestsPlaceholder": "Any special requirements or requests for your booking...",
+    "paymentDetails": "Payment Details",
+    "paymentMethod": "Payment Method",
+    "securePayment": "Your payment information is secure. We use encryption to protect your data.",
+    "cardNumber": "Card Number",
+    "expiryDate": "Expiry Date",
+    "cvv": "CVV",
+    "nameOnCard": "Name on Card",
+    "agreeToTerms": "I agree to the Terms and Conditions and Privacy Policy",
+    "processing": "Processing...",
+    "confirmPayment": "Confirm and Pay",
+    "successTitle": "Payment Successful!",
+    "successMessage": "Thank you for your booking. We have sent a confirmation email to your inbox with all the details.",
+    "backToHome": "Back to Home",
+    "orderSummary": "Order Summary",
+    "bookingDates": "Booking Dates",
+    "guests": "Guests",
+    "selectedServices": "Selected Services",
+    "subtotal": "Subtotal",
+    "taxes": "Taxes & Fees",
+    "total": "Total",
+    "needHelp": "Need Help?",
+    "helpText": "If you have any questions about your booking, please contact our support team."
+  },
+  "standardPage": {
+    "chip": "STANDARD EXPERIENCE",
+    "tilte": "Punta Cana Plan",
+    "subTitle": "Our standard package offers a complete vacation experience with essential services to make your stay in Punta Cana memorable and hassle-free, with the perfect blend of adventure and relaxation.",
+    "rating": "rating",
+    "rastingText": "Standard Experience",
+    "btn1": "Explore Premium Services",
+    "btn2": "Customize Your Package",
+    "tab1": "Overview",
+    "tab2": "Included Services",
+    "tab3": "Testimonials",
+    "tab4": "FAQ",
+    "services": {
+      "title": "Included Services",
+      "subtitle": "Our standard package includes the following premium services to ensure your Punta Cana experience is comfortable, exciting, and memorable."
+    },
+    "testimonial": {
+      "title": "Guest Testimonials",
+      "subtitle": "Dont just take our word for it. Here is what our guests have to say about their Punta Cana Plan experience.",
+      "testimonial1": "The Punta Cana Plan made our family vacation so easy and enjoyable. The airport transfers were smooth, the golf cart was perfect for getting around, and the catamaran trip was a highlight for the kids. Having a chef come to our villa for a night was such a special experience. Highly recommend!",
+      "testimonial2": "My husband and I celebrated our anniversary with the Punta Cana Plan package and it was perfect. The convenience of having transportation arranged and the freedom of the golf cart made exploring so much easier. The catamaran trip was absolutely stunning - best snorkeling I've ever done. The only thing I'd change is adding more food options to the package.",
+      "testimonial3": "As a group of friends celebrating a milestone birthday, we couldnt have asked for a better setup. The private chef was incredible - he prepared an authentic Dominican feast that we are still talking about. The catamaran trip was the perfect mix of relaxation and fun. Having the golf cart made late-night food runs a breeze. Will definitely book again!"
+    },
+    "standardPageCTA": {
+      "title": "Ready for Your Dominican Adventure?",
+      "subtitle": "Book your Punta Cana Plan package now and get ready for an unforgettable Caribbean experience with all the essential services included.",
+      "btn1": "Book Standard Package",
+      "btn2": "View Premium Package"
+    }
+  },
+  "premiumPage": {
+    "chip": "PREMIUM LUXURY EXPERIENCE",
+    "rating": "Rating",
+    "experince": "Exclusive Experience",
+    "subtitle": "Indulge in the ultimate Dominican Republic experience with our premium package. Elevate your vacation with exclusive luxuries, personalized service, and unforgettable moments from arrival to departure.",
+    "btn1": "Explore Premium Services",
+    "btn2": "Customize Your Experience",
+    "tab1": "Overview",
+    "tab2": "Premium Services",
+    "tab3": "Testimonials",
+    "tab4": "FAQ"
+  },
+  "grocery": {
+    "features": {
+      "title": "About Our Shopping Service",
+      "convenience": {
+        "title": "Convenience",
+        "description": "We’ll stock your kitchen before arrival or during your stay so you can focus on enjoying your vacation."
+      },
+      "quality": {
+        "title": "Quality Products",
+        "description": "We select the freshest local products and top-quality imported items for your complete satisfaction."
+      },
+      "selection": {
+        "title": "Premium Selection",
+        "description": "From daily essentials to premium wines and liquors, we offer a wide selection to meet all your needs."
+      }
+    }
+  }
+}
