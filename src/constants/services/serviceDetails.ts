@@ -1,62 +1,5 @@
+import { ServiceExtendedDetails } from '@/types/services';
 import { ServiceId, SERVICE_IDS } from './serviceId';
-
-/**
- * Interface for extended service details
- * Contains additional information that may be specific to certain service types
- */
-export interface ServiceExtendedDetails {
-  // Common fields
-  title?: string;
-  tagline?: string;
-  slogan?: string;
-  fullDescription?: string;
-  description?: string;
-  priceUnit?: string;
-  includes?: string[];
-  notIncluded?: string[];
-  whatToBring?: string[];
-  itinerary?: string[];
-  disclaimer?: string;
-  finalMessage?: string;
-
-  // Transportation related
-  pickupTime?: string;
-  travelTime?: string;
-
-  // Vehicle/vessel related
-  size?: string;
-  capacity?: string;
-
-  // Schedule related
-  schedule?: string;
-  timeSlots?: string[];
-  availability?: string;
-
-  // Location related
-  location?: string;
-  places?: string[];
-
-  // Activity options
-  menuOptions?: {
-    name: string;
-    items: string[];
-  }[];
-  halfDayOption?: {
-    available: boolean;
-    times?: string[];
-    price?: number;
-  };
-  yogaStyles?: string[];
-  openBarOptions?: string[];
-
-  // Child-related services
-  ageRange?: string;
-  minimumBooking?: string;
-  safetyStandards?: string[] | string;
-
-  // Misc
-  details?: Record<string, unknown>;
-}
 
 /**
  * Centralized repository of additional details for specific services
@@ -102,6 +45,88 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
     finalMessage:
       'Listen to your body. This is your time. Your space. Your pace.',
+  },
+
+  // CUSTOM DECORATIONS SERVICE
+  [SERVICE_IDS.CUSTOM_DECORATIONS]: {
+    title: 'CREATE A MEMORABLE SETTING',
+    description:
+      'Transform any space into a celebration with our personalized decoration service. Whether it is a birthday, anniversary, proposal, or a themed family night, we bring your vision to life with elegance, color, and creativity—right at your villa or event space.',
+    tagline: 'Your Moment. Your Style.',
+    slogan: 'CREATE A MEMORABLE SETTING',
+    priceUnit: 'per setup',
+    includes: [
+      'Custom Design Consultation',
+      'Full Setup & Breakdown',
+      'Decor Materials & Styling',
+      'Lighting (if needed)',
+      'Optional Add-ons: Cake, Flowers, Welcome Signs',
+    ],
+    notIncluded: ['Gratuity (optional, appreciated)'],
+    itinerary: [
+      'Theme & color palette consultation',
+      'On-site setup before your event',
+      'Beautiful decor tailored to your occasion',
+      'Timely breakdown & clean-up',
+    ],
+    timeSlots: [
+      'Romantic Setups',
+      'Birthday Themes',
+      'Balloon Garlands',
+      'Beach Picnics',
+      "Kids' Parties",
+      'Luxury Dining Decor',
+    ],
+    disclaimer: 'Please provide accurate setup location details and timing.',
+    details: {
+      bookingTime: 'Minimum 48 hours notice required',
+      customizationOptions: 'We adapt to space, weather, and personal style',
+      extrasAvailable:
+        'Photographers, live music, catering & more upon request',
+      setupLocation: 'Indoor or outdoor options available',
+    },
+    fullDescription:
+      "Transform any space into a celebration with our personalized decoration service. Whether it is a birthday, anniversary, proposal, or a themed family night, we bring your vision to life with elegance, color, and creativity—right at your villa or event space. From romantic setups to birthday themes, balloon garlands to beach picnics, kids' parties to luxury dining decor, we create magical environments that make your special moments unforgettable.",
+    finalMessage:
+      'Every celebration deserves a personal touch. We handle every detail so you can focus on enjoying the moment. From cozy to extravagant, we make your setting unforgettable.',
+  },
+
+  // LIVE MUSIC SERVICE
+  [SERVICE_IDS.LIVE_MUSIC]: {
+    title: 'BRING YOUR EVENT TO LIFE',
+    description:
+      'Create unforgettable memories with live music at your villa, beach gathering, or private event. Whether you want smooth acoustic tunes, tropical beats, or a lively band for dancing, we tailor the vibe perfectly to your occasion.',
+    tagline: 'Your Rhythm. Your Celebration.',
+    slogan: 'BRING YOUR EVENT TO LIFE',
+    priceUnit: 'per performance',
+    includes: [
+      'Professional Musicians',
+      'Personalized Music Selection',
+      'Sound Equipment (if needed)',
+      'Setup & Breakdown on Site',
+      'Coordination with Event Timeline',
+    ],
+    notIncluded: ['Gratuity (optional, appreciated)'],
+    itinerary: [
+      'Consultation to select your style and vibe',
+      'Musicians arrive early for setup & soundcheck',
+      'Live performance during your event',
+      'Professional breakdown and departure after performance',
+    ],
+    timeSlots: ['Soloist', 'Duo', 'Trio', 'Quartet', 'Quintet'],
+    disclaimer:
+      'Please coordinate music timing with your event planner or villa host to respect local noise policies.',
+    details: {
+      recommendedBookingTime: 'Minimum 72 hours in advance',
+      duration: 'Standard sets of 60–90 minutes (customizable)',
+      setupRequirements: 'Electricity access for amplified sets (110V)',
+      customization:
+        'Special requests for song lists or first dances available',
+    },
+    fullDescription:
+      'Create unforgettable memories with live music at your villa, beach gathering, or private event. Our professional musicians will enhance your celebration with personalized performances ranging from solo acoustic sets to full quintets. Whether you want smooth relaxing tunes for a dinner party, tropical rhythms for a beach day, or a lively ensemble for dancing, we tailor the musical experience to perfectly match your occasion and preferences.',
+    finalMessage:
+      'Music transforms moments. Our curated performances are designed to enhance your celebration—whether it is a romantic dinner, a family gathering, or a lively party night. Feel the rhythm, dance, and make memories that last forever.',
   },
 
   // KARAOKE SERVICE

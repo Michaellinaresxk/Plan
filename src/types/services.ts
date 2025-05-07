@@ -57,7 +57,13 @@ export interface ServiceData {
       maxLength?: number;
     };
   }[];
-  specialRender?: 'yoga' | 'karaoke' | 'special' | 'grocery' | 'airport' | 'babysitter'; // Identificador para renders especiales
+  specialRender?:
+    | 'yoga'
+    | 'karaoke'
+    | 'special'
+    | 'grocery'
+    | 'airport'
+    | 'babysitter'; // Identificador para renders especiales
   relatedServices?: string[]; // IDs de servicios relacionados
   tags?: string[]; // Etiquetas para categorización
   availability?: {
@@ -69,11 +75,72 @@ export interface ServiceData {
   notIncluded?: string[]; // No incluido en el servicio (keys para traducciones)
   itinerary?: string[]; // Pasos de itinerario (keys para traducciones)
   disclaimer?: string; // Clave para traducción de disclaimer
-  metaData?: Record<string, string | number | boolean | string[] | number[] | null>; // Datos adicionales específicos del servicio
+  metaData?: Record<
+    string,
+    string | number | boolean | string[] | number[] | null
+  >; // Datos adicionales específicos del servicio
 }
 
 // Interfaz para propiedades que se pasan entre componentes
 export interface ServiceDisplayProps {
   service: ServiceData;
   locale: string;
+}
+
+/**
+ * Interface for extended service details
+ * Contains additional information that may be specific to certain service types
+ */
+export interface ServiceExtendedDetails {
+  // Common fields
+  title?: string;
+  tagline?: string;
+  slogan?: string;
+  fullDescription?: string;
+  description?: string;
+  priceUnit?: string;
+  includes?: string[];
+  notIncluded?: string[];
+  whatToBring?: string[];
+  itinerary?: string[];
+  disclaimer?: string;
+  finalMessage?: string;
+
+  // Transportation related
+  pickupTime?: string;
+  travelTime?: string;
+
+  // Vehicle/vessel related
+  size?: string;
+  capacity?: string;
+
+  // Schedule related
+  schedule?: string;
+  timeSlots?: string[];
+  availability?: string;
+
+  // Location related
+  location?: string;
+  places?: string[];
+
+  // Activity options
+  menuOptions?: {
+    name: string;
+    items: string[];
+  }[];
+  halfDayOption?: {
+    available: boolean;
+    times?: string[];
+    price?: number;
+  };
+  yogaStyles?: string[];
+  openBarOptions?: string[];
+
+  // Child-related services
+  ageRange?: string;
+  minimumBooking?: string;
+  safetyStandards?: string[] | string;
+
+  // Misc
+  details?: Record<string, unknown>;
 }

@@ -382,6 +382,221 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
+  // CUSTOM DECORATIONS SERVICE
+  [SERVICE_IDS.CUSTOM_DECORATIONS]: {
+    id: SERVICE_IDS.CUSTOM_DECORATIONS,
+    titleKey: 'services.standard.customDecorations.name',
+    descriptionKey: 'services.standard.customDecorations.description',
+    fullDescriptionKey: 'services.standard.customDecorations.full',
+    basePrice: 150,
+    priceUnit: 'services.priceUnits.perSetup',
+    category: 'leisure',
+    packageType: ['standard'],
+    imageUrl: '/images/custom-decorations.jpg',
+    duration: 0, // No tiene duración específica
+    specialRender: 'decorations',
+    bookingDuration: {
+      min: 1,
+      max: 1,
+      unit: 'setups',
+    },
+    options: {
+      decorationType: {
+        id: 'decorationType',
+        nameKey: 'services.customDecorations.options.decorationType.title',
+        subOptions: {
+          romantic: {
+            id: 'romantic',
+            nameKey:
+              'services.customDecorations.options.decorationType.options.romantic',
+            price: 0,
+          },
+          birthday: {
+            id: 'birthday',
+            nameKey:
+              'services.customDecorations.options.decorationType.options.birthday',
+            price: 25,
+          },
+          balloonGarlands: {
+            id: 'balloonGarlands',
+            nameKey:
+              'services.customDecorations.options.decorationType.options.balloonGarlands',
+            price: 35,
+          },
+          beachPicnic: {
+            id: 'beachPicnic',
+            nameKey:
+              'services.customDecorations.options.decorationType.options.beachPicnic',
+            price: 50,
+          },
+          kidsParty: {
+            id: 'kidsParty',
+            nameKey:
+              'services.customDecorations.options.decorationType.options.kidsParty',
+            price: 45,
+          },
+          luxuryDining: {
+            id: 'luxuryDining',
+            nameKey:
+              'services.customDecorations.options.decorationType.options.luxuryDining',
+            price: 75,
+          },
+        },
+      },
+      extras: {
+        id: 'extras',
+        nameKey: 'services.customDecorations.options.extras.title',
+        subOptions: {
+          none: {
+            id: 'none',
+            nameKey: 'services.customDecorations.options.extras.options.none',
+            price: 0,
+          },
+          cake: {
+            id: 'cake',
+            nameKey: 'services.customDecorations.options.extras.options.cake',
+            price: 45,
+          },
+          flowers: {
+            id: 'flowers',
+            nameKey:
+              'services.customDecorations.options.extras.options.flowers',
+            price: 55,
+          },
+          welcomeSign: {
+            id: 'welcomeSign',
+            nameKey:
+              'services.customDecorations.options.extras.options.welcomeSign',
+            price: 25,
+          },
+        },
+      },
+    },
+    includes: [
+      'services.customDecorations.includes.1',
+      'services.customDecorations.includes.2',
+      'services.customDecorations.includes.3',
+      'services.customDecorations.includes.4',
+    ],
+    notIncluded: ['services.customDecorations.notIncluded.1'],
+    itinerary: [
+      'services.customDecorations.itinerary.1',
+      'services.customDecorations.itinerary.2',
+      'services.customDecorations.itinerary.3',
+      'services.customDecorations.itinerary.4',
+    ],
+    disclaimer: 'services.customDecorations.disclaimer',
+    relatedServices: [SERVICE_IDS.CHEF, SERVICE_IDS.LIVE_MUSIC],
+    tags: ['events', 'celebration', 'decorations', 'birthday', 'romantic'],
+    metaData: {
+      bookingNotice: '48 hours',
+      setupLocation: 'Indoor or outdoor',
+      customization: 'High',
+    },
+  },
+
+  // LIVE MUSIC SERVICE
+  [SERVICE_IDS.LIVE_MUSIC]: {
+    id: SERVICE_IDS.LIVE_MUSIC,
+    titleKey: 'services.standard.liveMusic.name',
+    descriptionKey: 'services.standard.liveMusic.description',
+    fullDescriptionKey: 'services.standard.liveMusic.full',
+    basePrice: 200,
+    priceUnit: 'services.priceUnits.perPerformance',
+    category: 'leisure',
+    packageType: ['standard', 'premium'],
+    imageUrl: '/images/live-music.jpg',
+    duration: 2, // Duración en horas (estándar)
+    specialRender: 'music',
+    bookingDuration: {
+      min: 1,
+      max: 4,
+      unit: 'hours',
+    },
+    options: {
+      performerType: {
+        id: 'performerType',
+        nameKey: 'services.liveMusic.options.performerType.title',
+        subOptions: {
+          soloist: {
+            id: 'soloist',
+            nameKey: 'services.liveMusic.options.performerType.options.soloist',
+            price: 0,
+          },
+          duo: {
+            id: 'duo',
+            nameKey: 'services.liveMusic.options.performerType.options.duo',
+            price: 100,
+          },
+          trio: {
+            id: 'trio',
+            nameKey: 'services.liveMusic.options.performerType.options.trio',
+            price: 200,
+          },
+          quartet: {
+            id: 'quartet',
+            nameKey: 'services.liveMusic.options.performerType.options.quartet',
+            price: 300,
+          },
+          quintet: {
+            id: 'quintet',
+            nameKey: 'services.liveMusic.options.performerType.options.quintet',
+            price: 400,
+          },
+        },
+      },
+      duration: {
+        id: 'duration',
+        nameKey: 'services.liveMusic.options.duration.title',
+        subOptions: {
+          standard: {
+            id: 'standard',
+            nameKey: 'services.liveMusic.options.duration.options.standard',
+            descriptionKey:
+              'services.liveMusic.options.duration.options.standardDescription',
+            price: 0,
+          },
+          extended: {
+            id: 'extended',
+            nameKey: 'services.liveMusic.options.duration.options.extended',
+            descriptionKey:
+              'services.liveMusic.options.duration.options.extendedDescription',
+            price: 75,
+          },
+          fullEvent: {
+            id: 'fullEvent',
+            nameKey: 'services.liveMusic.options.duration.options.fullEvent',
+            descriptionKey:
+              'services.liveMusic.options.duration.options.fullEventDescription',
+            price: 150,
+          },
+        },
+      },
+    },
+    includes: [
+      'services.liveMusic.includes.1',
+      'services.liveMusic.includes.2',
+      'services.liveMusic.includes.3',
+      'services.liveMusic.includes.4',
+    ],
+    notIncluded: ['services.liveMusic.notIncluded.1'],
+    itinerary: [
+      'services.liveMusic.itinerary.1',
+      'services.liveMusic.itinerary.2',
+      'services.liveMusic.itinerary.3',
+      'services.liveMusic.itinerary.4',
+    ],
+    disclaimer: 'services.liveMusic.disclaimer',
+    relatedServices: [SERVICE_IDS.CUSTOM_DECORATIONS, SERVICE_IDS.CHEF],
+    tags: ['entertainment', 'music', 'live', 'events', 'celebration'],
+    metaData: {
+      bookingNotice: '72 hours',
+      setupLocation: 'Indoor or outdoor',
+      electricityRequired: true,
+      standardSessionLength: '60-90 minutes',
+    },
+  },
+
   // Premium services section
   // LUXE YACHT
   [SERVICE_IDS.LUXE_YACHT]: {
