@@ -17,8 +17,8 @@ import {
 import { useTranslation } from '@/lib/i18n/client';
 import { Service, BookingDate } from '@/types/type';
 import ServiceCard from './ServiceCard';
-import { getServiceCategory } from '@/utils/servicesUtils';
 import { useBooking } from '@/context/BookingContext';
+import ServiceManager from '@/constants/services/ServiceManager';
 
 interface EnhancedServiceListProps {
   services: Service[];
@@ -110,7 +110,7 @@ const ServiceList: React.FC<EnhancedServiceListProps> = ({
     // Apply category filter if not "all"
     if (selectedCategory !== 'all') {
       result = result.filter(
-        (service) => getServiceCategory(service.id) === selectedCategory
+        (service) => ServiceManager.getCategory(service.id) === selectedCategory
       );
     }
 

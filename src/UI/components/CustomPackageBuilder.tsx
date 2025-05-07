@@ -38,7 +38,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import router from 'next/router';
-import { getServiceCategory } from '@/utils/servicesUtils';
+import ServiceManager from '@/constants/services/ServiceManager';
+import { getServiceTranslationPath } from '@/utils/servicesUtils';
 
 interface CustomPackageBuilderProps {
   services: Service[];
@@ -274,7 +275,7 @@ const CustomPackageBuilder: React.FC<CustomPackageBuilderProps> = ({
     // Apply category filter
     if (activeCategory !== 'all') {
       filtered = filtered.filter(
-        (service) => getServiceCategory(service.id) === activeCategory
+        (service) => ServiceManager.getCategory(service.id) === activeCategory
       );
     }
 

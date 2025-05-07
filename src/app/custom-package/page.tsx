@@ -19,7 +19,7 @@ import { useTranslation } from '@/lib/i18n/client';
 import Image from 'next/image';
 import CustomPackageBuilder from '@/UI/components/CustomPackageBuilder';
 import CustomPackageOrchestrator from '@/UI/components/packageBuilder/CustomPackageOrchestrator';
-import { getAllLegacyServices } from '@/utils/servicesUtils';
+import ServiceManager from '@/constants/services/ServiceManager';
 
 export default function CustomPackagePage() {
   const { t } = useTranslation();
@@ -30,8 +30,8 @@ export default function CustomPackagePage() {
     null
   );
 
-  // Get all services using the new centralized serviceData structure
-  const allServices = getAllLegacyServices();
+  // Get all services using the new ServiceManager
+  const allServices = ServiceManager.getAll();
 
   // Handle completion of the guided flow
   const handleComplete = () => {

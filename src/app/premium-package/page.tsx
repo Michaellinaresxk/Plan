@@ -21,15 +21,15 @@ import {
   Sparkles,
 } from 'lucide-react';
 import ServiceList from '@/UI/components/services/ServiceList';
-import { getLegacyServicesByPackageType } from '@/utils/servicesUtils';
+import ServiceManager from '@/constants/services/ServiceManager';
 
 const PremiumPackage = () => {
   const { packageType, setPackageType } = useBooking();
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Get premium services using the new data structure
-  const premiumServices = getLegacyServicesByPackageType('premium');
+  // Get premium services using the new ServiceManager
+  const premiumServices = ServiceManager.getByPackageType('premium');
 
   // Ensure package type is set to 'premium'
   React.useEffect(() => {
