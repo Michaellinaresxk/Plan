@@ -20,7 +20,7 @@ import {
   Wine,
   Sparkles,
 } from 'lucide-react';
-import ServiceList from '@/UI/components/services/ServiceList';
+import ServiceList from '@/UI/components/service/ServiceList';
 import ServiceManager from '@/constants/services/ServiceManager';
 
 const PremiumPackage = () => {

@@ -10,7 +10,7 @@ import CartSidebar from '@/UI/components/shared/CartSidebar';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight, Clock, Star } from 'lucide-react';
-import ServiceList from '@/UI/components/services/ServiceList';
+import ServiceList from '@/UI/components/service/ServiceList';
 import ServiceManager from '@/constants/services/ServiceManager';
 
 const StandardPackage = () => {
