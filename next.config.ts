@@ -5,9 +5,10 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'production-media-prisoner-of-payload.s3.amazonaws.com',
-      'denomades.imgix.net', // Añade el dominio del error
-      'images.unsplash.com', // Otros dominios comunes para imágenes
-      'res.cloudinary.com', // Puedes añadir otros dominios que uses
+      'denomades.imgix.net',
+      'images.unsplash.com',
+      'res.cloudinary.com',
+      'plus.unsplash.com',
     ],
   },
 };

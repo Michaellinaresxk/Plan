@@ -18,7 +18,8 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     priceUnit: 'services.priceUnits.perDay',
     category: 'food-drinks',
     packageType: ['standard'],
-    imageUrl: '/images/chef.jpg',
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1687697861242-03e99059e833?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: 3,
     isPopular: true,
     bookingDuration: {
@@ -62,7 +63,8 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     priceUnit: 'services.priceUnits.perSession',
     category: 'wellness',
     packageType: ['standard'],
-    imageUrl: '/img/bike.jpg',
+    imageUrl:
+      'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: 1,
     bookingDuration: {
       min: 1,
@@ -303,7 +305,8 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     priceUnit: 'services.priceUnits.perService',
     category: 'leisure',
     packageType: ['standard'],
-    imageUrl: '/images/grocery-shopping.jpg',
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1661381001052-2f5327899acd?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: 0,
     specialRender: 'grocery', // Indicates special rendering is needed
     isPopular: false,
@@ -314,9 +317,6 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       minimumOrder: '$50',
     },
   },
-
-  // Add as many services as needed following the same pattern
-  // This is a starting point with key services
 
   // BABYSITTER SERVICE
   [SERVICE_IDS.BABYSITTER]: {
@@ -413,7 +413,8 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     priceUnit: 'services.priceUnits.perSetup',
     category: 'leisure',
     packageType: ['standard'],
-    imageUrl: '/images/custom-decorations.jpg',
+    imageUrl:
+      'https://images.unsplash.com/photo-1604668915840-580c30026e5f?q=80&w=2848&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: 0, // No tiene duración específica
     specialRender: 'decorations',
     bookingDuration: {
@@ -526,7 +527,8 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     priceUnit: 'services.priceUnits.perPerformance',
     category: 'leisure',
     packageType: ['standard', 'premium'],
-    imageUrl: '/images/live-music.jpg',
+    imageUrl:
+      'https://plus.unsplash.com/premium_photo-1719467541072-7b53ae7e93c4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: 2, // Duración en horas (estándar)
     specialRender: 'music',
     bookingDuration: {
@@ -629,7 +631,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     priceUnit: 'services.priceUnits.perDay',
     category: 'water-activities',
     packageType: ['premium'],
-    imageUrl: '/images/luxe-yacht.jpg',
+    imageUrl: '/img/yacht.jpg',
     duration: 8,
     isPopular: true,
     bookingDuration: {

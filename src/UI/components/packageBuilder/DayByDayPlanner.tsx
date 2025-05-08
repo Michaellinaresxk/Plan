@@ -27,19 +27,12 @@ import Image from 'next/image';
 import { useBooking } from '@/context/BookingContext';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-
-// Available time slots
-const TIME_SLOTS = [
-  '9:00 AM',
-  '10:00 AM',
-  '11:00 AM',
-  '12:00 PM',
-  '1:00 PM',
-  '2:00 PM',
-  '3:00 PM',
-  '4:00 PM',
-  '5:00 PM',
-];
+import {
+  cardVariants,
+  containerVariants,
+  TIME_SLOTS,
+  travelPurposes,
+} from '@/constants/dayplanner';
 
 // Define a daily activity structure that includes guest count
 interface DailyActivity {
@@ -57,35 +50,6 @@ interface DayByDayPlannerProps {
 const fadeIn = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.5 } },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 20,
-    },
-  },
-  hover: {
-    scale: 1.03,
-    boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-    transition: { type: 'spring', stiffness: 400, damping: 10 },
-  },
-  tap: { scale: 0.98 },
-};
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
 };
 
 const DayByDayPlanner: React.FC<DayByDayPlannerProps> = ({
@@ -436,7 +400,7 @@ const DayByDayPlanner: React.FC<DayByDayPlannerProps> = ({
 
   // Handle image loading errors
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.src = '/images/placeholder-service.jpg';
+    e.currentTarget.src = '/img/bike.jpg';
   };
 
   // Get count of planned activities
@@ -568,37 +532,6 @@ const DayByDayPlanner: React.FC<DayByDayPlannerProps> = ({
     const handleSelectPurpose = (purposeId) => {
       setTravelPurpose(purposeId);
     };
-
-    const travelPurposes = [
-      {
-        id: 'family',
-        name: 'Familia',
-        image: '/puntacana-plan/src/img/beach.jpg',
-        desc: 'Viaje con niños',
-        color: 'from-blue-500 to-cyan-400',
-      },
-      {
-        id: 'couple',
-        name: 'Pareja',
-        image: '/images/travel/couple-travel.jpg',
-        desc: 'Escapada romántica',
-        color: 'from-rose-500 to-pink-400',
-      },
-      {
-        id: 'friends',
-        name: 'Amigos',
-        image: '/images/travel/friends-travel.jpg',
-        desc: 'Diversión en grupo',
-        color: 'from-amber-500 to-orange-400',
-      },
-      {
-        id: 'relax',
-        name: 'Relajación',
-        image: '/images/travel/relax-travel.jpg',
-        desc: 'Descanso y bienestar',
-        color: 'from-emerald-500 to-teal-400',
-      },
-    ];
 
     return (
       <motion.div
