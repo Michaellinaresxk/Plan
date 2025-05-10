@@ -1106,15 +1106,62 @@ const ServiceDisclaimerBlock: React.FC<ServiceContentProps> = ({ service }) => {
 // Estas ya están definidas arriba
 
 export default ServiceContent;
-function renderYogaService(yogaExtendedData: { yogaStyles: string[]; includes: string[]; notIncluded: string[]; itinerary: string[]; tagline: string; slogan: string; }, primaryColor: string, t: (key: string, options?: { fallback?: string;[key: string]: any; }) => string, arg3: string): React.ReactNode | Promise<React.ReactNode> {
+function renderYogaService(
+  yogaExtendedData: {
+    yogaStyles: string[];
+    includes: string[];
+    notIncluded: string[];
+    itinerary: string[];
+    tagline: string;
+    slogan: string;
+  },
+  primaryColor: string,
+  t: (
+    key: string,
+    options?: { fallback?: string; [key: string]: any }
+  ) => string,
+  arg3: string
+): React.ReactNode | Promise<React.ReactNode> {
   throw new Error('Function not implemented.');
 }
 
-function renderKaraokeService(karaokeExtendedData: { timeSlots: string[]; includes: string[]; notIncluded: string[]; itinerary: string[]; disclaimer: string | undefined; tagline: string; slogan: string; }, primaryColor: string, t: (key: string, options?: { fallback?: string;[key: string]: any; }) => string, arg3: string): React.ReactNode | Promise<React.ReactNode> {
+function renderKaraokeService(
+  karaokeExtendedData: {
+    timeSlots: string[];
+    includes: string[];
+    notIncluded: string[];
+    itinerary: string[];
+    disclaimer: string | undefined;
+    tagline: string;
+    slogan: string;
+  },
+  primaryColor: string,
+  t: (
+    key: string,
+    options?: { fallback?: string; [key: string]: any }
+  ) => string,
+  arg3: string
+): React.ReactNode | Promise<React.ReactNode> {
   throw new Error('Function not implemented.');
 }
 
-function renderAirportTransferDetails(airportData: { title: string; description: string; priceUnit: string; timeSlots: string[]; travelTime: string; includes: string[]; notIncluded: string[]; itinerary: string[]; safetyStandards: string[]; availability: string; disclaimer: string | undefined; fullDescription: string; tagline: string; }, primaryColor: string): React.ReactNode | Promise<React.ReactNode> {
+function renderAirportTransferDetails(
+  airportData: {
+    title: string;
+    description: string;
+    priceUnit: string;
+    timeSlots: string[];
+    travelTime: string;
+    includes: string[];
+    notIncluded: string[];
+    itinerary: string[];
+    safetyStandards: string[];
+    availability: string;
+    disclaimer: string | undefined;
+    fullDescription: string;
+    tagline: string;
+  },
+  primaryColor: string
+): React.ReactNode | Promise<React.ReactNode> {
   throw new Error('Function not implemented.');
 }
-

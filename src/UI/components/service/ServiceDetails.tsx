@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useBooking } from '@/context/BookingContext';
 import { ServiceData } from '@/types/services';
 import { Service } from '@/types/type';
-import { Check, Clock, Users, Star, ArrowLeft, Calendar } from 'lucide-react';
+import { Check, Star, ArrowLeft, Calendar } from 'lucide-react';
 import ServiceContentOrchestrator from './ServiceContentOrchestrator';
 import ServiceManager from '@/constants/services/ServiceManager';
 
@@ -269,7 +269,7 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
                     isPremium ? 'text-gray-400' : 'text-gray-500'
                   } mt-4`}
                 >
-                  {t(serviceData.disclaimer, { fallback: '' })}
+                  {t(serviceData.disclaimer, { fallback: 'Disclaimer' })}
                 </p>
               )}
             </div>

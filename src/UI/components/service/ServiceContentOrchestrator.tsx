@@ -1,8 +1,7 @@
 import React from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import { ServiceExtendedDetails } from '@/constants/services/serviceDetails';
+import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { motion } from 'framer-motion';
 
 // Import content blocks
@@ -17,6 +16,7 @@ import TagsBlock from './blocks/TagsBlock';
 import MetadataBlock from './blocks/MetadataBlock';
 import DisclaimerBlock from './blocks/DisclaimerBlock';
 import GroceryBlock from './blocks/GroceryBlock';
+import GalleryBlock from './blocks/GalleryBlock';
 
 // Block types supported by the orchestrator - define as string literals for simplicity
 export enum BlockType {
@@ -31,6 +31,7 @@ export enum BlockType {
   METADATA = 'metadata',
   DISCLAIMER = 'disclaimer',
   GROCERY = 'grocery',
+  GALLERY = 'gallery',
 }
 
 // Block configuration type
@@ -158,6 +159,18 @@ const RenderBlock: React.FC<{
           <IncludesBlock {...commonProps} />
         </motion.div>
       );
+    case BlockType.GALLERY:
+      return (
+        <motion.div {...blockAnimation}>
+          <GalleryBlock {...commonProps} />
+        </motion.div>
+      );
+    case BlockType.METADATA:
+      return (
+        <motion.div {...blockAnimation}>
+          <MetadataBlock {...commonProps} />
+        </motion.div>
+      );
     case BlockType.ITINERARY:
       return (
         <motion.div {...blockAnimation}>
@@ -194,12 +207,7 @@ const RenderBlock: React.FC<{
           <TagsBlock {...commonProps} />
         </motion.div>
       );
-    case BlockType.METADATA:
-      return (
-        <motion.div {...blockAnimation}>
-          <MetadataBlock {...commonProps} />
-        </motion.div>
-      );
+
     case BlockType.DISCLAIMER:
       return (
         <motion.div {...blockAnimation}>
@@ -257,6 +265,17 @@ const getServiceBlocksConfig = (
     blocks.push({
       type: BlockType.OPTIONS,
       priority: 30,
+    });
+  }
+
+  // Gallery block - add after description block
+  if (
+    extendedDetails?.gallery?.images &&
+    extendedDetails.gallery.images.length > 0
+  ) {
+    blocks.push({
+      type: BlockType.GALLERY,
+      priority: 15, // Show after description but before other blocks
     });
   }
 

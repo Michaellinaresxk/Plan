@@ -26,17 +26,7 @@ import {
   containerVariants,
 } from '@/types/dayPlanner';
 import { getRecommendedServices } from '@/utils/recommendationEngine';
-import { isTimeSlotAvailable } from '@/utils/dayPlannerUtils';
 import ServiceManager from '@/constants/services/ServiceManager';
-
-// Import child components
-import ProgressIndicator from './ProgressIndicator';
-import DayPlanHeader from './DayPlanHeader';
-import DayTimeGrid from './DayTimeGrid';
-import ServiceSearchModal from './ServiceSearchModal';
-import ServiceOptionsModal from './ServiceOptionsModal';
-import ItinerarySummary from './ItinerarySummary';
-import EmptyState from './EmptyState';
 
 // Step components
 const DayPlanner: React.FC = () => {
