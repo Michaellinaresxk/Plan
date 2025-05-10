@@ -39,6 +39,25 @@ export const containerVariants = {
   },
 };
 
+// dayPlanner/types.ts
+export interface DailyActivity {
+  serviceId: string;
+  timeSlot: string;
+  guestCount: number;
+}
+
+export type PlannerStep =
+  | 'select-dates'
+  | 'purpose'
+  | 'day-planning'
+  | 'review';
+
+export interface ConfiguringService {
+  serviceId: string;
+  timeSlot: string;
+  guestCount: number;
+}
+
 export const travelPurposes = [
   {
     id: 'family',

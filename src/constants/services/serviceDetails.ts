@@ -43,6 +43,26 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
       agePolicy: 'Minors are welcome with adult supervision',
       adaptability: 'Sessions can be adapted for pregnancy or mobility needs',
     },
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
     finalMessage:
       'Listen to your body. This is your time. Your space. Your pace.',
   },
@@ -87,6 +107,26 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
     fullDescription:
       "Transform any space into a celebration with our personalized decoration service. Whether it is a birthday, anniversary, proposal, or a themed family night, we bring your vision to life with elegance, color, and creativity—right at your villa or event space. From romantic setups to birthday themes, balloon garlands to beach picnics, kids' parties to luxury dining decor, we create magical environments that make your special moments unforgettable.",
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
     finalMessage:
       'Every celebration deserves a personal touch. We handle every detail so you can focus on enjoying the moment. From cozy to extravagant, we make your setting unforgettable.',
   },
@@ -125,6 +165,26 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
     fullDescription:
       'Create unforgettable memories with live music at your villa, beach gathering, or private event. Our professional musicians will enhance your celebration with personalized performances ranging from solo acoustic sets to full quintets. Whether you want smooth relaxing tunes for a dinner party, tropical rhythms for a beach day, or a lively ensemble for dancing, we tailor the musical experience to perfectly match your occasion and preferences.',
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
     finalMessage:
       'Music transforms moments. Our curated performances are designed to enhance your celebration—whether it is a romantic dinner, a family gathering, or a lively party night. Feel the rhythm, dance, and make memories that last forever.',
   },
@@ -152,6 +212,7 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
       'Sing your heart out with family or friends',
       'We pack everything up afterward',
     ],
+
     disclaimer:
       'Please be mindful of villa or resort quiet hours and local noise regulations.',
     tagline: 'Your Voice. Your Stage.',
@@ -161,6 +222,26 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
       spaceNeeded: 'Open living room, terrace, or covered outdoor space',
       powerAccess: 'Standard outlet required (110V)',
       customOptions: ['Add decorations', 'Live DJ'],
+    },
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
     },
   },
 
@@ -208,6 +289,26 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
     disclaimer:
       'Tour schedule may vary slightly depending on weather conditions and total number of participants.',
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
     finalMessage:
       'Book your Saona Island tour today and experience a Caribbean dream come true! This is one of the most popular excursions in the Dominican Republic for good reason - the stunning natural beauty will leave you with memories to last a lifetime.',
   },
@@ -241,6 +342,26 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     disclaimer:
       'To ensure your pickup, please provide accurate flight details.',
     tagline: 'Seamless Transfers. Stress-Free Starts',
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
   },
 
   // BABYSITTER SERVICE
@@ -278,6 +399,26 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     fullDescription:
       'Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort. Whether you need a few hours of evening respite or full-day childcare, our professionals engage children with safe, age-appropriate activities and attentive supervision.',
     tagline: 'Your Peace of Mind. Their Happiness.',
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
   },
 
   // Add details for more services as needed
@@ -313,10 +454,50 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
       dietaryAccommodations:
         'We accommodate allergies, intolerances, and preferences with advance notice',
     },
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
   },
 
   [SERVICE_IDS.PRIVATE_CATAMARAN]: {
     priceUnit: 'per group',
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
     includes: [
       'Private catamaran with water slide',
       'Private round-trip transportation from your villa',
