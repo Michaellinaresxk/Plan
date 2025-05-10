@@ -1,5 +1,9 @@
 {
   "common": {
+    "answers": {
+      "yes": "Yes",
+      "not": "Not requier"
+    },
     "nav": {
       "home": "Home",
       "packages": "Packages",
@@ -542,7 +546,7 @@
     "standardPageCTA": {
       "title": "Ready for Your Dominican Adventure?",
       "subtitle": "Book your Punta Cana Plan package now and get ready for an unforgettable Caribbean experience with all the essential services included.",
-      "btn1": "Book Standard Package",
+      "btn1": "Customize Your Package",
       "btn2": "View Premium Package"
     }
   },

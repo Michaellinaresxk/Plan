@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
       'images.unsplash.com',
       'res.cloudinary.com',
       'plus.unsplash.com',
+      'www.ymcalouisville.org',
+      'moonshadow-tqc.com.au',
+      'www.guardian.in',
     ],
   },
 };

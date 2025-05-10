@@ -1,7 +1,5 @@
 import React from 'react';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import { ServiceExtendedDetails } from '@/constants/services/serviceDetails';
+import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { BlockConfig } from '../ServiceContentOrchestrator';
 import { Info } from 'lucide-react';
 
@@ -20,7 +18,6 @@ interface MetadataBlockProps {
  * Renders additional metadata and details about a service
  */
 const MetadataBlock: React.FC<MetadataBlockProps> = ({
-  service,
   serviceData,
   extendedDetails,
   primaryColor,
@@ -164,7 +161,7 @@ const formatMetadataKey = (key: string): string => {
  */
 const formatMetadataValue = (value: any, t: any): string => {
   if (typeof value === 'boolean') {
-    return value ? t('common.yes') : t('common.no');
+    return value ? t('common.answers.yes') : t('common.not');
   } else if (typeof value === 'string' && value.includes(',')) {
     // Assume it's a comma-separated list and try to translate each item
     return value

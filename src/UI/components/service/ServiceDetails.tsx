@@ -98,7 +98,7 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
             className='text-white mb-6 inline-flex items-center hover:underline'
           >
             <ArrowLeft className='h-4 w-4 mr-2' />
-            {t('serviceDetails.backToServices')}
+            {t('services.actions.backToServices')}
           </Link>
 
           <motion.div
@@ -114,9 +114,6 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
             <h1 className='text-3xl md:text-4xl font-bold text-white mb-4'>
               {serviceName}
             </h1>
-            <p className='text-gray-200 md:text-xl max-w-2xl'>
-              {serviceDescription}
-            </p>
           </motion.div>
         </div>
       </div>
@@ -126,92 +123,6 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
           {/* Main content column */}
           <div className='lg:col-span-2'>
-            {/* Service basic features */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className={`bg-white p-6 rounded-xl shadow-sm mb-8 ${
-                isPremium ? 'bg-gray-800 text-white' : ''
-              }`}
-            >
-              <h2
-                className={`text-2xl font-bold ${
-                  isPremium ? 'text-white' : 'text-gray-800'
-                } mb-4`}
-              >
-                {t('serviceDetails.aboutService')}
-              </h2>
-
-              <div
-                className={`prose max-w-none ${
-                  isPremium ? 'text-gray-300' : 'text-gray-700'
-                } mb-6`}
-              >
-                <p>{fullDescription || serviceDescription}</p>
-              </div>
-
-              {/* Service characteristics */}
-              <div className='grid grid-cols-2 gap-4 py-4'>
-                <div
-                  className={`flex items-center ${
-                    isPremium ? 'text-gray-300' : 'text-gray-600'
-                  }`}
-                >
-                  <Clock
-                    className={`h-5 w-5 mr-2 ${
-                      isPremium ? 'text-amber-400' : 'text-blue-500'
-                    }`}
-                  />
-                  <span>
-                    {service.duration}{' '}
-                    {service.duration === 1
-                      ? t('common.hour')
-                      : service.duration === 24
-                      ? t('common.day')
-                      : t('common.hours')}
-                  </span>
-                </div>
-
-                {serviceData?.metaData?.maxPeople && (
-                  <div
-                    className={`flex items-center ${
-                      isPremium ? 'text-gray-300' : 'text-gray-600'
-                    }`}
-                  >
-                    <Users
-                      className={`h-5 w-5 mr-2 ${
-                        isPremium ? 'text-amber-400' : 'text-blue-500'
-                      }`}
-                    />
-                    <span>
-                      {t('common.upTo')} {serviceData.metaData.maxPeople}{' '}
-                      {t('common.people')}
-                    </span>
-                  </div>
-                )}
-
-                {serviceData?.availability?.daysOfWeek && (
-                  <div
-                    className={`flex items-center ${
-                      isPremium ? 'text-gray-300' : 'text-gray-600'
-                    }`}
-                  >
-                    <Calendar
-                      className={`h-5 w-5 mr-2 ${
-                        isPremium ? 'text-amber-400' : 'text-blue-500'
-                      }`}
-                    />
-                    <span>
-                      {serviceData.availability.daysOfWeek.length === 7
-                        ? t('common.availableAllDays')
-                        : t('common.availableSelect')}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-
             {/* Orchestrated content blocks */}
             <ServiceContentOrchestrator
               service={service}

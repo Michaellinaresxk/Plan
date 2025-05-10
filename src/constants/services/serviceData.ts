@@ -1,5 +1,4 @@
 import { ServiceData } from '@/types/services';
-import { PackageType } from '@/types/type';
 import { ServiceId, SERVICE_IDS } from './serviceId';
 import { ServiceCategory } from './serviceCategories';
 
@@ -14,12 +13,12 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     titleKey: 'services.standard.privateChef.name',
     descriptionKey: 'services.standard.privateChef.description',
     fullDescriptionKey: 'services.standard.privateChef.full',
-    basePrice: 200,
+    basePrice: 120,
     priceUnit: 'services.priceUnits.perDay',
     category: 'food-drinks',
     packageType: ['standard'],
     imageUrl:
-      'https://plus.unsplash.com/premium_photo-1687697861242-03e99059e833?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://plus.unsplash.com/premium_photo-1661288474987-1e90159ff2ca?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: 3,
     isPopular: true,
     bookingDuration: {
@@ -28,28 +27,92 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       unit: 'days',
     },
     options: {
-      cuisineType: {
-        id: 'cuisineType',
-        nameKey: 'services.chef.options.cuisineType.title',
+      chefType: {
+        id: 'chefType',
+        nameKey: 'services.chef.options.chefType.title',
         subOptions: {
-          italian: {
-            id: 'italian',
-            nameKey: 'services.chef.options.cuisineType.options.italian',
+          regular: {
+            id: 'regular',
+            nameKey: 'services.chef.options.chefType.options.regular',
+            price: 0, // Base price $120
+            descriptionKey:
+              'services.chef.options.chefType.options.regularDescription',
+          },
+          professional: {
+            id: 'professional',
+            nameKey: 'services.chef.options.chefType.options.professional',
+            price: 55, // $175 total
+            descriptionKey:
+              'services.chef.options.chefType.options.professionalDescription',
+          },
+        },
+      },
+      guestCount: {
+        id: 'guestCount',
+        nameKey: 'services.chef.options.guestCount.title',
+        subOptions: {
+          small: {
+            id: 'small',
+            nameKey: 'services.chef.options.guestCount.options.small',
             price: 0,
+            capacityInfo: {
+              min: 1,
+              max: 10,
+            },
+          },
+          medium: {
+            id: 'medium',
+            nameKey: 'services.chef.options.guestCount.options.medium',
+            price: 30,
+            capacityInfo: {
+              min: 11,
+              max: 15,
+            },
+          },
+          large: {
+            id: 'large',
+            nameKey: 'services.chef.options.guestCount.options.large',
+            price: 60,
+            capacityInfo: {
+              min: 16,
+              max: 20,
+            },
           },
         },
       },
     },
-    additionalInfoKeys: [
-      'services.golfCart.additionalInfo.1',
-      'services.golfCart.additionalInfo.2',
+    includes: [
+      'services.chef.includes.1',
+      'services.chef.includes.2',
+      'services.chef.includes.3',
+      'services.chef.includes.4',
+      'services.chef.includes.5',
     ],
-    relatedServices: [SERVICE_IDS.AIRPORT_TRANSFER, SERVICE_IDS.BIKE_RENTALS],
-    tags: ['transport', 'mobility'],
+    notIncluded: ['services.chef.notIncluded.1', 'services.chef.notIncluded.2'],
+    additionalInfoKeys: [
+      'services.chef.additionalInfo.1',
+      'services.chef.additionalInfo.2',
+    ],
+    relatedServices: [SERVICE_IDS.GROCERY],
+    tags: ['culinary', 'dining', 'personal chef'],
     metaData: {
-      requiresLicense: false,
-      maxSpeed: '25 km/h',
-      depositRequired: '200',
+      regularChefDescription:
+        "Regular cooks are individuals who cook well and offer their services at an affordable price. They don't work exclusively as chefs, nor do they actively promote themselves as such. They do not offer a set menu and usually work with guidance or requests from the guests.",
+      professionalChefDescription:
+        'A professional chef has formal culinary training and works full-time in the culinary field. They typically offer a curated menu, maintain high presentation standards, and have experience in handling special dietary needs or preferences.',
+      requiresConsultation: true,
+      cuisineTypes: [
+        'Dominican Traditional',
+        'International',
+        'Mediterranean',
+        'Asian Fusion',
+        'Seafood Specialist',
+        'Vegetarian/Vegan Options',
+      ],
+      dietaryAccommodations:
+        'We accommodate allergies, intolerances, and preferences with advance notice',
+      maxPeople: 20,
+      needsGroceries: true,
     },
   },
 
@@ -138,6 +201,90 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
+  // SAONA ISLAND TOUR
+  [SERVICE_IDS.SAONA_TOUR]: {
+    id: SERVICE_IDS.SAONA_TOUR,
+    titleKey: 'services.standard.saonaTour.name',
+    descriptionKey: 'services.standard.saonaTour.description',
+    fullDescriptionKey: 'services.standard.saonaTour.full',
+    basePrice: 85,
+    priceUnit: 'services.priceUnits.perPerson',
+    category: 'tours',
+    packageType: ['standard'],
+    imageUrl: '/img/saona.jpeg',
+    duration: 8, // Full day (8 hours)
+    bookingDuration: {
+      min: 1,
+      max: 1,
+      unit: 'days',
+    },
+    options: {
+      groupSize: {
+        id: 'groupSize',
+        nameKey: 'services.saonaTour.options.groupSize.title',
+        subOptions: {
+          small: {
+            id: 'small',
+            nameKey: 'services.saonaTour.options.groupSize.options.small',
+            descriptionKey:
+              'services.saonaTour.options.groupSize.options.smallDescription',
+            price: 0,
+          },
+          medium: {
+            id: 'medium',
+            nameKey: 'services.saonaTour.options.groupSize.options.medium',
+            descriptionKey:
+              'services.saonaTour.options.groupSize.options.mediumDescription',
+            price: -5, // Small discount per person for larger group
+          },
+          large: {
+            id: 'large',
+            nameKey: 'services.saonaTour.options.groupSize.options.large',
+            descriptionKey:
+              'services.saonaTour.options.groupSize.options.largeDescription',
+            price: -10, // Larger discount per person for largest group
+          },
+        },
+      },
+    },
+    includes: [
+      'services.saonaTour.includes.1', // Tour guide
+      'services.saonaTour.includes.2', // Round-trip transportation
+      'services.saonaTour.includes.3', // Catamaran ride
+      'services.saonaTour.includes.4', // Buffet lunch
+      'services.saonaTour.includes.5', // Open bar
+      'services.saonaTour.includes.6', // Entertainment
+    ],
+    whatToBring: [
+      'services.saonaTour.whatToBring.1', // Towel
+      'services.saonaTour.whatToBring.2', // Sunscreen
+      'services.saonaTour.whatToBring.3', // Swimwear
+      'services.saonaTour.whatToBring.4', // Camera
+      'services.saonaTour.whatToBring.5', // Cash
+    ],
+    itinerary: [
+      'services.saonaTour.itinerary.1', // Pickup from villa
+      'services.saonaTour.itinerary.2', // Transfer to Bayahibe
+      'services.saonaTour.itinerary.3', // Boat ride to Natural Pool
+      'services.saonaTour.itinerary.4', // Visit to Saona Island
+      'services.saonaTour.itinerary.5', // Return trip by catamaran
+      'services.saonaTour.itinerary.6', // Drop-off at villa
+    ],
+    specialRender: 'special',
+    relatedServices: [
+      SERVICE_IDS.PRIVATE_CATAMARAN,
+      SERVICE_IDS.DEEP_SEA_FISHING,
+    ],
+    tags: ['tour', 'island', 'boat', 'beach', 'swimming'],
+    metaData: {
+      pickupTime: '7:30 AM',
+      maxPeople: 20,
+      mealIncluded: true,
+      openBar: true,
+      snorkelingIncluded: true,
+    },
+  },
+
   // KARAOKE SERVICE
   [SERVICE_IDS.KARAOKE]: {
     id: SERVICE_IDS.KARAOKE,
@@ -223,7 +370,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     titleKey: 'services.standard.airportTransfers.name',
     descriptionKey: 'services.standard.airportTransfers.description',
     fullDescriptionKey: 'services.standard.airportTransfers.full',
-    basePrice: 75,
+    basePrice: 40, // Updated base price for standard van (1-6 people)
     priceUnit: 'services.priceUnits.perTrip',
     category: 'transportation',
     packageType: ['standard'],
@@ -236,21 +383,56 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
         id: 'vehicleType',
         nameKey: 'services.airportTransfer.options.vehicleType.title',
         subOptions: {
-          sedan: {
-            id: 'sedan',
+          vanSmall: {
+            id: 'vanSmall',
             nameKey:
-              'services.airportTransfer.options.vehicleType.options.sedan',
-            price: 0,
+              'services.airportTransfer.options.vehicleType.options.vanSmall',
+            price: 0, // Base price $40
+            descriptionKey:
+              'services.airportTransfer.options.vehicleType.options.vanSmallDesc',
+            capacityInfo: {
+              min: 1,
+              max: 6,
+              price: 40,
+            },
+          },
+          vanMedium: {
+            id: 'vanMedium',
+            nameKey:
+              'services.airportTransfer.options.vehicleType.options.vanMedium',
+            price: 25, // $65 total
+            descriptionKey:
+              'services.airportTransfer.options.vehicleType.options.vanMediumDesc',
+            capacityInfo: {
+              min: 7,
+              max: 10,
+              price: 65,
+            },
+          },
+          vanLarge: {
+            id: 'vanLarge',
+            nameKey:
+              'services.airportTransfer.options.vehicleType.options.vanLarge',
+            price: 35, // $75 total
+            descriptionKey:
+              'services.airportTransfer.options.vehicleType.options.vanLargeDesc',
+            capacityInfo: {
+              min: 11,
+              max: 16,
+              price: 75,
+            },
           },
           suv: {
             id: 'suv',
             nameKey: 'services.airportTransfer.options.vehicleType.options.suv',
-            price: 20,
-          },
-          van: {
-            id: 'van',
-            nameKey: 'services.airportTransfer.options.vehicleType.options.van',
-            price: 40,
+            price: 30, // $70 total
+            descriptionKey:
+              'services.airportTransfer.options.vehicleType.options.suvDesc',
+            capacityInfo: {
+              min: 1,
+              max: 6,
+              price: 70,
+            },
           },
         },
       },
@@ -268,7 +450,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
             id: 'roundTrip',
             nameKey:
               'services.airportTransfer.options.isRoundTrip.options.roundTrip',
-            price: 60,
+            price: 'double', // Special indicator to double the base price
           },
         },
       },
@@ -293,6 +475,8 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       availability: '24/7',
       flightTracking: true,
       childSeats: true,
+      providerChoice: true,
+      providers: ['Provider 1', 'Provider 2'],
     },
   },
 

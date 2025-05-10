@@ -1,5 +1,9 @@
 {
   "common": {
+    "answers": {
+      "yes": "Si",
+      "not": "No requiere electridad"
+    },
     "nav": {
       "home": "Inicio",
       "packages": "Paquetes",
@@ -538,7 +542,7 @@
     "standardPageCTA": {
       "title": "¿Listo para su aventura dominicana?",
       "subtitle": "Reserve ahora su paquete Punta Cana Plan y prepárese para vivir una experiencia caribeña inolvidable con todos los servicios esenciales incluidos.",
-      "btn1": "Reservar paquete estándar",
+      "btn1": "Personaliza tu paquete",
       "btn2": "Ver Paquete Premium"
     }
   },

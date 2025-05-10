@@ -164,6 +164,54 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
   },
 
+  // SAONA ISLAND TOUR
+  [SERVICE_IDS.SAONA_TOUR]: {
+    title: 'UNFORGETTABLE SAONA ISLAND EXPERIENCE',
+    description:
+      'A visit to Saona Island is a must during your stay in the Dominican Republic. Famous for its white sand beaches, crystal-clear turquoise waters, and endless palm trees, this Caribbean paradise offers the perfect escape.',
+    fullDescription:
+      'A visit to Saona Island is a must during your stay in the Dominican Republic. Famous for its white sand beaches, crystal-clear turquoise waters, and endless palm trees, this Caribbean paradise offers the perfect escape. Your tour begins with pick-up at your villa and transfer to Bayahibe, where you will board a speedboat or catamaran to the island. Along the way, you will stop at the iconic Natural Pool — perfect for swimming and snapping photos in shallow, crystal-clear waters. On Saona Island, enjoy a delicious Dominican buffet lunch, refreshing drinks, and plenty of time to relax on the beach. The return trip is by catamaran, complete with Caribbean music, open bar, and fun entertainment from the crew.',
+    tagline: 'Discover Paradise on Earth',
+    priceUnit: 'per person',
+    schedule: 'Full day tour, approximately 8 hours',
+    pickupTime: '7:30 AM',
+    includes: [
+      'Tour guide',
+      'Round-trip transportation from your villa',
+      'Catamaran ride',
+      'Buffet lunch on the beach',
+      'Open bar on the catamaran (beer, water, soda, and rum)',
+      'Onboard entertainment and animation',
+    ],
+    whatToBring: [
+      'Towel',
+      'Sunscreen',
+      'Swimwear',
+      'Camera',
+      'Cash (for souvenirs or local purchases)',
+    ],
+    itinerary: [
+      'Pick-up from your accommodation',
+      'Transfer to Bayahibe',
+      'Speedboat ride with stop at the Natural Pool',
+      'Arrival and free time at Saona Island',
+      'Buffet lunch and relaxation time on the beach',
+      'Return trip by catamaran with open bar and entertainment',
+      'Drop-off at your accommodation',
+    ],
+    places: ['Bayahibe', 'Natural Pool', 'Saona Island'],
+    details: {
+      tourDuration: 'Full day (approximately 8 hours)',
+      groupSize: 'Shared excursion with other travelers',
+      mealInfo: 'Dominican buffet lunch included',
+      boatInfo: 'Combination of speedboat and catamaran',
+    },
+    disclaimer:
+      'Tour schedule may vary slightly depending on weather conditions and total number of participants.',
+    finalMessage:
+      'Book your Saona Island tour today and experience a Caribbean dream come true! This is one of the most popular excursions in the Dominican Republic for good reason - the stunning natural beauty will leave you with memories to last a lifetime.',
+  },
+
   // AIRPORT TRANSFERS
   [SERVICE_IDS.AIRPORT_TRANSFER]: {
     title: 'START YOUR VACATION STRESS-FREE',

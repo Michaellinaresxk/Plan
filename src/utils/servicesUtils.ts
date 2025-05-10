@@ -1,7 +1,6 @@
 import { Service, EnhancedService, PackageType } from '@/types/type';
 import { ServiceData } from '@/types/services';
 import { ServiceId, isValidServiceId } from '../constants/services/serviceId';
-import { getServiceCategory } from '../constants/services/serviceCategories';
 import {
   getServiceExtendedDetails,
   ServiceExtendedDetails,
@@ -16,6 +15,7 @@ import {
   getRelatedServiceData,
   calculateServicePrice,
 } from '../constants/services/serviceData';
+import ServiceManager from '@/constants/services/ServiceManager';
 
 /**
  * Converts a ServiceData (new structured format) to Service (old array format)
@@ -110,7 +110,7 @@ export function getRelatedServices(
   const relatedServiceData = getRelatedServiceData(serviceId, limit);
   if (relatedServiceData.length === 0) {
     // Fallback: if no related services defined, find some from the same category
-    const category = getServiceCategory(serviceId);
+    const category = ServiceManager.getCategory(serviceId);
     return getServicesByCategory(category)
       .filter((s) => s.id !== serviceId)
       .slice(0, limit);
