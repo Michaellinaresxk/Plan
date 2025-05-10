@@ -26,19 +26,63 @@ const ItineraryBlock: React.FC<ItineraryBlockProps> = ({
   blockConfig,
   t,
 }) => {
-  // Combine itinerary steps from both sources
+  /**
+   * Helper function to check if a translation was successful
+   * Returns false if the translation still looks like a key
+   */
+  const isValidTranslation = (
+    translatedText: string,
+    originalKey: string
+  ): boolean => {
+    // Check if the translation is different from the key or doesn't follow the pattern of a translation key
+    return (
+      translatedText !== originalKey && !translatedText.startsWith('services.')
+    );
+  };
+
+  // Combine itinerary steps from both sources and filter out invalid translations
   const itinerary = [
-    ...(serviceData?.itinerary || []).map((key) => ({
-      content: t(key, { fallback: key }),
-      isTranslationKey: true,
-    })),
-    ...(extendedDetails?.itinerary || []).map((item) => ({
-      content:
-        typeof item === 'string' && item.startsWith('services.')
-          ? t(item, { fallback: item.split('.').pop() || item })
-          : item,
-      isTranslationKey: false,
-    })),
+    ...(serviceData?.itinerary || [])
+      .map((key) => {
+        const translated = t(key, { fallback: null });
+        return {
+          content: translated,
+          isTranslationKey: true,
+          originalKey: key,
+        };
+      })
+      .filter(
+        (item) =>
+          item.content && isValidTranslation(item.content, item.originalKey)
+      ),
+    ...(extendedDetails?.itinerary || [])
+      .map((item) => {
+        // If it's a translation key, try to translate it
+        if (typeof item === 'string' && item.startsWith('services.')) {
+          const translated = t(item, { fallback: null });
+          return {
+            content: translated,
+            isTranslationKey: true,
+            originalKey: item,
+          };
+        }
+        // Otherwise, use the item as is
+        return {
+          content: item,
+          isTranslationKey: false,
+          originalKey: item,
+        };
+      })
+      .filter((item) => {
+        // For translation keys, check if translation was successful
+        if (item.isTranslationKey) {
+          return (
+            item.content && isValidTranslation(item.content, item.originalKey)
+          );
+        }
+        // For non-translation keys, just check that content exists
+        return item.content;
+      }),
   ];
 
   // If no itinerary to display, don't render the block

@@ -90,8 +90,8 @@ const DefaultDetails: React.FC<DefaultDetailsProps> = ({
                     <span className='text-gray-700'>
                       {typeof value === 'boolean'
                         ? value
-                          ? t('common.yes')
-                          : t('common.no')
+                          ? t('common.answers.yes')
+                          : t('common.answers.not')
                         : value.toString()}
                     </span>
                   </div>

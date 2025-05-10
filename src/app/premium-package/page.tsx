@@ -1005,10 +1005,11 @@ const PremiumPackage = () => {
               </p>
 
               <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                <button className='px-8 py-4 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors duration-300 shadow-xl shadow-amber-500/20 text-lg'>
-                  Book Premium Package
-                </button>
-
+                <Link href='/custom-package'>
+                  <button className='px-8 py-4 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg transition-colors duration-300 shadow-xl shadow-amber-500/20 text-lg'>
+                    Customize Your Package
+                  </button>
+                </Link>
                 <Link href='/contact'>
                   <button className='px-8 py-4 bg-transparent border-2 border-amber-500 hover:bg-amber-500/10 text-amber-400 font-semibold rounded-lg transition-colors duration-300 text-lg'>
                     Contact Concierge

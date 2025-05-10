@@ -45,18 +45,6 @@ const DescriptionBlock: React.FC<DescriptionBlockProps> = ({
 
   return (
     <div className='bg-white p-6 rounded-xl shadow-sm'>
-      {/* Custom title if provided */}
-      {blockConfig.title ? (
-        <h2 className='text-2xl font-bold text-gray-800 mb-4'>
-          {blockConfig.title}
-        </h2>
-      ) : (
-        <h2 className='text-2xl font-bold text-gray-800 mb-4 flex items-center'>
-          <Info className={`mr-2 text-${primaryColor}-500`} size={20} />
-          {t('serviceDetails.aboutService')}
-        </h2>
-      )}
-
       {/* Optional tagline/slogan */}
       {(tagline || slogan) && (
         <div className='mb-4'>
@@ -72,7 +60,6 @@ const DescriptionBlock: React.FC<DescriptionBlockProps> = ({
       )}
 
       <div className='prose max-w-none text-gray-700 mb-6'>
-        <p>{description}</p>
         {fullDescription && fullDescription !== description && (
           <p className='mt-4'>{fullDescription}</p>
         )}

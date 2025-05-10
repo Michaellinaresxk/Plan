@@ -1,84 +1,89 @@
-export type PackageType = 'standard' | 'premium';
+// types/dayPlanner.ts
+export const TIME_SLOTS = [
+  '9:00 AM',
+  '10:00 AM',
+  '11:00 AM',
+  '12:00 PM',
+  '1:00 PM',
+  '2:00 PM',
+  '3:00 PM',
+  '4:00 PM',
+  '5:00 PM',
+];
 
-export interface Service {
-  id: string;
-  name: string;
-  img: string;
-  description: string;
-  packageType: PackageType[];
+export interface ServiceTimeSlot {
+  serviceId: string;
+  serviceName: string;
+  timeSlot: string;
+  duration: number;
   price: number;
-  duration: number; // in hours
-  available: boolean;
+  options?: any;
 }
 
-// Extended service interface for detailed information
-export interface EnhancedService extends Service {
-  fullDescription?: string;
-  includes?: string[];
-  whatToBring?: string[];
-  schedule?: string;
-  pickupTime?: string;
-  priceUnit?: string; // e.g., "per person", "per group"
-  capacity?: string;
-  size?: string; // For yacht, etc.
-  location?: string;
-  menuOptions?: {
-    name: string;
-    items: string[];
-  }[];
-  halfDayOption?: {
-    available: boolean;
-    times?: string[];
-    price?: number;
-  };
-}
-
-export interface BookingDate {
-  startDate: Date;
-  endDate: Date;
-}
-
-export interface BookingDetails {
-  packageType: PackageType;
-  selectedServices: Service[];
-  dates: BookingDate;
-  guests: number;
-  specialRequests?: string;
-  totalPrice: number;
-}
-
-export interface Customer {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  passportNumber?: string;
-  nationality?: string;
-}
-
-export interface PaymentMethod {
+export interface DayPlan {
   id: string;
-  name: string;
-  description: string;
-  icon: string;
-  isAvailable: boolean;
+  date: Date;
+  services: ServiceTimeSlot[];
 }
 
-export interface Booking {
-  id: string;
-  customer: Customer;
-  bookingDetails: BookingDetails;
-  paymentStatus: 'pending' | 'confirmed' | 'cancelled';
-  createdAt: Date;
-  updatedAt: Date;
-}
+export type TravelPurpose = 'family' | 'couple' | 'friends' | 'relax';
 
-export interface PropertyDetails {
-  name: string;
-  resort: string;
-  province: string;
-  municipality: string;
-  sector: string;
-  zipCode: string;
-  country: string;
-}
+export const travelPurposes = [
+  {
+    id: 'family' as TravelPurpose,
+    name: 'Familia',
+    image: '/img/purpose/familia.jpg',
+    desc: 'Viaje con niños',
+    color: 'from-blue-500 to-cyan-400',
+  },
+  {
+    id: 'couple' as TravelPurpose,
+    name: 'Pareja',
+    image: '/img/purpose/pareja.jpg',
+    desc: 'Escapada romántica',
+    color: 'from-rose-500 to-pink-400',
+  },
+  {
+    id: 'friends' as TravelPurpose,
+    name: 'Amigos',
+    image: '/img/purpose/amigos.webp',
+    desc: 'Diversión en grupo',
+    color: 'from-amber-500 to-orange-400',
+  },
+  {
+    id: 'relax' as TravelPurpose,
+    name: 'Relajación',
+    image: '/img/purpose/relax.jpg',
+    desc: 'Descanso y bienestar',
+    color: 'from-emerald-500 to-teal-400',
+  },
+];
+
+export const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 20,
+    },
+  },
+  hover: {
+    scale: 1.03,
+    boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+    transition: { type: 'spring', stiffness: 400, damping: 10 },
+  },
+  tap: { scale: 0.98 },
+};
+
+export const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};

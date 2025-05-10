@@ -5,7 +5,7 @@ import { useTranslation } from '@/lib/i18n/client';
 import { motion } from 'framer-motion';
 import { Service } from '@/types/type';
 import { ArrowRight, Clock, Tag } from 'lucide-react';
-import { getServiceCategory } from '@/utils/servicesUtils';
+import ServiceManager from '@/constants/services/ServiceManager';
 
 interface RelatedServicesProps {
   services: Service[];
@@ -34,7 +34,7 @@ const RelatedServices: React.FC<RelatedServicesProps> = ({
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {services.map((service) => {
           // Obtener categoría del servicio para la etiqueta
-          const category = getServiceCategory(service.id);
+          const category = ServiceManager.getCategory(service.id);
 
           // Determinar si es un servicio premium
           const isPremium = service.packageType.includes('premium');

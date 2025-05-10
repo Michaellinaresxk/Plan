@@ -651,7 +651,7 @@ const StandardPackage = () => {
               </p>
 
               <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                <Link href='/standard-package'>
+                <Link href='/custom-package'>
                   <button className='px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-300 shadow-xl shadow-blue-500/20 text-lg'>
                     {t('standardPage.standardPageCTA.btn1')}
                   </button>
