@@ -1,8 +1,7 @@
 import React from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import { ServiceExtendedDetails } from '@/constants/services/serviceDetails';
+import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { motion } from 'framer-motion';
 
 // Import content blocks

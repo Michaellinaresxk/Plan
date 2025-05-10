@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { Calendar, Clock, Users, ChefHat, Utensils, Info } from 'lucide-react';
+import { Calendar, ChefHat, Utensils, Info } from 'lucide-react';
 import ServiceManager from '@/constants/services/ServiceManager';
 
 interface ChefServiceFormProps {

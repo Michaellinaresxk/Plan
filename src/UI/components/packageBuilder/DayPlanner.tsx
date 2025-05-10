@@ -26,7 +26,6 @@ import {
   containerVariants,
 } from '@/types/dayPlanner';
 import { getRecommendedServices } from '@/utils/recommendationEngine';
-import { isTimeSlotAvailable } from '@/utils/dayPlannerUtils';
 import ServiceManager from '@/constants/services/ServiceManager';
 
 // Step components

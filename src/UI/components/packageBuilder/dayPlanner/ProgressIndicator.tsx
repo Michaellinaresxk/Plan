@@ -1,69 +1,100 @@
+// dayPlanner/components/ProgressIndicator.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/client';
+import { Calendar, Check, Heart, Sun } from 'lucide-react';
+import { PlannerStep } from '@/constants/dayplanner';
 
 interface ProgressIndicatorProps {
-  currentStep: number;
-  totalSteps: number;
+  currentStep: PlannerStep;
 }
 
-const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
+export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   currentStep,
 }) => {
-  const { t } = useTranslation();
-
   const steps = [
-    { id: 1, label: t('dayplanner.steps.welcome') },
-    { id: 2, label: t('dayplanner.steps.selectServices') },
-    { id: 3, label: t('dayplanner.steps.selectTime') },
-    { id: 4, label: t('dayplanner.steps.planDays') },
-    { id: 5, label: t('dayplanner.steps.review') },
+    { key: 'select-dates', label: 'Fechas', icon: Calendar },
+    { key: 'purpose', label: 'Propósito', icon: Heart },
+    { key: 'day-planning', label: 'Plan Diario', icon: Sun },
+    { key: 'review', label: 'Revisar', icon: Check },
   ];
 
+  const getProgressWidth = () => {
+    switch (currentStep) {
+      case 'select-dates':
+        return '25%';
+      case 'purpose':
+        return '50%';
+      case 'day-planning':
+        return '75%';
+      case 'review':
+        return '100%';
+      default:
+        return '0%';
+    }
+  };
+
   return (
-    <div className='mb-8'>
-      <div className='flex items-center justify-center'>
-        {steps.map((step, index) => (
-          <React.Fragment key={step.id}>
-            <div className='flex flex-col items-center'>
+    <motion.div
+      className='mb-10 max-w-3xl mx-auto'
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className='flex justify-between max-w-md mx-auto'>
+        {steps.map((step, index) => {
+          const isActive = currentStep === step.key;
+          const isCompleted =
+            index < steps.findIndex((s) => s.key === currentStep);
+          const StepIcon = step.icon;
+
+          return (
+            <div key={step.key} className='flex flex-col items-center'>
               <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
                 className={`
-                  w-10 h-10 rounded-full flex items-center justify-center
+                  w-12 h-12 rounded-full flex items-center justify-center text-white shadow-md
                   ${
-                    currentStep > step.id
-                      ? 'bg-green-500 text-white'
-                      : currentStep === step.id
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-600'
+                    isCompleted
+                      ? 'bg-gradient-to-r from-green-400 to-green-500'
+                      : isActive
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                      : 'bg-gray-300'
                   }
                 `}
+                whileHover={{
+                  scale: 1.1,
+                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                }}
+                animate={{
+                  scale: isActive ? [1, 1.1, 1] : 1,
+                  transition: {
+                    duration: 0.5,
+                    repeat: isActive ? Infinity : 0,
+                    repeatType: 'reverse',
+                  },
+                }}
               >
-                {currentStep > step.id ? (
-                  <Check size={20} />
-                ) : (
-                  <span>{step.id}</span>
-                )}
+                {isCompleted ? <Check size={20} /> : <StepIcon size={20} />}
               </motion.div>
-              <span className='text-xs text-gray-600 mt-2 text-center max-w-[80px]'>
+              <span
+                className={`text-sm mt-2 font-medium ${
+                  isActive ? 'text-blue-600' : 'text-gray-500'
+                }`}
+              >
                 {step.label}
               </span>
             </div>
-
-            {index < steps.length - 1 && (
-              <div
-                className={`h-0.5 w-16 mx-2 mb-8 ${
-                  currentStep > step.id ? 'bg-green-500' : 'bg-gray-200'
-                }`}
-              />
-            )}
-          </React.Fragment>
-        ))}
+          );
+        })}
       </div>
-    </div>
+
+      <div className='relative h-2 bg-gray-200 rounded-full max-w-md mx-auto mt-3'>
+        <motion.div
+          className='absolute top-0 left-0 h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full'
+          initial={{ width: '0%' }}
+          animate={{ width: getProgressWidth() }}
+          transition={{ duration: 0.5 }}
+        />
+      </div>
+    </motion.div>
   );
 };
-
-export default ProgressIndicator;
