@@ -15,16 +15,8 @@ import {
   Music,
 } from 'lucide-react';
 import { useBooking } from '@/context/BookingContext';
-import { Service, PackageType, BookingDate } from '@/types/type';
-import {
-  DayPlan,
-  ServiceTimeSlot,
-  TravelPurpose,
-  TIME_SLOTS,
-  travelPurposes,
-  cardVariants,
-  containerVariants,
-} from '@/types/dayPlanner';
+import { Service, PackageType, BookingDate, TravelPurpose } from '@/types/type';
+import { DayPlan, ServiceTimeSlot } from '@/types/dayPlanner';
 import { getRecommendedServices } from '@/utils/recommendationEngine';
 import ServiceManager from '@/constants/services/ServiceManager';
 

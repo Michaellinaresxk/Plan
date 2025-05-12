@@ -1,30 +1,125 @@
-// UI/components/packageBuilder/dayPlanner/DayByDayPlanner.tsx
+// UI/components/packageBuilder/dayPlanner/LuxuryDayByDayPlanner.tsx
 'use client';
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
 import { useBooking } from '@/context/BookingContext';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-
-// Import custom hooks from the main hooks folder
 import { useDayPlanner } from '@/hooks/useDayPlanner';
 import { PlannerStep } from '@/constants/dayplanner';
 import { useServiceConfig } from '@/hooks/useServiceConfig';
-import { ServiceConfigModal } from './dayPlanner/ServiceConfigModal';
-import { ProgressIndicator } from './dayPlanner/ProgressIndicator';
 import { DateSelectionStep } from './dayPlanner/steps/DateSelectionStep';
 import { PurposeStep } from './dayPlanner/steps/PurposeStep';
 import { DayPlanningStep } from './dayPlanner/steps/DayPlanningStep';
 import { ReviewStep } from './dayPlanner/steps/ReviewStep';
+import { ServiceConfigModal } from './dayPlanner/ServiceConfigModal';
 
-interface DayByDayPlannerProps {
+interface LuxuryDayByDayPlannerProps {
   services: Service[];
   onComplete: () => void;
 }
 
-const DayByDayPlanner: React.FC<DayByDayPlannerProps> = ({
+// Custom ProgressIndicator component with luxury style
+const LuxuryProgressIndicator = ({
+  currentStep,
+}: {
+  currentStep: PlannerStep;
+}) => {
+  const steps = [
+    {
+      key: 'select-dates',
+      label: 'Fechas',
+      completed: currentStep !== 'select-dates',
+    },
+    {
+      key: 'purpose',
+      label: 'Propósito',
+      completed: currentStep !== 'select-dates' && currentStep !== 'purpose',
+    },
+    {
+      key: 'day-planning',
+      label: 'Experiencias',
+      completed: currentStep === 'review',
+    },
+    { key: 'review', label: 'Revisar', completed: false },
+  ];
+
+  const getProgressWidth = () => {
+    switch (currentStep) {
+      case 'select-dates':
+        return '25%';
+      case 'purpose':
+        return '50%';
+      case 'day-planning':
+        return '75%';
+      case 'review':
+        return '100%';
+      default:
+        return '0%';
+    }
+  };
+
+  return (
+    <div className='mb-12 pt-4'>
+      {/* Progress bar */}
+      <div className='relative h-1 bg-gray-200 rounded-full max-w-3xl mx-auto mb-8'>
+        <motion.div
+          className='absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full'
+          initial={{ width: '0%' }}
+          animate={{ width: getProgressWidth() }}
+          transition={{ duration: 0.5 }}
+        />
+      </div>
+
+      {/* Step indicators */}
+      <div className='flex justify-between max-w-3xl mx-auto px-4'>
+        {steps.map((step, index) => {
+          const isActive = currentStep === step.key;
+
+          return (
+            <div key={step.key} className='flex flex-col items-center'>
+              <motion.div
+                className={`
+                  w-10 h-10 rounded-full flex items-center justify-center mb-2 
+                  ${
+                    step.completed
+                      ? 'bg-gradient-to-r from-green-400 to-green-500 text-white'
+                      : isActive
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
+                      : 'bg-gray-200 text-gray-400'
+                  }
+                `}
+                animate={{
+                  scale: isActive ? [1, 1.1, 1] : 1,
+                  boxShadow: isActive
+                    ? '0 4px 12px rgba(79, 70, 229, 0.3)'
+                    : 'none',
+                }}
+                transition={{
+                  duration: 0.5,
+                  repeat: isActive ? Infinity : 0,
+                  repeatType: 'reverse',
+                }}
+              >
+                {index + 1}
+              </motion.div>
+              <span
+                className={`text-sm font-medium ${
+                  isActive ? 'text-blue-600' : 'text-gray-600'
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
   services,
   onComplete,
 }) => {
@@ -105,8 +200,8 @@ const DayByDayPlanner: React.FC<DayByDayPlannerProps> = ({
   );
 
   return (
-    <div className='w-full py-8 px-4'>
-      <ProgressIndicator currentStep={currentStep} />
+    <div className='w-full py-8 px-4 bg-gradient-to-br from-white to-blue-50 min-h-screen'>
+      <LuxuryProgressIndicator currentStep={currentStep} />
 
       <AnimatePresence mode='wait'>
         <motion.div
@@ -115,7 +210,7 @@ const DayByDayPlanner: React.FC<DayByDayPlannerProps> = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.4 }}
-          className='max-w-3xl mx-auto'
+          className='max-w-5xl mx-auto'
         >
           {currentStep === 'select-dates' && (
             <DateSelectionStep
