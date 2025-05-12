@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import { motion } from 'framer-motion';
@@ -6,9 +6,10 @@ import Link from 'next/link';
 import { useBooking } from '@/context/BookingContext';
 import { ServiceData } from '@/types/services';
 import { Service } from '@/types/type';
-import { Check, Star, ArrowLeft, Calendar } from 'lucide-react';
+import { Check, Star, ArrowLeft, Calendar, PlusCircle } from 'lucide-react';
 import ServiceContentOrchestrator from './ServiceContentOrchestrator';
 import ServiceManager from '@/constants/services/ServiceManager';
+import BookingModal from '../modal/BookingModal';
 
 interface ServiceDetailsEnhancedProps {
   service: Service;
@@ -16,11 +17,10 @@ interface ServiceDetailsEnhancedProps {
 }
 
 /**
- * Enhanced Service Details Component
+ * Simplified Service Details Component
  *
- * This is a drop-in replacement for the existing ServiceDetails component
- * that uses the new ServiceContentOrchestrator to render service details
- * in a more flexible and scalable way.
+ * This version removes the sidebar completely and adds a floating
+ * "Book Now" button that opens the BookingModal
  */
 const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
   service,
@@ -28,6 +28,7 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
 }) => {
   const { t } = useTranslation();
   const { addService, selectedServices } = useBooking();
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   // Get extended details from ServiceManager
   const extendedDetails = ServiceManager.getDetails(service.id);
@@ -61,9 +62,21 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
     ? 'per day'
     : 'per session';
 
+  // Handle booking confirmation
+  const handleBookingConfirm = (service: Service, formData: any) => {
+    console.log('Booking confirmed:', service, formData);
+    // Process the booking - here you might redirect to checkout, add to cart, etc.
+    setIsBookingModalOpen(false);
+    // You can also add the service to the selected services if that's appropriate
+    if (!isSelected) {
+      addService(service);
+    }
+    // Show success message or redirect
+  };
+
   return (
     <div
-      className={`bg-gray-50 min-h-screen pb-16 ${
+      className={`bg-gray-50 min-h-screen pb-24 ${
         isPremium ? 'bg-gray-900' : ''
       }`}
     >
@@ -103,171 +116,118 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
                 Premium
               </span>
             )}
-            <h1 className='text-3xl md:text-4xl font-bold text-white mb-4'>
+            <h1 className='text-3xl md:text-4xl font-bold text-white mb-2'>
               {serviceName}
             </h1>
+
+            {/* Price display in hero section */}
+            <div className='flex items-center mt-2'>
+              <span className='text-xl md:text-2xl font-bold text-white'>
+                {formattedPrice}
+              </span>
+              <span className='text-white/80 ml-1'>{priceUnit}</span>
+
+              {serviceData?.metaData?.rating && (
+                <div className='flex items-center ml-4'>
+                  <Star className='h-5 w-5 text-yellow-400 fill-yellow-400' />
+                  <span className='ml-1 text-white'>
+                    {serviceData.metaData.rating}
+                  </span>
+                </div>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className='container mx-auto px-6 pt-12'>
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-          {/* Main content column */}
-          <div className='lg:col-span-2'>
-            {/* Orchestrated content blocks */}
-            <ServiceContentOrchestrator
-              service={service}
-              serviceData={serviceData}
-              extendedDetails={extendedDetails}
-              viewContext={isPremium ? 'premium-view' : 'standard-view'}
-            />
+        {/* Action Bar (Optional) - Fixed position at top */}
+        <div className='bg-white rounded-lg shadow-md p-4 mb-8 flex justify-between items-center'>
+          <div className='flex items-center'>
+            <span
+              className={`text-lg font-bold ${
+                isPremium ? 'text-amber-600' : 'text-blue-600'
+              }`}
+            >
+              {formattedPrice}
+            </span>
+            <span className='text-gray-500 ml-1'>{priceUnit}</span>
           </div>
 
-          {/* Sidebar - Booking and options */}
-          <div className='lg:col-span-1'>
-            <div
-              className={`${
-                isPremium ? 'bg-gray-800 border-gray-700' : 'bg-white'
-              } p-6 rounded-xl shadow-sm sticky top-24`}
+          <div className='flex space-x-3'>
+            <button
+              onClick={() => addService(service)}
+              className={`py-2 px-4 rounded-lg ${
+                isPremium
+                  ? isSelected
+                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                    : 'bg-white text-amber-700 border border-amber-300 hover:bg-amber-50'
+                  : isSelected
+                  ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                  : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'
+              } transition-colors flex items-center`}
             >
-              <div className='flex justify-between items-center mb-6'>
-                <div>
-                  <span
-                    className={`text-3xl font-bold ${
-                      isPremium ? 'text-amber-400' : 'text-gray-900'
-                    }`}
-                  >
-                    {formattedPrice}
-                  </span>
-                  <span
-                    className={`${
-                      isPremium ? 'text-gray-400' : 'text-gray-500'
-                    } ml-1`}
-                  >
-                    {priceUnit}
-                  </span>
-                </div>
-
-                {serviceData?.metaData?.rating && (
-                  <div className='flex items-center'>
-                    <Star
-                      className={`h-5 w-5 ${
-                        isPremium
-                          ? 'text-amber-400 fill-amber-400'
-                          : 'text-yellow-400 fill-yellow-400'
-                      }`}
-                    />
-                    <span
-                      className={`ml-1 ${
-                        isPremium ? 'text-gray-300' : 'text-gray-700'
-                      }`}
-                    >
-                      {serviceData.metaData.rating}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Service options if available */}
-              {serviceData?.options &&
-                Object.keys(serviceData.options).length > 0 && (
-                  <div className='space-y-4 mb-6'>
-                    <h4
-                      className={`font-medium ${
-                        isPremium ? 'text-white' : 'text-gray-800'
-                      }`}
-                    >
-                      {t('serviceDetails.options')}
-                    </h4>
-
-                    {Object.entries(serviceData.options).map(
-                      ([optionKey, option]) => (
-                        <div key={optionKey} className='mb-4'>
-                          <label
-                            className={`block text-sm font-medium ${
-                              isPremium ? 'text-gray-300' : 'text-gray-700'
-                            } mb-2`}
-                          >
-                            {t(option.nameKey, { fallback: option.id })}
-                          </label>
-                          <select
-                            className={`w-full border ${
-                              isPremium
-                                ? 'bg-gray-700 border-gray-600 text-white'
-                                : 'border-gray-300 text-gray-900'
-                            } rounded-md py-2 px-3 focus:outline-none focus:ring-2 ${
-                              isPremium
-                                ? 'focus:ring-amber-500 focus:border-amber-500'
-                                : 'focus:ring-blue-500 focus:border-blue-500'
-                            }`}
-                          >
-                            {option.subOptions &&
-                              Object.entries(option.subOptions).map(
-                                ([subOptionKey, subOption]) => (
-                                  <option
-                                    key={subOptionKey}
-                                    value={subOption.id}
-                                  >
-                                    {t(subOption.nameKey, {
-                                      fallback: subOption.id,
-                                    })}
-                                    {typeof subOption === 'object' &&
-                                      'price' in subOption &&
-                                      subOption.price !== 0 &&
-                                      ` (${subOption.price > 0 ? '+' : ''}${
-                                        subOption.price
-                                      })`}
-                                  </option>
-                                )
-                              )}
-                          </select>
-                        </div>
-                      )
-                    )}
-                  </div>
-                )}
-
-              {/* Booking button */}
-              <button
-                onClick={() => addService(service)}
-                className={`w-full py-3 px-4 rounded-lg font-medium ${
-                  isPremium
-                    ? isSelected
-                      ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                      : 'bg-amber-500 hover:bg-amber-600 text-black'
-                    : isSelected
-                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                } transition-colors flex items-center justify-center`}
-              >
-                {isSelected ? (
-                  <>
-                    <Check className='mr-2' size={20} />
-                    {t('serviceDetails.removeFromPackage')}
-                  </>
-                ) : (
-                  <>
-                    <Calendar className='mr-2' size={20} />
-                    {t('serviceDetails.addToPackage')}
-                  </>
-                )}
-              </button>
-
-              {/* Disclaimer if available */}
-              {serviceData?.disclaimer && (
-                <p
-                  className={`text-sm ${
-                    isPremium ? 'text-gray-400' : 'text-gray-500'
-                  } mt-4`}
-                >
-                  {t(serviceData.disclaimer, { fallback: 'Disclaimer' })}
-                </p>
+              {isSelected ? (
+                <>
+                  <Check className='mr-1' size={16} />
+                  {t('serviceDetails.added', { fallback: 'Added' })}
+                </>
+              ) : (
+                <>
+                  <PlusCircle className='mr-1' size={16} />
+                  {t('serviceDetails.addToPackage', {
+                    fallback: 'Add to Package',
+                  })}
+                </>
               )}
-            </div>
+            </button>
+
+            <button
+              onClick={() => setIsBookingModalOpen(true)}
+              className={`py-2 px-4 rounded-lg font-medium ${
+                isPremium
+                  ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              } transition-colors flex items-center`}
+            >
+              <Calendar className='mr-1' size={16} />
+              {t('serviceDetails.bookNow', { fallback: 'Book Now' })}
+            </button>
           </div>
         </div>
+
+        {/* Full width content */}
+        <ServiceContentOrchestrator
+          service={service}
+          serviceData={serviceData}
+          extendedDetails={extendedDetails}
+          viewContext={isPremium ? 'premium-view' : 'standard-view'}
+        />
       </div>
+
+      {/* Floating Book Now Button */}
+      <div className='fixed bottom-6 right-6 z-40'>
+        <button
+          onClick={() => setIsBookingModalOpen(true)}
+          className={`${
+            isPremium
+              ? 'bg-amber-500 hover:bg-amber-600 text-black'
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
+          } rounded-full h-16 w-16 flex items-center justify-center shadow-lg transform transition-transform hover:scale-105`}
+          aria-label='Book Now'
+        >
+          <Calendar size={28} />
+        </button>
+      </div>
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        onConfirm={handleBookingConfirm}
+        service={service}
+      />
     </div>
   );
 };
