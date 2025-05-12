@@ -225,6 +225,11 @@
         "short": "Experiencias culinarias personalizadas en tu alojamiento",
         "full": "Deleita tu paladar con creaciones gourmet personalizadas por un chef privado en tu villa, apartamento o yate. Nuestro equipo elabora menús a tu medida, usando ingredientes frescos y sabores locales para convertir cada comida en un momento inolvidable. Reserva tu chef privado hoy y disfruta de una experiencia culinaria única en Punta Cana."
       },
+      "privateCatamaran": {
+        "name": "Servicio de Chef Privado",
+        "short": "Experiencias culinarias personalizadas en tu alojamiento",
+        "full": "Deleita tu paladar con creaciones gourmet personalizadas por un chef privado en tu villa, apartamento o yate. Nuestro equipo elabora menús a tu medida, usando ingredientes frescos y sabores locales para convertir cada comida en un momento inolvidable. Reserva tu chef privado hoy y disfruta de una experiencia culinaria única en Punta Cana."
+      },
       "customDecorations": {
         "name": "Decoraciones Personalizadas",
         "short": "Decoraciones especiales para eventos y celebraciones",
@@ -401,14 +406,18 @@
       "subTitle": "Complete el formulario y nuestro equipo le contactará pronto",
       "name": "Nombre Completo",
       "email": "Correo Electrónico",
-      "subject": "Asunto",
-      "selectSubject": "Seleccionar tema",
+      "subject": "¿Qué tipo de servicios le interesan?",
+      "selectSubject": "Select a service",
+      "date": "Fecha",
+      "guests": "Número de invitados",
+      "preferences": "¿Tiene algún requisito o preferencia especial?",
       "subject1": "Reservaciones",
       "subject2": "Información de servicios",
       "subject3": "Ayuda",
       "subject4": "Comentarios",
-      "subject5": "Other",
+      "subject5": "Otros",
       "message": "Mensaje",
+      "messagePlaceHolder": "Escriba su mensaje aqui",
       "sending": "Enviando...",
       "submitButton": "Enviar Mensaje",
       "success": "¡Mensaje Enviado!",

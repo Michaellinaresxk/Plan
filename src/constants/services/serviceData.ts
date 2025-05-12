@@ -971,7 +971,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   [SERVICE_IDS.PRIVATE_CATAMARAN]: {
     id: SERVICE_IDS.PRIVATE_CATAMARAN,
     titleKey: 'services.standard.privateCatamaran.name',
-    descriptionKey: 'services.standard.privateCatamaran.description',
+    descriptionKey: 'services.standard.privateCatamaran.short',
     fullDescriptionKey: 'services.standard.privateCatamaran.full',
     basePrice: 450,
     priceUnit: 'services.priceUnits.perTrip',
