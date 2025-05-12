@@ -2,18 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Users, Check, ArrowLeft, ArrowRight } from 'lucide-react';
-import { DayPicker } from 'react-day-picker';
-import { format, differenceInDays } from 'date-fns';
+import { X, Check, ArrowLeft, ArrowRight } from 'lucide-react';
+import { differenceInDays } from 'date-fns';
 import { useTranslation } from '@/lib/i18n/client';
-import { Service, BookingDate } from '@/types/type';
-
-interface BookingModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (service: Service, dates: BookingDate, guests: number) => void;
-  service: Service | null;
-}
+import { useForm, FormProvider } from 'react-hook-form';
+import { BookingModalProps } from '@/constants/formFields';
+import DynamicFormField from '../forms/DynamicFormField';
+import BookingSummary from '../shared/BookingSummary';
+import { getServiceFormConfig } from '@/constants/getServiceFormConfig';
 
 const BookingModal: React.FC<BookingModalProps> = ({
   isOpen,
@@ -22,82 +18,54 @@ const BookingModal: React.FC<BookingModalProps> = ({
   service,
 }) => {
   const { t } = useTranslation();
-  const [dateRange, setDateRange] = useState<
-    { from: Date; to: Date } | undefined
-  >(undefined);
-  const [guests, setGuests] = useState<number>(1);
-  const [step, setStep] = useState<'dates' | 'guests'>('dates');
+  const [currentStep, setCurrentStep] = useState(0);
+  const methods = useForm();
 
-  // Reset state when modal opens
+  // Reset form when modal opens or service changes
   useEffect(() => {
-    if (isOpen) {
-      setDateRange(undefined);
-      setGuests(1);
-      setStep('dates');
+    if (isOpen && service) {
+      methods.reset();
+      setCurrentStep(0);
     }
-  }, [isOpen]);
+  }, [isOpen, service, methods]);
 
-  // Ensure we can only book dates in the future
-  const disabledDays = { before: new Date() };
+  if (!service) return null;
 
-  const handleRangeSelect = (range: { from: Date; to: Date } | undefined) => {
-    if (range?.from && range?.to) {
-      setDateRange(range);
-    }
+  // Get the form configuration based on the service type
+  const formConfig = getServiceFormConfig(service);
+
+  // Check if we have a configuration for this service
+  if (!formConfig) {
+    console.error(`No form configuration found for service: ${service.id}`);
+    return null;
+  }
+
+  const isPremium = service.packageType.includes('premium');
+  const primaryColor = isPremium ? 'amber' : 'blue';
+
+  const handleSubmit = methods.handleSubmit((data) => {
+    onConfirm(service, data);
+  });
+
+  const nextStep = () => {
+    const fieldsInCurrentStep = formConfig.steps[currentStep].fields.map(
+      (field) => field.id
+    );
+
+    // Validate only the fields in the current step
+    methods.trigger(fieldsInCurrentStep).then((isValid) => {
+      if (isValid) {
+        if (currentStep < formConfig.steps.length - 1) {
+          setCurrentStep((prev) => prev + 1);
+        } else {
+          handleSubmit();
+        }
+      }
+    });
   };
 
-  const handleGuestsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGuests(Number(e.target.value));
-  };
-
-  const handleContinueToGuests = () => {
-    if (dateRange?.from && dateRange?.to) {
-      setStep('guests');
-    }
-  };
-
-  const handleBack = () => {
-    setStep('dates');
-  };
-
-  const handleConfirm = () => {
-    if (service && dateRange?.from && dateRange?.to) {
-      onConfirm(
-        service,
-        {
-          startDate: dateRange.from,
-          endDate: dateRange.to,
-        },
-        guests
-      );
-    }
-  };
-
-  const calculateTotalPrice = () => {
-    if (!service) return 0;
-
-    // Calculate number of days if the service is duration-based
-    const days =
-      dateRange?.from && dateRange?.to
-        ? differenceInDays(dateRange.to, dateRange.from) + 1
-        : 1;
-
-    // Multiply by days only if service is day-based (e.g., rentals)
-    const isDayBased = [
-      'golf-cart-rentals',
-      'bike-rentals',
-      'luxe-golf-cart',
-      'luxe-e-bikes',
-    ].includes(service.id);
-
-    return service.price * guests * (isDayBased ? days : 1);
-  };
-
-  // Get container classes based on service type for theming
-  const getContainerClasses = () => {
-    if (!service) return '';
-    const isPremium = service.packageType.includes('premium');
-    return isPremium ? 'premium-theme' : 'standard-theme';
+  const prevStep = () => {
+    setCurrentStep((curr) => Math.max(0, curr - 1));
   };
 
   // Animation variants
@@ -129,16 +97,40 @@ const BookingModal: React.FC<BookingModalProps> = ({
     exit: { opacity: 0, x: -20, transition: { duration: 0.2 } },
   };
 
-  if (!service) return null;
+  // Calculate total price based on form data
+  const calculateTotalPrice = () => {
+    if (!service) return 0;
 
-  const isPremium = service.packageType.includes('premium');
-  const primaryColor = isPremium ? 'amber' : 'blue';
+    const formData = methods.getValues();
+    const basePrice = service.price;
+
+    // Handle different pricing logic based on service type
+    if (service.id === 'transport') {
+      // Example: Additional fee for car seats
+      const carSeats = formData.carSeats || 0;
+      return basePrice + carSeats * 10; // $10 per car seat
+    } else if (['golf-cart-rentals', 'bike-rentals'].includes(service.id)) {
+      // Example: Day-based pricing for rentals
+      const days = formData.dateRange
+        ? differenceInDays(
+            new Date(formData.dateRange.to),
+            new Date(formData.dateRange.from)
+          ) + 1
+        : 1;
+      const guests = formData.guests || 1;
+      return basePrice * days * guests;
+    } else {
+      // Default pricing
+      const guests = formData.guests || 1;
+      return basePrice * guests;
+    }
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <div className='fixed inset-0 z-50 overflow-hidden flex items-center justify-center p-4 md:p-6'>
-          {/* Backdrop with improved animation */}
+          {/* Backdrop */}
           <motion.div
             variants={backdropVariants}
             initial='hidden'
@@ -154,9 +146,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
             initial='hidden'
             animate='visible'
             exit='exit'
-            className={`relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto overflow-hidden ${getContainerClasses()}`}
+            className={`relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto overflow-hidden`}
           >
-            {/* Close button - now floating in corner for cleaner look */}
+            {/* Close button */}
             <button
               onClick={onClose}
               className='absolute right-4 top-4 z-10 p-1.5 rounded-full bg-white/80 hover:bg-white shadow-md text-gray-700 hover:text-gray-900 transition-all duration-200'
@@ -165,7 +157,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               <X size={18} />
             </button>
 
-            {/* Header with service info and gradient background */}
+            {/* Header with service info */}
             <div
               className={`relative px-6 py-8 ${
                 isPremium
@@ -191,287 +183,130 @@ const BookingModal: React.FC<BookingModalProps> = ({
                 </div>
               </div>
 
-              {/* Step indicators - now cleaner and more visual */}
+              {/* Step progress indicator */}
               <div className='absolute bottom-0 left-0 right-0 h-1 bg-white/20'>
                 <div
-                  className={`h-full ${step === 'dates' ? 'w-1/2' : 'w-full'} ${
+                  className={`h-full transition-all duration-500 ${
                     isPremium ? 'bg-amber-300' : 'bg-blue-300'
-                  } transition-all duration-500`}
+                  }`}
+                  style={{
+                    width: `${
+                      ((currentStep + 1) / formConfig.steps.length) * 100
+                    }%`,
+                  }}
                 />
               </div>
             </div>
 
             {/* Steps navigation */}
-            <div className='flex border-b'>
-              <button
-                className={`flex-1 text-sm font-medium py-3 px-4 flex justify-center items-center relative ${
-                  step === 'dates'
-                    ? isPremium
-                      ? 'text-amber-600 border-b-2 border-amber-500'
-                      : 'text-blue-600 border-b-2 border-blue-500'
-                    : 'text-gray-500'
-                }`}
-              >
-                <Calendar size={16} className='mr-1.5' />
-                <span>1. {t('modal.dates', { fallback: 'Select Dates' })}</span>
-              </button>
-              <button
-                className={`flex-1 text-sm font-medium py-3 px-4 flex justify-center items-center relative ${
-                  step === 'guests'
-                    ? isPremium
-                      ? 'text-amber-600 border-b-2 border-amber-500'
-                      : 'text-blue-600 border-b-2 border-blue-500'
-                    : 'text-gray-500'
-                }`}
-                onClick={handleContinueToGuests}
-                disabled={!dateRange?.from || !dateRange?.to}
-              >
-                <Users size={16} className='mr-1.5' />
-                <span>
-                  2. {t('modal.guests', { fallback: 'Guests & Confirm' })}
-                </span>
-              </button>
+            <div className='flex border-b overflow-x-auto hide-scrollbar'>
+              {formConfig.steps.map((step, index) => (
+                <button
+                  key={step.id}
+                  className={`flex-1 text-sm whitespace-nowrap font-medium py-3 px-4 flex justify-center items-center relative ${
+                    currentStep === index
+                      ? isPremium
+                        ? 'text-amber-600 border-b-2 border-amber-500'
+                        : 'text-blue-600 border-b-2 border-blue-500'
+                      : currentStep > index
+                      ? 'text-gray-400'
+                      : 'text-gray-500'
+                  }`}
+                  onClick={() => {
+                    // Only allow going back or to completed steps
+                    if (index <= currentStep) {
+                      setCurrentStep(index);
+                    }
+                  }}
+                >
+                  <span>
+                    {index + 1}. {step.title}
+                  </span>
+                </button>
+              ))}
             </div>
 
-            {/* Content area with animation between steps */}
-            <div className='p-6 overflow-hidden'>
-              <AnimatePresence mode='wait'>
-                {step === 'dates' ? (
+            {/* Form content with animations */}
+            <FormProvider {...methods}>
+              <form onSubmit={handleSubmit} className='p-6 overflow-hidden'>
+                <AnimatePresence mode='wait'>
                   <motion.div
-                    key='dates-step'
+                    key={`step-${currentStep}`}
                     variants={contentVariants}
                     initial='hidden'
                     animate='visible'
                     exit='exit'
+                    className='space-y-5'
                   >
-                    <div className='mb-6'>
-                      <h4 className='text-base font-medium text-gray-800 mb-3'>
-                        {t('modal.selectDates', {
-                          fallback: 'When would you like to book this service?',
-                        })}
-                      </h4>
+                    <h4 className='text-base font-medium text-gray-800 mb-4'>
+                      {formConfig.steps[currentStep].title}
+                    </h4>
 
-                      <div
-                        className={`border rounded-xl overflow-hidden shadow-sm ${
-                          isPremium ? 'border-amber-200' : 'border-blue-200'
-                        }`}
-                      >
-                        <DayPicker
-                          mode='range'
-                          selected={dateRange}
-                          onSelect={handleRangeSelect}
-                          disabled={disabledDays}
-                          numberOfMonths={1}
-                          className='rdp-custom p-2'
-                          styles={{
-                            day_selected: {
-                              backgroundColor: isPremium
-                                ? '#f59e0b'
-                                : '#3b82f6',
-                              color: 'black',
-                            },
-                            day_today: {
-                              color: isPremium ? '#f59e0b' : '#3b82f6',
-                              fontWeight: 'bold',
-                            },
-                          }}
-                        />
-                      </div>
-                    </div>
+                    {/* Render fields for current step */}
+                    {formConfig.steps[currentStep].fields.map((field) => (
+                      <DynamicFormField
+                        key={field.id}
+                        field={field}
+                        isPremium={isPremium}
+                        formMethods={methods}
+                      />
+                    ))}
 
-                    {dateRange?.from && dateRange?.to && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`p-4 rounded-lg mb-6 ${
-                          isPremium
-                            ? 'bg-amber-50 border border-amber-100'
-                            : 'bg-blue-50 border border-blue-100'
-                        }`}
-                      >
-                        <p className='text-sm font-medium mb-1'>
-                          {t('modal.selectedDates', {
-                            fallback: 'Your selected dates:',
-                          })}
-                        </p>
-                        <p className='text-sm flex items-center'>
-                          <Calendar
-                            size={15}
-                            className={`mr-1.5 ${
-                              isPremium ? 'text-amber-500' : 'text-blue-500'
-                            }`}
-                          />
-                          <span>
-                            {format(dateRange.from, 'PPP')} —{' '}
-                            {format(dateRange.to, 'PPP')}
-                          </span>
-                        </p>
-                        <p className='text-xs text-gray-500 mt-1'>
-                          {differenceInDays(dateRange.to, dateRange.from) + 1}{' '}
-                          {differenceInDays(dateRange.to, dateRange.from) +
-                            1 ===
-                          1
-                            ? t('calendar.day', { fallback: 'day' })
-                            : t('calendar.days', { fallback: 'days' })}
-                        </p>
-                      </motion.div>
+                    {/* Show summary on last step */}
+                    {currentStep === formConfig.steps.length - 1 && (
+                      <BookingSummary
+                        service={service}
+                        formData={methods.getValues()}
+                        totalPrice={calculateTotalPrice()}
+                        isPremium={isPremium}
+                      />
                     )}
+                  </motion.div>
+                </AnimatePresence>
 
+                {/* Navigation buttons */}
+                <div className='flex space-x-3 mt-8'>
+                  {currentStep > 0 && (
                     <button
-                      onClick={handleContinueToGuests}
-                      disabled={!dateRange?.from || !dateRange?.to}
-                      className={`
-                        w-full py-3 px-4 rounded-lg font-medium flex justify-center items-center
-                        transition-colors duration-200 transform active:scale-[0.98]
-                        ${
-                          dateRange?.from && dateRange?.to
-                            ? isPremium
-                              ? 'bg-amber-500 hover:bg-amber-600 text-white'
-                              : 'bg-blue-500 hover:bg-blue-600 text-white'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        }
-                      `}
+                      type='button'
+                      onClick={prevStep}
+                      className='flex-1 py-3 px-4 rounded-lg font-medium border hover:bg-gray-50 transition-colors flex justify-center items-center'
                     >
-                      {t('modal.continue', { fallback: 'Continue' })}
-                      <ArrowRight size={16} className='ml-1.5' />
+                      <ArrowLeft size={16} className='mr-1.5' />
+                      {t('modal.back', { fallback: 'Back' })}
                     </button>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key='guests-step'
-                    variants={contentVariants}
-                    initial='hidden'
-                    animate='visible'
-                    exit='exit'
+                  )}
+
+                  <button
+                    type='button'
+                    onClick={nextStep}
+                    className={`
+                      flex-1 py-3 px-4 rounded-lg font-medium text-white 
+                      flex justify-center items-center transition-colors
+                      transform active:scale-[0.98]
+                      ${
+                        isPremium
+                          ? 'bg-amber-500 hover:bg-amber-600'
+                          : 'bg-blue-500 hover:bg-blue-600'
+                      }
+                    `}
                   >
-                    <div className='mb-6'>
-                      <h4 className='text-base font-medium text-gray-800 mb-3'>
-                        {t('modal.guestsQuestion', {
-                          fallback: 'How many guests?',
-                        })}
-                      </h4>
-
-                      <div className='relative'>
-                        <select
-                          value={guests}
-                          onChange={handleGuestsChange}
-                          className={`
-                            w-full p-3 pr-10 appearance-none border rounded-lg focus:outline-none focus:ring-2
-                            ${
-                              isPremium
-                                ? 'focus:ring-amber-500 focus:border-amber-500'
-                                : 'focus:ring-blue-500 focus:border-blue-500'
-                            }
-                          `}
-                        >
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                            <option key={num} value={num}>
-                              {num}{' '}
-                              {num === 1
-                                ? t('calendar.guest', { fallback: 'Guest' })
-                                : t('calendar.guests', { fallback: 'Guests' })}
-                            </option>
-                          ))}
-                        </select>
-                        <div className='absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none'>
-                          <Users size={18} className='text-gray-400' />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`p-4 rounded-lg mb-6 ${
-                        isPremium ? 'bg-amber-50' : 'bg-blue-50'
-                      }`}
-                    >
-                      <h4
-                        className={`font-medium ${
-                          isPremium ? 'text-amber-800' : 'text-blue-800'
-                        } mb-3`}
-                      >
-                        {t('modal.summary', { fallback: 'Booking Summary' })}
-                      </h4>
-
-                      <div className='space-y-3'>
-                        <div className='flex justify-between text-sm'>
-                          <span className='text-gray-600'>
-                            {t('modal.service', { fallback: 'Service' })}:
-                          </span>
-                          <span className='font-medium text-gray-900'>
-                            {service.name}
-                          </span>
-                        </div>
-
-                        <div className='flex justify-between text-sm'>
-                          <span className='text-gray-600'>
-                            {t('modal.dates', { fallback: 'Dates' })}:
-                          </span>
-                          <span className='font-medium text-gray-900'>
-                            {dateRange?.from &&
-                              dateRange?.to &&
-                              `${format(dateRange.from, 'MMM d')} - ${format(
-                                dateRange.to,
-                                'MMM d, yyyy'
-                              )}`}
-                          </span>
-                        </div>
-
-                        <div className='flex justify-between text-sm'>
-                          <span className='text-gray-600'>
-                            {t('modal.guests', { fallback: 'Guests' })}:
-                          </span>
-                          <span className='font-medium text-gray-900'>
-                            {guests}
-                          </span>
-                        </div>
-
-                        <div className='pt-3 border-t'>
-                          <div className='flex justify-between items-center'>
-                            <span className='font-medium text-gray-900'>
-                              {t('modal.total', { fallback: 'Total' })}:
-                            </span>
-                            <span
-                              className={`text-lg font-bold ${
-                                isPremium ? 'text-amber-600' : 'text-blue-600'
-                              }`}
-                            >
-                              ${calculateTotalPrice()}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className='flex space-x-3'>
-                      <button
-                        onClick={handleBack}
-                        className='flex-1 py-3 px-4 rounded-lg font-medium border hover:bg-gray-50 transition-colors flex justify-center items-center'
-                      >
-                        <ArrowLeft size={16} className='mr-1.5' />
-                        {t('modal.back', { fallback: 'Back' })}
-                      </button>
-
-                      <button
-                        onClick={handleConfirm}
-                        className={`
-                          flex-1 py-3 px-4 rounded-lg font-medium text-white 
-                          flex justify-center items-center transition-colors
-                          transform active:scale-[0.98]
-                          ${
-                            isPremium
-                              ? 'bg-amber-500 hover:bg-amber-600'
-                              : 'bg-blue-500 hover:bg-blue-600'
-                          }
-                        `}
-                      >
+                    {currentStep === formConfig.steps.length - 1 ? (
+                      <>
                         <Check size={16} className='mr-1.5' />
-                        {t('modal.addToCart', { fallback: 'Add to Cart' })}
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                        {formConfig.submitButtonText ||
+                          t('modal.addToCart', { fallback: 'Add to Cart' })}
+                      </>
+                    ) : (
+                      <>
+                        {t('modal.continue', { fallback: 'Continue' })}
+                        <ArrowRight size={16} className='ml-1.5' />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </FormProvider>
           </motion.div>
         </div>
       )}

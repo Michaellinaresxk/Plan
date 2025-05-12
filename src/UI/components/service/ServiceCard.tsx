@@ -182,10 +182,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               </p>
 
               <div className='flex flex-col gap-3 mt-6'>
-                {/* View details button */}
                 <Link
                   href={`/service/${service.id}`}
-                  className='group inline-flex items-center justify-center w-full py-2.5 px-4 rounded-lg font-medium transition-all duration-300 text-sm bg-gray-800/80 hover:bg-gray-700/80 text-amber-300 border border-amber-500/30 backdrop-blur-md'
+                  className='group inline-flex items-center justify-center w-full py-2.5 px-4 rounded-lg font-medium transition-all duration-300 text-sm bg-amber-500 text-white hover:bg-amber-600 shadow-md'
                 >
                   {t('services.actions.details', { fallback: 'View Details' })}
                   <ArrowRight
@@ -235,8 +234,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       </>
     );
   }
-
-  // ESTILO ESTÁNDAR (ORIGINAL)
+  // ESTILO STANDARD
   return (
     <>
       <motion.div

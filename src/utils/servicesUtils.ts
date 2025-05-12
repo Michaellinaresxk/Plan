@@ -1,9 +1,8 @@
 import { Service, EnhancedService, PackageType } from '@/types/type';
-import { ServiceData } from '@/types/services';
+import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { ServiceId, isValidServiceId } from '../constants/services/serviceId';
 import {
   getServiceExtendedDetails,
-  ServiceExtendedDetails,
 } from '../constants/services/serviceDetails';
 import {
   SERVICES_DATA,

@@ -3,14 +3,12 @@
 import React, { use } from 'react';
 import { notFound } from 'next/navigation';
 import { BookingProvider } from '@/context/BookingContext';
-import { useTranslation } from '@/lib/i18n/client';
 import Navbar from '@/UI/components/shared/Navbar';
 import CartSidebar from '@/UI/components/shared/CartSidebar';
 import Footer from '@/UI/components/shared/Footer';
 import ServiceManager from '@/constants/services/ServiceManager';
 import ServiceDetails from '@/UI/components/service/ServiceDetails';
 
-// Page parameters interface
 interface ServicePageParams {
   params: {
     id: string;
@@ -25,10 +23,7 @@ interface ServicePageParams {
  * ServiceDetailsEnhanced component to render the service details.
  */
 export default function SelectedServicePage({ params }: ServicePageParams) {
-  // Usar React.use() para desenvolver params si es una promesa
-
   const { id } = use(params);
-  const { t } = useTranslation();
 
   // Get the service data using ServiceManager
   const serviceData = ServiceManager.getData(id);

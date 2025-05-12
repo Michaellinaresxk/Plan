@@ -44,14 +44,6 @@ const ServiceDetails: React.FC<ServiceDetailsEnhancedProps> = ({
     ? t(serviceData.titleKey, { fallback: service.name })
     : service.name;
 
-  const serviceDescription = serviceData?.descriptionKey
-    ? t(serviceData.descriptionKey, { fallback: service.description })
-    : service.description;
-
-  const fullDescription = serviceData?.fullDescriptionKey
-    ? t(serviceData.fullDescriptionKey, { fallback: '' })
-    : '';
-
   // Format price with currency
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
