@@ -1106,6 +1106,8 @@ const ServiceDisclaimerBlock: React.FC<ServiceContentProps> = ({ service }) => {
 // Estas ya están definidas arriba
 
 export default ServiceContent;
+
+
 function renderYogaService(
   yogaExtendedData: {
     yogaStyles: string[];

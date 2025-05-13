@@ -304,40 +304,74 @@ export default function CustomPackagePage() {
 
       {/* Bottom feature highlights */}
       <motion.div
-        className='grid grid-cols-1 md:grid-cols-3 gap-6 mt-16'
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.6 }}
+        className='grid grid-cols-1 md:grid-cols-3 gap-8 mt-20'
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
         {[
           {
             icon: <Calendar className='h-6 w-6 text-amber-500' />,
             title: 'Flexible Planning',
             description: 'Modify your itinerary anytime before your trip',
+            gradient: 'from-amber-500/10 to-amber-500/5',
+            borderColor: 'border-amber-200/20',
+            hoverBorder: 'group-hover:border-amber-300/30',
+            iconBg: 'bg-amber-50',
           },
           {
             icon: <Star className='h-6 w-6 text-blue-500' />,
             title: 'Best Local Experiences',
             description: 'Curated by our team of local destination experts',
+            gradient: 'from-blue-500/10 to-blue-500/5',
+            borderColor: 'border-blue-200/20',
+            hoverBorder: 'group-hover:border-blue-300/30',
+            iconBg: 'bg-blue-50',
           },
           {
             icon: <Package className='h-6 w-6 text-green-500' />,
             title: 'All-inclusive Packages',
             description: 'Everything you need in one convenient booking',
+            gradient: 'from-green-500/10 to-green-500/5',
+            borderColor: 'border-green-200/20',
+            hoverBorder: 'group-hover:border-green-300/30',
+            iconBg: 'bg-green-50',
           },
         ].map((feature, idx) => (
-          <div
+          <motion.div
             key={idx}
-            className='bg-white/50 backdrop-blur-md p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all'
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 * idx + 0.3 }}
+            className={`group relative bg-white/70 backdrop-blur-xl p-8 rounded-2xl border ${feature.borderColor} shadow-sm hover:shadow-lg transition-all duration-500 overflow-hidden`}
           >
-            <div className='bg-gray-50 p-3 rounded-full w-fit mb-4'>
+            {/* Subtle gradient background */}
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-30 group-hover:opacity-60 transition-opacity duration-500`}
+            ></div>
+
+            {/* Icon */}
+            <div
+              className={`relative ${feature.iconBg} p-4 rounded-2xl w-fit mb-6 shadow-sm ${feature.hoverBorder} border border-transparent transition-colors duration-300`}
+            >
               {feature.icon}
             </div>
-            <h3 className='text-lg font-bold text-gray-800 mb-2'>
-              {feature.title}
-            </h3>
-            <p className='text-gray-600'>{feature.description}</p>
-          </div>
+
+            {/* Content */}
+            <div className='relative'>
+              <h3 className='text-xl font-bold text-gray-800 mb-3'>
+                {feature.title}
+              </h3>
+              <p className='text-gray-600 leading-relaxed'>
+                {feature.description}
+              </p>
+            </div>
+
+            {/* Subtle diagonal line decoration */}
+            <div
+              className={`absolute -bottom-6 -right-6 w-12 h-12 rounded-full border-2 ${feature.borderColor} opacity-20 group-hover:opacity-40 transition-opacity duration-500`}
+            ></div>
+          </motion.div>
         ))}
       </motion.div>
     </div>
@@ -349,34 +383,57 @@ export default function CustomPackagePage() {
         <Navbar />
 
         {/* Page Header */}
-        <section className='bg-gradient-to-b from-gray-50 to-white pt-32 pb-12'>
-          <div className='container mx-auto px-6'>
+        <section className='relative overflow-hidden pt-24 pb-12'>
+          {/* Decorative background elements */}
+          <div className='absolute inset-0 -z-10'>
+            <div className='absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-blue-50 to-transparent'></div>
+            <div className='absolute -top-24 right-0 w-96 h-96 rounded-full bg-blue-50/80 blur-3xl'></div>
+            <div className='absolute top-1/3 left-10 w-48 h-48 rounded-full bg-indigo-50/50 blur-3xl'></div>
+            <div className='absolute bottom-0 right-1/4 w-64 h-64 rounded-full bg-amber-50/40 blur-3xl'></div>
+          </div>
+
+          <div className='container mx-auto px-6 relative z-10'>
             <div className='max-w-4xl'>
-              {/* Back Button */}
-              <Link
+              {/* Badge */}
+              <div className='inline-flex items-center mb-6 px-4 py-1.5 bg-white rounded-full shadow-sm border border-gray-100'>
+                <Sparkles className='w-4 h-4 mr-2 text-blue-500' />
+                <span className='text-sm font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>
+                  {t('customPackage.badge', { fallback: 'Custom Experience' })}
+                </span>
+              </div>
+
+              {/* Back Button - Enhanced version */}
+              {/* <Link
                 href='/'
-                className='inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-6 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm hover:shadow border border-gray-100'
+                className='inline-flex items-center mb-8 text-gray-600 hover:text-gray-900 transition-colors group'
               >
-                <ArrowLeft className='mr-2 h-5 w-5' />
-                {t('customPackage.actions.backToHome', {
-                  fallback: 'Back to Home',
-                })}
-              </Link>
+                <span className='mr-2 h-8 w-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center group-hover:bg-gray-50 transition-colors'>
+                  <ArrowLeft className='h-4 w-4 group-hover:-translate-x-0.5 transition-transform' />
+                </span>
+                <span className='font-medium'>
+                  {t('customPackage.actions.backToHome', {
+                    fallback: 'Back to Home',
+                  })}
+                </span>
+              </Link> */}
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <h1 className='text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-4'>
+                <h1 className='text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-gray-800 bg-clip-text text-transparent mb-6'>
                   {t('customPackagePage.title')}
                 </h1>
-                <p className='text-xl text-gray-600'>
+                <p className='text-xl md:text-2xl text-gray-600 max-w-2xl'>
                   {t('customPackagePage.subtitle')}
                 </p>
               </motion.div>
             </div>
           </div>
+
+          {/* Bottom divider */}
+          <div className='absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent'></div>
         </section>
 
         {/* Main Content Area */}

@@ -20,7 +20,7 @@ const DefaultDetails: React.FC<DefaultDetailsProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className='mt-6'>
+    <div className='mt-6 w-full'>
       {/* Tags del servicio si existen */}
       {serviceData?.tags && serviceData.tags.length > 0 && (
         <div className='mb-6'>
