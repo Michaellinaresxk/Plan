@@ -1,4 +1,4 @@
-// ServiceDetails.tsx
+// ServiceDetails.tsx (sin sidebar)
 
 import React from 'react';
 import Image from 'next/image';
@@ -70,41 +70,18 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
             <h1 className='text-3xl md:text-4xl font-bold text-white mb-4'>
               {service.name}
             </h1>
-
-            {/* Precio y duración en el hero, para reemplazar el sidebar */}
-            <div className='flex items-center text-white space-x-4'>
-              <div className='flex items-center'>
-                <span className='text-2xl font-bold'>${service.price}</span>
-                <span className='ml-1 text-gray-300'>
-                  {service.duration === 24
-                    ? t('common.perDay')
-                    : t('common.perSession')}
-                </span>
-              </div>
-
-              <div className='flex items-center text-gray-300'>
-                <span>
-                  {service.duration === 1
-                    ? t('common.hour', { count: 1 })
-                    : service.duration === 24
-                    ? t('common.day', { count: 1 })
-                    : t('common.hours', { count: service.duration })}
-                </span>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Main Content Area - con el espacio completo */}
+      {/* Main Content Area - Ahora con ancho completo */}
       <div className='container mx-auto px-6 pt-12'>
-        <div className='max-w-4xl mx-auto'>
-          <ServiceViewFactory
-            service={service}
-            serviceData={serviceData}
-            primaryColor={primaryColor}
-          />
-        </div>
+        {/* Sin grid, solo el contenido principal */}
+        <ServiceViewFactory
+          service={service}
+          serviceData={serviceData}
+          primaryColor={primaryColor}
+        />
       </div>
     </div>
   );

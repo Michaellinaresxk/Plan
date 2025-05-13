@@ -1,10 +1,23 @@
 // views/GroceryServiceView.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
-import { ShoppingBag, Clock, Truck, Filter } from 'lucide-react';
+import {
+  ShoppingBag,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  PlusCircle,
+  MinusCircle,
+  ShoppingCart,
+  FileText,
+  ArrowRight,
+  RefreshCw,
+} from 'lucide-react';
+
+import GroceryShoppingService from '@/UI/components/grocery/GroceryShoppingService';
 
 interface GroceryServiceViewProps {
   service: Service;
@@ -18,299 +31,305 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
   primaryColor,
 }) => {
   const { t } = useTranslation();
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState('shop'); // 'shop' or 'cart'
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [specialRequests, setSpecialRequests] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
 
-  // Datos del servicio
-  const deliveryTime = serviceData?.metaData?.deliveryTime || '24-48 hours';
-  const minimumOrder = serviceData?.metaData?.minimumOrder || '$50';
+  // Calculate cart totals
+  const cartTotal = cartItems.reduce((total, item) => {
+    return total + item.price * (item.quantity || 1);
+  }, 0);
 
-  // Categorías de ejemplo para el filtro
-  const categories = [
-    { id: 'all', name: 'All Items' },
-    { id: 'produce', name: 'Fresh Produce' },
-    { id: 'bakery', name: 'Bakery & Pastries' },
-    { id: 'meat', name: 'Meat & Seafood' },
-    { id: 'dairy', name: 'Dairy & Eggs' },
-    { id: 'pantry', name: 'Pantry Essentials' },
-    { id: 'snacks', name: 'Snacks & Treats' },
-    { id: 'beverages', name: 'Beverages' },
-    { id: 'organic', name: 'Organic' },
-    { id: 'gourmet', name: 'Gourmet' },
-  ];
+  const itemCount = cartItems.reduce((count, item) => {
+    return count + (item.quantity || 1);
+  }, 0);
+
+  // Simulate form submission
+  const handleSubmitOrder = () => {
+    setIsSubmitting(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmissionSuccess(true);
+
+      // Reset after showing success message
+      setTimeout(() => {
+        setCartItems([]);
+        setSpecialRequests('');
+        setSubmissionSuccess(false);
+        setActiveTab('shop');
+      }, 3000);
+    }, 1500);
+  };
 
   return (
-    <div className='space-y-8'>
-      {/* Sección de introducción */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <h2 className='text-2xl font-bold text-gray-900 mb-2 flex items-center'>
-            <ShoppingBag
-              className={`mr-3 text-${primaryColor}-500`}
-              size={24}
-            />
-            {t('groceryService.title', {
-              fallback: 'Grocery Shopping Service',
-            })}
+    <div className='space-y-8 '>
+      {/* Service description */}
+      <div className={`bg-white rounded-xl shadow-lg overflow-hidden p-6`}>
+        <div className='flex items-center mb-4'>
+          <ShoppingBag className={`h-6 w-6 text-${primaryColor}-500 mr-3`} />
+          <h2 className='text-2xl font-bold text-gray-900'>
+            {t('services.grocery.title')}
           </h2>
-
-          <p className='text-lg text-gray-700 mb-6'>
-            {serviceData?.descriptionKey
-              ? t(serviceData.descriptionKey)
-              : service.description}
-          </p>
-
-          {serviceData?.fullDescriptionKey && (
-            <p className='text-gray-700 mt-3'>
-              {t(serviceData.fullDescriptionKey)}
-            </p>
-          )}
-
-          {/* Características destacadas */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-8'>
-            <div
-              className={`flex items-start p-4 bg-${primaryColor}-50 rounded-lg`}
-            >
-              <div
-                className={`h-12 w-12 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-4`}
-              >
-                <Clock className={`h-6 w-6 text-${primaryColor}-600`} />
-              </div>
-              <div>
-                <h3 className='font-medium text-gray-900 mb-1'>
-                  {t('groceryService.deliveryTime')}
-                </h3>
-                <p className='text-gray-700'>{deliveryTime}</p>
-              </div>
-            </div>
-            <div
-              className={`flex items-start p-4 bg-${primaryColor}-50 rounded-lg`}
-            >
-              <div
-                className={`h-12 w-12 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-4`}
-              >
-                <ShoppingBag className={`h-6 w-6 text-${primaryColor}-600`} />
-              </div>
-              <div>
-                <h3 className='font-medium text-gray-900 mb-1'>
-                  {t('groceryService.minimumOrder')}
-                </h3>
-                <p className='text-gray-700'>{minimumOrder}</p>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+        <p className='text-lg text-gray-700 mb-6'>
+          {serviceData?.descriptionKey
+            ? t(serviceData.descriptionKey)
+            : t('services.grocery.description')}
+        </p>
 
-      {/* Sección de búsqueda y filtrado */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <div className='flex flex-col md:flex-row gap-4 mb-6'>
-            {/* Campo de búsqueda */}
-            <div className='relative flex-1'>
-              <input
-                type='text'
-                placeholder={t('groceryService.searchPlaceholder', {
-                  fallback: 'Search for items...',
-                })}
-                className='w-full py-3 px-4 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-              />
-              <svg
-                className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'
-                width='20'
-                height='20'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-                />
-              </svg>
-            </div>
-
-            {/* Botón de filtro - Móvil */}
-            <div className='md:hidden'>
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center justify-center w-full py-3 px-4 rounded-lg border border-gray-300 ${
-                  showFilters
-                    ? `bg-${primaryColor}-50 text-${primaryColor}-700`
-                    : 'bg-white text-gray-700'
-                }`}
-              >
-                <Filter size={20} className='mr-2' />
-                <span>
-                  {t('groceryService.filter', { fallback: 'Filter' })}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* Filtros - Móvil acordeón */}
+        {/* Enhanced description with service highlights */}
+        <div className='grid md:grid-cols-3 gap-4 mt-6'>
           <div
-            className={`md:hidden mb-6 overflow-hidden transition-all ${
-              showFilters ? 'max-h-96' : 'max-h-0'
-            }`}
+            className={`p-4 rounded-lg bg-${primaryColor}-50 flex flex-col items-center text-center`}
           >
-            <div className='bg-gray-50 p-4 rounded-lg'>
-              <h3 className='font-medium text-gray-800 mb-3'>
-                {t('groceryService.categories', { fallback: 'Categories' })}
-              </h3>
-              <div className='grid grid-cols-2 gap-2'>
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => setActiveFilter(category.id)}
-                    className={`py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                      activeFilter === category.id
-                        ? `bg-${primaryColor}-100 text-${primaryColor}-800`
-                        : 'bg-white text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
+            <div className={`rounded-full bg-${primaryColor}-100 p-3 mb-3`}>
+              <RefreshCw className={`h-5 w-5 text-${primaryColor}-600`} />
             </div>
-          </div>
-
-          {/* Filtros - Desktop horizontal */}
-          <div className='hidden md:block mb-6'>
-            <div className='flex space-x-2 overflow-x-auto pb-2'>
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveFilter(category.id)}
-                  className={`whitespace-nowrap py-2 px-4 rounded-full text-sm font-medium transition-colors ${
-                    activeFilter === category.id
-                      ? `bg-${primaryColor}-100 text-${primaryColor}-800`
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Productos destacados */}
-          <div>
-            <h3 className='text-lg font-semibold text-gray-800 mb-6 flex items-center'>
-              <ShoppingBag className='h-5 w-5 mr-2 text-blue-500' />
-              {t('groceryService.featuredItems', {
-                fallback: 'Featured Items',
-              })}
+            <h3 className='font-medium text-gray-800 mb-1'>
+              {t('services.grocery.fastDelivery')}
             </h3>
-
-            <GroceryItems activeFilter={activeFilter} />
-
-            {/* Ver más botón */}
-            <div className='mt-8 text-center'>
-              <button
-                className={`py-3 px-6 bg-${primaryColor}-500 hover:bg-${primaryColor}-600 text-white font-medium rounded-lg transition-colors`}
-              >
-                {t('groceryService.viewMore', { fallback: 'View More Items' })}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Categorías populares */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <h3 className='text-lg font-semibold text-gray-800 mb-6'>
-            {t('groceryService.browseCategories', {
-              fallback: 'Browse by Category',
-            })}
-          </h3>
-
-          <AccordionGrocery />
-        </div>
-      </div>
-
-      {/* Información de entrega */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <h3 className='text-lg font-semibold text-gray-800 mb-6 flex items-center'>
-            <Truck className='h-5 w-5 mr-2 text-blue-500' />
-            {t('groceryService.deliveryInfo', {
-              fallback: 'Delivery Information',
-            })}
-          </h3>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <div
-              className={`p-4 bg-${primaryColor}-50 rounded-lg border border-${primaryColor}-100`}
-            >
-              <h4 className='font-medium text-gray-800 mb-2'>
-                {t('groceryService.standardDelivery', {
-                  fallback: 'Standard Delivery',
-                })}
-              </h4>
-              <p className='text-gray-700 mb-2'>
-                {t('groceryService.standardDeliveryDesc', {
-                  fallback:
-                    'Delivery within 24-48 hours of placing your order.',
-                })}
-              </p>
-              <div className='flex items-center text-sm text-gray-600'>
-                <Clock className='h-4 w-4 mr-1' />
-                <span>24-48 hours</span>
-              </div>
-            </div>
-
-            <div
-              className={`p-4 bg-${primaryColor}-50 rounded-lg border border-${primaryColor}-100`}
-            >
-              <h4 className='font-medium text-gray-800 mb-2'>
-                {t('groceryService.expressDelivery', {
-                  fallback: 'Express Delivery',
-                })}
-              </h4>
-              <p className='text-gray-700 mb-2'>
-                {t('groceryService.expressDeliveryDesc', {
-                  fallback:
-                    'Need it faster? Select express delivery at checkout.',
-                })}
-              </p>
-              <div className='flex items-center text-sm text-gray-600'>
-                <Clock className='h-4 w-4 mr-1' />
-                <span>3-6 hours</span>
-              </div>
-            </div>
-          </div>
-
-          <div className='mt-6 p-4 bg-amber-50 rounded-lg border border-amber-100'>
-            <h4 className='font-medium text-amber-800 mb-2 flex items-center'>
-              <svg
-                className='h-5 w-5 mr-2'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                />
-              </svg>
-              {t('groceryService.importantNote', {
-                fallback: 'Important Note',
-              })}
-            </h4>
-            <p className='text-amber-700'>
-              {t('groceryService.deliveryNote', {
-                fallback:
-                  'Delivery times may vary based on availability and location. Orders placed after 6 PM will be processed the next day.',
-              })}
+            <p className='text-sm text-gray-600'>
+              {t('services.grocery.deliveryTime')}
             </p>
           </div>
+
+          <div
+            className={`p-4 rounded-lg bg-${primaryColor}-50 flex flex-col items-center text-center`}
+          >
+            <div className={`rounded-full bg-${primaryColor}-100 p-3 mb-3`}>
+              <ShoppingCart className={`h-5 w-5 text-${primaryColor}-600`} />
+            </div>
+            <h3 className='font-medium text-gray-800 mb-1'>
+              {t('services.grocery.wideSelection')}
+            </h3>
+            <p className='text-sm text-gray-600'>
+              {t('services.grocery.localProducts')}
+            </p>
+          </div>
+
+          <div
+            className={`p-4 rounded-lg bg-${primaryColor}-50 flex flex-col items-center text-center`}
+          >
+            <div className={`rounded-full bg-${primaryColor}-100 p-3 mb-3`}>
+              <FileText className={`h-5 w-5 text-${primaryColor}-600`} />
+            </div>
+            <h3 className='font-medium text-gray-800 mb-1'>
+              {t('services.grocery.specialRequests')}
+            </h3>
+            <p className='text-sm text-gray-600'>
+              {t('services.grocery.customOrders')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Grocery shopping interface */}
+      <div className={`bg-white rounded-xl shadow-lg overflow-hidden`}>
+        <div className='p-6'>
+          {/* Tab navigation */}
+          <div className='flex border-b border-gray-200 mb-6'>
+            <button
+              onClick={() => setActiveTab('shop')}
+              className={`py-3 px-5 font-medium border-b-2 mr-4 ${
+                activeTab === 'shop'
+                  ? `border-${primaryColor}-500 text-${primaryColor}-600`
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <ShoppingBag className='h-5 w-5 inline-block mr-2' />
+              {t('services.grocery.shopItems')}
+            </button>
+
+            <button
+              onClick={() => setActiveTab('cart')}
+              className={`py-3 px-5 font-medium border-b-2 relative ${
+                activeTab === 'cart'
+                  ? `border-${primaryColor}-500 text-${primaryColor}-600`
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <ShoppingCart className='h-5 w-5 inline-block mr-2' />
+              {t('services.grocery.cart')}
+
+              {cartItems.length > 0 && (
+                <span
+                  className={`absolute -top-1 -right-1 bg-${primaryColor}-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs`}
+                >
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Main interface - shop or cart */}
+          {activeTab === 'shop' ? (
+            <div>
+              {/* Main grocery shopping component */}
+              <GroceryShoppingService />
+            </div>
+          ) : (
+            <div>
+              {/* Cart view */}
+              {cartItems.length === 0 ? (
+                <div className='text-center py-12'>
+                  <div className='inline-block p-4 rounded-full bg-gray-100 mb-4'>
+                    <ShoppingCart className='h-8 w-8 text-gray-400' />
+                  </div>
+                  <h3 className='text-lg font-medium text-gray-700 mb-2'>
+                    {t('services.grocery.emptyCart')}
+                  </h3>
+                  <p className='text-gray-500 mb-4'>
+                    {t('services.grocery.emptyCartMessage')}
+                  </p>
+                  <button
+                    onClick={() => setActiveTab('shop')}
+                    className={`px-4 py-2 bg-${primaryColor}-500 text-white rounded-lg hover:bg-${primaryColor}-600 transition-colors`}
+                  >
+                    {t('services.grocery.startShopping')}
+                  </button>
+                </div>
+              ) : submissionSuccess ? (
+                <div className='text-center py-12'>
+                  <div
+                    className={`inline-block p-4 rounded-full bg-green-100 mb-4`}
+                  >
+                    <Check className='h-8 w-8 text-green-500' />
+                  </div>
+                  <h3 className='text-lg font-medium text-gray-700 mb-2'>
+                    {t('services.grocery.orderSuccess')}
+                  </h3>
+                  <p className='text-gray-500 mb-4'>
+                    {t('services.grocery.orderSuccessMessage')}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <h3 className='text-xl font-semibold text-gray-800 mb-4'>
+                    {t('services.grocery.yourOrder')}
+                  </h3>
+
+                  <div className='space-y-4 mb-6'>
+                    {cartItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className='flex justify-between items-center p-3 border border-gray-200 rounded-lg'
+                      >
+                        <div>
+                          <h4 className='font-medium text-gray-800'>
+                            {item.name}
+                          </h4>
+                          <p className='text-sm text-gray-500'>
+                            ${item.price.toFixed(2)} per {item.unit}
+                          </p>
+                        </div>
+
+                        <div className='flex items-center'>
+                          <button
+                            onClick={() => {
+                              /* Handle decrease */
+                            }}
+                            className='p-1 text-gray-500 hover:text-gray-700'
+                          >
+                            <MinusCircle size={18} />
+                          </button>
+                          <span className='mx-2 min-w-[30px] text-center'>
+                            {item.quantity || 1}
+                          </span>
+                          <button
+                            onClick={() => {
+                              /* Handle increase */
+                            }}
+                            className='p-1 text-gray-500 hover:text-gray-700'
+                          >
+                            <PlusCircle size={18} />
+                          </button>
+
+                          <span className='font-medium ml-4'>
+                            ${(item.price * (item.quantity || 1)).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Special requests */}
+                  <div className='mb-6'>
+                    <h4 className='font-medium text-gray-800 mb-2'>
+                      {t('services.grocery.specialRequests')}
+                    </h4>
+                    <textarea
+                      value={specialRequests}
+                      onChange={(e) => setSpecialRequests(e.target.value)}
+                      className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                      rows={3}
+                      placeholder={t(
+                        'services.grocery.specialRequestsPlaceholder'
+                      )}
+                    ></textarea>
+                  </div>
+
+                  {/* Order summary */}
+                  <div className={`p-4 bg-${primaryColor}-50 rounded-lg mb-6`}>
+                    <h4 className='font-medium text-gray-800 mb-3'>
+                      {t('services.grocery.orderSummary')}
+                    </h4>
+
+                    <div className='flex justify-between mb-2'>
+                      <span className='text-gray-600'>
+                        {t('services.grocery.subtotal')}
+                      </span>
+                      <span className='font-medium'>
+                        ${cartTotal.toFixed(2)}
+                      </span>
+                    </div>
+
+                    <div className='flex justify-between mb-2'>
+                      <span className='text-gray-600'>
+                        {t('services.grocery.deliveryFee')}
+                      </span>
+                      <span className='font-medium'>$10.00</span>
+                    </div>
+
+                    <div className='border-t border-gray-200 my-2 pt-2 flex justify-between'>
+                      <span className='font-medium text-gray-800'>
+                        {t('services.grocery.total')}
+                      </span>
+                      <span className='font-bold text-gray-800'>
+                        ${(cartTotal + 10).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Submit button */}
+                  <button
+                    onClick={handleSubmitOrder}
+                    disabled={isSubmitting}
+                    className={`w-full py-3 px-4 flex items-center justify-center ${
+                      isSubmitting
+                        ? 'bg-gray-300 cursor-not-allowed'
+                        : `bg-${primaryColor}-500 hover:bg-${primaryColor}-600`
+                    } text-white font-medium rounded-lg transition-colors`}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <RefreshCw className='h-5 w-5 mr-2 animate-spin' />
+                        {t('services.grocery.processing')}
+                      </>
+                    ) : (
+                      <>
+                        {t('services.grocery.placeOrder')}
+                        <ArrowRight className='h-5 w-5 ml-2' />
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
@@ -19,7 +18,6 @@ import { useTranslation } from '@/lib/i18n/client';
 import { useLanguage } from '@/lib/i18n/client';
 import Image from 'next/image';
 import BookingModal from '../modal/BookingModal';
-
 interface ServiceCardProps {
   service: Service;
   isSelected: boolean;
@@ -28,7 +26,6 @@ interface ServiceCardProps {
   onBookService: (service: Service, dates: BookingDate, guests: number) => void;
   viewContext?: 'standard-view' | 'premium-view';
 }
-
 const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   isSelected,
@@ -47,13 +44,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     once: true,
     margin: '0px 0px -100px 0px',
   });
-
   // Determine the style context
   const styleContext =
     viewContext ||
     (packageType === 'premium' ? 'premium-view' : 'standard-view');
   const isPremiumStyle = styleContext === 'premium-view';
-
   // Helper function to get translation path
   const getTranslationPath = (serviceId: string) => {
     const type = serviceId.startsWith('luxe-') ? 'premium' : 'standard';
@@ -61,17 +56,14 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     key = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
     return `services.${type}.${key}`;
   };
-
   // Get the translation path for this service
   const translationPath = getTranslationPath(service.id);
-
   // Handle potential image errors
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>
   ) => {
     e.currentTarget.src = '/images/placeholder-service.jpg';
   };
-
   // Handle booking a service
   const handleBookingConfirm = (
     service: Service,
@@ -81,18 +73,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     onBookService(service, dates, guests);
     setIsModalOpen(false);
   };
-
   // Format price with commas for thousands
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'decimal',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(service.price);
-
   // Get colors based on whether it's premium or standard
   const mainColor = isPremiumStyle ? 'amber' : 'blue';
   const gradientDirection = isPremiumStyle ? 'to-tr' : 'to-r';
-
   // Render the premium luxury card
   if (isPremiumStyle) {
     return (
@@ -129,7 +118,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   : 'none',
               }}
             />
-
             {/* Card inner content */}
             <div className='relative h-full bg-gradient-to-br from-gray-900 to-black p-px rounded-2xl overflow-hidden z-10'>
               <div className='h-full bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden'>
@@ -144,14 +132,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       </span>
                     </div>
                   </div>
-
                   {/* Image loading placeholder */}
                   <div
                     className={`absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 z-10 transition-opacity duration-1000 ${
                       imageLoaded ? 'opacity-0' : 'opacity-100'
                     }`}
                   ></div>
-
                   <Image
                     src={service.img || `/images/services/${service.id}.jpg`}
                     alt={t(`${translationPath}.name`, {
@@ -169,11 +155,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     quality={90}
                     priority={true}
                   />
-
                   {/* Overlay for text contrast */}
                   <div className='absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-30'></div>
                 </div>
-
                 {/* Service details */}
                 <div className='p-8 relative'>
                   {/* Selection indicator */}
@@ -191,7 +175,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       </div>
                     </motion.div>
                   )}
-
                   {/* Rating stars and details */}
                   <div className='flex justify-between items-start mb-4'>
                     <div className='flex items-center'>
@@ -213,12 +196,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       </span>
                     </div>
                   </div>
-
                   {/* Service title */}
                   <h3 className='text-2xl font-bold mb-3 text-white tracking-tight'>
                     {t(`${translationPath}.name`, { fallback: service.name })}
                   </h3>
-
                   {/* Service details */}
                   <div className='flex items-center text-gray-400 mb-4'>
                     <div className='flex items-center mr-4'>
@@ -234,14 +215,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       </span>
                     </div>
                   </div>
-
                   {/* Service description */}
                   <p className='mb-6 text-gray-300 leading-relaxed text-sm line-clamp-2'>
                     {t(`${translationPath}.short`, {
                       fallback: service.description,
                     })}
                   </p>
-
                   {/* Action buttons */}
                   <div className='grid grid-cols-2 gap-4'>
                     <Link
@@ -257,7 +236,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       </span>
                       <span className='absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/0 to-amber-500/0 group-hover:from-amber-500/20 group-hover:via-amber-500/20 group-hover:to-amber-500/0 transition-all duration-500'></span>
                     </Link>
-
                     <button
                       onClick={() => setIsModalOpen(true)}
                       className={`relative overflow-hidden py-3 px-5 flex items-center justify-center ${
@@ -292,7 +270,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               </div>
             </div>
           </div>
-
           {/* Light effect when selected */}
           {isSelected && (
             <div className='absolute inset-0 -z-10'>
@@ -300,7 +277,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
           )}
         </motion.div>
-
         {/* Booking Modal */}
         <AnimatePresence>
           {isModalOpen && (
@@ -315,7 +291,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       </>
     );
   }
-
   // Render the standard card
   return (
     <>
@@ -349,7 +324,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               animation: isHovered ? 'gradient-shift 3s ease infinite' : 'none',
             }}
           />
-
           {/* Card inner content */}
           <div className='relative h-full bg-gradient-to-b from-white to-gray-100 p-px rounded-2xl overflow-hidden z-10'>
             <div className='h-full bg-gradient-to-b from-white to-gray-100 rounded-2xl overflow-hidden'>
@@ -364,14 +338,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     </span>
                   </div>
                 </div>
-
                 {/* Image loading placeholder */}
                 <div
                   className={`absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-100 z-10 transition-opacity duration-1000 ${
                     imageLoaded ? 'opacity-0' : 'opacity-100'
                   }`}
                 ></div>
-
                 <Image
                   src={service.img || `/images/services/${service.id}.jpg`}
                   alt={t(`${translationPath}.name`, { fallback: service.name })}
@@ -384,11 +356,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   onError={handleImageError}
                   priority={true}
                 />
-
                 {/* Overlay for text contrast */}
                 <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-30'></div>
               </div>
-
               {/* Service details */}
               <div className='p-8 relative'>
                 {/* Selection indicator */}
@@ -406,7 +376,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     </div>
                   </motion.div>
                 )}
-
                 {/* Rating stars and details */}
                 <div className='flex justify-between items-start mb-4'>
                   <div className='flex items-center'>
@@ -427,12 +396,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     <span className='font-bold text-lg'>{formattedPrice}</span>
                   </div>
                 </div>
-
                 {/* Service title */}
                 <h3 className='text-2xl font-bold mb-3 text-gray-900 tracking-tight'>
                   {t(`${translationPath}.name`, { fallback: service.name })}
                 </h3>
-
                 {/* Service details */}
                 <div className='flex items-center text-gray-500 mb-4'>
                   <div className='flex items-center mr-4'>
@@ -448,14 +415,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     </span>
                   </div>
                 </div>
-
                 {/* Service description */}
                 <p className='mb-6 text-gray-600 leading-relaxed text-sm line-clamp-2'>
                   {t(`${translationPath}.short`, {
                     fallback: service.description,
                   })}
                 </p>
-
                 {/* Action buttons */}
                 <div className='grid grid-cols-2 gap-4'>
                   <Link
@@ -470,7 +435,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       />
                     </span>
                   </Link>
-
                   <button
                     onClick={() => setIsModalOpen(true)}
                     className={`py-3 px-5 flex items-center justify-center ${
@@ -500,7 +464,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
           </div>
         </div>
-
         {/* Light effect when selected */}
         {isSelected && (
           <div className='absolute inset-0 -z-10'>
@@ -508,7 +471,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           </div>
         )}
       </motion.div>
-
       {/* Booking Modal */}
       <AnimatePresence>
         {isModalOpen && (
@@ -523,20 +485,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     </>
   );
 };
-
 export default ServiceCard;
-
 // Add this to your global CSS
-// /*
-// @keyframes gradient-shift {
-//   0% {
-//     background-position: 0% 50%;
-//   }
-//   50% {
-//     background-position: 100% 50%;
-//   }
-//   100% {
-//     background-position: 0% 50%;
-//   }
-// }
-// */
+/* 
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+*/

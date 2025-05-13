@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import { ServiceExtendedDetails } from '@/constants/services/serviceDetails';
+import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import {
@@ -12,12 +11,9 @@ import {
   MapPin,
   Users,
   Calendar,
-  Heart,
   Check,
-  Star,
   Shield,
   Info,
-  Sparkles,
   ChevronRight,
   ArrowRight,
   Play,
@@ -37,7 +33,6 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
   service,
   serviceData,
   extendedDetails,
-  primaryColor,
 }) => {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);

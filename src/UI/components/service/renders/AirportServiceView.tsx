@@ -180,6 +180,70 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
 
   return (
     <div className='space-y-16'>
+      {/* Traveler tips section */}
+      <div
+        className={`rounded-xl ${
+          isPremium
+            ? 'bg-amber-50 border border-amber-100'
+            : 'bg-blue-50 border border-blue-100'
+        } p-8`}
+      >
+        <div className='flex items-center mb-6'>
+          <AlertTriangle
+            className={`h-6 w-6 ${
+              isPremium ? 'text-amber-500' : 'text-blue-500'
+            } mr-3`}
+          />
+          <h2 className='text-2xl font-bold text-gray-900'>Traveler Tips</h2>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+          <div className='bg-white rounded-lg p-5 shadow-sm'>
+            <Calendar
+              className={`h-5 w-5 ${
+                isPremium ? 'text-amber-500' : 'text-blue-500'
+              } mb-3`}
+            />
+            <h3 className='font-semibold text-gray-800 mb-2'>
+              Book in Advance
+            </h3>
+            <p className='text-gray-600 text-sm'>
+              Reserve your transfer at least 24 hours before your flight for the
+              best experience
+            </p>
+          </div>
+
+          <div className='bg-white rounded-lg p-5 shadow-sm'>
+            <MapPin
+              className={`h-5 w-5 ${
+                isPremium ? 'text-amber-500' : 'text-blue-500'
+              } mb-3`}
+            />
+            <h3 className='font-semibold text-gray-800 mb-2'>
+              Provide Complete Details
+            </h3>
+            <p className='text-gray-600 text-sm'>
+              Include your flight number, arrival/departure time, and
+              accommodation address
+            </p>
+          </div>
+
+          <div className='bg-white rounded-lg p-5 shadow-sm'>
+            <Clock
+              className={`h-5 w-5 ${
+                isPremium ? 'text-amber-500' : 'text-blue-500'
+              } mb-3`}
+            />
+            <h3 className='font-semibold text-gray-800 mb-2'>
+              Allow Buffer Time
+            </h3>
+            <p className='text-gray-600 text-sm'>
+              For departures, schedule your pickup with ample time before your
+              flight
+            </p>
+          </div>
+        </div>
+      </div>
       {/* Hero section con llamado a la acción */}
       <div className='w-full relative rounded-2xl overflow-hidden'>
         <div className='absolute inset-0 z-0'>
@@ -239,294 +303,6 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
               </div>
             </motion.div>
           </div>
-        </div>
-      </div>
-
-      {/* Key features section */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-        {features.map((feature, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            className={`p-8 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${
-              isPremium ? 'hover:border-amber-200' : 'hover:border-blue-200'
-            }`}
-          >
-            <div
-              className={`p-3 rounded-full inline-flex ${
-                isPremium
-                  ? 'bg-amber-100 text-amber-600'
-                  : 'bg-blue-100 text-blue-600'
-              } mb-4`}
-            >
-              {feature.icon}
-            </div>
-            <h3 className='text-xl font-bold text-gray-900 mb-2'>
-              {feature.title}
-            </h3>
-            <p className='text-gray-600'>{feature.description}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Vehicle options section */}
-      <div>
-        <div className='text-center mb-12'>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className='text-3xl font-bold text-gray-900 mb-4'
-          >
-            Choose Your Vehicle
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className='text-gray-600 max-w-2xl mx-auto'
-          >
-            Select the perfect option for your group size and comfort preference
-          </motion.p>
-        </div>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-          {Object.entries(vehicleOptions).map(([key, vehicle], index) => {
-            const isLuxury = key === 'luxury' || key === 'suv';
-            const capacity =
-              typeof vehicle === 'object' && 'capacity' in vehicle
-                ? vehicle.capacity
-                : getDefaultCapacity(key);
-
-            return (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`rounded-xl border ${
-                  isLuxury
-                    ? `border-${primaryColor}-200 bg-${primaryColor}-50/30`
-                    : 'border-gray-200 bg-white'
-                } overflow-hidden hover:shadow-lg transition-all duration-300 group`}
-              >
-                <div className='relative h-48 overflow-hidden'>
-                  <Image
-                    src={getVehicleImage(key)}
-                    alt={
-                      typeof vehicle === 'object' && 'nameKey' in vehicle
-                        ? t(vehicle.nameKey, {
-                            fallback: formatVehicleTypeName(key),
-                          })
-                        : formatVehicleTypeName(key)
-                    }
-                    fill
-                    className='object-cover transition-transform duration-700 group-hover:scale-110'
-                  />
-                  {isLuxury && (
-                    <div className='absolute top-3 right-3 px-2 py-1 bg-amber-500 text-amber-900 text-xs font-bold rounded-md'>
-                      Premium
-                    </div>
-                  )}
-                </div>
-
-                <div className='p-6'>
-                  <h3 className='text-xl font-bold text-gray-900 mb-2'>
-                    {typeof vehicle === 'object' && 'nameKey' in vehicle
-                      ? t(vehicle.nameKey, {
-                          fallback: formatVehicleTypeName(key),
-                        })
-                      : formatVehicleTypeName(key)}
-                  </h3>
-
-                  <div className='flex items-center text-gray-500 mb-3'>
-                    <Users className='h-4 w-4 mr-1' />
-                    <span>{capacity}</span>
-                  </div>
-
-                  {typeof vehicle === 'object' &&
-                    'descriptionKey' in vehicle && (
-                      <p className='text-gray-600 text-sm mb-4'>
-                        {t(vehicle.descriptionKey, {
-                          fallback: getDefaultVehicleDescription(key),
-                        })}
-                      </p>
-                    )}
-
-                  <div className='flex items-center justify-between mt-4'>
-                    {typeof vehicle === 'object' && 'price' in vehicle && (
-                      <div>
-                        {vehicle.price > 0 ? (
-                          <span
-                            className={`font-bold text-${primaryColor}-600`}
-                          >
-                            +${vehicle.price}
-                          </span>
-                        ) : (
-                          <span className='font-bold text-gray-900'>
-                            Base Price
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    <button
-                      onClick={handleOpenBookingModal}
-                      className={`flex items-center px-3 py-2 ${
-                        isPremium || isLuxury
-                          ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
-                      } rounded-lg text-sm font-medium transition-colors duration-300`}
-                    >
-                      Select
-                      <ChevronRight className='ml-1 h-4 w-4' />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Trip options section */}
-      <div
-        className={`rounded-xl ${
-          isPremium
-            ? 'bg-gradient-to-br from-amber-50 to-amber-100/30'
-            : 'bg-gradient-to-br from-blue-50 to-blue-100/30'
-        } p-8 md:p-10`}
-      >
-        <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8'>
-          <div>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className='text-3xl font-bold text-gray-900 mb-2'
-            >
-              Trip Options
-            </motion.h2>
-            <p className='text-gray-600'>
-              Choose a one-way or round-trip transfer for maximum convenience
-            </p>
-          </div>
-
-          <button
-            onClick={handleOpenBookingModal}
-            className={`px-5 py-3 ${
-              isPremium
-                ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            } rounded-lg font-medium shadow-md transition-colors duration-300 whitespace-nowrap`}
-          >
-            Book Now
-          </button>
-        </div>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {Object.entries(tripOptions).map(([key, option], index) => (
-            <motion.div
-              key={key}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className='flex bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300'
-            >
-              <div
-                className={`w-2 ${isPremium ? 'bg-amber-500' : 'bg-blue-500'}`}
-              ></div>
-              <div className='flex items-center p-6 w-full'>
-                <div
-                  className={`p-3 rounded-full mr-4 ${
-                    isPremium
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-blue-100 text-blue-700'
-                  } flex-shrink-0`}
-                >
-                  {key === 'oneWay' ? <ArrowRight /> : <Repeat />}
-                </div>
-
-                <div className='flex-grow'>
-                  <h3 className='text-lg font-semibold text-gray-900'>
-                    {typeof option === 'object' && 'nameKey' in option
-                      ? t(option.nameKey, {
-                          fallback: formatTripOptionName(key),
-                        })
-                      : formatTripOptionName(key)}
-                  </h3>
-                  <p className='text-gray-600 text-sm'>
-                    {key === 'oneWay'
-                      ? 'One-way transfer to or from the airport'
-                      : 'Return transfers included, for arrival and departure'}
-                  </p>
-                </div>
-
-                <div className='flex-shrink-0 ml-4'>
-                  {typeof option === 'object' && 'price' in option && (
-                    <div className='text-right'>
-                      {option.price === 'double' ? (
-                        <span className='text-sm font-medium text-gray-500'>
-                          2x base price
-                        </span>
-                      ) : option.price > 0 ? (
-                        <span
-                          className={`text-sm font-medium text-${primaryColor}-600`}
-                        >
-                          +${option.price}
-                        </span>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Gallery section - stylish design */}
-      <div>
-        <div className='flex items-center justify-between mb-8'>
-          <h2 className='text-3xl font-bold text-gray-900'>
-            Our Service Gallery
-          </h2>
-          <button
-            className={`text-${
-              isPremium ? 'amber' : 'blue'
-            }-600 flex items-center font-medium`}
-          >
-            View all photos
-            <ChevronRight className='h-5 w-5 ml-1' />
-          </button>
-        </div>
-
-        <div className='grid grid-cols-3 gap-4'>
-          {galleryImages.map((image, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative ${
-                index === 0
-                  ? 'col-span-3 md:col-span-2 h-80'
-                  : 'col-span-3 md:col-span-1 h-64'
-              } rounded-xl overflow-hidden group`}
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className='object-cover transition-transform duration-700 group-hover:scale-110'
-              />
-              <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'>
-                <p className='p-6 text-white font-medium'>{image.caption}</p>
-              </div>
-            </motion.div>
-          ))}
         </div>
       </div>
 
@@ -698,68 +474,134 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
         </div>
       </div>
 
-      {/* Traveler tips section */}
+      {/* Gallery section - stylish design */}
+      <div>
+        <div className='flex items-center justify-between mb-8'>
+          <h2 className='text-3xl font-bold text-gray-900'>
+            Our Service Gallery
+          </h2>
+        </div>
+
+        <div className='grid grid-cols-3 gap-4'>
+          {galleryImages.map((image, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={`relative ${
+                index === 0
+                  ? 'col-span-3 md:col-span-2 h-80'
+                  : 'col-span-3 md:col-span-1 h-64'
+              } rounded-xl overflow-hidden group`}
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                className='object-cover transition-transform duration-700 group-hover:scale-110'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'>
+                <p className='p-6 text-white font-medium'>{image.caption}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Trip options section */}
       <div
         className={`rounded-xl ${
           isPremium
-            ? 'bg-amber-50 border border-amber-100'
-            : 'bg-blue-50 border border-blue-100'
-        } p-8`}
+            ? 'bg-gradient-to-br from-amber-50 to-amber-100/30'
+            : 'bg-gradient-to-br from-blue-50 to-blue-100/30'
+        } p-8 md:p-10`}
       >
-        <div className='flex items-center mb-6'>
-          <AlertTriangle
-            className={`h-6 w-6 ${
-              isPremium ? 'text-amber-500' : 'text-blue-500'
-            } mr-3`}
-          />
-          <h2 className='text-2xl font-bold text-gray-900'>Traveler Tips</h2>
+        <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8'>
+          <div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className='text-3xl font-bold text-gray-900 mb-2'
+            >
+              Trip Options
+            </motion.h2>
+            <p className='text-gray-600'>
+              Choose a one-way or round-trip transfer for maximum convenience
+            </p>
+          </div>
+
+          <button
+            onClick={handleOpenBookingModal}
+            className={`px-5 py-3 ${
+              isPremium
+                ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            } rounded-lg font-medium shadow-md transition-colors duration-300 whitespace-nowrap`}
+          >
+            Book Now
+          </button>
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-          <div className='bg-white rounded-lg p-5 shadow-sm'>
-            <Calendar
-              className={`h-5 w-5 ${
-                isPremium ? 'text-amber-500' : 'text-blue-500'
-              } mb-3`}
-            />
-            <h3 className='font-semibold text-gray-800 mb-2'>
-              Book in Advance
-            </h3>
-            <p className='text-gray-600 text-sm'>
-              Reserve your transfer at least 24 hours before your flight for the
-              best experience
-            </p>
-          </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {Object.entries(tripOptions).map(([key, option], index) => (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className='flex bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300'
+            >
+              <div
+                className={`w-2 ${isPremium ? 'bg-amber-500' : 'bg-blue-500'}`}
+              ></div>
+              <div className='flex items-center p-6 w-full'>
+                <div
+                  className={`p-3 rounded-full mr-4 ${
+                    isPremium
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-blue-100 text-blue-700'
+                  } flex-shrink-0`}
+                >
+                  {key === 'oneWay' ? <ArrowRight /> : <Repeat />}
+                </div>
 
-          <div className='bg-white rounded-lg p-5 shadow-sm'>
-            <MapPin
-              className={`h-5 w-5 ${
-                isPremium ? 'text-amber-500' : 'text-blue-500'
-              } mb-3`}
-            />
-            <h3 className='font-semibold text-gray-800 mb-2'>
-              Provide Complete Details
-            </h3>
-            <p className='text-gray-600 text-sm'>
-              Include your flight number, arrival/departure time, and
-              accommodation address
-            </p>
-          </div>
+                <div className='flex-grow'>
+                  <h3 className='text-lg font-semibold text-gray-900'>
+                    {typeof option === 'object' && 'nameKey' in option
+                      ? t(option.nameKey, {
+                          fallback: formatTripOptionName(key),
+                        })
+                      : formatTripOptionName(key)}
+                  </h3>
+                  <p className='text-gray-600 text-sm'>
+                    {key === 'oneWay'
+                      ? 'One-way transfer to or from the airport'
+                      : 'Return transfers included, for arrival and departure'}
+                  </p>
+                </div>
 
-          <div className='bg-white rounded-lg p-5 shadow-sm'>
-            <Clock
-              className={`h-5 w-5 ${
-                isPremium ? 'text-amber-500' : 'text-blue-500'
-              } mb-3`}
-            />
-            <h3 className='font-semibold text-gray-800 mb-2'>
-              Allow Buffer Time
-            </h3>
-            <p className='text-gray-600 text-sm'>
-              For departures, schedule your pickup with ample time before your
-              flight
-            </p>
-          </div>
+                <div className='flex-shrink-0 ml-4'>
+                  {typeof option === 'object' && 'price' in option && (
+                    <div className='text-right'>
+                      {option.price === 'double' ? (
+                        <span className='text-sm font-medium text-gray-500'>
+                          2x base price
+                        </span>
+                      ) : option.price > 0 ? (
+                        <span
+                          className={`text-sm font-medium text-${primaryColor}-600`}
+                        >
+                          +${option.price}
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
 
@@ -790,6 +632,34 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
             </button>
           </div>
         </div>
+      </div>
+      {/* Key features section */}
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+        {features.map((feature, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+            className={`p-8 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${
+              isPremium ? 'hover:border-amber-200' : 'hover:border-blue-200'
+            }`}
+          >
+            <div
+              className={`p-3 rounded-full inline-flex ${
+                isPremium
+                  ? 'bg-amber-100 text-amber-600'
+                  : 'bg-blue-100 text-blue-600'
+              } mb-4`}
+            >
+              {feature.icon}
+            </div>
+            <h3 className='text-xl font-bold text-gray-900 mb-2'>
+              {feature.title}
+            </h3>
+            <p className='text-gray-600'>{feature.description}</p>
+          </motion.div>
+        ))}
       </div>
 
       {/* Disclaimer */}
