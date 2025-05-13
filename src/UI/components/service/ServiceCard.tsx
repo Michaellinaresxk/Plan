@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { Service, BookingDate } from '@/types/type';
 import {
-  Plus,
-  Check,
-  ArrowRight,
+  ArrowUpRight,
   Clock,
   DollarSign,
   Sparkles,
+  Star,
+  Plus,
+  Diamond,
+  CalendarDays,
+  Check,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
 import { useLanguage } from '@/lib/i18n/client';
@@ -38,6 +41,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   const [language] = useLanguage();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, {
+    once: true,
+    margin: '0px 0px -100px 0px',
+  });
 
   // Determine the style context
   const styleContext =
@@ -73,310 +82,461 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     setIsModalOpen(false);
   };
 
-  // ESTILO PREMIUM (LUXURY)
+  // Format price with commas for thousands
+  const formattedPrice = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(service.price);
+
+  // Get colors based on whether it's premium or standard
+  const mainColor = isPremiumStyle ? 'amber' : 'blue';
+  const gradientDirection = isPremiumStyle ? 'to-tr' : 'to-r';
+
+  // Render the premium luxury card
   if (isPremiumStyle) {
     return (
       <>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          whileHover={{
-            y: -8,
-            transition: { duration: 0.3 },
-          }}
+          ref={cardRef}
+          initial={{ opacity: 0, y: 40 }}
+          animate={
+            isInView
+              ? {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] },
+                }
+              : { opacity: 0, y: 40 }
+          }
+          whileHover={{ y: -12, transition: { duration: 0.3 } }}
+          className='relative group overflow-hidden cursor-pointer'
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
-          className='relative rounded-xl overflow-hidden transition-all duration-300 border border-amber-500/30 shadow-[0_10px_40px_-5px_rgba(0,0,0,0.5),0_0_15px_-3px_rgba(251,191,36,0.4)]'
         >
-          {/* Dark elegant background */}
-          <div className='absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-800/90 to-gray-900/90 z-0'></div>
-
-          {/* Luxury accent glows */}
-          <div className='absolute -top-24 -right-24 w-48 h-48 rounded-full bg-amber-500/20 blur-3xl z-0'></div>
-          <div className='absolute -bottom-24 -left-24 w-48 h-48 rounded-full bg-amber-500/10 blur-3xl z-0'></div>
-          <div className='absolute top-1/4 left-0 w-full h-32 bg-gradient-to-r from-amber-500/0 via-amber-500/10 to-amber-500/0 rotate-12 blur-3xl z-0'></div>
-
-          {/* Subtle animated shine effect */}
-          <motion.div
-            className='absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent z-0'
-            animate={{
-              x: ['-100%', '200%'],
-              opacity: [0, 0.05, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 5,
-              ease: 'linear',
-            }}
-          />
-
-          {/* Glow effect when selected */}
-          {isSelected && (
-            <div className='absolute inset-0 z-0 blur-3xl rounded-full scale-75 opacity-60 bg-amber-400/40' />
-          )}
-
-          {/* Image Section */}
-          <div className='h-64 relative overflow-hidden'>
-            {/* Loading placeholder */}
-            <div className='absolute inset-0 bg-gray-200 animate-pulse z-10'></div>
-
-            {/* Main image */}
-            <Image
-              src={service.img || `/images/services/${service.id}.jpg`}
-              alt={t(`${translationPath}.name`, { fallback: service.name })}
-              width={400}
-              height={240}
-              className={`w-full h-full object-cover transition-transform duration-700 relative z-20 ${
-                isHovered ? 'scale-110' : 'scale-100'
-              }`}
-              onError={handleImageError}
-              unoptimized={service.img?.startsWith('http')}
-              priority={true}
+          {/* Card body with luxury gold border and effect */}
+          <div className='relative isolate rounded-2xl overflow-hidden p-0.5 z-10'>
+            {/* Animated gradient border */}
+            <div
+              className='absolute inset-0 bg-gradient-to-br from-amber-300 via-amber-500 to-amber-700 opacity-60 group-hover:opacity-100 transition-opacity duration-700 z-0'
+              style={{
+                background: `linear-gradient(${
+                  isHovered ? '120deg' : '45deg'
+                }, rgba(251, 191, 36, 0.4), rgba(245, 158, 11, 0.5), rgba(202, 138, 4, 0.6), rgba(245, 158, 11, 0.5), rgba(251, 191, 36, 0.4))`,
+                backgroundSize: '400% 400%',
+                animation: isHovered
+                  ? 'gradient-shift 3s ease infinite'
+                  : 'none',
+              }}
             />
 
-            {/* Gradient overlay for text contrast */}
-            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-30'></div>
+            {/* Card inner content */}
+            <div className='relative h-full bg-gradient-to-br from-gray-900 to-black p-px rounded-2xl overflow-hidden z-10'>
+              <div className='h-full bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden'>
+                {/* Service image */}
+                <div className='relative h-64 overflow-hidden'>
+                  {/* Premium badge */}
+                  <div className='absolute top-5 right-5 z-30 pointer-events-none'>
+                    <div className='flex items-center px-4 py-2 rounded-full bg-black/20 backdrop-blur-2xl border border-amber-500/20 shadow-xl'>
+                      <Diamond className='text-amber-400 mr-2 h-4 w-4' />
+                      <span className='text-xs font-semibold uppercase tracking-widest text-amber-300'>
+                        Premium
+                      </span>
+                    </div>
+                  </div>
 
-            {/* Premium badge */}
-            <div className='absolute top-4 right-4 z-50'>
-              <div className='flex items-center px-3 py-1.5 rounded-full backdrop-blur-xl bg-amber-500/40 border border-amber-400/30 shadow-lg'>
-                <Sparkles size={14} className='text-amber-300 mr-1.5' />
-                <span className='text-xs font-semibold tracking-wide text-white'>
-                  PREMIUM
-                </span>
-              </div>
-            </div>
-
-            {/* Service badge */}
-            <div className='absolute top-4 left-4 z-50'>
-              <span className='px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-xl bg-black/40 text-amber-300 border border-amber-500/30 shadow-lg'>
-                {service.duration > 0 && (
-                  <Clock size={12} className='inline-block mr-1.5' />
-                )}
-                {service.duration > 0
-                  ? `${service.duration}h Experience`
-                  : 'Experience'}
-              </span>
-            </div>
-
-            {/* Price tag */}
-            <div className='absolute bottom-4 right-4 z-50'>
-              <span className='px-3 py-1.5 rounded-full text-sm font-bold backdrop-blur-xl flex items-center bg-amber-600/50 text-white border border-amber-500/50 shadow-lg'>
-                <DollarSign size={14} className='mr-0.5' />
-                {service.price}
-              </span>
-            </div>
-          </div>
-
-          {/* Title and description with premium blur overlay */}
-          <div className='relative z-40 px-1 -mt-12'>
-            <div className='mx-4 p-5 rounded-xl backdrop-blur-xl border bg-black/40 border-amber-500/20 shadow-lg'>
-              <h3 className='text-xl font-bold mb-2 text-white'>
-                {t(`${translationPath}.name`, { fallback: service.name })}
-              </h3>
-
-              <p className='mb-4 h-12 line-clamp-2 text-sm text-gray-200'>
-                {t(`${translationPath}.short`, {
-                  fallback: service.description,
-                })}
-              </p>
-
-              <div className='flex flex-col gap-3 mt-6'>
-                <Link
-                  href={`/service/${service.id}`}
-                  className='group inline-flex items-center justify-center w-full py-2.5 px-4 rounded-lg font-medium transition-all duration-300 text-sm bg-amber-500 text-white hover:bg-amber-600 shadow-md'
-                >
-                  {t('services.actions.details', { fallback: 'View Details' })}
-                  <ArrowRight
-                    size={16}
-                    className='ml-2 transition-transform duration-300 group-hover:translate-x-1'
-                  />
-                </Link>
-
-                {/* Book service button */}
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className={`w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-all duration-300 
-                    ${
-                      isSelected
-                        ? 'bg-amber-500 text-white hover:bg-amber-600 border border-amber-400/30'
-                        : 'bg-amber-500 text-white hover:bg-amber-600 border border-amber-400/30'
+                  {/* Image loading placeholder */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 z-10 transition-opacity duration-1000 ${
+                      imageLoaded ? 'opacity-0' : 'opacity-100'
                     }`}
-                >
-                  {isSelected ? (
-                    <>
-                      <Check size={18} className='mr-2' />
-                      {t('services.actions.selected', {
-                        fallback: 'Update Booking',
-                      })}
-                    </>
-                  ) : (
-                    <>
-                      <Plus size={18} className='mr-2' />
-                      {t('services.actions.addToBooking', {
-                        fallback: 'Book Now',
-                      })}
-                    </>
+                  ></div>
+
+                  <Image
+                    src={service.img || `/images/services/${service.id}.jpg`}
+                    alt={t(`${translationPath}.name`, {
+                      fallback: service.name,
+                    })}
+                    fill
+                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                    className={`object-cover transition-all duration-1000 ease-out z-20 ${
+                      isHovered
+                        ? 'scale-110 filter contrast-125 brightness-110'
+                        : 'scale-100'
+                    }`}
+                    onLoad={() => setImageLoaded(true)}
+                    onError={handleImageError}
+                    quality={90}
+                    priority={true}
+                  />
+
+                  {/* Overlay for text contrast */}
+                  <div className='absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-30'></div>
+                </div>
+
+                {/* Service details */}
+                <div className='p-8 relative'>
+                  {/* Selection indicator */}
+                  {isSelected && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className='absolute -top-12 right-8 h-24 w-24'
+                    >
+                      <div className='relative h-full w-full'>
+                        <div className='absolute inset-0 bg-amber-500 rounded-full opacity-20 animate-ping'></div>
+                        <div className='absolute inset-[30%] bg-amber-500 rounded-full flex items-center justify-center'>
+                          <Check className='text-black h-5 w-5' />
+                        </div>
+                      </div>
+                    </motion.div>
                   )}
-                </button>
+
+                  {/* Rating stars and details */}
+                  <div className='flex justify-between items-start mb-4'>
+                    <div className='flex items-center'>
+                      {[1, 2, 3, 4, 5].map((rating) => (
+                        <Star
+                          key={rating}
+                          size={16}
+                          className='text-amber-400 fill-amber-400 mr-0.5'
+                        />
+                      ))}
+                      <span className='text-amber-300 text-xs ml-2 font-medium'>
+                        (5.0)
+                      </span>
+                    </div>
+                    <div className='flex items-center text-amber-400'>
+                      <DollarSign className='h-4 w-4 mr-0.5' />
+                      <span className='font-bold text-lg'>
+                        {formattedPrice}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Service title */}
+                  <h3 className='text-2xl font-bold mb-3 text-white tracking-tight'>
+                    {t(`${translationPath}.name`, { fallback: service.name })}
+                  </h3>
+
+                  {/* Service details */}
+                  <div className='flex items-center text-gray-400 mb-4'>
+                    <div className='flex items-center mr-4'>
+                      <Clock className='h-4 w-4 mr-1.5 text-amber-500/70' />
+                      <span className='text-xs font-medium'>
+                        {service.duration}h Experience
+                      </span>
+                    </div>
+                    <div className='flex items-center'>
+                      <CalendarDays className='h-4 w-4 mr-1.5 text-amber-500/70' />
+                      <span className='text-xs font-medium'>
+                        Flexible Scheduling
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Service description */}
+                  <p className='mb-6 text-gray-300 leading-relaxed text-sm line-clamp-2'>
+                    {t(`${translationPath}.short`, {
+                      fallback: service.description,
+                    })}
+                  </p>
+
+                  {/* Action buttons */}
+                  <div className='grid grid-cols-2 gap-4'>
+                    <Link
+                      href={`/service/${service.id}`}
+                      className='py-3 px-5 flex items-center justify-center bg-black/40 hover:bg-black/70 backdrop-blur-md font-medium text-white rounded-lg transition-all duration-300 border border-amber-500/30 group overflow-hidden relative'
+                    >
+                      <span className='relative z-10 flex items-center'>
+                        {t('services.actions.details', { fallback: 'Details' })}
+                        <ArrowUpRight
+                          size={16}
+                          className='ml-1.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform'
+                        />
+                      </span>
+                      <span className='absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/0 to-amber-500/0 group-hover:from-amber-500/20 group-hover:via-amber-500/20 group-hover:to-amber-500/0 transition-all duration-500'></span>
+                    </Link>
+
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className={`relative overflow-hidden py-3 px-5 flex items-center justify-center ${
+                        isSelected ? 'bg-amber-600' : 'bg-amber-500'
+                      } hover:bg-amber-600 text-black font-medium rounded-lg transition-all duration-300 shadow-lg shadow-amber-500/20`}
+                    >
+                      <span className='relative z-10 flex items-center'>
+                        {isSelected ? (
+                          <>
+                            <Check size={16} className='mr-1.5' />
+                            <span>
+                              {t('services.actions.selected', {
+                                fallback: 'Selected',
+                              })}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus size={16} className='mr-1.5' />
+                            <span>
+                              {t('services.actions.book', {
+                                fallback: 'Book Now',
+                              })}
+                            </span>
+                          </>
+                        )}
+                      </span>
+                      <span className='absolute inset-0 bg-gradient-to-r from-amber-400/0 via-amber-400/0 to-amber-400/0 hover:from-amber-400/30 hover:via-amber-400/30 hover:to-amber-400/0 transition-all duration-500'></span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Light effect when selected */}
+          {isSelected && (
+            <div className='absolute inset-0 -z-10'>
+              <div className='absolute inset-x-0 -bottom-10 h-20 bg-amber-500/20 blur-3xl'></div>
+            </div>
+          )}
         </motion.div>
 
         {/* Booking Modal */}
-        <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleBookingConfirm}
-          service={service}
-        />
+        <AnimatePresence>
+          {isModalOpen && (
+            <BookingModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onConfirm={handleBookingConfirm}
+              service={service}
+            />
+          )}
+        </AnimatePresence>
       </>
     );
   }
-  // ESTILO STANDARD
+
+  // Render the standard card
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        whileHover={{
-          y: -8,
-          transition: { duration: 0.3 },
-        }}
+        ref={cardRef}
+        initial={{ opacity: 0, y: 40 }}
+        animate={
+          isInView
+            ? {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] },
+              }
+            : { opacity: 0, y: 40 }
+        }
+        whileHover={{ y: -12, transition: { duration: 0.3 } }}
+        className='relative group overflow-hidden cursor-pointer'
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
-        className='relative rounded-xl overflow-hidden transition-all duration-300 shadow-lg'
-        style={{
-          background:
-            'linear-gradient(135deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.35))',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.7)',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
-        }}
       >
-        {/* Color highlight effects */}
-        <>
-          <div className='absolute -top-20 -right-20 w-40 h-40 rounded-full bg-blue-500/20 blur-3xl'></div>
-          <div className='absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-blue-400/10 blur-3xl'></div>
-        </>
-
-        {/* Glow effect when selected */}
-        {isSelected && (
-          <div className='absolute inset-0 -z-10 blur-3xl rounded-full scale-75 opacity-60 bg-blue-400/40' />
-        )}
-
-        {/* Image Section */}
-        <div className='h-56 relative overflow-hidden'>
-          {/* Loading placeholder */}
-          <div className='absolute inset-0 bg-gray-200 animate-pulse'></div>
-
-          {/* Main image */}
-          <Image
-            src={service.img || `/images/services/${service.id}.jpg`}
-            alt={t(`${translationPath}.name`, { fallback: service.name })}
-            width={400}
-            height={240}
-            className={`w-full h-full object-cover transition-transform duration-700 relative z-10 ${
-              isHovered ? 'scale-110' : 'scale-100'
-            }`}
-            onError={handleImageError}
-            unoptimized={service.img?.startsWith('http')}
-            priority={true}
+        {/* Card body with gradient border effect */}
+        <div className='relative isolate rounded-2xl overflow-hidden p-0.5 z-10'>
+          {/* Gradient border */}
+          <div
+            className='absolute inset-0 bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700 opacity-40 group-hover:opacity-80 transition-opacity duration-700 z-0'
+            style={{
+              background: `linear-gradient(${
+                isHovered ? '120deg' : '45deg'
+              }, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.4), rgba(29, 78, 216, 0.5), rgba(37, 99, 235, 0.4), rgba(59, 130, 246, 0.3))`,
+              backgroundSize: '400% 400%',
+              animation: isHovered ? 'gradient-shift 3s ease infinite' : 'none',
+            }}
           />
 
-          {/* Gradient overlay for text contrast */}
-          <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20'></div>
+          {/* Card inner content */}
+          <div className='relative h-full bg-gradient-to-b from-white to-gray-100 p-px rounded-2xl overflow-hidden z-10'>
+            <div className='h-full bg-gradient-to-b from-white to-gray-100 rounded-2xl overflow-hidden'>
+              {/* Service image */}
+              <div className='relative h-64 overflow-hidden'>
+                {/* Standard badge */}
+                <div className='absolute top-5 right-5 z-30 pointer-events-none'>
+                  <div className='flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-2xl border border-blue-400/20 shadow-xl'>
+                    <Star className='text-blue-500 mr-2 h-4 w-4' />
+                    <span className='text-xs font-semibold uppercase tracking-wider text-blue-600'>
+                      Standard
+                    </span>
+                  </div>
+                </div>
 
-          {/* Service badge */}
-          <div className='absolute top-3 left-3 z-30'>
-            <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-500/50 backdrop-blur-xl text-white border border-blue-400/30'>
-              Standard
-            </span>
-          </div>
+                {/* Image loading placeholder */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-100 z-10 transition-opacity duration-1000 ${
+                    imageLoaded ? 'opacity-0' : 'opacity-100'
+                  }`}
+                ></div>
 
-          {/* Price and duration info */}
-          <div className='absolute top-3 right-3 z-30 flex space-x-2'>
-            <span className='px-2 py-1 rounded-full text-xs font-medium bg-black/30 backdrop-blur-xl border border-white/10 text-white flex items-center'>
-              <DollarSign size={12} className='mr-0.5' />
-              {service.price}
-            </span>
+                <Image
+                  src={service.img || `/images/services/${service.id}.jpg`}
+                  alt={t(`${translationPath}.name`, { fallback: service.name })}
+                  fill
+                  sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                  className={`object-cover transition-all duration-1000 ease-out z-20 ${
+                    isHovered ? 'scale-110' : 'scale-100'
+                  }`}
+                  onLoad={() => setImageLoaded(true)}
+                  onError={handleImageError}
+                  priority={true}
+                />
 
-            {service.duration > 0 && (
-              <span className='px-2 py-1 rounded-full text-xs font-medium bg-black/30 backdrop-blur-xl border border-white/10 text-white flex items-center'>
-                <Clock size={12} className='mr-0.5' />
-                {service.duration}h
-              </span>
-            )}
-          </div>
+                {/* Overlay for text contrast */}
+                <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-30'></div>
+              </div>
 
-          {/* Service name overlay */}
-          <div className='absolute bottom-0 left-0 right-0 p-4 z-30'>
-            <h3 className='text-xl font-bold text-white drop-shadow-md'>
-              {t(`${translationPath}.name`, { fallback: service.name })}
-            </h3>
+              {/* Service details */}
+              <div className='p-8 relative'>
+                {/* Selection indicator */}
+                {isSelected && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className='absolute -top-12 right-8 h-24 w-24'
+                  >
+                    <div className='relative h-full w-full'>
+                      <div className='absolute inset-0 bg-blue-500 rounded-full opacity-20 animate-ping'></div>
+                      <div className='absolute inset-[30%] bg-blue-500 rounded-full flex items-center justify-center'>
+                        <Check className='text-white h-5 w-5' />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Rating stars and details */}
+                <div className='flex justify-between items-start mb-4'>
+                  <div className='flex items-center'>
+                    {[1, 2, 3, 4].map((rating) => (
+                      <Star
+                        key={rating}
+                        size={16}
+                        className='text-blue-500 fill-blue-500 mr-0.5'
+                      />
+                    ))}
+                    <Star key={5} size={16} className='text-gray-300 mr-0.5' />
+                    <span className='text-gray-500 text-xs ml-2 font-medium'>
+                      (4.0)
+                    </span>
+                  </div>
+                  <div className='flex items-center text-blue-600'>
+                    <DollarSign className='h-4 w-4 mr-0.5' />
+                    <span className='font-bold text-lg'>{formattedPrice}</span>
+                  </div>
+                </div>
+
+                {/* Service title */}
+                <h3 className='text-2xl font-bold mb-3 text-gray-900 tracking-tight'>
+                  {t(`${translationPath}.name`, { fallback: service.name })}
+                </h3>
+
+                {/* Service details */}
+                <div className='flex items-center text-gray-500 mb-4'>
+                  <div className='flex items-center mr-4'>
+                    <Clock className='h-4 w-4 mr-1.5 text-blue-500/70' />
+                    <span className='text-xs font-medium'>
+                      {service.duration}h Experience
+                    </span>
+                  </div>
+                  <div className='flex items-center'>
+                    <CalendarDays className='h-4 w-4 mr-1.5 text-blue-500/70' />
+                    <span className='text-xs font-medium'>
+                      Flexible Scheduling
+                    </span>
+                  </div>
+                </div>
+
+                {/* Service description */}
+                <p className='mb-6 text-gray-600 leading-relaxed text-sm line-clamp-2'>
+                  {t(`${translationPath}.short`, {
+                    fallback: service.description,
+                  })}
+                </p>
+
+                {/* Action buttons */}
+                <div className='grid grid-cols-2 gap-4'>
+                  <Link
+                    href={`/service/${service.id}`}
+                    className='py-3 px-5 flex items-center justify-center bg-gray-100 hover:bg-gray-200 font-medium text-gray-800 rounded-lg transition-all duration-300 border border-gray-200 group'
+                  >
+                    <span className='flex items-center'>
+                      {t('services.actions.details', { fallback: 'Details' })}
+                      <ArrowUpRight
+                        size={16}
+                        className='ml-1.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform'
+                      />
+                    </span>
+                  </Link>
+
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className={`py-3 px-5 flex items-center justify-center ${
+                      isSelected ? 'bg-blue-600' : 'bg-blue-500'
+                    } hover:bg-blue-600 text-white font-medium rounded-lg transition-all duration-300 shadow-md shadow-blue-500/20`}
+                  >
+                    {isSelected ? (
+                      <>
+                        <Check size={16} className='mr-1.5' />
+                        <span>
+                          {t('services.actions.selected', {
+                            fallback: 'Selected',
+                          })}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={16} className='mr-1.5' />
+                        <span>
+                          {t('services.actions.book', { fallback: 'Book Now' })}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Content section with styled blur background */}
-        <div className='p-5 relative backdrop-blur-md z-20 text-gray-800'>
-          <p className='mb-4 h-12 line-clamp-2 text-sm text-gray-700'>
-            {t(`${translationPath}.short`, { fallback: service.description })}
-          </p>
-
-          <div className='flex flex-col gap-3 mt-6'>
-            {/* View details button */}
-            <Link
-              href={`/service/${service.id}`}
-              className='inline-flex items-center justify-center w-full py-2.5 px-4 rounded-lg font-medium transition-all duration-300 text-sm bg-white/30 hover:bg-white/50 text-gray-900 backdrop-blur-md border border-white/50'
-            >
-              {t('services.actions.details', { fallback: 'View Details' })}
-              <ArrowRight
-                size={16}
-                className='ml-2 transition-transform duration-300'
-              />
-            </Link>
-
-            {/* Book service button */}
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className={`w-full py-3 px-4 rounded-lg font-medium flex items-center justify-center transition-all duration-300 backdrop-blur-md
-                ${
-                  isSelected
-                    ? 'bg-blue-500/90 text-white hover:bg-blue-600/90 border border-blue-400/50'
-                    : 'bg-gray-900/90 text-white hover:bg-black/90 border border-gray-700/50'
-                }`}
-            >
-              {isSelected ? (
-                <>
-                  <Check size={18} className='mr-2' />
-                  {t('services.actions.selected', {
-                    fallback: 'Update Booking',
-                  })}
-                </>
-              ) : (
-                <>
-                  <Plus size={18} className='mr-2' />
-                  {t('services.actions.addToBooking', {
-                    fallback: 'Book Now',
-                  })}
-                </>
-              )}
-            </button>
+        {/* Light effect when selected */}
+        {isSelected && (
+          <div className='absolute inset-0 -z-10'>
+            <div className='absolute inset-x-0 -bottom-10 h-20 bg-blue-500/20 blur-3xl'></div>
           </div>
-        </div>
+        )}
       </motion.div>
 
       {/* Booking Modal */}
-      <BookingModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleBookingConfirm}
-        service={service}
-      />
+      <AnimatePresence>
+        {isModalOpen && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBookingConfirm}
+            service={service}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
 
 export default ServiceCard;
+
+// Add this to your global CSS
+// /*
+// @keyframes gradient-shift {
+//   0% {
+//     background-position: 0% 50%;
+//   }
+//   50% {
+//     background-position: 100% 50%;
+//   }
+//   100% {
+//     background-position: 0% 50%;
+//   }
+// }
+// */

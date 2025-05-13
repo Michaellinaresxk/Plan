@@ -180,6 +180,25 @@
         "disclaimer": "Por tu seguridad y tranquilidad, recomendamos consultar con tu médico antes de comenzar cualquier nueva actividad física, especialmente si estás embarazada, en proceso de recuperación o tienes alguna condición médica. La participación es bajo tu propia responsabilidad.",
         "finalMessage": "Escucha a tu cuerpo. Este es tu momento. Tu espacio. Tu ritmo."
       },
+      "massageDetails": {
+        "experience": "Experience",
+        "premiumExperience": "Premium Massage Experience",
+        "professionalExperience": "Professional Massage Experience",
+        "sessionDuration": "Session Duration",
+        "massageTypes": "Massage Types",
+        "durationOptions": "Duration Options",
+        "techniques": "Massage Techniques",
+        "technique1Description": "Relaxing technique that uses long, smooth strokes to release tension",
+        "technique2Description": "Targets deeper layers of muscle and connective tissue",
+        "technique3Description": "Combines massage with essential oils for enhanced relaxation",
+        "technique4Description": "Uses heated stones to ease muscle tension and improve circulation",
+        "benefits": "Benefits",
+        "sessionPreparation": "Preparing for Your Session",
+        "preparation1": "Arrive 10-15 minutes before your scheduled appointment",
+        "preparation2": "Communicate any preferences or concerns to your massage therapist",
+        "preparation3": "Stay hydrated before and after your massage session",
+        "preparation4": "Avoid heavy meals right before your massage"
+      },
       "bikeRentals": {
         "name": "Alquiler de Bicicletas",
         "short": "Explore el resort en nuestras cómodas bicicletas",

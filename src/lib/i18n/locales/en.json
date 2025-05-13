@@ -227,6 +227,25 @@
         "short": "Personalized culinary experiences in your accommodation",
         "full": "Delight your palate with personalized gourmet creations by a private chef in your villa, apartment, or yacht. Our team crafts custom menus using fresh ingredients and local flavors, turning every meal into an unforgettable experience. Book your private chef today and enjoy a unique culinary experience in Punta Cana."
       },
+      "massageDetails": {
+        "experience": "Experience",
+        "premiumExperience": "Premium Massage Experience",
+        "professionalExperience": "Professional Massage Experience",
+        "sessionDuration": "Session Duration",
+        "massageTypes": "Massage Types",
+        "durationOptions": "Duration Options",
+        "techniques": "Massage Techniques",
+        "technique1Description": "Relaxing technique that uses long, smooth strokes to release tension",
+        "technique2Description": "Targets deeper layers of muscle and connective tissue",
+        "technique3Description": "Combines massage with essential oils for enhanced relaxation",
+        "technique4Description": "Uses heated stones to ease muscle tension and improve circulation",
+        "benefits": "Benefits",
+        "sessionPreparation": "Preparing for Your Session",
+        "preparation1": "Arrive 10-15 minutes before your scheduled appointment",
+        "preparation2": "Communicate any preferences or concerns to your massage therapist",
+        "preparation3": "Stay hydrated before and after your massage session",
+        "preparation4": "Avoid heavy meals right before your massage"
+      },
       "privateCatamaran": {
         "name": "Servicio de Chef Privado",
         "short": "Experiencias culinarias personalizadas en tu alojamiento",

@@ -25,10 +25,10 @@ export type ServiceOption = {
 export interface ServiceData {
   id: string;
   titleKey: string; // Clave para el título en archivos de traducción
-  descriptionKey: string; // Clave para la descripción en archivos de traducción
-  fullDescriptionKey?: string; // Clave para descripción completa en traducción
+  descriptionKey: string;
+  fullDescriptionKey?: string;
   basePrice: number;
-  priceUnit: string; // Por hora, por día, etc.
+  priceUnit: string;
   category: ServiceCategory;
   packageType: PackageType[];
   imageUrl: string;
@@ -40,7 +40,7 @@ export interface ServiceData {
     unit: 'hours' | 'days' | 'weeks';
   };
   options?: Record<string, ServiceOption>;
-  additionalInfoKeys?: string[]; // Claves para traducción de info adicional
+  additionalInfoKeys?: string[];
   customFields?: {
     type: 'text' | 'number' | 'select' | 'checkbox' | 'textarea';
     name: string;

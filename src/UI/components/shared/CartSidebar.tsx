@@ -1,25 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, } from 'react';
 import {
-  ShoppingCart,
   X,
-  ChevronRight,
+
   Trash2,
-  Users,
-  Calendar,
+
 } from 'lucide-react';
 import { useBooking } from '@/context/BookingContext';
-import { useTranslation } from '@/lib/i18n/client';
-import { format } from 'date-fns';
-import { useRouter } from 'next/navigation'; // Import Next.js router
+ // Import Next.js router
 import { formatServiceDetails } from '@/utils/formatServiceDetails';
 import ServiceFormFactory from '../forms/ServiceFormFactory';
 import { Service } from '@/types/type';
 
 const CartSidebar: React.FC = () => {
-  const { isCartOpen, closeCart, selectedServices, removeService } =
+  const { isCartOpen, closeCart, selectedServices } =
     useBooking();
   const [activeForm, setActiveForm] = useState<Service | null>(null);
   const [cartItems, setCartItems] = useState<unknown[]>([]);
