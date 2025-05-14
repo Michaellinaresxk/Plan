@@ -168,7 +168,7 @@ export const getServiceFormConfig = (
     },
 
     // Custom Decoration service configuration
-    'custom-decoration': {
+    'custom-decorations': {
       steps: [
         {
           id: 'occasion',
