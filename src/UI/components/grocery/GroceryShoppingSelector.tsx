@@ -9,9 +9,11 @@ import SummaryBar from './SummaryBar';
 import SpecialRequests from './SpecialRequests';
 import SubmitButton from './SubmitButton';
 import AccordionGrocery from './AccordionGrocery';
+import { ShoppingBasket, Wine, Check, Sparkles } from 'lucide-react';
 
 /**
  * Componente principal para la selección de productos de supermercado y licores
+ * Versión modernizada con mejor UX/UI
  */
 const GroceryShoppingSelector: React.FC = () => {
   const { t } = useTranslation();
@@ -20,6 +22,7 @@ const GroceryShoppingSelector: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'grocery' | 'spirits'>('grocery');
   const [specialRequests, setSpecialRequests] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Manejadores de eventos
   const handleToggleItem = (itemId: string) => {
@@ -43,28 +46,44 @@ const GroceryShoppingSelector: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    // Simular envío con estado loading
+    setIsSubmitting(true);
+
     // En una aplicación real, esto enviaría los datos al backend
     console.log('Enviando ítems seleccionados:', selectedItems);
     console.log('Solicitudes especiales:', specialRequests);
 
-    // Para demostración, mostraremos una alerta
-    alert(
-      `Seleccionaste ${selectedItems.length} ítems para tu lista de compras!`
-    );
+    // Simular una respuesta del servidor
+    setTimeout(() => {
+      setIsSubmitting(false);
+      alert(
+        `Seleccionaste ${selectedItems.length} ítems para tu lista de compras!`
+      );
+    }, 800);
   };
 
   // Selecciona las categorías según la pestaña activa
   const categories =
     activeTab === 'grocery' ? GROCERY_CATEGORIES : SPIRIT_CATEGORIES;
   const columns = splitIntoColumns(categories, 2);
+
   return (
-    <div className='max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden'>
-      {/* Cabecera */}
-      <div className='bg-blue-600 px-6 py-4 text-white'>
-        <h2 className='text-xl font-semibold'>
-          {t('grocery.service.title', { fallback: 'Grocery Shopping Service' })}
-        </h2>
-        <p className='text-blue-100 mt-1'>
+    <div className='w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100'>
+      {/* Cabecera con degradado moderno */}
+      <div className='bg-gradient-to-r from-blue-600 to-blue-500 px-8 py-6 text-white'>
+        <div className='flex items-center'>
+          {activeTab === 'grocery' ? (
+            <ShoppingBasket className='w-6 h-6 mr-3 text-blue-100' />
+          ) : (
+            <Wine className='w-6 h-6 mr-3 text-blue-100' />
+          )}
+          <h2 className='text-2xl font-bold tracking-tight'>
+            {t('grocery.service.title', {
+              fallback: 'Grocery Shopping Service',
+            })}
+          </h2>
+        </div>
+        <p className='text-blue-100 mt-2 font-light'>
           {t('grocery.service.subtitle', {
             fallback:
               'Select the items you would like to include in your grocery list',
@@ -72,39 +91,75 @@ const GroceryShoppingSelector: React.FC = () => {
         </p>
       </div>
 
-      {/* Selector de pestañas */}
-      <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Contenedor principal con padding adecuado */}
+      <div className='p-6 sm:p-8'>
+        {/* Selector de pestañas - asumimos que el componente se actualizará en consecuencia */}
+        <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Barra de resumen */}
-      <SummaryBar
-        selectedCount={selectedItems.length}
-        onClearAll={handleClearAll}
-      />
+        {/* Barra de resumen con animación y diseño mejorado */}
+        <div className='mt-6 mb-8'>
+          <SummaryBar
+            selectedCount={selectedItems.length}
+            onClearAll={handleClearAll}
+          />
+        </div>
 
-      {/* Contenido principal - Categorías con sus ítems */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6'>
-        {columns.map((column, columnIndex) => (
-          <div key={columnIndex} className='flex flex-col gap-3 sm:gap-6'>
-            {column.map((category) => (
-              <AccordionGrocery
-                key={category.id}
-                category={category}
-                selectedItems={selectedItems}
-                onItemToggle={handleToggleItem}
-              />
+        {/* Panel principal con sombras suaves y espaciado mejorado */}
+        <div className='bg-gray-50 rounded-xl p-6 mb-8'>
+          {/* Contenido principal - Categorías con sus ítems */}
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8'>
+            {columns.map((column, columnIndex) => (
+              <div key={columnIndex} className='flex flex-col gap-4 sm:gap-6'>
+                {column.map((category) => (
+                  <AccordionGrocery
+                    key={category.id}
+                    category={category}
+                    selectedItems={selectedItems}
+                    onItemToggle={handleToggleItem}
+                  />
+                ))}
+              </div>
             ))}
           </div>
-        ))}
+        </div>
+
+        {/* Solicitudes especiales con diseño mejorado */}
+        <div className='mb-8'>
+          <SpecialRequests
+            value={specialRequests}
+            onChange={setSpecialRequests}
+          />
+        </div>
+
+        {/* Sección inferior con botón de envío */}
+        <div className='flex justify-between items-center'>
+          <div className='text-sm text-gray-500 flex items-center'>
+            {selectedItems.length > 0 && (
+              <>
+                <Check className='w-4 h-4 text-green-500 mr-1' />
+                <span>
+                  {selectedItems.length}{' '}
+                  {selectedItems.length === 1 ? 'item' : 'items'} seleccionados
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Botón de envío con transición y estado de carga */}
+          <div className='relative'>
+            {selectedItems.length > 0 && (
+              <span className='absolute -top-1 -right-1'>
+                <Sparkles className='w-4 h-4 text-amber-500 animate-pulse' />
+              </span>
+            )}
+            <SubmitButton
+              onSubmit={handleSubmit}
+              disabled={selectedItems.length === 0 || isSubmitting}
+              isLoading={isSubmitting}
+            />
+          </div>
+        </div>
       </div>
-
-      {/* Solicitudes especiales */}
-      <SpecialRequests value={specialRequests} onChange={setSpecialRequests} />
-
-      {/* Botón de envío */}
-      <SubmitButton
-        onSubmit={handleSubmit}
-        disabled={selectedItems.length === 0}
-      />
     </div>
   );
 };

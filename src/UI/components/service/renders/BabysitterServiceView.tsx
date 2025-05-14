@@ -1,5 +1,3 @@
-// views/BabysitterServiceView.tsx
-
 import React from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -13,260 +11,670 @@ import {
   Shield,
   Heart,
   Check,
-  DollarSign,
+  Info,
+  Sparkles,
   Star,
-  Camera,
-  ExternalLink,
+  ArrowRight,
+  PlayCircle,
+  BookOpen,
+  Baby,
+  SmilePlus,
+  Activity,
+  MessageCircle,
+  Instagram,
 } from 'lucide-react';
 
 interface BabysitterServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
   primaryColor: string;
+  viewContext?: 'standard-view' | 'premium-view';
 }
 
 const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
   service,
   serviceData,
   primaryColor,
+  viewContext,
 }) => {
   const { t } = useTranslation();
-  const [expandedImage, setExpandedImage] = React.useState<number | null>(null);
+  const isPremium =
+    service.packageType.includes('premium') || viewContext === 'premium-view';
 
-  // Crear adaptador de datos para mantener compatibilidad con el renderizador existente
-  const extendedData = {
-    minimumBooking: serviceData?.metaData?.minimumBooking?.toString() || '',
-    availability: serviceData?.metaData?.availability?.toString() || '',
-    ageRange: serviceData?.metaData?.ageRange?.toString() || '',
-    safetyStandards: serviceData?.metaData?.safetyStandards
-      ? (serviceData.metaData.safetyStandards as string).split(',')
-      : [],
-    timeSlots: serviceData?.options?.timeSlot?.subOptions
-      ? Object.values(serviceData.options.timeSlot.subOptions).map((opt: any) =>
-          t(opt.nameKey)
-        )
-      : [],
-    includes: serviceData?.includes?.map((key: string) => t(key)) || [],
-    notIncluded: serviceData?.notIncluded?.map((key: string) => t(key)) || [],
-    itinerary: serviceData?.itinerary?.map((key: string) => t(key)) || [],
-    disclaimer: serviceData?.disclaimer ? t(serviceData.disclaimer) : undefined,
-    tagline: t('services.babysitter.tagline', {
-      defaultValue: 'Your Peace of Mind. Their Happiness.',
-    }),
-    fullDescription: t(
-      serviceData?.fullDescriptionKey || serviceData?.descriptionKey || ''
-    ),
-  };
+  // Extract data from serviceData
+  const minimumBooking =
+    serviceData?.metaData?.minimumBooking?.toString() || '3 hours';
+  const availability =
+    serviceData?.metaData?.availability?.toString() ||
+    'Day & evening; overnight upon request';
+  const ageRange =
+    serviceData?.metaData?.ageRange?.toString() || '6 months to 12 years';
+  const safetyStandards = serviceData?.metaData?.safetyStandards
+    ? (serviceData.metaData.safetyStandards as string).split(',')
+    : ['CPR-trained', 'First-aid certified', 'Background-checked'];
 
-  // Gallery images for luxury babysitting service
-  const galleryImages = [
+  // Extract time slots from options
+  const timeSlots = serviceData?.options?.timeSlot?.subOptions
+    ? Object.values(serviceData.options.timeSlot.subOptions).map((opt: any) =>
+        t(opt.nameKey)
+      )
+    : ['Daytime', 'Evening', 'Overnight'];
+
+  // Get childCount options if available
+  const childCountOptions = serviceData?.options?.childCount?.subOptions || {};
+
+  // Extract includes and not included
+  const includes = serviceData?.includes?.map((key: string) => t(key)) || [
+    'Certified, Background-Checked Caregiver',
+    'Age-Appropriate Activities & Games',
+    'Snacks & Light Meals (as needed)',
+    'Quiet Time Stories & Nap Support',
+  ];
+
+  const notIncluded = serviceData?.notIncluded?.map((key: string) =>
+    t(key)
+  ) || ['Gratuity (optional, appreciated)'];
+
+  // Extract itinerary
+  const itinerary = serviceData?.itinerary?.map((key: string) => t(key)) || [
+    'Babysitter arrives & greets family',
+    "Review children's routines & any special needs",
+    'Engaging play, meals, and nap support',
+    'Parent check-in and smooth handover',
+  ];
+
+  // Disclaimer if available
+  const disclaimer = serviceData?.disclaimer ? t(serviceData.disclaimer) : '';
+
+  // Sample activities by age group
+  const activities = [
     {
-      src: 'https://images.unsplash.com/photo-1560884845-2aeb05f38f13?auto=format&fit=crop&q=80&w=1200',
-      alt: 'Luxury babysitting experience',
-      caption: 'Professional childcare in the comfort of your villa',
+      ageGroup: 'Infants (6-18 months)',
+      activities: [
+        'Sensory play with textures and sounds',
+        'Gentle movement and stretching',
+        'Interactive reading with colorful board books',
+        'Soothing music and lullabies',
+      ],
+      icon: <Baby />,
     },
     {
-      src: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80&w=1200',
-      alt: 'Educational activities with children',
-      caption: "Engaging activities tailored to your child's interests",
+      ageGroup: 'Toddlers (1.5-3 years)',
+      activities: [
+        'Simple arts and crafts with safe materials',
+        'Music and movement games',
+        'Outdoor exploration (weather permitting)',
+        'Imaginative play with puppets and toys',
+      ],
+      icon: <SmilePlus />,
     },
     {
-      src: 'https://images.unsplash.com/photo-1596975366153-2c2598fadfa7?auto=format&fit=crop&q=80&w=1200',
-      alt: 'Safe and nurturing environment',
-      caption: 'Creating memorable experiences for your little ones',
+      ageGroup: 'Preschoolers (3-5 years)',
+      activities: [
+        'Storytelling and puppet shows',
+        'Guided creative play',
+        'Simple cooking activities',
+        'Educational games and puzzles',
+      ],
+      icon: <PlayCircle />,
+    },
+    {
+      ageGroup: 'School-Age (6-12 years)',
+      activities: [
+        'Arts, crafts, and DIY projects',
+        'Board games and age-appropriate card games',
+        'Physical activities and outdoor games',
+        'Assistance with homework (if needed)',
+      ],
+      icon: <BookOpen />,
+    },
+  ];
+
+  // Testimonials
+  const testimonials = [
+    {
+      text: 'Our children absolutely adored their babysitter! She was punctual, professional, and had an amazing rapport with the kids. We could enjoy our evening knowing they were in safe, caring hands.',
+      author: 'Sarah M.',
+      rating: 5,
+    },
+    {
+      text: 'The level of professionalism was outstanding. Our babysitter came prepared with age-appropriate activities that kept our children engaged throughout the evening.',
+      author: 'David L.',
+      rating: 5,
+    },
+    {
+      text: 'This is the only babysitting service I trust with my little ones. The screening process for caregivers is thorough, and the sitter assigned to us was exceptional.',
+      author: 'Michelle K.',
+      rating: 5,
+    },
+  ];
+
+  // Sample FAQ
+  const faq = [
+    {
+      question: 'How are your babysitters screened?',
+      answer:
+        'All our babysitters undergo a rigorous screening process including background checks, reference verification, interviews, CPR and first aid certification, and regular performance reviews.',
+    },
+    {
+      question: 'Can I meet the babysitter before booking?',
+      answer:
+        'Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.',
+    },
+    {
+      question: 'What happens if my child gets sick?',
+      answer:
+        'Our babysitters are trained to handle minor health concerns. For emergencies, they will contact you immediately and follow predetermined emergency protocols.',
+    },
+    {
+      question: 'What if I need to extend the babysitting time?',
+      answer:
+        'Extensions are possible subject to the babysitter is availability. Please notify us as soon as possible, and we will confirm with your assigned sitter.',
     },
   ];
 
   // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
+  const fadeIn = {
     hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
   return (
-    <motion.div
-      className='space-y-8'
-      initial='hidden'
-      animate='visible'
-      variants={containerVariants}
-    >
-      {/* Main Description */}
+    <div className='space-y-12'>
+      {/* Hero Section with Tagline */}
       <motion.div
-        className={`bg-white rounded-xl shadow-xl overflow-hidden border border-${primaryColor}-100`}
-        variants={itemVariants}
+        className={`relative overflow-hidden rounded-2xl ${
+          isPremium
+            ? 'bg-gradient-to-r from-amber-900/90 to-amber-700/80'
+            : 'bg-gradient-to-r from-blue-900/90 to-blue-700/80'
+        }`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
       >
-        <div className='p-8 md:p-10'>
+        <div className='absolute inset-0 -z-10'>
+          <Image
+            src='https://images.unsplash.com/photo-1560877241-1dc5479934b6?auto=format&fit=crop&q=80&w=1000'
+            alt='Child playing'
+            fill
+            className='object-cover opacity-30'
+          />
+        </div>
+
+        <div className='p-10 md:p-16 text-white'>
           <div className='flex items-center mb-4'>
-            <div className={`h-10 w-1 bg-${primaryColor}-500 mr-4`}></div>
-            <h2 className='text-3xl font-bold text-gray-900'>
-              {extendedData.tagline || 'Your Peace of Mind. Their Happiness.'}
-            </h2>
+            {isPremium ? (
+              <div className='flex items-center bg-amber-500/20 backdrop-blur-sm px-3 py-1 rounded-full border border-amber-500/40'>
+                <Sparkles className='h-4 w-4 text-amber-300 mr-2' />
+                <span className='text-xs font-semibold uppercase tracking-wider text-amber-100'>
+                  Premium Experience
+                </span>
+              </div>
+            ) : (
+              <div className='flex items-center bg-blue-500/20 backdrop-blur-sm px-3 py-1 rounded-full border border-blue-500/40'>
+                <Heart className='h-4 w-4 text-blue-300 mr-2' />
+                <span className='text-xs font-semibold uppercase tracking-wider text-blue-100'>
+                  Professional Childcare
+                </span>
+              </div>
+            )}
           </div>
-          <p className='text-lg text-gray-700 leading-relaxed mb-6'>
-            {extendedData.fullDescription ||
-              'Trust our experienced, background-checked babysitters to care for your little ones.'}
-          </p>
+          <h1 className='text-3xl md:text-5xl font-bold mb-4 leading-tight'>
+            {isPremium
+              ? 'Premium In-Villa Childcare Services'
+              : 'Professional Babysitting Services'}
+          </h1>
+          <h2 className='text-xl md:text-2xl opacity-90 mb-8 max-w-3xl font-light'>
+            {isPremium
+              ? 'Exceptional childcare that lets parents enjoy their vacation while children thrive'
+              : 'Trusted, certified caregivers to keep your children safe, happy, and engaged'}
+          </h2>
 
-          {/* Ratings Bar - Luxury Touch */}
+          <div className='flex flex-wrap items-center gap-6 text-sm'>
+            <div className='flex items-center'>
+              <Shield className='h-5 w-5 mr-2 opacity-80' />
+              <span>Certified & Background-Checked</span>
+            </div>
+            <div className='flex items-center'>
+              <Users className='h-5 w-5 mr-2 opacity-80' />
+              <span>Age-Appropriate Activities</span>
+            </div>
+            <div className='flex items-center'>
+              <Calendar className='h-5 w-5 mr-2 opacity-80' />
+              <span>Flexible Scheduling</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Info with Image */}
+      <motion.div
+        className='grid grid-cols-1 md:grid-cols-2 gap-8 items-center'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='relative h-[400px] rounded-2xl overflow-hidden'>
+          <Image
+            src={
+              isPremium
+                ? 'https://images.unsplash.com/photo-1596463059283-da257325bab8?auto=format&fit=crop&q=80&w=800'
+                : 'https://images.unsplash.com/photo-1583244685026-d8519b5e3d21?auto=format&fit=crop&q=80&w=800'
+            }
+            alt='Babysitter with children'
+            fill
+            className='object-cover'
+          />
           <div
-            className={`flex items-center p-4 bg-${primaryColor}-50 rounded-lg mb-8`}
+            className={`absolute bottom-0 left-0 right-0 p-4 ${
+              isPremium
+                ? 'bg-gradient-to-t from-black/80 to-transparent'
+                : 'bg-gradient-to-t from-black/70 to-transparent'
+            }`}
           >
-            <div className='flex mr-6'>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={18}
-                  className={`text-${primaryColor}-500 fill-${primaryColor}-500`}
-                />
-              ))}
-            </div>
-            <div className='text-sm'>
-              <span className='font-medium'>Outstanding Service</span>
-              <span className='text-gray-500 ml-2'>Based on 150+ reviews</span>
-            </div>
+            <p className='text-white text-sm md:text-base'>
+              {isPremium
+                ? 'Elite childcare professionals with advanced training in child development'
+                : 'Professional caregivers focused on providing engaging, safe experiences'}
+            </p>
           </div>
+        </div>
 
-          <div className='grid md:grid-cols-2 gap-8'>
-            <div>
-              <h3 className='text-lg font-semibold text-gray-800 mb-5 flex items-center'>
-                <Clock className={`mr-3 text-${primaryColor}-500`} size={22} />
-                {t('services.booking.information')}
-              </h3>
-
-              <div className='space-y-5'>
-                <div className='flex items-start'>
-                  <div
-                    className={`h-10 w-10 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-4 flex-shrink-0 shadow-sm`}
-                  >
-                    <Clock className={`h-5 w-5 text-${primaryColor}-600`} />
-                  </div>
-                  <div>
-                    <p className='font-semibold text-gray-800'>
-                      {t('services.booking.minimum')}
-                    </p>
-                    <p className='text-gray-600'>
-                      {extendedData.minimumBooking}
-                    </p>
-                  </div>
-                </div>
-
-                <div className='flex items-start'>
-                  <div
-                    className={`h-10 w-10 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-4 flex-shrink-0 shadow-sm`}
-                  >
-                    <Calendar className={`h-5 w-5 text-${primaryColor}-600`} />
-                  </div>
-                  <div>
-                    <p className='font-semibold text-gray-800'>
-                      {t('services.booking.availability')}
-                    </p>
-                    <p className='text-gray-600'>{extendedData.availability}</p>
-                  </div>
-                </div>
-
-                <div className='flex items-start'>
-                  <div
-                    className={`h-10 w-10 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-4 flex-shrink-0 shadow-sm`}
-                  >
-                    <Users className={`h-5 w-5 text-${primaryColor}-600`} />
-                  </div>
-                  <div>
-                    <p className='font-semibold text-gray-800'>
-                      {t('services.babysitter.ageRange')}
-                    </p>
-                    <p className='text-gray-600'>{extendedData.ageRange}</p>
-                  </div>
-                </div>
-
-                <div className='flex items-start'>
-                  <div
-                    className={`h-10 w-10 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-4 flex-shrink-0 shadow-sm`}
-                  >
-                    <Shield className={`h-5 w-5 text-${primaryColor}-600`} />
-                  </div>
-                  <div>
-                    <p className='font-semibold text-gray-800'>
-                      {t('services.babysitter.safetyStandards')}
-                    </p>
-                    <p className='text-gray-600'>
-                      {extendedData.safetyStandards?.join(', ')}
-                    </p>
-                  </div>
-                </div>
+        <div>
+          <h2
+            className={`text-2xl md:text-3xl font-bold mb-6 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            }`}
+          >
+            {serviceData?.titleKey
+              ? t(serviceData.titleKey)
+              : isPremium
+              ? 'Your Peace of Mind. Their Happiness.'
+              : 'Trust our experienced, background-checked babysitters'}
+          </h2>
+          <div className='space-y-4'>
+            <div className='flex items-start'>
+              <div
+                className={`h-8 w-8 rounded-full ${
+                  isPremium ? 'bg-amber-100' : 'bg-blue-100'
+                } flex items-center justify-center mr-3 flex-shrink-0 mt-1`}
+              >
+                <Clock
+                  className={`h-4 w-4 ${
+                    isPremium ? 'text-amber-600' : 'text-blue-600'
+                  }`}
+                />
+              </div>
+              <div>
+                <p className='font-medium text-gray-700'>
+                  {t('services.booking.minimum')}
+                </p>
+                <p className='text-gray-600'>{minimumBooking}</p>
               </div>
             </div>
 
-            <div>
-              <h3 className='text-lg font-semibold text-gray-800 mb-5 flex items-center'>
-                <Heart className={`mr-3 text-${primaryColor}-500`} size={22} />
-                {t('services.common.options')}
-              </h3>
+            <div className='flex items-start'>
+              <div
+                className={`h-8 w-8 rounded-full ${
+                  isPremium ? 'bg-amber-100' : 'bg-blue-100'
+                } flex items-center justify-center mr-3 flex-shrink-0 mt-1`}
+              >
+                <Calendar
+                  className={`h-4 w-4 ${
+                    isPremium ? 'text-amber-600' : 'text-blue-600'
+                  }`}
+                />
+              </div>
+              <div>
+                <p className='font-medium text-gray-700'>
+                  {t('services.booking.availability')}
+                </p>
+                <p className='text-gray-600'>{availability}</p>
+              </div>
+            </div>
 
-              <div className='grid grid-cols-1 gap-3'>
-                {extendedData.timeSlots?.map((option, index) => (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-lg bg-${primaryColor}-50/60 border border-${primaryColor}-100 shadow-sm hover:shadow-md transition-shadow duration-300`}
-                  >
-                    <p className='font-medium text-gray-800 flex items-center'>
-                      <Check
-                        className={`mr-3 h-5 w-5 text-${primaryColor}-500`}
-                      />
-                      {option}
-                    </p>
-                  </div>
-                ))}
+            <div className='flex items-start'>
+              <div
+                className={`h-8 w-8 rounded-full ${
+                  isPremium ? 'bg-amber-100' : 'bg-blue-100'
+                } flex items-center justify-center mr-3 flex-shrink-0 mt-1`}
+              >
+                <Users
+                  className={`h-4 w-4 ${
+                    isPremium ? 'text-amber-600' : 'text-blue-600'
+                  }`}
+                />
+              </div>
+              <div>
+                <p className='font-medium text-gray-700'>
+                  {t('services.babysitter.ageRange')}
+                </p>
+                <p className='text-gray-600'>{ageRange}</p>
+              </div>
+            </div>
+
+            <div className='flex items-start'>
+              <div
+                className={`h-8 w-8 rounded-full ${
+                  isPremium ? 'bg-amber-100' : 'bg-blue-100'
+                } flex items-center justify-center mr-3 flex-shrink-0 mt-1`}
+              >
+                <Shield
+                  className={`h-4 w-4 ${
+                    isPremium ? 'text-amber-600' : 'text-blue-600'
+                  }`}
+                />
+              </div>
+              <div>
+                <p className='font-medium text-gray-700'>
+                  {t('services.babysitter.safetyStandards')}
+                </p>
+                <p className='text-gray-600'>{safetyStandards?.join(' • ')}</p>
               </div>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Gallery Section */}
+      {/* Service Options */}
       <motion.div
-        className={`bg-white rounded-xl shadow-xl overflow-hidden border border-${primaryColor}-100`}
-        variants={itemVariants}
+        className='bg-white rounded-2xl shadow-xl overflow-hidden'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
       >
-        <div className='p-8 md:p-10'>
-          <div className='flex items-center justify-between mb-6'>
-            <h3 className='text-2xl font-bold text-gray-900 flex items-center'>
-              <Camera className={`mr-3 text-${primaryColor}-500`} size={24} />
-              <span>Premium Childcare Experience</span>
-            </h3>
-          </div>
+        <div className='p-8'>
+          <h2
+            className={`text-2xl font-bold mb-6 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            } flex items-center`}
+          >
+            <Heart className='mr-3' size={24} />
+            {t('services.common.options')}
+          </h2>
 
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
-            {galleryImages.map((image, index) => (
-              <div key={index} className='relative group'>
-                <div
-                  className='relative aspect-[4/3] overflow-hidden rounded-lg shadow-md cursor-pointer'
-                  onClick={() => setExpandedImage(index)}
-                >
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className='object-cover transition-transform duration-500 group-hover:scale-110'
-                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-                  <div className='absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
-                    <p className='text-sm font-medium'>{image.caption}</p>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            {/* Time Slots */}
+            <div>
+              <h3 className='text-lg font-semibold text-gray-800 mb-4'>
+                Scheduling Options
+              </h3>
+              <div className='grid grid-cols-1 gap-3'>
+                {timeSlots?.map((option, index) => (
+                  <div
+                    key={index}
+                    className={`p-4 rounded-lg ${
+                      isPremium ? 'bg-amber-50' : 'bg-blue-50'
+                    } hover:shadow-md transition-shadow`}
+                  >
+                    <div className='flex items-center'>
+                      <div
+                        className={`h-8 w-8 rounded-full ${
+                          isPremium
+                            ? 'bg-amber-100 text-amber-600'
+                            : 'bg-blue-100 text-blue-600'
+                        } flex items-center justify-center mr-3`}
+                      >
+                        {index === 0 ? (
+                          <Clock className='h-4 w-4' />
+                        ) : index === 1 ? (
+                          <Calendar className='h-4 w-4' />
+                        ) : (
+                          <Shield className='h-4 w-4' />
+                        )}
+                      </div>
+                      <div>
+                        <p className='font-medium text-gray-800'>
+                          {option} Care
+                        </p>
+                        <p className='text-sm text-gray-600'>
+                          {index === 0
+                            ? '8am - 6pm flexible scheduling'
+                            : index === 1
+                            ? '6pm - 11pm for your evening events'
+                            : 'Full night coverage for complete peace of mind'}
+                        </p>
+                      </div>
+                    </div>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Child Count Options */}
+            <div>
+              <h3 className='text-lg font-semibold text-gray-800 mb-4'>
+                Child Care Options
+              </h3>
+              <div className='grid grid-cols-1 gap-3'>
+                {Object.keys(childCountOptions).length > 0
+                  ? Object.entries(childCountOptions).map(
+                      ([key, option]: [string, any], index) => (
+                        <div
+                          key={key}
+                          className={`p-4 rounded-lg ${
+                            isPremium ? 'bg-amber-50' : 'bg-blue-50'
+                          } hover:shadow-md transition-shadow`}
+                        >
+                          <div className='flex justify-between'>
+                            <div className='flex items-center'>
+                              <div
+                                className={`h-8 w-8 rounded-full ${
+                                  isPremium
+                                    ? 'bg-amber-100 text-amber-600'
+                                    : 'bg-blue-100 text-blue-600'
+                                } flex items-center justify-center mr-3`}
+                              >
+                                <Users className='h-4 w-4' />
+                              </div>
+                              <div>
+                                <p className='font-medium text-gray-800'>
+                                  {t(option.nameKey, {
+                                    fallback: formatOptionName(key),
+                                  })}
+                                </p>
+                                {index === 0 ? (
+                                  <p className='text-sm text-gray-600'>
+                                    Individual attention for your child
+                                  </p>
+                                ) : index === 1 ? (
+                                  <p className='text-sm text-gray-600'>
+                                    Perfect for siblings
+                                  </p>
+                                ) : (
+                                  <p className='text-sm text-gray-600'>
+                                    For multiple children or playdates
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            {option.price !== 0 && (
+                              <div
+                                className={`font-medium ${
+                                  option.price > 0
+                                    ? 'text-amber-600'
+                                    : 'text-green-600'
+                                }`}
+                              >
+                                {option.price > 0
+                                  ? `+$${option.price}`
+                                  : `-$${Math.abs(option.price)}`}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    )
+                  : // Default options if none provided in data
+                    ['one', 'two', 'threePlus'].map((option, index) => (
+                      <div
+                        key={option}
+                        className={`p-4 rounded-lg ${
+                          isPremium ? 'bg-amber-50' : 'bg-blue-50'
+                        } hover:shadow-md transition-shadow`}
+                      >
+                        <div className='flex justify-between'>
+                          <div className='flex items-center'>
+                            <div
+                              className={`h-8 w-8 rounded-full ${
+                                isPremium
+                                  ? 'bg-amber-100 text-amber-600'
+                                  : 'bg-blue-100 text-blue-600'
+                              } flex items-center justify-center mr-3`}
+                            >
+                              <Users className='h-4 w-4' />
+                            </div>
+                            <div>
+                              <p className='font-medium text-gray-800'>
+                                {option === 'one'
+                                  ? 'One Child'
+                                  : option === 'two'
+                                  ? 'Two Children'
+                                  : 'Three or More Children'}
+                              </p>
+                              {index === 0 ? (
+                                <p className='text-sm text-gray-600'>
+                                  Individual attention for your child
+                                </p>
+                              ) : index === 1 ? (
+                                <p className='text-sm text-gray-600'>
+                                  Perfect for siblings
+                                </p>
+                              ) : (
+                                <p className='text-sm text-gray-600'>
+                                  For multiple children or playdates
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div
+                            className={`font-medium ${
+                              index > 0 ? 'text-amber-600' : 'text-gray-600'
+                            }`}
+                          >
+                            {index === 0
+                              ? 'Base Rate'
+                              : index === 1
+                              ? '+$10'
+                              : '+$25'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Age-Appropriate Activities */}
+      <motion.div
+        className='bg-white rounded-2xl shadow-xl overflow-hidden'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-8'>
+          <h2
+            className={`text-2xl font-bold mb-6 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            } flex items-center`}
+          >
+            <Activity className='mr-3' size={24} />
+            Age-Appropriate Activities
+          </h2>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            {activities.map((ageGroup, index) => (
+              <div
+                key={index}
+                className={`p-6 rounded-xl ${
+                  isPremium
+                    ? 'bg-gradient-to-br from-amber-50 to-amber-100/50'
+                    : 'bg-gradient-to-br from-blue-50 to-blue-100/50'
+                }`}
+              >
+                <div className='flex items-center mb-4'>
+                  <div
+                    className={`h-10 w-10 rounded-full ${
+                      isPremium
+                        ? 'bg-amber-100 text-amber-600'
+                        : 'bg-blue-100 text-blue-600'
+                    } flex items-center justify-center mr-3`}
+                  >
+                    {ageGroup.icon}
+                  </div>
+                  <h3 className='text-lg font-semibold text-gray-800'>
+                    {ageGroup.ageGroup}
+                  </h3>
+                </div>
+
+                <ul className='space-y-2'>
+                  {ageGroup.activities.map((activity, idx) => (
+                    <li key={idx} className='flex items-start'>
+                      <Check
+                        className={`h-5 w-5 ${
+                          isPremium ? 'text-amber-500' : 'text-blue-500'
+                        } mr-2 mt-0.5 flex-shrink-0`}
+                      />
+                      <span className='text-gray-700'>{activity}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Gallery Section with Instagram-like feel */}
+      <motion.div
+        className='bg-white rounded-2xl shadow-xl overflow-hidden'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-8'>
+          <h2
+            className={`text-2xl font-bold mb-6 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            } flex items-center`}
+          >
+            <Instagram className='mr-3' size={24} />
+            Childcare Moments
+          </h2>
+          <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+            {[
+              'https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=300',
+              'https://images.unsplash.com/photo-1597413545419-4013d5fade59?auto=format&fit=crop&q=80&w=300',
+              'https://images.unsplash.com/photo-1596464716066-8ee1cc47bb8e?auto=format&fit=crop&q=80&w=300',
+              'https://images.unsplash.com/photo-1607453998774-d533f65dac99?auto=format&fit=crop&q=80&w=300',
+            ].map((imgSrc, index) => (
+              <div
+                key={index}
+                className='relative aspect-square rounded-lg overflow-hidden group'
+              >
+                <Image
+                  src={imgSrc}
+                  alt={`Childcare moment ${index + 1}`}
+                  fill
+                  className='object-cover transition-transform duration-300 group-hover:scale-110'
+                />
+                <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'>
+                  <p className='p-3 text-white text-sm font-medium'>
+                    {
+                      [
+                        'Art & crafts time',
+                        'Outdoor exploration',
+                        'Storytime favorites',
+                        'Learning through play',
+                        'Snack preparation',
+                        'Interactive games',
+                        'Music & movement',
+                        'Creative playtime',
+                      ][index]
+                    }
+                  </p>
                 </div>
               </div>
             ))}
@@ -274,157 +682,134 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
         </div>
       </motion.div>
 
-      {/* What's Included Section */}
+      {/* Testimonials Section */}
       <motion.div
-        className={`bg-white rounded-xl shadow-xl overflow-hidden border border-${primaryColor}-100`}
-        variants={itemVariants}
+        className={`rounded-2xl overflow-hidden ${
+          isPremium ? 'bg-amber-50' : 'bg-blue-50'
+        }`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
       >
-        <div className='p-8 md:p-10'>
-          <h3 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
-            <Check className={`mr-3 text-${primaryColor}-500`} size={24} />
-            {t('services.common.whatsIncluded')}
-          </h3>
+        <div className='p-8'>
+          <h2
+            className={`text-2xl font-bold mb-6 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            } flex items-center`}
+          >
+            <MessageCircle className='mr-3' size={24} />
+            What Parents Say
+          </h2>
 
-          <div className='grid md:grid-cols-2 gap-10'>
-            <div>
-              <h4 className='text-lg font-semibold text-gray-800 mb-4 flex items-center'>
-                <div
-                  className={`h-8 w-8 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-3 shadow-sm`}
-                >
-                  <Check className={`h-4 w-4 text-${primaryColor}-600`} />
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className='bg-white p-6 rounded-xl shadow-sm'>
+                <div className='flex mb-4'>
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      className={`${
+                        isPremium
+                          ? 'text-amber-400 fill-amber-400'
+                          : 'text-blue-400 fill-blue-400'
+                      } mr-1`}
+                    />
+                  ))}
                 </div>
-                {t('services.common.includedInService')}
-              </h4>
-
-              <ul className='space-y-4'>
-                {extendedData.includes?.map((item, index) => (
-                  <li key={index} className='flex items-start'>
-                    <div
-                      className={`mt-1 h-6 w-6 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-3 flex-shrink-0 shadow-sm`}
-                    >
-                      <Check
-                        className={`h-3.5 w-3.5 text-${primaryColor}-600`}
-                      />
-                    </div>
-                    <span className='text-gray-700'>{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              {extendedData.notIncluded &&
-                extendedData.notIncluded.length > 0 && (
-                  <div className='mt-8'>
-                    <h4 className='text-lg font-semibold text-gray-800 mb-4 flex items-center'>
-                      <div
-                        className={`h-8 w-8 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-3 shadow-sm`}
-                      >
-                        <DollarSign
-                          className={`h-4 w-4 text-${primaryColor}-600`}
-                        />
-                      </div>
-                      {t('services.common.notIncluded')}
-                    </h4>
-
-                    <ul className='space-y-4'>
-                      {extendedData.notIncluded.map((item, index) => (
-                        <li
-                          key={index}
-                          className='flex items-start text-gray-700'
-                        >
-                          <div className='mt-1 h-6 w-6 flex items-center justify-center mr-3 flex-shrink-0'>
-                            <span className='text-sm font-medium'>•</span>
-                          </div>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-            </div>
-
-            <div>
-              <h4 className='text-lg font-semibold text-gray-800 mb-4 flex items-center'>
-                <div
-                  className={`h-8 w-8 rounded-full bg-${primaryColor}-100 flex items-center justify-center mr-3 shadow-sm`}
-                >
-                  <Clock className={`h-4 w-4 text-${primaryColor}-600`} />
-                </div>
-                {t('services.common.whatToExpect')}
-              </h4>
-
-              <ol className='space-y-5'>
-                {extendedData.itinerary?.map((step, index) => (
-                  <li key={index} className='flex items-start'>
-                    <div
-                      className={`mt-0.5 h-8 w-8 rounded-full bg-${primaryColor}-500 text-white flex items-center justify-center mr-4 flex-shrink-0 font-medium text-sm shadow-md`}
-                    >
-                      {index + 1}
-                    </div>
-                    <span className='text-gray-700'>{step}</span>
-                  </li>
-                ))}
-              </ol>
-
-              {extendedData.disclaimer && (
-                <div className='mt-8 p-6 bg-amber-50 rounded-lg border border-amber-100'>
-                  <h4 className='font-medium text-amber-800 mb-2 flex items-center'>
-                    <Shield className='w-5 h-5 mr-2' />
-                    {t('services.common.importantNote')}
-                  </h4>
-                  <p className='text-amber-700'>{extendedData.disclaimer}</p>
-                </div>
-              )}
-            </div>
+                <p className='italic text-gray-700 mb-4'>
+                  "{testimonial.text}"
+                </p>
+                <p className='text-sm font-medium text-gray-900'>
+                  {testimonial.author}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </motion.div>
 
-      {/* Image Modal */}
-      {expandedImage !== null && (
-        <div
-          className='fixed inset-0 bg-black/90 z-50 flex items-center justify-center'
-          onClick={() => setExpandedImage(null)}
-        >
-          <div className='relative max-w-5xl max-h-[90vh] w-full'>
-            <button
-              className='absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors z-10'
-              onClick={() => setExpandedImage(null)}
-            >
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                className='h-6 w-6'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
+      {/* FAQ Section */}
+      <motion.div
+        className='bg-white rounded-2xl shadow-xl overflow-hidden'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-8'>
+          <h2
+            className={`text-2xl font-bold mb-6 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            } flex items-center`}
+          >
+            <Info className='mr-3' size={24} />
+            Frequently Asked Questions
+          </h2>
+
+          <div className='space-y-4'>
+            {faq.map((item, index) => (
+              <div
+                key={index}
+                className={`p-6 rounded-xl border ${
+                  isPremium ? 'border-amber-200' : 'border-blue-200'
+                }`}
               >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M6 18L18 6M6 6l12 12'
-                />
-              </svg>
-            </button>
-
-            <div className='relative h-[80vh]'>
-              <Image
-                src={galleryImages[expandedImage].src}
-                alt={galleryImages[expandedImage].alt}
-                fill
-                className='object-contain'
-                sizes='100vw'
-              />
-            </div>
-
-            <div className='absolute bottom-0 left-0 right-0 bg-black/70 text-white p-4'>
-              <p className='text-lg font-medium'>
-                {galleryImages[expandedImage].caption}
-              </p>
-            </div>
+                <h3
+                  className={`text-lg font-medium mb-2 ${
+                    isPremium ? 'text-amber-800' : 'text-blue-800'
+                  }`}
+                >
+                  {item.question}
+                </h3>
+                <p className='text-gray-700'>{item.answer}</p>
+              </div>
+            ))}
           </div>
         </div>
-      )}
-    </motion.div>
+      </motion.div>
+
+      {/* Call-to-Action Section */}
+      <motion.div
+        className={`rounded-2xl overflow-hidden ${
+          isPremium
+            ? 'bg-gradient-to-r from-amber-600 to-amber-800'
+            : 'bg-gradient-to-r from-blue-600 to-blue-800'
+        }`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-10 md:p-16 text-white text-center'>
+          <h2 className='text-3xl md:text-4xl font-bold mb-4'>
+            Ready to Enjoy Your Time While Your Children are in Great Hands?
+          </h2>
+          <p className='text-xl opacity-90 mb-8 max-w-2xl mx-auto'>
+            {isPremium
+              ? 'Book our premium babysitting service and give your children an enriching experience while you enjoy your time away'
+              : 'Schedule professional, reliable childcare and treat yourself to worry-free time away'}
+          </p>
+          <button
+            className={`py-3 px-8 rounded-full bg-white flex items-center mx-auto font-medium ${
+              isPremium ? 'text-amber-700' : 'text-blue-700'
+            }`}
+          >
+            Book Now
+            <ArrowRight className='ml-2 h-5 w-5' />
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Helper function to format option names
+const formatOptionName = (name: string): string => {
+  return (
+    name.charAt(0).toUpperCase() +
+    name
+      .slice(1)
+      .replace(/-|([A-Z])/g, ' $1')
+      .trim()
   );
 };
 

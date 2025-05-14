@@ -4,31 +4,30 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
+import Image from 'next/image';
 import {
   ShoppingBag,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  PlusCircle,
-  MinusCircle,
   ShoppingCart,
-  FileText,
-  ArrowRight,
-  RefreshCw,
+  Truck,
+  Clock,
+  Sparkles,
+  Info,
 } from 'lucide-react';
 
 import GroceryShoppingService from '@/UI/components/grocery/GroceryShoppingService';
+import { motion } from 'framer-motion';
 
 interface GroceryServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
   primaryColor: string;
+  viewContext?: 'standard-view' | 'premium-view';
 }
 
 const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
   service,
   serviceData,
-  primaryColor,
+  viewContext,
 }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('shop'); // 'shop' or 'cart'
@@ -36,15 +35,14 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
   const [specialRequests, setSpecialRequests] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const isPremium =
+    viewContext === 'premium-view' || service.packageType.includes('premium');
+  // State for the accordion
 
-  // Calculate cart totals
-  const cartTotal = cartItems.reduce((total, item) => {
-    return total + item.price * (item.quantity || 1);
-  }, 0);
-
-  const itemCount = cartItems.reduce((count, item) => {
-    return count + (item.quantity || 1);
-  }, 0);
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
 
   // Simulate form submission
   const handleSubmitOrder = () => {
@@ -67,271 +65,284 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
 
   return (
     <div className='space-y-8 '>
-      {/* Service description */}
-      <div className={`bg-white rounded-xl shadow-lg overflow-hidden p-6`}>
-        <div className='flex items-center mb-4'>
-          <ShoppingBag className={`h-6 w-6 text-${primaryColor}-500 mr-3`} />
-          <h2 className='text-2xl font-bold text-gray-900'>
-            {t('services.grocery.title')}
-          </h2>
+      {/* Hero Section */}
+      <motion.div
+        className={`relative overflow-hidden rounded-2xl ${
+          isPremium
+            ? 'bg-gradient-to-r from-amber-900/90 to-amber-700/80'
+            : 'bg-gradient-to-r from-blue-900/90 to-blue-700/80'
+        }`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='absolute inset-0 -z-10'>
+          <Image
+            src='https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
+            alt='Fresh groceries'
+            fill
+            className='object-cover opacity-30'
+          />
         </div>
-        <p className='text-lg text-gray-700 mb-6'>
-          {serviceData?.descriptionKey
-            ? t(serviceData.descriptionKey)
-            : t('services.grocery.description')}
-        </p>
-
-        {/* Enhanced description with service highlights */}
-        <div className='grid md:grid-cols-3 gap-4 mt-6'>
-          <div
-            className={`p-4 rounded-lg bg-${primaryColor}-50 flex flex-col items-center text-center`}
-          >
-            <div className={`rounded-full bg-${primaryColor}-100 p-3 mb-3`}>
-              <RefreshCw className={`h-5 w-5 text-${primaryColor}-600`} />
-            </div>
-            <h3 className='font-medium text-gray-800 mb-1'>
-              {t('services.grocery.fastDelivery')}
-            </h3>
-            <p className='text-sm text-gray-600'>
-              {t('services.grocery.deliveryTime')}
-            </p>
-          </div>
-
-          <div
-            className={`p-4 rounded-lg bg-${primaryColor}-50 flex flex-col items-center text-center`}
-          >
-            <div className={`rounded-full bg-${primaryColor}-100 p-3 mb-3`}>
-              <ShoppingCart className={`h-5 w-5 text-${primaryColor}-600`} />
-            </div>
-            <h3 className='font-medium text-gray-800 mb-1'>
-              {t('services.grocery.wideSelection')}
-            </h3>
-            <p className='text-sm text-gray-600'>
-              {t('services.grocery.localProducts')}
-            </p>
-          </div>
-
-          <div
-            className={`p-4 rounded-lg bg-${primaryColor}-50 flex flex-col items-center text-center`}
-          >
-            <div className={`rounded-full bg-${primaryColor}-100 p-3 mb-3`}>
-              <FileText className={`h-5 w-5 text-${primaryColor}-600`} />
-            </div>
-            <h3 className='font-medium text-gray-800 mb-1'>
-              {t('services.grocery.specialRequests')}
-            </h3>
-            <p className='text-sm text-gray-600'>
-              {t('services.grocery.customOrders')}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Grocery shopping interface */}
-      <div className={`bg-white rounded-xl shadow-lg overflow-hidden`}>
-        <div className='p-6'>
-          {/* Tab navigation */}
-          <div className='flex border-b border-gray-200 mb-6'>
-            <button
-              onClick={() => setActiveTab('shop')}
-              className={`py-3 px-5 font-medium border-b-2 mr-4 ${
-                activeTab === 'shop'
-                  ? `border-${primaryColor}-500 text-${primaryColor}-600`
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <ShoppingBag className='h-5 w-5 inline-block mr-2' />
-              {t('services.grocery.shopItems')}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('cart')}
-              className={`py-3 px-5 font-medium border-b-2 relative ${
-                activeTab === 'cart'
-                  ? `border-${primaryColor}-500 text-${primaryColor}-600`
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <ShoppingCart className='h-5 w-5 inline-block mr-2' />
-              {t('services.grocery.cart')}
-
-              {cartItems.length > 0 && (
-                <span
-                  className={`absolute -top-1 -right-1 bg-${primaryColor}-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs`}
-                >
-                  {cartItems.length}
+        <div className='p-10 md:p-16 text-white'>
+          <div className='flex items-center mb-4'>
+            {isPremium ? (
+              <div className='flex items-center bg-amber-500/20 backdrop-blur-sm px-3 py-1 rounded-full border border-amber-500/40'>
+                <Sparkles className='h-4 w-4 text-amber-300 mr-2' />
+                <span className='text-xs font-semibold uppercase tracking-wider text-amber-100'>
+                  Premium Grocery Service
                 </span>
-              )}
-            </button>
+              </div>
+            ) : (
+              <div className='flex items-center bg-blue-500/20 backdrop-blur-sm px-3 py-1 rounded-full border border-blue-500/40'>
+                <ShoppingBag className='h-4 w-4 text-blue-300 mr-2' />
+                <span className='text-xs font-semibold uppercase tracking-wider text-blue-100'>
+                  Grocery Delivery
+                </span>
+              </div>
+            )}
+          </div>
+          <h1 className='text-3xl md:text-5xl font-bold mb-4 leading-tight'>
+            {isPremium
+              ? 'Premium Grocery Delivery & Stocking Service'
+              : 'Fresh Groceries Delivered to Your Door'}
+          </h1>
+          <h2 className='text-xl md:text-2xl opacity-90 mb-8 max-w-3xl font-light'>
+            {isPremium
+              ? 'Your personalized grocery concierge service with premium selection and white-glove stocking'
+              : 'We shop for the freshest local ingredients and deliver them right to your vacation rental'}
+          </h2>
+          <div className='flex flex-wrap items-center gap-4 text-sm'>
+            <div className='flex items-center'>
+              <Clock className='h-5 w-5 mr-2 opacity-80' />
+              <span>
+                {isPremium
+                  ? 'Same-day delivery available'
+                  : 'Delivery within 24-48 hours'}
+              </span>
+            </div>
+            <div className='flex items-center'>
+              <Truck className='h-5 w-5 mr-2 opacity-80' />
+              <span>Island-wide delivery service</span>
+            </div>
+            <div className='flex items-center'>
+              <ShoppingBag className='h-5 w-5 mr-2 opacity-80' />
+              <span>Local & imported products</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        className='grid grid-cols-1 md:grid-cols-5 gap-8 items-center'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        {/* Right Side with Images - Modernized */}
+        <div className='md:col-span-2 space-y-6'>
+          <div className='relative h-72 rounded-2xl overflow-hidden shadow-xl transition-transform duration-500 hover:scale-[1.02] group'>
+            <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10'></div>
+            <Image
+              src='https://images.unsplash.com/photo-1584473457409-ce95b8a3affb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
+              alt='Fresh produce'
+              fill
+              className='object-cover transition-transform duration-700 group-hover:scale-110'
+            />
+            <div className='absolute bottom-4 left-4 z-20 text-white'>
+              <span
+                className={`px-3 py-1 text-xs font-medium rounded-full ${
+                  isPremium ? 'bg-amber-500' : 'bg-blue-500'
+                }`}
+              >
+                Premium Selection
+              </span>
+            </div>
           </div>
 
-          {/* Main interface - shop or cart */}
-          {activeTab === 'shop' ? (
-            <div>
-              {/* Main grocery shopping component */}
-              <GroceryShoppingService />
+          <div className='relative h-56 rounded-2xl overflow-hidden shadow-xl transition-transform duration-500 hover:scale-[1.02] group'>
+            <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10'></div>
+            <Image
+              src='https://images.unsplash.com/photo-1605774337664-7a846e9cdf17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
+              alt='Grocery delivery'
+              fill
+              className='object-cover transition-transform duration-700 group-hover:scale-110'
+            />
+            <div className='absolute bottom-4 left-4 z-20 text-white'>
+              <span
+                className={`px-3 py-1 text-xs font-medium rounded-full ${
+                  isPremium ? 'bg-amber-500' : 'bg-blue-500'
+                }`}
+              >
+                Delivery Service
+              </span>
             </div>
-          ) : (
-            <div>
-              {/* Cart view */}
-              {cartItems.length === 0 ? (
-                <div className='text-center py-12'>
-                  <div className='inline-block p-4 rounded-full bg-gray-100 mb-4'>
-                    <ShoppingCart className='h-8 w-8 text-gray-400' />
-                  </div>
-                  <h3 className='text-lg font-medium text-gray-700 mb-2'>
-                    {t('services.grocery.emptyCart')}
-                  </h3>
-                  <p className='text-gray-500 mb-4'>
-                    {t('services.grocery.emptyCartMessage')}
-                  </p>
-                  <button
-                    onClick={() => setActiveTab('shop')}
-                    className={`px-4 py-2 bg-${primaryColor}-500 text-white rounded-lg hover:bg-${primaryColor}-600 transition-colors`}
-                  >
-                    {t('services.grocery.startShopping')}
-                  </button>
-                </div>
-              ) : submissionSuccess ? (
-                <div className='text-center py-12'>
-                  <div
-                    className={`inline-block p-4 rounded-full bg-green-100 mb-4`}
-                  >
-                    <Check className='h-8 w-8 text-green-500' />
-                  </div>
-                  <h3 className='text-lg font-medium text-gray-700 mb-2'>
-                    {t('services.grocery.orderSuccess')}
-                  </h3>
-                  <p className='text-gray-500 mb-4'>
-                    {t('services.grocery.orderSuccessMessage')}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <h3 className='text-xl font-semibold text-gray-800 mb-4'>
-                    {t('services.grocery.yourOrder')}
-                  </h3>
-
-                  <div className='space-y-4 mb-6'>
-                    {cartItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className='flex justify-between items-center p-3 border border-gray-200 rounded-lg'
-                      >
-                        <div>
-                          <h4 className='font-medium text-gray-800'>
-                            {item.name}
-                          </h4>
-                          <p className='text-sm text-gray-500'>
-                            ${item.price.toFixed(2)} per {item.unit}
-                          </p>
-                        </div>
-
-                        <div className='flex items-center'>
-                          <button
-                            onClick={() => {
-                              /* Handle decrease */
-                            }}
-                            className='p-1 text-gray-500 hover:text-gray-700'
-                          >
-                            <MinusCircle size={18} />
-                          </button>
-                          <span className='mx-2 min-w-[30px] text-center'>
-                            {item.quantity || 1}
-                          </span>
-                          <button
-                            onClick={() => {
-                              /* Handle increase */
-                            }}
-                            className='p-1 text-gray-500 hover:text-gray-700'
-                          >
-                            <PlusCircle size={18} />
-                          </button>
-
-                          <span className='font-medium ml-4'>
-                            ${(item.price * (item.quantity || 1)).toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Special requests */}
-                  <div className='mb-6'>
-                    <h4 className='font-medium text-gray-800 mb-2'>
-                      {t('services.grocery.specialRequests')}
-                    </h4>
-                    <textarea
-                      value={specialRequests}
-                      onChange={(e) => setSpecialRequests(e.target.value)}
-                      className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                      rows={3}
-                      placeholder={t(
-                        'services.grocery.specialRequestsPlaceholder'
-                      )}
-                    ></textarea>
-                  </div>
-
-                  {/* Order summary */}
-                  <div className={`p-4 bg-${primaryColor}-50 rounded-lg mb-6`}>
-                    <h4 className='font-medium text-gray-800 mb-3'>
-                      {t('services.grocery.orderSummary')}
-                    </h4>
-
-                    <div className='flex justify-between mb-2'>
-                      <span className='text-gray-600'>
-                        {t('services.grocery.subtotal')}
-                      </span>
-                      <span className='font-medium'>
-                        ${cartTotal.toFixed(2)}
-                      </span>
-                    </div>
-
-                    <div className='flex justify-between mb-2'>
-                      <span className='text-gray-600'>
-                        {t('services.grocery.deliveryFee')}
-                      </span>
-                      <span className='font-medium'>$10.00</span>
-                    </div>
-
-                    <div className='border-t border-gray-200 my-2 pt-2 flex justify-between'>
-                      <span className='font-medium text-gray-800'>
-                        {t('services.grocery.total')}
-                      </span>
-                      <span className='font-bold text-gray-800'>
-                        ${(cartTotal + 10).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Submit button */}
-                  <button
-                    onClick={handleSubmitOrder}
-                    disabled={isSubmitting}
-                    className={`w-full py-3 px-4 flex items-center justify-center ${
-                      isSubmitting
-                        ? 'bg-gray-300 cursor-not-allowed'
-                        : `bg-${primaryColor}-500 hover:bg-${primaryColor}-600`
-                    } text-white font-medium rounded-lg transition-colors`}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <RefreshCw className='h-5 w-5 mr-2 animate-spin' />
-                        {t('services.grocery.processing')}
-                      </>
-                    ) : (
-                      <>
-                        {t('services.grocery.placeOrder')}
-                        <ArrowRight className='h-5 w-5 ml-2' />
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+        {/* Main Content Section */}
+        <div className='md:col-span-3'>
+          <h2
+            className={`text-3xl md:text-4xl font-bold mb-8 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            } tracking-tight`}
+          >
+            {serviceData?.titleKey
+              ? t(serviceData.titleKey)
+              : isPremium
+              ? 'Premium Villa Grocery Service'
+              : 'Convenient Grocery Delivery'}
+          </h2>
+          <div className='prose max-w-none text-gray-700'>
+            <p className='text-lg mb-6 leading-relaxed'>
+              {serviceData?.descriptionKey
+                ? t(serviceData.descriptionKey)
+                : isPremium
+                ? 'Our premium grocery service takes the hassle out of vacation planning. We carefully select the freshest local and imported products and deliver them directly to your villa, allowing you to focus on enjoying your stay.'
+                : 'Skip the grocery store and let us do the shopping for you. We deliver fresh, high-quality groceries directly to your vacation rental so you can spend more time enjoying your stay.'}
+            </p>
+            {serviceData?.fullDescriptionKey && (
+              <p className='mb-6 leading-relaxed'>
+                {t(serviceData.fullDescriptionKey)}
+              </p>
+            )}
+
+            {/* Process Steps - Modernized */}
+            <div className='mt-12 relative'>
+              {/* Decorative element */}
+              <div
+                className={`absolute left-4 top-12 bottom-12 w-0.5 ${
+                  isPremium ? 'bg-amber-300' : 'bg-blue-300'
+                } opacity-50`}
+              ></div>
+
+              <h3
+                className={`text-2xl font-bold mb-8 ${
+                  isPremium ? 'text-amber-700' : 'text-blue-700'
+                }`}
+              >
+                How It Works
+              </h3>
+
+              <div className='space-y-8'>
+                {/* Step 1 */}
+                <div className='flex items-start group transition-all duration-300 hover:transform hover:translate-x-1'>
+                  <div
+                    className={`flex-shrink-0 h-10 w-10 rounded-full ${
+                      isPremium
+                        ? 'bg-gradient-to-tr from-amber-500 to-amber-300 shadow-amber-200'
+                        : 'bg-gradient-to-tr from-blue-500 to-blue-300 shadow-blue-200'
+                    } flex items-center justify-center mr-5 font-medium text-white shadow-lg z-10`}
+                  >
+                    1
+                  </div>
+                  <div className='pt-1'>
+                    <h4 className='font-semibold text-gray-900 text-lg'>
+                      Submit Your Order
+                    </h4>
+                    <p className='text-gray-600 mt-2'>
+                      Send us your grocery list or choose from our curated
+                      selections of local favorites.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className='flex items-start group transition-all duration-300 hover:transform hover:translate-x-1'>
+                  <div
+                    className={`flex-shrink-0 h-10 w-10 rounded-full ${
+                      isPremium
+                        ? 'bg-gradient-to-tr from-amber-500 to-amber-300 shadow-amber-200'
+                        : 'bg-gradient-to-tr from-blue-500 to-blue-300 shadow-blue-200'
+                    } flex items-center justify-center mr-5 font-medium text-white shadow-lg z-10`}
+                  >
+                    2
+                  </div>
+                  <div className='pt-1'>
+                    <h4 className='font-semibold text-gray-900 text-lg'>
+                      We Shop For You
+                    </h4>
+                    <p className='text-gray-600 mt-2'>
+                      Our experienced shoppers carefully select the freshest
+                      items from local markets and stores.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className='flex items-start group transition-all duration-300 hover:transform hover:translate-x-1'>
+                  <div
+                    className={`flex-shrink-0 h-10 w-10 rounded-full ${
+                      isPremium
+                        ? 'bg-gradient-to-tr from-amber-500 to-amber-300 shadow-amber-200'
+                        : 'bg-gradient-to-tr from-blue-500 to-blue-300 shadow-blue-200'
+                    } flex items-center justify-center mr-5 font-medium text-white shadow-lg z-10`}
+                  >
+                    3
+                  </div>
+                  <div className='pt-1'>
+                    <h4 className='font-semibold text-gray-900 text-lg'>
+                      Prompt Delivery
+                    </h4>
+                    <p className='text-gray-600 mt-2'>
+                      {isPremium
+                        ? 'We deliver and stock your kitchen at your preferred time.'
+                        : 'We deliver your groceries to your door at your chosen time slot.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <GroceryShoppingService />
+      {/* Call-to-Action Banner */}
+      <motion.div
+        className={`rounded-2xl overflow-hidden ${
+          isPremium
+            ? 'bg-gradient-to-r from-amber-600 to-amber-800'
+            : 'bg-gradient-to-r from-blue-600 to-blue-800'
+        }`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-10 md:p-16 text-white text-center'>
+          <h2 className='text-3xl md:text-4xl font-bold mb-4'>
+            Ready to Stock Your Villa?
+          </h2>
+          <p className='text-xl opacity-90 mb-8 max-w-2xl mx-auto'>
+            {isPremium
+              ? 'Experience our premium grocery service with personalized shopping and delivery'
+              : 'Skip the grocery store and let us handle your shopping needs during your stay'}
+          </p>
+          <button
+            className={`py-3 px-8 rounded-full bg-white flex items-center mx-auto font-medium ${
+              isPremium ? 'text-amber-700' : 'text-blue-700'
+            }`}
+          >
+            Place Your Order
+            <ShoppingCart className='ml-2 h-5 w-5' />
+          </button>
+        </div>
+      </motion.div>
+      {/* Service Disclaimer */}
+      <motion.div
+        className='bg-gray-50 rounded-lg p-4 flex items-start'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <Info className='h-5 w-5 text-gray-500 mr-3 mt-0.5 flex-shrink-0' />
+        <p className='text-sm text-gray-600'>
+          Minimum order value of $50 applies to all grocery deliveries. Prices
+          are subject to change based on market conditions.
+          {isPremium
+            ? ' Premium membership includes benefits such as reduced fees, priority scheduling, and additional services.'
+            : ' Delivery fees may vary based on location and time of delivery.'}
+        </p>
+      </motion.div>
     </div>
   );
 };
