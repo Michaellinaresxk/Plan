@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       'www.ymcalouisville.org',
       'moonshadow-tqc.com.au',
       'www.guardian.in',
+      'images.pexels.com',
     ],
   },
 };
