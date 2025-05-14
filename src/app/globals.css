@@ -297,3 +297,191 @@ body {
 }
 
 
+/* luxury-modal-styles */
+
+/* Custom scrollbars for a more elegant look */
+.custom-scrollbar {
+  scrollbar-width: thin;
+}
+
+.scrollbar-light::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-light::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.scrollbar-light::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.scrollbar-light::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.scrollbar-dark::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 10px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb {
+  background: rgba(255, 205, 97, 0.5);
+  border-radius: 10px;
+}
+
+.scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 205, 97, 0.8);
+}
+
+/* Premium inputs styling */
+.premium-input {
+  background-color: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 205, 97, 0.3);
+  color: white;
+}
+
+.premium-input:focus {
+  border-color: rgba(255, 205, 97, 0.7);
+  box-shadow: 0 0 0 2px rgba(255, 205, 97, 0.2);
+}
+
+.premium-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Luxury animations */
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.luxury-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 205, 97, 0) 0%,
+    rgba(255, 205, 97, 0.3) 50%,
+    rgba(255, 205, 97, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  pointer-events: none;
+}
+
+/* Gold gradient text */
+.gold-gradient-text {
+  background: linear-gradient(to right, #f1c40f, #ffcd61, #f39c12);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline;
+}
+
+/* Premium select styling */
+.premium-select {
+  background-color: rgba(31, 41, 55, 0.6);
+  border-color: rgba(255, 205, 97, 0.3);
+  color: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 205, 97, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+/* Luxury button with shimmer effect */
+.luxury-button {
+  background: linear-gradient(to right, #ffcd61, #f39c12, #f1c40f, #f39c12);
+  background-size: 300% 100%;
+  transition: all 0.5s ease;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-button:hover {
+  background-position: 100% 0;
+  box-shadow: 0 5px 15px rgba(242, 201, 76, 0.4);
+}
+
+.luxury-button::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  bottom: -50%;
+  left: -50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg) translate(0, -100%);
+  animation: shineEffect 3s infinite;
+}
+
+@keyframes shineEffect {
+  0% {
+    transform: rotate(45deg) translate(0, -100%);
+  }
+  20%, 100% {
+    transform: rotate(45deg) translate(0, 100%);
+  }
+}
+
+/* Premium form field styling */
+.form-group.premium label {
+  color: rgba(255, 205, 97, 0.9);
+  font-weight: 500;
+}
+
+.form-group.premium .helper-text {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Luxury card styling */
+.luxury-card {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 205, 97, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 205, 97, 0),
+    rgba(255, 205, 97, 0.5),
+    rgba(255, 205, 97, 0)
+  );
+}

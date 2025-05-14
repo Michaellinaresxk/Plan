@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ColorPicker from '../ColorPicker';
-
 interface CustomDecorationFormProps {
   service: Service;
   onBookService: (
@@ -158,11 +157,14 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     onClose();
   };
 
+  const isPremium = service.packageType.includes('premium');
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
+      className={isPremium ? 'text-white' : ''}
     >
       <form onSubmit={handleSubmit} className='space-y-6'>
         {/* Date and Time Selection */}
@@ -187,7 +189,11 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                   }}
                   min={new Date().toISOString().split('T')[0]}
                   className={`w-full pl-10 py-2 border rounded-lg ${
-                    errors.date ? 'border-red-500' : 'border-gray-300'
+                    errors.date
+                      ? 'border-red-500'
+                      : isPremium
+                      ? 'premium-input'
+                      : 'border-gray-300'
                   }`}
                 />
               </div>
@@ -207,7 +213,11 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 className={`w-full pl-10 py-2 border rounded-lg ${
-                  errors.time ? 'border-red-500' : 'border-gray-300'
+                  errors.time
+                    ? 'border-red-500'
+                    : isPremium
+                    ? 'premium-input'
+                    : 'border-gray-300'
                 }`}
               />
               <span className='absolute left-3 text-gray-400'>
@@ -233,7 +243,11 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
               value={occasion}
               onChange={(e) => setOccasion(e.target.value)}
               className={`w-full pl-10 py-2 border rounded-lg appearance-none ${
-                errors.occasion ? 'border-red-500' : 'border-gray-300'
+                errors.occasion
+                  ? 'border-red-500'
+                  : isPremium
+                  ? 'premium-select'
+                  : 'border-gray-300'
               }`}
             >
               <option value=''>{t('forms.select')}</option>
@@ -271,7 +285,11 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className={`w-full pl-10 py-2 border rounded-lg appearance-none ${
-                errors.location ? 'border-red-500' : 'border-gray-300'
+                errors.location
+                  ? 'border-red-500'
+                  : isPremium
+                  ? 'premium-select'
+                  : 'border-gray-300'
               }`}
             >
               <option value=''>{t('forms.select')}</option>
@@ -342,7 +360,13 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
             {t('decorationForm.referenceImage')}
           </label>
           <div className='flex items-center justify-center w-full'>
-            <label className='flex flex-col w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50'>
+            <label
+              className={`flex flex-col w-full h-32 border-2 border-dashed rounded-lg cursor-pointer ${
+                isPremium
+                  ? 'border-amber-500/30 hover:border-amber-500/50 hover:bg-gray-800/30'
+                  : 'border-gray-300 hover:bg-gray-50'
+              }`}
+            >
               <div className='flex flex-col items-center justify-center pt-5 pb-6'>
                 {imagePreview ? (
                   <div className='relative w-full h-full flex items-center justify-center'>
@@ -357,18 +381,34 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                         setReferenceImage(null);
                         setImagePreview(null);
                       }}
-                      className='absolute top-0 right-0 bg-red-500 text-white rounded-full p-1'
+                      className={`absolute top-0 right-0 ${
+                        isPremium
+                          ? 'bg-amber-500 text-black'
+                          : 'bg-red-500 text-white'
+                      } rounded-full p-1`}
                     >
                       &times;
                     </button>
                   </div>
                 ) : (
                   <>
-                    <Upload className='w-8 h-8 text-gray-400' />
-                    <p className='mb-2 text-sm text-gray-500'>
+                    <Upload
+                      className={`w-8 h-8 ${
+                        isPremium ? 'text-amber-500/70' : 'text-gray-400'
+                      }`}
+                    />
+                    <p
+                      className={`mb-2 text-sm ${
+                        isPremium ? 'text-gray-300' : 'text-gray-500'
+                      }`}
+                    >
                       {t('decorationForm.uploadInstruction')}
                     </p>
-                    <p className='text-xs text-gray-400'>
+                    <p
+                      className={`text-xs ${
+                        isPremium ? 'text-gray-400' : 'text-gray-400'
+                      }`}
+                    >
                       {t('decorationForm.uploadHint')}
                     </p>
                   </>
@@ -397,7 +437,9 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              className='w-full pl-10 py-2 border border-gray-300 rounded-lg resize-none'
+              className={`w-full pl-10 py-2 border rounded-lg resize-none ${
+                isPremium ? 'premium-input' : 'border-gray-300'
+              }`}
               placeholder={t('decorationForm.notesPlaceholder')}
             ></textarea>
           </div>
@@ -415,7 +457,11 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
           <button
             type='submit'
             disabled={isSubmitting}
-            className={`px-4 py-2 bg-amber-500 text-black rounded-lg hover:bg-amber-600 transition-colors ${
+            className={`px-4 py-2 ${
+              isPremium
+                ? 'luxury-button text-black font-medium'
+                : 'bg-amber-500 text-black hover:bg-amber-600'
+            } rounded-lg transition-colors ${
               isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
