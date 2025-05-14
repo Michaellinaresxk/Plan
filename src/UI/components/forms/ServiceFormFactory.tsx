@@ -3,7 +3,7 @@ import { Service } from '@/types/type';
 import AirportTransferForm from './AirportTransferForm';
 import ChefServiceForm from './ChefFrom';
 import DefaultServiceForm from './DefaultServiceForm';
-
+import CustomDecorationForm from './CustomDecorationForm';
 interface ServiceFormFactoryProps {
   service: Service;
   onSubmit: (formData: any) => void;
@@ -30,6 +30,17 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
     ) {
       return (
         <AirportTransferForm
+          service={service}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+        />
+      );
+    }
+
+    // Check for airport transfer service
+    if (service.id.includes('custom-decorations')) {
+      return (
+        <CustomDecorationForm
           service={service}
           onSubmit={onSubmit}
           onCancel={onCancel}

@@ -8,6 +8,7 @@ import AirportServiceView from '../renders/AirportServiceView';
 import CatamaranServiceView from '../renders/CatamaranServiceView';
 import GroceryServiceView from '../renders/GroceryServiceView';
 import LiveMusicServiceView from '../renders/LiveMusicServiceView';
+import KaraokeServiceView from '../renders/KaraokeServiceView';
 import CustomDecorationsServiceView from '../renders/CustomDecorationsServiceView';
 import DefaultServiceView from './DefaultServiceView';
 
@@ -40,6 +41,7 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'private-catamaran': CatamaranServiceView,
     'grocery-shopping': GroceryServiceView,
     'live-music': LiveMusicServiceView,
+    karaoke: KaraokeServiceView,
     'custom-decorations': CustomDecorationsServiceView,
 
     // Premium services
