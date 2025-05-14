@@ -1,5 +1,3 @@
-// views/MassageServiceView.tsx
-
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';

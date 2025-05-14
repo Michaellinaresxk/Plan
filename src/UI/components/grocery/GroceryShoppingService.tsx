@@ -60,34 +60,6 @@ const GroceryShoppingService: React.FC = () => {
     },
   ];
 
-  // Steps data
-  const steps = [
-    {
-      number: 1,
-      textKey: 'grocery.service.step1',
-      textFallback:
-        'Select your groceries and beverages from our comprehensive list below.',
-    },
-    {
-      number: 2,
-      textKey: 'grocery.service.step2',
-      textFallback:
-        'Submit your grocery list through our system at least 48 hours before your desired delivery.',
-    },
-    {
-      number: 3,
-      textKey: 'grocery.service.step3',
-      textFallback:
-        'Our team will shop for your groceries and deliver them to your accommodation at the scheduled time.',
-    },
-    {
-      number: 4,
-      textKey: 'grocery.service.step4',
-      textFallback:
-        'Enjoy your vacation with a fully stocked kitchen and your favorite drinks and snacks.',
-    },
-  ];
-
   return (
     <section className='py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
       {/* Features Section */}
@@ -109,30 +81,6 @@ const GroceryShoppingService: React.FC = () => {
               descriptionFallback={feature.descriptionFallback}
             />
           ))}
-        </div>
-      </div>
-
-      {/* How It Works Section */}
-      <div className='mb-16'>
-        <div className='bg-white rounded-xl p-8 shadow-sm border border-gray-100'>
-          <h2 className='text-2xl font-bold text-gray-900 mb-6'>
-            {t('grocery.service.howItWorks', { fallback: 'How It Works' })}
-          </h2>
-
-          <div className='space-y-6'>
-            {steps.map((step) => (
-              <div key={step.number} className='flex items-start'>
-                <div className='flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white mr-4'>
-                  <span className='text-sm font-medium'>{step.number}</span>
-                </div>
-                <div className='pt-1'>
-                  <p className='text-gray-700'>
-                    {t(step.textKey, { fallback: step.textFallback })}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 

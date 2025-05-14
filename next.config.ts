@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
       'moonshadow-tqc.com.au',
       'www.guardian.in',
       'images.pexels.com',
+      'www.bluewatercruising.org',
+      'coastalmags.com',
+      'image.cnbj1.fds.api.mi-img.com',
+      'i0.wp.com',
     ],
   },
 };
