@@ -9,6 +9,7 @@ import CatamaranServiceView from '../renders/CatamaranServiceView';
 import GroceryServiceView from '../renders/GroceryServiceView';
 import LiveMusicServiceView from '../renders/LiveMusicServiceView';
 import KaraokeServiceView from '../renders/KaraokeServiceView';
+import SaonaIslandTourServiceView from '../renders/SaonaIslandTourServiceView';
 import CustomDecorationsServiceView from '../renders/CustomDecorationsServiceView';
 import DefaultServiceView from './DefaultServiceView';
 
@@ -39,6 +40,7 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'airport-transfers': AirportServiceView,
     'catamaran-trips': CatamaranServiceView,
     'private-catamaran': CatamaranServiceView,
+    'saona-island-tour': SaonaIslandTourServiceView,
     'grocery-shopping': GroceryServiceView,
     'live-music': LiveMusicServiceView,
     karaoke: KaraokeServiceView,
