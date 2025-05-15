@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useBooking } from '@/context/BookingContext';
+import { BookingDate } from '@/types/type';
+import BookingModal from '../../modal/BookingModal';
 import {
   User,
   MapPin,
   Leaf,
-  CheckCircle,
   Shield,
   Clock,
   CalendarDays,
@@ -33,6 +35,8 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
   viewContext,
 }) => {
   const { t } = useTranslation();
+  const { bookService } = useBooking();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isPremium =
     service.packageType.includes('premium') || viewContext === 'premium-view';
 
@@ -628,6 +632,16 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               </div>
             ))}
           </div>
+
+          {/* Modal de reserva */}
+          {isModalOpen && (
+            <BookingModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              // onConfirm={handleBookingConfirm}
+              service={service}
+            />
+          )}
         </div>
       </motion.div>
 
@@ -652,6 +666,14 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               : 'Schedule your personal yoga session and start your journey to balance and wellness'}
           </p>
           <button
+            onClick={() => {
+              setIsModalOpen(true);
+              bookService({
+                service,
+                bookingDate: {} as BookingDate,
+                isPremium,
+              });
+            }}
             className={`py-3 px-8 rounded-full bg-white flex items-center mx-auto font-medium ${
               isPremium ? 'text-amber-700' : 'text-blue-700'
             }`}

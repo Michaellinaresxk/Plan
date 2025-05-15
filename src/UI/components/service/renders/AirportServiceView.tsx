@@ -20,10 +20,9 @@ import {
   ChevronRight,
   Check,
 } from 'lucide-react';
-import BookingModal from '@/UI/components/modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
 import { BookingDate } from '@/types/type';
-import AirportTransferForm from '../../forms/AirportTransferForm';
+import BookingModal from '../../modal/BookingModal';
 
 interface AirportServiceViewProps {
   service: Service;
@@ -104,11 +103,6 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
   // Extraer detalles adicionales
   const hasFlightTracking = serviceData?.metaData?.flightTracking !== false;
   const hasChildSeats = serviceData?.metaData?.childSeats !== false;
-
-  // Manejar la apertura del modal de reserva
-  const handleOpenBookingModal = () => {
-    setIsModalOpen(true);
-  };
 
   // Manejar la confirmación de reserva
   const handleBookingConfirm = (
@@ -254,7 +248,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
 
               <div className='flex flex-wrap gap-4'>
                 <button
-                  onClick={handleOpenBookingModal}
+                  onClick={() => setIsModalOpen(true)}
                   className={`flex items-center px-6 py-3 ${
                     isPremium
                       ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
@@ -263,11 +257,6 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
                 >
                   Book Now
                   <ArrowRight className='ml-2 h-5 w-5' />
-                </button>
-
-                <button className='flex items-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-medium border border-white/20 transition-colors duration-300'>
-                  Learn More
-                  <ChevronRight className='ml-1 h-5 w-5' />
                 </button>
               </div>
             </motion.div>
@@ -502,7 +491,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
           </div>
 
           <button
-            onClick={handleOpenBookingModal}
+            onClick={() => setIsModalOpen(true)}
             className={`px-5 py-3 ${
               isPremium
                 ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
@@ -589,7 +578,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
             </div>
 
             <button
-              onClick={handleOpenBookingModal}
+              onClick={() => setIsModalOpen(true)}
               className={`px-8 py-4 ${
                 isPremium
                   ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
@@ -661,7 +650,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
       {/* Booking modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <AirportTransferForm
+          <BookingModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onConfirm={handleBookingConfirm}
