@@ -1,5 +1,3 @@
-// views/KaraokeServiceView.tsx
-
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -22,14 +20,13 @@ import {
   Play,
   ChevronRight,
   ChevronLeft,
-  Info,
-  MessageCircle,
-  HelpCircle,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useBooking } from '@/context/BookingContext';
 import { formatSetupName, getSetupFeatures } from '@/utils/KaraokeUtils';
 import { GalleryModal, VideoModal } from '../../modal/GalleryModal';
+import BookingModal from '../../modal/BookingModal';
+import { BookingDate } from '@/constants/formFields';
 
 interface KaraokeServiceViewProps {
   service: Service;
@@ -51,16 +48,23 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
   // Check if service is already selected in the booking context
   const isSelected = selectedServices.some((s) => s.id === service.id);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { bookService } = useBooking();
+
+  // Manejar la confirmación de reserva
+  const handleBookingConfirm = (
+    bookingService: Service,
+    dates: BookingDate,
+    guests: number
+  ) => {
+    bookService(bookingService, dates, guests);
+    setIsModalOpen(false);
+  };
+
   // Extract setup options if they exist
   let setupOptions: Record<string, any> = {};
   if (serviceData?.options?.setupType?.subOptions) {
     setupOptions = serviceData.options.setupType.subOptions;
-  }
-
-  // Extract host options if they exist
-  let hostOptions: Record<string, any> = {};
-  if (serviceData?.options?.hostIncluded?.subOptions) {
-    hostOptions = serviceData.options.hostIncluded.subOptions;
   }
 
   // Determine if there's a disclaimer
@@ -101,14 +105,14 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
     languageOptions = ['English', 'Spanish'];
   }
 
-  // Extract equipment included
-  let equipmentIncluded: string[] = [];
-  if (serviceData?.metaData?.equipmentIncluded) {
-    const equipmentStr = serviceData.metaData.equipmentIncluded.toString();
-    equipmentIncluded = equipmentStr.split(',').map((item) => item.trim());
-  } else {
-    equipmentIncluded = ['Microphones', 'Speakers', 'Screen', 'Karaoke System'];
-  }
+  // // Extract equipment included
+  // let equipmentIncluded: string[] = [];
+  // if (serviceData?.metaData?.equipmentIncluded) {
+  //   const equipmentStr = serviceData.metaData.equipmentIncluded.toString();
+  //   equipmentIncluded = equipmentStr.split(',').map((item) => item.trim());
+  // } else {
+  //   equipmentIncluded = ['Microphones', 'Speakers', 'Screen', 'Karaoke System'];
+  // }
 
   // Song genres - this could come from metadata in the future
   const songGenres = [
@@ -163,11 +167,6 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
     if (newIndex >= 0 && newIndex < galleryImages.length) {
       setCurrentImageIndex(newIndex);
     }
-  };
-
-  // Function to handle booking button click
-  const handleBookNow = () => {
-    addService(service);
   };
 
   return (
@@ -267,10 +266,6 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
                 <PartyPopper className='h-6 w-6' />
               </div>
               <div>
-                <p className='text-white font-bold text-lg md:text-xl'>
-                  ${service.price}{' '}
-                  <span className='font-normal text-sm'>/ session</span>
-                </p>
                 <p className='text-white/80 text-sm'>
                   {service.duration}-hour professional karaoke experience
                 </p>
@@ -290,24 +285,15 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
             {/* Book Now Button */}
             <button
-              onClick={handleBookNow}
+              onClick={() => setIsModalOpen(true)}
               className={`px-8 py-3 rounded-lg ${
                 isSelected
                   ? `bg-white text-${primaryColor}-600 hover:bg-${primaryColor}-50`
                   : `bg-${primaryColor}-700 text-white hover:bg-${primaryColor}-800`
               } font-bold transition-all duration-300 shadow-lg flex items-center gap-2`}
             >
-              {isSelected ? (
-                <>
-                  <Check className='h-5 w-5' />
-                  <span>Added to Package</span>
-                </>
-              ) : (
-                <>
-                  <span>Book Now</span>
-                  <ArrowRight className='h-5 w-5' />
-                </>
-              )}
+              <span>Book Now</span>
+              <ArrowRight className='h-5 w-5' />
             </button>
           </div>
         </div>
@@ -397,21 +383,8 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
               {Object.entries(setupOptions).map(([key, option]) => (
                 <div
                   key={key}
-                  className={`relative rounded-xl overflow-hidden transition-all duration-500 group hover:shadow-2xl ${
-                    key === 'premium'
-                      ? 'border-2 border-amber-400'
-                      : 'border border-gray-200'
-                  }`}
+                  className={`relative rounded-xl overflow-hidden transition-all duration-500 group hover:shadow-2xl`}
                 >
-                  {key === 'premium' && (
-                    <div className='absolute -right-12 -top-12 h-24 w-24 bg-amber-400 rotate-45 z-10'></div>
-                  )}
-                  {key === 'premium' && (
-                    <div className='absolute right-0 top-0 z-20 bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1'>
-                      PREMIUM
-                    </div>
-                  )}
-
                   <div
                     className={`${
                       key === 'premium'
@@ -473,6 +446,37 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
           </div>
         </motion.div>
       )}
+
+      {/* Book Now CTA */}
+      <motion.div
+        className={`rounded-xl overflow-hidden bg-gradient-to-r from-${primaryColor}-600 to-${primaryColor}-500 shadow-xl`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-8 md:p-12 flex flex-col md:flex-row items-center justify-between'>
+          <div className='mb-6 md:mb-0'>
+            <h3 className='text-2xl md:text-3xl font-bold text-white mb-2'>
+              Ready to Rock Your Party?
+            </h3>
+            <p className='text-white/80'>
+              Book now and create unforgettable karaoke memories at your villa
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className={`px-8 py-4 rounded-xl ${
+              isSelected
+                ? 'bg-white text-gray-800 hover:bg-gray-100'
+                : 'bg-black/20 backdrop-blur-sm text-white hover:bg-black/30'
+            } font-bold transition-all duration-300 shadow-lg text-lg flex items-center gap-2 min-w-[200px] justify-center`}
+          >
+            <span>Book Now</span>
+            <ArrowRight className='h-5 w-5' />
+          </button>
+        </div>
+      </motion.div>
 
       {/* Song Collection with modern visual styling */}
       <motion.div
@@ -539,101 +543,6 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
           </div>
         </div>
       </motion.div>
-
-      {/* Host Options with modern styling*/}
-      {Object.keys(hostOptions).length > 0 && (
-        <motion.div
-          className='bg-white rounded-xl shadow-xl overflow-hidden'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='p-6 md:p-8'>
-            <h3 className='text-2xl font-bold text-gray-900 mb-8 flex items-center'>
-              <Users className={`h-7 w-7 text-${primaryColor}-500 mr-3`} />
-              <span className='bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent'>
-                {t('karaokeDetails.hostOptions')}
-              </span>
-            </h3>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-              {Object.entries(hostOptions).map(([key, option]) => (
-                <div
-                  key={key}
-                  className={`rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl border ${
-                    key === 'yes'
-                      ? `border-${primaryColor}-200 hover:border-${primaryColor}-300`
-                      : 'border-gray-200'
-                  }`}
-                >
-                  <div
-                    className={`p-8 ${
-                      key === 'yes'
-                        ? `bg-gradient-to-br from-${primaryColor}-50 via-${primaryColor}-100 to-${primaryColor}-50`
-                        : 'bg-gray-50'
-                    }`}
-                  >
-                    <div className='flex items-center mb-4'>
-                      {key === 'yes' ? (
-                        <div
-                          className={`h-14 w-14 rounded-full bg-${primaryColor}-200 flex items-center justify-center mr-4`}
-                        >
-                          <Sparkles
-                            className={`h-8 w-8 text-${primaryColor}-600`}
-                          />
-                        </div>
-                      ) : (
-                        <div className='h-14 w-14 rounded-full bg-gray-200 flex items-center justify-center mr-4'>
-                          <Users className='h-8 w-8 text-gray-500' />
-                        </div>
-                      )}
-                      <h4 className='text-xl font-bold text-gray-800'>
-                        {typeof option === 'object' && 'nameKey' in option
-                          ? t(option.nameKey, {
-                              fallback:
-                                key === 'yes'
-                                  ? 'Professional Host'
-                                  : 'Self-Hosted',
-                            })
-                          : key === 'yes'
-                          ? 'Professional Host'
-                          : 'Self-Hosted'}
-                      </h4>
-                    </div>
-
-                    <p className='text-gray-700 mb-6 text-lg'>
-                      {key === 'yes'
-                        ? 'Our expert host will guide your party, encourage shy singers, organize sing-offs, and keep the energy high!'
-                        : 'Host the event yourself with our easy-to-use equipment. Perfect for casual and intimate gatherings.'}
-                    </p>
-
-                    {typeof option === 'object' &&
-                      'price' in option &&
-                      option.price !== 0 && (
-                        <div className='mt-4 pt-4 border-t border-gray-200 flex justify-between items-center'>
-                          <span
-                            className={`text-${primaryColor}-600 font-bold text-lg`}
-                          >
-                            {option.price > 0 ? `+$${option.price}` : ''}
-                          </span>
-                          <button
-                            className={`px-4 py-2 rounded-lg ${
-                              key === 'yes'
-                                ? `bg-${primaryColor}-500 text-white hover:bg-${primaryColor}-600`
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            } transition-all duration-300 text-sm font-medium`}
-                          >
-                            {key === 'yes' ? 'Add Host' : 'Self-Host'}
-                          </button>
-                        </div>
-                      )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* Tips for a Great Karaoke Party with enhanced styling */}
       <motion.div
@@ -730,188 +639,6 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
         </div>
       </motion.div>
 
-      {/* Additional Information Tabs */}
-      <motion.div
-        className='bg-white rounded-xl shadow-xl overflow-hidden'
-        initial='hidden'
-        animate='visible'
-        variants={fadeIn}
-      >
-        <div className='p-6 md:p-8'>
-          <h3 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
-            <Info className={`h-7 w-7 text-${primaryColor}-500 mr-3`} />
-            <span className='bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent'>
-              {t('karaokeDetails.additionalInfo')}
-            </span>
-          </h3>
-
-          {/* Tabs Navigation */}
-          <div className='flex border-b border-gray-200 mb-6 overflow-x-auto'>
-            {/* <TabButton
-              active={activeTab === 'equipment'}
-              onClick={() => setActiveTab('equipment')}
-              icon={<Speaker className='h-4 w-4' />}
-              label='Equipment & Setup'
-              primaryColor={primaryColor}
-            /> */}
-
-            {/* <TabButton
-              active={activeTab === 'testimonials'}
-              onClick={() => setActiveTab('testimonials')}
-              icon={<MessageCircle className='h-4 w-4' />}
-              label='Client Testimonials'
-              primaryColor={primaryColor}
-            /> */}
-
-            {/* <TabButton
-              active={activeTab === 'faq'}
-              onClick={() => setActiveTab('faq')}
-              icon={<HelpCircle className='h-4 w-4' />}
-              label='FAQ'
-              primaryColor={primaryColor}
-            /> */}
-          </div>
-
-          {/* Tab Content */}
-          <div>
-            {/* Equipment Tab */}
-            {/* {activeTab === 'equipment' && (
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-                <div>
-                  <h4 className='font-semibold text-gray-800 mb-4 text-lg flex items-center'>
-                    <Speaker
-                      className={`h-5 w-5 text-${primaryColor}-500 mr-2`}
-                    />
-                    Sound Equipment
-                  </h4>
-                  <ul className='space-y-2'>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Professional karaoke system with over 10,000 songs
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Two to four wireless microphones with echo effects
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      High-quality speaker system with subwoofer
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Digital mixing console for perfect sound
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Tablet interface for song selection
-                    </EquipmentItem>
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className='font-semibold text-gray-800 mb-4 text-lg flex items-center'>
-                    <Monitor
-                      className={`h-5 w-5 text-${primaryColor}-500 mr-2`}
-                    />
-                    Visual & Lighting
-                  </h4>
-                  <ul className='space-y-2'>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Dual-screen display system (lyrics + visuals)
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Customizable light show with LED fixtures
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Optional fog machine (premium package)
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      HDMI connectivity for larger displays
-                    </EquipmentItem>
-                    <EquipmentItem primaryColor={primaryColor}>
-                      Personalized welcome screens available
-                    </EquipmentItem>
-                  </ul>
-                </div>
-
-                <div className='md:col-span-2 mt-4'>
-                  <h4 className='font-semibold text-gray-800 mb-4 text-lg flex items-center'>
-                    <Clock
-                      className={`h-5 w-5 text-${primaryColor}-500 mr-2`}
-                    />
-                    Setup Process
-                  </h4>
-                  <ol className='space-y-4'>
-                    <SetupStep number={1} primaryColor={primaryColor}>
-                      <span className='font-medium'>Arrival & Assessment</span>{' '}
-                      - Our team arrives 30 minutes before your start time to
-                      assess the space and layout
-                    </SetupStep>
-                    <SetupStep number={2} primaryColor={primaryColor}>
-                      <span className='font-medium'>Equipment Setup</span> -
-                      Professional setup of all sound and visual equipment in
-                      your chosen space
-                    </SetupStep>
-                    <SetupStep number={3} primaryColor={primaryColor}>
-                      <span className='font-medium'>System Test</span> -
-                      Complete sound check and system testing to ensure
-                      everything works flawlessly
-                    </SetupStep>
-                    <SetupStep number={4} primaryColor={primaryColor}>
-                      <span className='font-medium'>Tutorial & Handover</span> -
-                      Quick tutorial on using the system and song selection
-                      process
-                    </SetupStep>
-                    <SetupStep number={5} primaryColor={primaryColor}>
-                      <span className='font-medium'>
-                        Breakdown & Collection
-                      </span>{' '}
-                      - After your event, we handle all equipment breakdown and
-                      cleanup
-                    </SetupStep>
-                  </ol>
-                </div>
-              </div>
-            )} */}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Book Now CTA */}
-      <motion.div
-        className={`rounded-xl overflow-hidden bg-gradient-to-r from-${primaryColor}-600 to-${primaryColor}-500 shadow-xl`}
-        initial='hidden'
-        animate='visible'
-        variants={fadeIn}
-      >
-        <div className='p-8 md:p-12 flex flex-col md:flex-row items-center justify-between'>
-          <div className='mb-6 md:mb-0'>
-            <h3 className='text-2xl md:text-3xl font-bold text-white mb-2'>
-              Ready to Rock Your Party?
-            </h3>
-            <p className='text-white/80'>
-              Book now and create unforgettable karaoke memories at your villa
-            </p>
-          </div>
-
-          <button
-            onClick={handleBookNow}
-            className={`px-8 py-4 rounded-xl ${
-              isSelected
-                ? 'bg-white text-gray-800 hover:bg-gray-100'
-                : 'bg-black/20 backdrop-blur-sm text-white hover:bg-black/30'
-            } font-bold transition-all duration-300 shadow-lg text-lg flex items-center gap-2 min-w-[200px] justify-center`}
-          >
-            {isSelected ? (
-              <>
-                <Check className='h-5 w-5' />
-                <span>Added to Package</span>
-              </>
-            ) : (
-              <>
-                <span>Book Now</span>
-                <ArrowRight className='h-5 w-5' />
-              </>
-            )}
-          </button>
-        </div>
-      </motion.div>
-
       {/* Disclaimer if available */}
       {disclaimer && (
         <motion.div
@@ -927,6 +654,18 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
           <p className='text-amber-700'>{disclaimer}</p>
         </motion.div>
       )}
+
+      {/* Booking modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBookingConfirm}
+            service={service}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Modals */}
       <GalleryModal
@@ -944,76 +683,5 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
     </div>
   );
 };
-
-// TabButton Component
-interface TabButtonProps {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-  primaryColor: string;
-}
-
-const TabButton: React.FC<TabButtonProps> = ({
-  active,
-  onClick,
-  icon,
-  label,
-  primaryColor,
-}) => (
-  <button
-    onClick={onClick}
-    className={`px-4 py-2 font-medium text-sm mr-4 whitespace-nowrap flex items-center ${
-      active
-        ? `text-${primaryColor}-600 border-b-2 border-${primaryColor}-600`
-        : 'text-gray-600 hover:text-gray-900'
-    }`}
-  >
-    <span className='mr-1.5'>{icon}</span>
-    {label}
-  </button>
-);
-
-// Helper component for equipment items
-interface EquipmentItemProps {
-  children: React.ReactNode;
-  primaryColor: string;
-}
-
-const EquipmentItem: React.FC<EquipmentItemProps> = ({
-  children,
-  primaryColor,
-}) => (
-  <li className='flex items-start'>
-    <Check
-      className={`h-5 w-5 text-${primaryColor}-500 mr-2 mt-0.5 flex-shrink-0`}
-    />
-    <span className='text-gray-700'>{children}</span>
-  </li>
-);
-
-// Setup Step Component
-interface SetupStepProps {
-  number: number;
-  children: React.ReactNode;
-  primaryColor: string;
-}
-
-const SetupStep: React.FC<SetupStepProps> = ({
-  number,
-  children,
-  primaryColor,
-}) => (
-  <li className='flex'>
-    <div
-      className={`flex-shrink-0 h-6 w-6 rounded-full bg-${primaryColor}-100 text-${primaryColor}-800 flex items-center justify-center font-medium mr-3`}
-    >
-      {number}
-    </div>
-    <div>
-      <p className='text-gray-700'>{children}</p>
-    </div>
-  </li>
-);
 
 export default KaraokeServiceView;

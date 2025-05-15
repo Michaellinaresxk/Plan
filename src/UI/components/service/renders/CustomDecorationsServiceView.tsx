@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -51,6 +51,19 @@ const decorationGallery = [
   },
 ];
 
+interface DecorationFormData {
+  eventType: string;
+  colorScheme: string[];
+  theme: string;
+  style: string;
+  specialRequests: string;
+  location: string;
+  additionalServices: string[];
+  budget: number;
+  referenceImage?: File; // The actual image file
+  referenceImageUrl?: string; // If you're working with URLs
+}
+
 // Componente principal para CustomDecorationsServiceView
 const CustomDecorationsServiceView: React.FC<
   CustomDecorationsServiceViewProps
@@ -62,11 +75,8 @@ const CustomDecorationsServiceView: React.FC<
     null
   );
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
-
-  const handleBooking = (date: BookingDate) => {
-    
-  }
-
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   // Determinar si es un servicio premium
   const isPremium =
     service.packageType.includes('premium') || viewContext === 'premium-view';
@@ -84,6 +94,51 @@ const CustomDecorationsServiceView: React.FC<
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
+
+  const handleBookingConfirm = (
+    service: Service,
+    dates: BookingDate,
+    guests: number,
+    decorationData: DecorationFormData
+  ) => {
+    // Include the image in your form data
+    const fullDecorationData = {
+      ...decorationData,
+      referenceImage: uploadedImage,
+    };
+
+    // If you need to send the image to a server, you might use FormData
+    const formData = new FormData();
+    formData.append('service', JSON.stringify(service));
+    formData.append('dates', JSON.stringify(dates));
+    formData.append('guests', String(guests));
+
+    // Add all decoration data
+    Object.entries(decorationData).forEach(([key, value]) => {
+      if (key !== 'referenceImage') {
+        formData.append(key, String(value));
+      }
+    });
+
+    // Add the image file if it exists
+    if (uploadedImage) {
+      formData.append('referenceImage', uploadedImage);
+    }
+
+    // Then send this FormData to your backend
+    // Or pass it to bookService if it can handle FormData
+    bookService(service, dates, guests, fullDecorationData, formData);
+    setIsModalOpen(false);
+  };
+
+  useEffect(() => {
+    // Clean up object URLs when component unmounts
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   return (
     <div className='space-y-12'>
@@ -400,18 +455,6 @@ const CustomDecorationsServiceView: React.FC<
               Book Your Decoration
               <ArrowRight className='ml-2 h-5 w-5' />
             </button>
-
-            <button
-              onClick={() =>
-                document
-                  .getElementById('celebration-occasions')
-                  .scrollIntoView({ behavior: 'smooth' })
-              }
-              className='py-3 px-8 border border-white/30 backdrop-blur-sm hover:bg-white/10 text-white rounded-lg font-medium transition-colors duration-300'
-            >
-              Explore Options
-              <ChevronRight className='ml-2 h-5 w-5 inline' />
-            </button>
           </div>
         </div>
       </motion.div>
@@ -462,6 +505,16 @@ const CustomDecorationsServiceView: React.FC<
           </p>
         </div>
       </motion.div>
+
+      {/* Modal de reserva */}
+      {isModalOpen && (
+        <BookingModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleBookingConfirm}
+          service={service}
+        />
+      )}
     </div>
   );
 };

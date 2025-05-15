@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service, BookingDate } from '@/types/type';
-import {
-  Upload,
-  Calendar,
-  Palette,
-  MapPin,
-  MessageSquare,
-  Tag,
-} from 'lucide-react';
+import { Upload, Calendar, MapPin, MessageSquare, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ColorPicker from '../ColorPicker';
 interface CustomDecorationFormProps {

@@ -313,11 +313,6 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
             nameKey: 'services.karaoke.options.setupType.options.basic',
             price: 0,
           },
-          premium: {
-            id: 'premium',
-            nameKey: 'services.karaoke.options.setupType.options.premium',
-            price: 50,
-          },
         },
       },
       hostIncluded: {
