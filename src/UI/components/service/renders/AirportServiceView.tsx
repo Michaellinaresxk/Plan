@@ -1,5 +1,3 @@
-// views/AirportServiceView.tsx
-
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -25,6 +23,7 @@ import {
 import BookingModal from '@/UI/components/modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
 import { BookingDate } from '@/types/type';
+import AirportTransferForm from '../../forms/AirportTransferForm';
 
 interface AirportServiceViewProps {
   service: Service;
@@ -65,44 +64,8 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
     'Gratuity (optional, appreciated)',
   ];
 
-  // Extraer opciones de vehículo si existen
-  let vehicleOptions: Record<string, any> = {};
-  if (serviceData?.options?.vehicleType?.subOptions) {
-    vehicleOptions = serviceData.options.vehicleType.subOptions;
-  } else {
-    // Valores por defecto si no existen
-    vehicleOptions = {
-      standard: {
-        nameKey: 'services.airport.options.vehicleType.options.standard',
-        descriptionKey:
-          'services.airport.options.vehicleType.options.standardDesc',
-        price: 0,
-        capacity: '1-4 passengers',
-      },
-      suv: {
-        nameKey: 'services.airport.options.vehicleType.options.suv',
-        descriptionKey: 'services.airport.options.vehicleType.options.suvDesc',
-        price: 30,
-        capacity: '1-6 passengers',
-      },
-      van: {
-        nameKey: 'services.airport.options.vehicleType.options.van',
-        descriptionKey: 'services.airport.options.vehicleType.options.vanDesc',
-        price: 25,
-        capacity: '1-10 passengers',
-      },
-      luxury: {
-        nameKey: 'services.airport.options.vehicleType.options.luxury',
-        descriptionKey:
-          'services.airport.options.vehicleType.options.luxuryDesc',
-        price: 70,
-        capacity: '1-3 passengers',
-      },
-    };
-  }
-
   // Extraer opciones de viaje (ida o ida y vuelta) si existen
-  let tripOptions: Record<string, any> = {};
+  let tripOptions = {};
   if (serviceData?.options?.isRoundTrip?.subOptions) {
     tripOptions = serviceData.options.isRoundTrip.subOptions;
   } else {
@@ -149,11 +112,11 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
 
   // Manejar la confirmación de reserva
   const handleBookingConfirm = (
-    service: Service,
+    bookingService: Service,
     dates: BookingDate,
     guests: number
   ) => {
-    bookService(service, dates, guests);
+    bookService(bookingService, dates, guests);
     setIsModalOpen(false);
   };
 
@@ -177,6 +140,12 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
         : 'Clean, comfortable transportation',
     },
   ];
+
+  function formatTripOptionName(key: string): string {
+    if (key === 'oneWay') return 'One Way';
+    if (key === 'roundTrip') return 'Round Trip';
+    return key.replace(/([A-Z])/g, ' $1').trim();
+  }
 
   return (
     <div className='space-y-16'>
@@ -431,7 +400,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
             transition={{ duration: 0.5 }}
             className='text-3xl font-bold text-gray-900 mb-6'
           >
-            What's Included
+            What is Included
           </motion.h2>
 
           <div className='bg-white rounded-xl shadow-sm p-6 mb-6'>
@@ -633,6 +602,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
           </div>
         </div>
       </div>
+
       {/* Key features section */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         {features.map((feature, index) => (
@@ -691,7 +661,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
       {/* Booking modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <BookingModal
+          <AirportTransferForm
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onConfirm={handleBookingConfirm}
@@ -702,69 +672,5 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
     </div>
   );
 };
-
-// Funciones auxiliares para formateo y valores por defecto
-function formatVehicleTypeName(key: string): string {
-  const capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
-  // Manejar casos especiales
-  if (key === 'vanSmall' || key === 'vanMedium' || key === 'vanLarge') {
-    return capitalizedKey.replace('Van', 'Van - ');
-  }
-  return capitalizedKey.replace(/([A-Z])/g, ' $1').trim();
-}
-
-function formatTripOptionName(key: string): string {
-  if (key === 'oneWay') return 'One Way';
-  if (key === 'roundTrip') return 'Round Trip';
-  return key.replace(/([A-Z])/g, ' $1').trim();
-}
-
-function getDefaultCapacity(vehicleType: string): string {
-  const capacities: Record<string, string> = {
-    standard: '1-4 passengers',
-    van: '1-10 passengers',
-    vanSmall: '1-6 passengers',
-    vanMedium: '1-10 passengers',
-    vanLarge: '1-14 passengers',
-    suv: '1-6 passengers',
-    luxury: '1-3 passengers',
-  };
-  return capacities[vehicleType.toLowerCase()] || '1-4 passengers';
-}
-
-function getDefaultVehicleDescription(type: string): string {
-  const descriptions: Record<string, string> = {
-    standard: 'Comfortable sedan with ample space for luggage',
-    van: 'Spacious vehicle ideal for larger groups or those with extra luggage',
-    vanSmall: 'Comfortable van with space for up to 6 passengers',
-    vanMedium: 'Spacious van ideal for medium-sized groups',
-    vanLarge: 'Large capacity van perfect for bigger groups',
-    suv: 'Premium SUV offering extra comfort and luggage space',
-    luxury: 'Executive luxury vehicle with premium amenities',
-  };
-  return (
-    descriptions[type.toLowerCase()] || 'Comfortable transportation service'
-  );
-}
-
-function getVehicleImage(type: string): string {
-  // Placeholder images for different vehicle types
-  const images: Record<string, string> = {
-    standard:
-      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3',
-    van: 'https://images.unsplash.com/photo-1558993904-bfaccfc1e2d1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3',
-    vanSmall:
-      'https://images.unsplash.com/photo-1558993904-bfaccfc1e2d1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3',
-    vanMedium:
-      'https://images.unsplash.com/photo-1558993904-bfaccfc1e2d1?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3',
-    vanLarge:
-      'https://images.unsplash.com/photo-1515876305430-f06edab8282a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3',
-    suv: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3',
-    luxury:
-      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3',
-  };
-
-  return images[type.toLowerCase()] || images.standard;
-}
 
 export default AirportServiceView;

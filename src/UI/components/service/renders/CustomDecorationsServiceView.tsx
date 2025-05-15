@@ -1,20 +1,21 @@
-// views/CustomDecorationsServiceView.tsx (versión mejorada)
-
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
+import { ServiceData, ServiceExtendedDetails } from '@/types/services';
+import { motion } from 'framer-motion';
 import {
   Palette,
-  Calendar,
-  Clock,
   Camera,
-  Users,
-  AlertCircle,
-  Check,
   Sparkles,
-  X,
+  Heart,
+  ArrowRight,
+  ChevronRight,
+  ChevronLeft,
+  Image as ImageIcon,
+  Bookmark,
+  PartyPopper,
+  Briefcase,
 } from 'lucide-react';
 import { useBooking } from '@/context/BookingContext';
 import { BookingDate } from '@/types/type';
@@ -23,441 +24,444 @@ import BookingModal from '../../modal/BookingModal';
 interface CustomDecorationsServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
+  extendedDetails?: ServiceExtendedDetails;
   primaryColor: string;
+  viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Imágenes para la galería
-const decorationImages = [
+// Imágenes para la galería - en una aplicación real vendrían del backend
+const decorationGallery = [
   {
     src: 'https://images.unsplash.com/photo-1580740103686-55594a00a1b0?q=80&w=2787&auto=format&fit=crop',
-    alt: 'Romantic beach setup with candles and flowers',
+    alt: 'Romantic beach dinner setup with candles and flowers',
     category: 'romantic',
+    tags: ['romantic', 'dinner', 'beach'],
   },
   {
     src: 'https://images.unsplash.com/photo-1602631985686-1bb0e6a8696e?q=80&w=2940&auto=format&fit=crop',
-    alt: 'Elegant birthday decoration with balloons and cake',
+    alt: 'Elegant birthday celebration decoration with balloons',
     category: 'birthday',
+    tags: ['birthday', 'celebration', 'elegant'],
   },
   {
     src: 'https://images.unsplash.com/photo-1464699798531-2ecf3a63fe09?q=80&w=2940&auto=format&fit=crop',
     alt: 'Luxury beach picnic setup with cushions and umbrella',
     category: 'beachPicnic',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2940&auto=format&fit=crop',
-    alt: 'Elegant dining table with floral arrangements',
-    category: 'luxuryDining',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1626760890874-522e0f47e3e1?q=80&w=3087&auto=format&fit=crop',
-    alt: 'Colorful kids party setup with themes and games',
-    category: 'kidsParty',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1523362289600-a70b4a0e09e4?q=80&w=3024&auto=format&fit=crop',
-    alt: 'Beautiful balloon garland arrangement',
-    category: 'balloonGarlands',
+    tags: ['beach', 'picnic', 'luxury'],
   },
 ];
 
+// Componente principal para CustomDecorationsServiceView
 const CustomDecorationsServiceView: React.FC<
   CustomDecorationsServiceViewProps
-> = ({ service, serviceData, primaryColor }) => {
+> = ({ service, serviceData, extendedDetails, primaryColor, viewContext }) => {
   const { t } = useTranslation();
   const { bookService } = useBooking();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
+  const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
 
-  // Extraer datos específicos
-  const decorationOptions =
-    serviceData?.options?.decorationType?.subOptions || {};
-  const extrasOptions = serviceData?.options?.extras?.subOptions || {};
+  const handleBooking = (date: BookingDate) => {
+    
+  }
 
-  // Metadatos relevantes
-  const bookingNotice = serviceData?.metaData?.bookingNotice || '48 hours';
-  const setupLocation =
-    serviceData?.metaData?.setupLocation || 'Indoor or outdoor';
-  const customization = serviceData?.metaData?.customization || 'High';
+  // Determinar si es un servicio premium
+  const isPremium =
+    service.packageType.includes('premium') || viewContext === 'premium-view';
 
-  // Manejar la reserva
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-    setIsModalOpen(false);
+  // Manejar la navegación de la galería
+  const navigateGallery = (direction: number) => {
+    const newIndex = currentGalleryIndex + direction;
+    if (newIndex >= 0 && newIndex < decorationGallery.length) {
+      setCurrentGalleryIndex(newIndex);
+    }
+  };
+
+  // Variantes de animación
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   };
 
   return (
-    <div className='space-y-8'>
-      {/* Galería de fotos */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <h3 className='text-xl font-bold text-gray-900 mb-6 flex items-center'>
-            <Camera className={`mr-2 text-${primaryColor}-500`} size={20} />
-            {t('decorationDetails.inspirationGallery')}
-          </h3>
+    <div className='space-y-12'>
+      {/* Hero Section con Galería Interactiva */}
+      <motion.div
+        className='relative h-[500px] rounded-2xl overflow-hidden'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        {/* Imagen principal con overlay */}
+        <Image
+          src={decorationGallery[currentGalleryIndex].src}
+          alt={decorationGallery[currentGalleryIndex].alt}
+          fill
+          className='object-cover'
+          priority
+        />
+        <div
+          className={`absolute inset-0 bg-gradient-to-r ${
+            isPremium
+              ? 'from-amber-900/80 to-amber-700/50'
+              : 'from-blue-900/80 to-blue-700/50'
+          }`}
+        ></div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {decorationImages.map((image, index) => (
-              <div
-                key={index}
-                className='relative aspect-video rounded-lg overflow-hidden cursor-pointer group'
-                onClick={() => setSelectedImageIndex(index)}
+        {/* Navegación de galería */}
+        <div className='absolute inset-0 flex items-center justify-between px-4 z-10'>
+          <button
+            onClick={() => navigateGallery(-1)}
+            disabled={currentGalleryIndex === 0}
+            className={`h-12 w-12 rounded-full flex items-center justify-center ${
+              currentGalleryIndex === 0
+                ? 'bg-gray-700/30 text-gray-400 cursor-not-allowed'
+                : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+            } transition-all duration-300`}
+          >
+            <ChevronLeft className='h-6 w-6' />
+          </button>
+
+          <button
+            onClick={() => navigateGallery(1)}
+            disabled={currentGalleryIndex === decorationGallery.length - 1}
+            className={`h-12 w-12 rounded-full flex items-center justify-center ${
+              currentGalleryIndex === decorationGallery.length - 1
+                ? 'bg-gray-700/30 text-gray-400 cursor-not-allowed'
+                : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+            } transition-all duration-300`}
+          >
+            <ChevronRight className='h-6 w-6' />
+          </button>
+        </div>
+
+        {/* Contenido Hero */}
+        <div className='absolute bottom-0 left-0 right-0 p-8 z-10'>
+          <div className='max-w-3xl'>
+            {isPremium && (
+              <span className='inline-block px-3 py-1 bg-amber-400 text-amber-900 text-xs font-bold uppercase rounded-full mb-4'>
+                Premium Experience
+              </span>
+            )}
+
+            <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>
+              {serviceData?.titleKey
+                ? t(serviceData.titleKey)
+                : 'Custom Decoration Services'}
+            </h1>
+
+            <p className='text-xl text-white/90 mb-6'>
+              {serviceData?.descriptionKey
+                ? t(serviceData.descriptionKey)
+                : 'Transform your space into something extraordinary for your special occasion'}
+            </p>
+
+            <div className='flex flex-wrap gap-3'>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className={`flex items-center px-6 py-3 ${
+                  isPremium
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                } rounded-lg font-bold shadow-lg transform transition-all duration-300 hover:scale-105`}
               >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  className='object-cover transition-transform duration-300 group-hover:scale-105'
-                />
-                <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3'>
-                  <p className='text-white text-sm font-medium'>
-                    {t(`decorationDetails.${image.category}`, {
-                      fallback:
-                        image.category.charAt(0).toUpperCase() +
-                        image.category.slice(1).replace(/([A-Z])/g, ' $1'),
-                    })}
+                Book Now
+                <ArrowRight className='ml-2 h-5 w-5' />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Indicadores de Galería */}
+        <div className='absolute bottom-6 right-6 flex space-x-2 z-10'>
+          {decorationGallery.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentGalleryIndex(index)}
+              className={`h-2 w-${
+                index === currentGalleryIndex ? '10' : '6'
+              } rounded-full transition-all duration-300 ${
+                index === currentGalleryIndex ? 'bg-white' : 'bg-white/30'
+              }`}
+              aria-label={`Go to image ${index + 1}`}
+            ></button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Celebration Occasions Section */}
+      <motion.div
+        id='celebration-occasions'
+        className='bg-white rounded-xl shadow-lg overflow-hidden'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-6 md:p-8'>
+          <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+            <PartyPopper
+              className={`mr-2 text-${primaryColor}-500`}
+              size={22}
+            />
+            Select Your Celebration Occasion
+          </h2>
+
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+            {[
+              {
+                id: 'birthday',
+                name: 'Birthday Celebration',
+                icon: <PartyPopper size={24} />,
+                description:
+                  'Make their special day unforgettable with balloons, banners, and personalized decorations.',
+              },
+              {
+                id: 'anniversary',
+                name: 'Anniversary',
+                icon: <Heart size={24} />,
+                description:
+                  'Celebrate your love story with romantic settings and meaningful decorative elements.',
+              },
+              {
+                id: 'proposal',
+                name: 'Proposal Setup',
+                icon: <Sparkles size={24} />,
+                description:
+                  'Create the perfect romantic environment for your surprise proposal moment.',
+              },
+              {
+                id: 'wedding',
+                name: 'Wedding Celebration',
+                icon: <Heart size={24} />,
+                description:
+                  'Elegant decorations for intimate wedding receptions and celebrations.',
+              },
+              {
+                id: 'babyShower',
+                name: 'Baby Shower',
+                icon: <Heart size={24} />,
+                description:
+                  'Sweet and charming decorations to welcome the newest family member.',
+              },
+              {
+                id: 'graduation',
+                name: 'Graduation Party',
+                icon: <Bookmark size={24} />,
+                description:
+                  'Celebrate academic achievements with themed decorations and photo opportunities.',
+              },
+              {
+                id: 'holiday',
+                name: 'Holiday Celebration',
+                icon: <Sparkles size={24} />,
+                description:
+                  'Festive decorations for Christmas, New Year, Halloween, and other holidays.',
+              },
+              {
+                id: 'corporate',
+                name: 'Corporate Event',
+                icon: <Briefcase size={24} />,
+                description:
+                  'Professional and elegant setups for business meetings and corporate events.',
+              },
+              {
+                id: 'custom',
+                name: 'Custom Occasion',
+                icon: <Palette size={24} />,
+                description:
+                  'Have something specific in mind? We will work with you to create your vision.',
+              },
+            ].map((occasion) => (
+              <div
+                key={occasion.id}
+                // className={`border rounded-xl overflow-hidden hover:shadow-md transition-all duration-300 ${
+                //   selectedOccasion === occasion.id
+                //     ? `border-${primaryColor}-500 bg-${primaryColor}-50 shadow-md`
+                //     : 'border-gray-200 hover:border-gray-300'
+                // }`}
+                // onClick={() => setSelectedOccasion(occasion.id)}
+              >
+                <div className='p-5 cursor-pointer flex flex-col h-full'>
+                  <div className='flex items-start'>
+                    <div
+                      className={`p-2 rounded-full ${
+                        isPremium
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-blue-100 text-blue-700'
+                      } mr-3`}
+                    >
+                      {occasion.icon}
+                    </div>
+                    <div className='flex-1'>
+                      <h3 className='font-medium text-gray-900'>
+                        {occasion.name}
+                      </h3>
+                    </div>
+                    {/* <div
+                      className={`h-5 w-5 rounded-full border ${
+                        selectedOccasion === occasion.id
+                          ? isPremium
+                            ? 'bg-amber-500 border-amber-500'
+                            : 'bg-blue-500 border-blue-500'
+                          : 'border-gray-300'
+                      } flex items-center justify-center`}
+                    >
+                      {selectedOccasion === occasion.id && (
+                        <Check className='h-3 w-3 text-white' />
+                      )}
+                    </div> */}
+                  </div>
+
+                  <p className='text-gray-600 text-sm mt-2'>
+                    {occasion.description}
                   </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Tipos de decoración */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
+      {/* Gallery Grid - Galería de inspiración */}
+      <motion.div initial='hidden' animate='visible' variants={fadeIn}>
         <div className='p-6 md:p-8'>
-          <h3 className='text-xl font-bold text-gray-900 mb-6 flex items-center'>
-            <Palette className={`mr-2 text-${primaryColor}-500`} size={20} />
-            {t('decorationDetails.decorationTypes')}
-          </h3>
+          <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+            <Camera className={`mr-2 text-${primaryColor}-500`} size={22} />
+            Inspiration Gallery
+          </h2>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-            {Object.entries(decorationOptions).map(
-              ([key, option]: [string, any]) => (
-                <div
-                  key={key}
-                  className={`p-4 rounded-lg hover:shadow-md transition-shadow ${
-                    option.price > 0
-                      ? `border-${primaryColor}-200 bg-${primaryColor}-50/30`
-                      : 'border-gray-200 bg-gray-50/50'
-                  } border group`}
-                >
-                  <div className='flex justify-between items-start'>
-                    <h4 className='font-medium text-gray-800'>
-                      {t(option.nameKey, {
-                        fallback:
-                          key.charAt(0).toUpperCase() +
-                          key.slice(1).replace(/([A-Z])/g, ' $1'),
-                      })}
-                    </h4>
-
-                    {option.price !== 0 && (
-                      <span
-                        className={`font-medium ${
-                          option.price > 0
-                            ? `text-${primaryColor}-600`
-                            : 'text-green-600'
-                        }`}
-                      >
-                        {option.price > 0 ? '+' : ''}${option.price}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Botón de Book This Style añadido a cada tipo de decoración */}
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className={`mt-3 w-full py-2 px-3 bg-transparent border border-${primaryColor}-400 text-${primaryColor}-600 group-hover:bg-${primaryColor}-500 group-hover:text-white font-medium rounded-lg transition-colors text-sm hidden group-hover:block`}
-                  >
-                    {t('decorationDetails.bookThisStyle')}
-                  </button>
-                </div>
-              )
-            )}
-          </div>
-        </div>
-      </div>
-      {/* Hero Section para decoraciones */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='relative h-96 w-full'>
-          <Image
-            src='https://images.unsplash.com/photo-1602631985686-1bb0e6a8696e?q=80&w=2940&auto=format&fit=crop'
-            alt='Luxury decoration services'
-            fill
-            className='object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent'>
-            <div className='p-8 h-full flex flex-col justify-end'>
-              <h2 className='text-3xl font-bold text-white mb-2'>
-                {serviceData?.titleKey ? t(serviceData.titleKey) : service.name}
-              </h2>
-              <p className='text-lg text-white max-w-2xl'>
-                {serviceData?.descriptionKey
-                  ? t(serviceData.descriptionKey)
-                  : service.description}
-              </p>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className={`mt-6 px-6 py-3 bg-${primaryColor}-500 hover:bg-${primaryColor}-600 text-white font-medium rounded-lg transition-colors flex items-center space-x-2 w-auto`}
+          <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+            {decorationGallery.map((image, index) => (
+              <div
+                key={index}
+                className='relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer group'
+                onClick={() => setSelectedImageIndex(index)}
               >
-                <Calendar size={18} />
-                <span>{t('serviceDetails.bookNow')}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Descripción principal con call-to-action */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <div className='flex flex-col md:flex-row gap-8'>
-            <div className='flex-1'>
-              <h2 className='text-2xl font-bold text-gray-900 mb-4'>
-                {t('decorationDetails.transformYourSpace')}
-              </h2>
-              {serviceData?.fullDescriptionKey && (
-                <p className='text-gray-700 mb-6'>
-                  {t(serviceData.fullDescriptionKey)}
-                </p>
-              )}
-
-              <div className='space-y-4 mb-6'>
-                <div className='flex items-start'>
-                  <Sparkles
-                    className={`h-5 w-5 text-${primaryColor}-500 mr-3 mt-1`}
-                  />
-                  <p className='text-gray-700'>
-                    {t('decorationDetails.benefit1')}
-                  </p>
-                </div>
-                <div className='flex items-start'>
-                  <Sparkles
-                    className={`h-5 w-5 text-${primaryColor}-500 mr-3 mt-1`}
-                  />
-                  <p className='text-gray-700'>
-                    {t('decorationDetails.benefit2')}
-                  </p>
-                </div>
-                <div className='flex items-start'>
-                  <Sparkles
-                    className={`h-5 w-5 text-${primaryColor}-500 mr-3 mt-1`}
-                  />
-                  <p className='text-gray-700'>
-                    {t('decorationDetails.benefit3')}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className='md:w-1/3 bg-gray-50 p-6 rounded-xl border border-gray-100'>
-              <h3 className='text-lg font-medium text-gray-900 mb-4'>
-                {t('decorationDetails.readyToTransform')}
-              </h3>
-              <p className='text-gray-600 mb-4'>
-                {t('decorationDetails.bookEarly')}
-              </p>
-
-              <div className='space-y-3 mb-6'>
-                <div className='flex items-center'>
-                  <Check className={`h-5 w-5 text-${primaryColor}-500 mr-2`} />
-                  <span className='text-gray-700'>
-                    {t('decorationDetails.perk1')}
-                  </span>
-                </div>
-                <div className='flex items-center'>
-                  <Check className={`h-5 w-5 text-${primaryColor}-500 mr-2`} />
-                  <span className='text-gray-700'>
-                    {t('decorationDetails.perk2')}
-                  </span>
-                </div>
-                <div className='flex items-center'>
-                  <Check className={`h-5 w-5 text-${primaryColor}-500 mr-2`} />
-                  <span className='text-gray-700'>
-                    {t('decorationDetails.perk3')}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className={`w-full py-3 px-4 bg-${primaryColor}-500 hover:bg-${primaryColor}-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center`}
-              >
-                <Calendar className='mr-2' size={20} />
-                {t('serviceDetails.bookNow')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Extras disponibles */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <h3 className='text-xl font-bold text-gray-900 mb-6 flex items-center'>
-            <Sparkles className={`mr-2 text-${primaryColor}-500`} size={20} />
-            {t('decorationDetails.enhanceYourExperience')}
-          </h3>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            {Object.entries(extrasOptions)
-              .filter(([key]) => key !== 'none')
-              .map(([key, option]: [string, any]) => (
-                <div
-                  key={key}
-                  className={`p-4 rounded-lg border ${
-                    option.price > 0
-                      ? `border-${primaryColor}-200 bg-${primaryColor}-50/30`
-                      : 'border-gray-200 bg-gray-50/50'
-                  } flex justify-between items-center`}
-                >
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className='object-cover transition-transform duration-500 group-hover:scale-110'
+                />
+                <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4'>
                   <div>
-                    <h4 className='font-medium text-gray-800'>
-                      {t(option.nameKey, {
-                        fallback:
-                          key.charAt(0).toUpperCase() +
-                          key.slice(1).replace(/([A-Z])/g, ' $1'),
-                      })}
-                    </h4>
-                    <p className='text-sm text-gray-600'>
-                      {t(`decorationDetails.${key}Desc`, {
-                        fallback: `Enhance your decoration with a beautiful ${key}`,
-                      })}
+                    <p className='text-white font-medium mb-1'>
+                      {image.category.replace(/([A-Z])/g, ' $1').trim()}
                     </p>
-                  </div>
-
-                  <div className='text-right'>
-                    <span
-                      className={`font-medium block text-${primaryColor}-600`}
-                    >
-                      ${option.price}
-                    </span>
+                    <div className='flex flex-wrap gap-1'>
+                      {image.tags.map((tag, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className='text-xs bg-white/20 px-2 py-1 rounded-full text-white backdrop-blur-sm'
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Call to action final */}
-      <div
-        className={`bg-${primaryColor}-500 rounded-xl shadow-lg overflow-hidden text-white`}
+      {/* Call to Action Section */}
+      <motion.div
+        className={`rounded-xl overflow-hidden ${
+          isPremium
+            ? 'bg-gradient-to-r from-amber-600 to-amber-800'
+            : 'bg-gradient-to-r from-blue-600 to-blue-800'
+        }`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
       >
-        <div className='p-6 md:p-8'>
-          <div className='flex flex-col md:flex-row items-center justify-between gap-6'>
-            <div>
-              <h3 className='text-xl font-bold mb-2'>
-                {t('decorationDetails.readyToBegin')}
-              </h3>
-              <p className='text-${primaryColor}-100'>
-                {t('decorationDetails.limitedAvailability')}
-              </p>
-            </div>
-
+        <div className='p-10 md:p-16 text-white text-center'>
+          <h2 className='text-3xl md:text-4xl font-bold mb-4'>
+            Create Your Perfect Celebration
+          </h2>
+          <p className='text-xl opacity-90 mb-8 max-w-2xl mx-auto'>
+            {isPremium
+              ? 'Our premium decoration services bring your vision to life with exclusive materials and personalized design.'
+              : 'Transform any space into an unforgettable setting with our custom decoration services.'}
+          </p>
+          <div className='flex flex-wrap gap-4 justify-center'>
             <button
               onClick={() => setIsModalOpen(true)}
-              className='py-3 px-6 bg-white text-gray-900 font-medium rounded-lg transition-colors hover:bg-gray-100 flex items-center'
+              className={`py-3 px-8 bg-white flex items-center font-medium rounded-lg ${
+                isPremium
+                  ? 'text-amber-700 hover:bg-amber-50'
+                  : 'text-blue-700 hover:bg-blue-50'
+              } transition-colors duration-300`}
             >
-              <Calendar className='mr-2' size={20} />
-              {t('serviceDetails.bookNow')}
+              Book Your Decoration
+              <ArrowRight className='ml-2 h-5 w-5' />
+            </button>
+
+            <button
+              onClick={() =>
+                document
+                  .getElementById('celebration-occasions')
+                  .scrollIntoView({ behavior: 'smooth' })
+              }
+              className='py-3 px-8 border border-white/30 backdrop-blur-sm hover:bg-white/10 text-white rounded-lg font-medium transition-colors duration-300'
+            >
+              Explore Options
+              <ChevronRight className='ml-2 h-5 w-5 inline' />
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Info adicional */}
-      <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-        <div className='p-6 md:p-8'>
-          <h3 className='text-xl font-bold text-gray-900 mb-6 flex items-center'>
-            <Users className={`mr-2 text-${primaryColor}-500`} size={20} />
-            {t('decorationDetails.additionalInfo')}
-          </h3>
-
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-            <div
-              className={`p-4 rounded-lg bg-${primaryColor}-50/60 border border-${primaryColor}-100`}
-            >
-              <p className='text-sm text-gray-500 mb-1'>
-                {t('decorationDetails.bookingNotice')}
-              </p>
-              <p className='font-medium text-gray-900'>{bookingNotice}</p>
-            </div>
-            <div
-              className={`p-4 rounded-lg bg-${primaryColor}-50/60 border border-${primaryColor}-100`}
-            >
-              <p className='text-sm text-gray-500 mb-1'>
-                {t('decorationDetails.setupLocation')}
-              </p>
-              <p className='font-medium text-gray-900'>{setupLocation}</p>
-            </div>
-            <div
-              className={`p-4 rounded-lg bg-${primaryColor}-50/60 border border-${primaryColor}-100`}
-            >
-              <p className='text-sm text-gray-500 mb-1'>
-                {t('decorationDetails.customizationLevel')}
-              </p>
-              <p className='font-medium text-gray-900'>{customization}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Disclaimer si existe */}
-      {serviceData?.disclaimer && (
-        <div className='bg-amber-50 rounded-xl p-6 border border-amber-100'>
-          <h3 className='font-medium text-amber-800 mb-2 flex items-center'>
-            <AlertCircle className='w-5 h-5 mr-2' />
-            {t('services.common.importantNote')}
-          </h3>
-          <p className='text-amber-700'>{t(serviceData.disclaimer)}</p>
-        </div>
-      )}
-
-      {/* Modal de reserva */}
-      {isModalOpen && (
-        <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleBookingConfirm}
-          service={service}
-        />
-      )}
-
-      {/* Visor de imagen a pantalla completa */}
-      {selectedImageIndex !== null && (
-        <div
-          className='fixed inset-0 bg-black/90 z-50 flex items-center justify-center'
-          onClick={() => setSelectedImageIndex(null)}
-        >
-          <button
-            className='absolute top-4 right-4 text-white bg-black/20 p-2 rounded-full hover:bg-black/40'
-            onClick={() => setSelectedImageIndex(null)}
+      {/* Features Grid - Ventajas del servicio */}
+      <motion.div
+        className='grid grid-cols-1 md:grid-cols-3 gap-6'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className={`p-6 hover:shadow-md transition-shadow`}>
+          <div
+            className={`w-12 h-12 rounded-full bg-${primaryColor}-100 flex items-center justify-center mb-4`}
           >
-            <X size={24} />
-          </button>
-
-          <div className='relative w-[90vw] h-[80vh]'>
-            <Image
-              src={decorationImages[selectedImageIndex].src}
-              alt={decorationImages[selectedImageIndex].alt}
-              fill
-              className='object-contain'
-            />
+            <Palette className={`h-6 w-6 text-${primaryColor}-600`} />
           </div>
-
-          <div className='absolute bottom-4 left-0 right-0 text-center text-white'>
-            <p className='text-lg'>
-              {decorationImages[selectedImageIndex].alt}
-            </p>
-          </div>
+          <h3 className='text-lg font-semibold mb-2'>Personalized Designs</h3>
+          <p className='text-gray-600'>
+            Every decoration is uniquely designed to match your vision and
+            preferences for the occasion.
+          </p>
         </div>
-      )}
+
+        <div className={`p-6 hover:shadow-md transition-shadow`}>
+          <div
+            className={`w-12 h-12 rounded-full bg-${primaryColor}-100 flex items-center justify-center mb-4`}
+          >
+            <Sparkles className={`h-6 w-6 text-${primaryColor}-600`} />
+          </div>
+          <h3 className='text-lg font-semibold mb-2'>Premium Materials</h3>
+          <p className='text-gray-600'>
+            We use only high-quality decorative elements that create stunning
+            visual impact for your events.
+          </p>
+        </div>
+
+        <div className={`p-6 hover:shadow-md transition-shadow`}>
+          <div
+            className={`w-12 h-12 rounded-full bg-${primaryColor}-100 flex items-center justify-center mb-4`}
+          >
+            <PartyPopper className={`h-6 w-6 text-${primaryColor}-600`} />
+          </div>
+          <h3 className='text-lg font-semibold mb-2'>Full-Service Setup</h3>
+          <p className='text-gray-600'>
+            Our team handles everything from design to installation and removal,
+            leaving you free to enjoy.
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 };
