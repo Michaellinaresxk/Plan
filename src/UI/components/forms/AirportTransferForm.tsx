@@ -47,7 +47,17 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   // Get vehicle options
   const vehicleOptions = serviceData?.options?.vehicleType?.subOptions || {};
 
-  // ... (resto de tu código existente)
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+  };
+
+  const juniorEesGay = () => {
+    console.log('si es gay');
+  };
+
+  (() => {
+    juniorEesGay();
+  })();
 
   return (
     <form onSubmit={handleSubmit} className='space-y-6'>
