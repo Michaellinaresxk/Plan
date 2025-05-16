@@ -1,7 +1,7 @@
 import React from 'react';
 import { Service } from '@/types/type';
 import AirportTransferForm from './AirportTransferForm';
-import ChefServiceForm from './ChefFrom';
+import ChefForm from './ChefFrom';
 import DefaultServiceForm from './DefaultServiceForm';
 import BabysitterForm from './BabysitterForm';
 import CustomDecorationForm from './CustomDecorationForm';
@@ -64,11 +64,7 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
     // Check for chef service
     if (service.id.includes('chef')) {
       return (
-        <ChefServiceForm
-          service={service}
-          onSubmit={onSubmit}
-          onCancel={onCancel}
-        />
+        <ChefForm service={service} onSubmit={onSubmit} onCancel={onCancel} />
       );
     }
 
