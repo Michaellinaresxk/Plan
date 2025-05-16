@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Clock,
   Calendar,
@@ -23,6 +23,9 @@ import {
   MessageCircle,
   Instagram,
 } from 'lucide-react';
+import { useBooking } from '@/context/BookingContext';
+import { BookingDate } from '@/constants/formFields';
+import BookingModal from '../../modal/BookingModal';
 
 interface BabysitterServiceViewProps {
   service: Service;
@@ -34,10 +37,22 @@ interface BabysitterServiceViewProps {
 const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
   service,
   serviceData,
-  primaryColor,
   viewContext,
 }) => {
   const { t } = useTranslation();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { bookService } = useBooking();
+
+  // Manejar la confirmación de reserva
+  const handleBookingConfirm = (
+    bookingService: Service,
+    dates: BookingDate,
+    guests: number
+  ) => {
+    bookService(bookingService, dates, guests);
+    setIsModalOpen(false);
+  };
+
   const isPremium =
     service.packageType.includes('premium') || viewContext === 'premium-view';
 
@@ -53,38 +68,6 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
     ? (serviceData.metaData.safetyStandards as string).split(',')
     : ['CPR-trained', 'First-aid certified', 'Background-checked'];
 
-  // Extract time slots from options
-  const timeSlots = serviceData?.options?.timeSlot?.subOptions
-    ? Object.values(serviceData.options.timeSlot.subOptions).map((opt: any) =>
-        t(opt.nameKey)
-      )
-    : ['Daytime', 'Evening', 'Overnight'];
-
-  // Get childCount options if available
-  const childCountOptions = serviceData?.options?.childCount?.subOptions || {};
-
-  // Extract includes and not included
-  const includes = serviceData?.includes?.map((key: string) => t(key)) || [
-    'Certified, Background-Checked Caregiver',
-    'Age-Appropriate Activities & Games',
-    'Snacks & Light Meals (as needed)',
-    'Quiet Time Stories & Nap Support',
-  ];
-
-  const notIncluded = serviceData?.notIncluded?.map((key: string) =>
-    t(key)
-  ) || ['Gratuity (optional, appreciated)'];
-
-  // Extract itinerary
-  const itinerary = serviceData?.itinerary?.map((key: string) => t(key)) || [
-    'Babysitter arrives & greets family',
-    "Review children's routines & any special needs",
-    'Engaging play, meals, and nap support',
-    'Parent check-in and smooth handover',
-  ];
-
-  // Disclaimer if available
-  const disclaimer = serviceData?.disclaimer ? t(serviceData.disclaimer) : '';
 
   // Sample activities by age group
   const activities = [
@@ -606,6 +589,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               : 'Schedule professional, reliable childcare and treat yourself to worry-free time away'}
           </p>
           <button
+            onClick={() => setIsModalOpen(true)}
             className={`py-3 px-8 rounded-full bg-white flex items-center mx-auto font-medium ${
               isPremium ? 'text-amber-700' : 'text-blue-700'
             }`}
@@ -615,18 +599,18 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
           </button>
         </div>
       </motion.div>
+      {/* Booking modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBookingConfirm}
+            service={service}
+          />
+        )}
+      </AnimatePresence>
     </div>
-  );
-};
-
-// Helper function to format option names
-const formatOptionName = (name: string): string => {
-  return (
-    name.charAt(0).toUpperCase() +
-    name
-      .slice(1)
-      .replace(/-|([A-Z])/g, ' $1')
-      .trim()
   );
 };
 

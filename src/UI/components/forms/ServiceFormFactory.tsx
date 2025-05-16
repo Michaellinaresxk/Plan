@@ -3,7 +3,9 @@ import { Service } from '@/types/type';
 import AirportTransferForm from './AirportTransferForm';
 import ChefServiceForm from './ChefFrom';
 import DefaultServiceForm from './DefaultServiceForm';
+import BabysitterForm from './BabysitterForm';
 import CustomDecorationForm from './CustomDecorationForm';
+import GroceryForm from './GroceryForm';
 interface ServiceFormFactoryProps {
   service: Service;
   onSubmit: (formData: any) => void;
@@ -48,10 +50,32 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
       );
     }
 
+    // Check for airport transfer service
+    if (service.id.includes('grocery-shopping')) {
+      return (
+        <GroceryForm
+          service={service}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+        />
+      );
+    }
+
     // Check for chef service
     if (service.id.includes('chef')) {
       return (
         <ChefServiceForm
+          service={service}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+        />
+      );
+    }
+
+    // Check for babySitter service
+    if (service.id.includes('babysitter')) {
+      return (
+        <BabysitterForm
           service={service}
           onSubmit={onSubmit}
           onCancel={onCancel}

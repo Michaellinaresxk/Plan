@@ -105,14 +105,6 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
     languageOptions = ['English', 'Spanish'];
   }
 
-  // // Extract equipment included
-  // let equipmentIncluded: string[] = [];
-  // if (serviceData?.metaData?.equipmentIncluded) {
-  //   const equipmentStr = serviceData.metaData.equipmentIncluded.toString();
-  //   equipmentIncluded = equipmentStr.split(',').map((item) => item.trim());
-  // } else {
-  //   equipmentIncluded = ['Microphones', 'Speakers', 'Screen', 'Karaoke System'];
-  // }
 
   // Song genres - this could come from metadata in the future
   const songGenres = [

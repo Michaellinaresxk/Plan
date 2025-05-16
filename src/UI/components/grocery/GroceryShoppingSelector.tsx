@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import {
   GROCERY_CATEGORIES,
+  GroceryItem,
   SPIRIT_CATEGORIES,
 } from '@/constants/GroceryShopping';
 import TabSelector from './TabSelector';
@@ -15,7 +16,17 @@ import { ShoppingBasket, Wine, Check, Sparkles } from 'lucide-react';
  * Componente principal para la selección de productos de supermercado y licores
  * Versión modernizada con mejor UX/UI
  */
-const GroceryShoppingSelector: React.FC = () => {
+
+interface GroceryShoppingSelectorProps {
+  onItemsSelected: (items: GroceryItem[]) => void;
+  // Add a new prop for the parent's openModal function
+  onSubmit?: () => void;
+}
+
+const GroceryShoppingSelector: React.FC<GroceryShoppingSelectorProps> = ({
+  onItemsSelected,
+  onSubmit,
+}) => {
   const { t } = useTranslation();
 
   // Estados
@@ -45,27 +56,35 @@ const GroceryShoppingSelector: React.FC = () => {
     setSelectedItems([]);
   };
 
-  const handleSubmit = () => {
-    // Simular envío con estado loading
-    setIsSubmitting(true);
-
-    // En una aplicación real, esto enviaría los datos al backend
-    console.log('Enviando ítems seleccionados:', selectedItems);
-    console.log('Solicitudes especiales:', specialRequests);
-
-    // Simular una respuesta del servidor
-    setTimeout(() => {
-      setIsSubmitting(false);
-      alert(
-        `Seleccionaste ${selectedItems.length} ítems para tu lista de compras!`
-      );
-    }, 800);
-  };
-
   // Selecciona las categorías según la pestaña activa
   const categories =
     activeTab === 'grocery' ? GROCERY_CATEGORIES : SPIRIT_CATEGORIES;
   const columns = splitIntoColumns(categories, 2);
+
+  const handleSubmit = () => {
+    // Show loading state
+    setIsSubmitting(true);
+
+    // Simulate a short delay for UI feedback
+    setTimeout(() => {
+      setIsSubmitting(false);
+
+      // Call the parent's submit handler if provided
+      if (onSubmit) {
+        onSubmit();
+      }
+    }, 300);
+  };
+
+  useEffect(() => {
+    if (onItemsSelected) {
+      onItemsSelected(selectedItems);
+    }
+  }, [selectedItems, onItemsSelected]);
+
+  useEffect(() => {
+    onItemsSelected(selectedItems);
+  }, [selectedItems, onItemsSelected]);
 
   return (
     <div className='w-full mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100'>
@@ -152,11 +171,11 @@ const GroceryShoppingSelector: React.FC = () => {
                 <Sparkles className='w-4 h-4 text-amber-500 animate-pulse' />
               </span>
             )}
-            <SubmitButton
+            {/* <SubmitButton
               onSubmit={handleSubmit}
               disabled={selectedItems.length === 0 || isSubmitting}
               isLoading={isSubmitting}
-            />
+            /> */}
           </div>
         </div>
       </div>
