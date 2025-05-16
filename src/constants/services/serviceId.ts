@@ -14,7 +14,7 @@ export const SERVICE_IDS = {
   BIKE_RENTALS: 'bike-rentals',
   BABYSITTER: 'babysitter',
   CATAMARAN: 'catamaran-trips',
-  PRIVATE_CATAMARAN: 'private-catamaran',
+
   SAONA_TOUR: 'saona-island-tour',
   HORSEBACK_RIDING: 'horseback-riding',
   DEEP_SEA_FISHING: 'deep-sea-fishing',
@@ -26,6 +26,7 @@ export const SERVICE_IDS = {
   // Premium services
   LUXE_GOLF_CART: 'luxe-golf-cart',
   LUXE_YOGA: 'luxe-yoga',
+  PRIVATE_CATAMARAN: 'private-catamaran',
   LUXE_FITNESS: 'luxe-fitness',
   LUXE_EBIKES: 'luxe-e-bikes',
   LUXE_YACHT: 'luxe-yacht',
