@@ -227,7 +227,7 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
           services={serviceCategories.shortServices}
           currentDayActivities={currentDayActivities}
           onServiceSelect={handleServiceSelect}
-          title={<div className="flex items-center"><Clock className="mr-2 h-5 w-5 text-blue-500" />Experiencias Cortas (≤ 2h)</div>}
+          title={<div className="flex items-center"><Clock className="mr-2 h-5 w-5 text-blue-500" />Experiencias Cortas (2h / 3h)</div>}
           className="mb-8"
         />
       )}
