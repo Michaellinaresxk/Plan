@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { Calendar, AlertCircle } from 'lucide-react';
-import ServiceManager from '@/constants/services/ServiceManager';
+import { motion } from 'framer-motion';
+import { Calendar, Users, CreditCard, MapPin } from 'lucide-react';
 
 interface DefaultServiceFormProps {
   service: Service;
@@ -11,11 +11,12 @@ interface DefaultServiceFormProps {
 }
 
 /**
- * Default Service Form
+ * Simplified Service Form
  *
- * A generic form for services that don't have specialized forms.
- * This provides basic date, time, guest count inputs and handles options
- * from the service data.
+ * A streamlined form for services with only essential fields:
+ * - Date selection
+ * - Guest count
+ * - Location
  */
 const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
   service,
@@ -25,24 +26,11 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     date: '',
-    time: '',
     guestCount: 1,
-    selectedOptions: {} as Record<string, string>,
-    specialRequests: '',
+    location: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [totalPrice, setTotalPrice] = useState(service.price);
-
-  // Get full service data
-  const serviceData = ServiceManager.getData(service.id);
-
-  // Get service options
-  const serviceOptions = serviceData?.options || {};
-
-  // Calculate price when form data changes
-  useEffect(() => {
-    calculateTotalPrice(formData.selectedOptions);
-  }, [formData.selectedOptions]);
 
   // Handle input changes
   const handleChange = (
@@ -50,83 +38,58 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value, type } = e.target;
-
-    // Handle number inputs
-    if (type === 'number') {
-      const numberValue = parseInt(value);
-      setFormData((prev) => ({ ...prev, [name]: numberValue }));
-      return;
-    }
-
-    // Handle all other inputs
+    const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear error when field is filled
+    if (errors[name] && value) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
-  // Handle option changes
-  const handleOptionChange = (category: string, optionValue: string) => {
+  // Handle guest count updates
+  const updateGuestCount = (increment: boolean) => {
     setFormData((prev) => ({
       ...prev,
-      selectedOptions: {
-        ...prev.selectedOptions,
-        [category]: optionValue,
-      },
+      guestCount: increment
+        ? prev.guestCount + 1
+        : Math.max(1, prev.guestCount - 1),
     }));
   };
 
-  // Calculate total price based on selected options
-  const calculateTotalPrice = (selectedOptions: Record<string, string>) => {
-    if (!serviceData) return;
-
-    let price = service.price;
-
-    // Add option prices
-    Object.entries(selectedOptions).forEach(([category, selectedOption]) => {
-      const options = serviceOptions[category]?.subOptions || {};
-      const option = options[selectedOption];
-
-      if (option && typeof option === 'object' && 'price' in option) {
-        // Handle special case for round trip (doubles the price)
-        if (option.price === 'double') {
-          price = price * 2;
-        } else {
-          price += Number(option.price);
-        }
-      }
-    });
-
-    setTotalPrice(price);
-  };
+  // Calculate price based on guest count
+  React.useEffect(() => {
+    // You can implement a more complex pricing calculation if needed
+    const basePrice = service.price;
+    const guestPrice = basePrice * formData.guestCount;
+    setTotalPrice(guestPrice);
+  }, [formData.guestCount, service.price]);
 
   // Validate form before submission
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.date) {
-      newErrors.date = t('form.errors.required');
-    }
-
-    // Check if service requires date/time
-    if (service.duration > 0) {
-      if (!formData.date) {
-        newErrors.date = t('form.errors.required');
-      }
-
-      if (!formData.time) {
-        newErrors.time = t('form.errors.required');
-      }
+      newErrors.date = t('form.errors.required', {
+        fallback: 'Date is required',
+      });
     }
 
     if (!formData.guestCount || formData.guestCount < 1) {
-      newErrors.guestCount = t('form.errors.invalidGuestCount');
+      newErrors.guestCount = t('form.errors.invalidGuestCount', {
+        fallback: 'Please select at least 1 guest',
+      });
     }
 
-    // Validate that all required options are selected
-    Object.entries(serviceOptions).forEach(([category, option]) => {
-      if (option && !formData.selectedOptions[category]) {
-        newErrors[category] = t('form.errors.required');
-      }
-    });
+    if (!formData.location) {
+      newErrors.location = t('form.errors.required', {
+        fallback: 'Location is required',
+      });
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -151,172 +114,186 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
     onSubmit(submissionData);
   };
 
+  // Get isPremium status based on package type
+  const isPremium = service.packageType.includes('premium');
+  const colorScheme = isPremium ? 'amber' : 'blue';
+
   return (
-    <form onSubmit={handleSubmit} className='space-y-6'>
-      <div className='space-y-4'>
-        <h3 className='text-lg font-bold text-gray-900'>
-          {t('serviceForm.title', { service: service.name })}
-        </h3>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+    >
+      <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
+        <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
+          {/* Form Header */}
+          <div
+            className={`bg-gradient-to-r from-${colorScheme}-900 via-${colorScheme}-800 to-${colorScheme}-900 p-6 text-white`}
+          >
+            <h2 className='text-2xl font-light tracking-wide'>
+              {t('serviceForm.title', {
+                service: service.name,
+                fallback: `Book ${service.name}`,
+              })}
+            </h2>
+            <p className='text-${colorScheme}-100 mt-1 font-light'>
+              {t('serviceForm.description', {
+                fallback: 'Fill in the details below to book your experience',
+              })}
+            </p>
+          </div>
 
-        <p className='text-sm text-gray-600'>{t('serviceForm.description')}</p>
+          {/* Form Body */}
+          <div className='p-8 space-y-8'>
+            {/* Date Selection */}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <Calendar className='h-5 w-5 mr-2 text-${colorScheme}-600' />
+                {t('serviceForm.dateDetails', { fallback: 'Date' })}
+              </h3>
 
-        {/* Date and Time Selection (only if service has duration) */}
-        {service.duration > 0 && (
-          <div className='border rounded-md p-4'>
-            <h4 className='font-medium text-gray-800 mb-3 flex items-center'>
-              <Calendar className='h-5 w-5 text-blue-500 mr-2' />
-              {t('serviceForm.schedulingDetails')}
-            </h4>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
-                  {t('serviceForm.date')} *
+                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                  {t('serviceForm.date', { fallback: 'Select Date' })}{' '}
+                  <span className='text-red-500'>*</span>
                 </label>
-                <input
-                  type='date'
-                  name='date'
-                  value={formData.date}
-                  onChange={handleChange}
-                  className={`w-full p-2 border rounded-md ${
-                    errors.date ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
+                <div className='relative'>
+                  <span className='absolute left-3 top-3 text-gray-400'>
+                    <Calendar size={18} />
+                  </span>
+                  <input
+                    type='date'
+                    name='date'
+                    value={formData.date}
+                    onChange={handleChange}
+                    min={new Date().toISOString().split('T')[0]}
+                    className={`w-full pl-10 py-2 border rounded-lg appearance-none ${
+                      errors.date ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                </div>
                 {errors.date && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.date}</p>
+                  <p className='mt-1 text-red-500 text-sm'>{errors.date}</p>
                 )}
               </div>
+            </div>
+
+            {/* Guest Count Section */}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <Users className='h-5 w-5 mr-2 text-${colorScheme}-600' />
+                {t('serviceForm.guestDetails', { fallback: 'Guests' })}
+              </h3>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
-                  {t('serviceForm.time')} *
+                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                  {t('serviceForm.guestCount', {
+                    fallback: 'Number of Guests',
+                  })}{' '}
+                  <span className='text-red-500'>*</span>
                 </label>
-                <input
-                  type='time'
-                  name='time'
-                  value={formData.time}
-                  onChange={handleChange}
-                  className={`w-full p-2 border rounded-md ${
-                    errors.time ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {errors.time && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.time}</p>
+                <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs'>
+                  <button
+                    type='button'
+                    onClick={() => updateGuestCount(false)}
+                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors'
+                  >
+                    -
+                  </button>
+                  <div className='flex-1 py-2 text-center'>
+                    {formData.guestCount}
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => updateGuestCount(true)}
+                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors'
+                  >
+                    +
+                  </button>
+                </div>
+                {errors.guestCount && (
+                  <p className='mt-1 text-red-500 text-sm'>
+                    {errors.guestCount}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Location Section */}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <MapPin className='h-5 w-5 mr-2 text-${colorScheme}-600' />
+                {t('serviceForm.locationDetails', { fallback: 'Location' })}
+              </h3>
+
+              <div>
+                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                  {t('serviceForm.location', { fallback: 'Service Location' })}{' '}
+                  <span className='text-red-500'>*</span>
+                </label>
+                <div className='relative'>
+                  <span className='absolute left-3 top-3 text-gray-400'>
+                    <MapPin size={18} />
+                  </span>
+                  <textarea
+                    name='location'
+                    value={formData.location}
+                    onChange={handleChange}
+                    placeholder={t('serviceForm.locationPlaceholder', {
+                      fallback:
+                        'Enter the full address where the service should take place...',
+                    })}
+                    className={`w-full pl-10 py-2 border rounded-lg resize-none ${
+                      errors.location ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    rows={3}
+                  ></textarea>
+                </div>
+                {errors.location && (
+                  <p className='mt-1 text-red-500 text-sm'>{errors.location}</p>
                 )}
               </div>
             </div>
           </div>
-        )}
 
-        {/* Special Requests */}
-        <div className='form-group'>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>
-            {t('serviceForm.specialRequests')}
-          </label>
-          <textarea
-            name='specialRequests'
-            value={formData.specialRequests}
-            onChange={handleChange}
-            rows={3}
-            className='w-full p-2 border border-gray-300 rounded-md'
-            placeholder={t('serviceForm.specialRequestsPlaceholder')}
-          ></textarea>
-        </div>
-      </div>
+          {/* Form Footer with Price and Actions */}
+          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
+            <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
+              <span className='text-gray-400 text-sm uppercase tracking-wide'>
+                {t('serviceForm.totalPrice', { fallback: 'Total Price' })}
+              </span>
+              <span className='text-3xl font-light'>
+                ${totalPrice.toFixed(2)}
+              </span>
+              {formData.guestCount > 1 && (
+                <span className='text-sm text-gray-400 mt-1'>
+                  ${service.price.toFixed(2)} x {formData.guestCount}{' '}
+                  {t('serviceForm.guests', { fallback: 'guests' })}
+                </span>
+              )}
+            </div>
 
-      {/* Price summary */}
-      <div className='bg-gray-50 p-4 rounded-md'>
-        <div className='flex justify-between items-center mb-2'>
-          <span className='text-gray-700'>{t('serviceForm.basePrice')}</span>
-          <span>${service.price}</span>
-        </div>
+            <div className='flex space-x-4'>
+              <button
+                type='button'
+                onClick={onCancel}
+                className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition-colors'
+              >
+                {t('common.cancel', { fallback: 'Cancel' })}
+              </button>
 
-        {Object.entries(formData.selectedOptions).map(
-          ([category, selectedOption]) => {
-            const options = serviceOptions[category]?.subOptions || {};
-            const option = options[selectedOption];
-
-            if (
-              option &&
-              typeof option === 'object' &&
-              'price' in option &&
-              option.price !== 0
-            ) {
-              // Handle round trip
-              if (option.price === 'double') {
-                return (
-                  <div
-                    key={category}
-                    className='flex justify-between items-center mb-2'
-                  >
-                    <span className='text-gray-700'>
-                      {option.nameKey ? t(option.nameKey) : selectedOption}
-                    </span>
-                    <span>x2</span>
-                  </div>
-                );
-              }
-
-              // Handle regular price adjustment
-              return (
-                <div
-                  key={category}
-                  className='flex justify-between items-center mb-2'
-                >
-                  <span className='text-gray-700'>
-                    {option.nameKey ? t(option.nameKey) : selectedOption}
-                  </span>
-                  <span>
-                    {option.price > 0
-                      ? `+$${option.price}`
-                      : `-$${Math.abs(option.price)}`}
-                  </span>
-                </div>
-              );
-            }
-
-            return null;
-          }
-        )}
-
-        <div className='flex justify-between items-center pt-2 border-t border-gray-200 mt-2'>
-          <span className='font-bold text-gray-900'>
-            {t('serviceForm.totalPrice')}
-          </span>
-          <span className='font-bold text-blue-600'>${totalPrice}</span>
-        </div>
-      </div>
-
-      {/* Warning/Info messages if needed */}
-      {serviceData?.disclaimer && (
-        <div className='bg-amber-50 border border-amber-100 rounded-md p-4'>
-          <div className='flex'>
-            <AlertCircle className='h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5' />
-            <p className='text-sm text-amber-700'>
-              {t(serviceData.disclaimer)}
-            </p>
+              <button
+                type='submit'
+                className={`px-8 py-3 bg-${colorScheme}-600 hover:bg-${colorScheme}-500 text-white rounded-lg transition-colors flex items-center`}
+              >
+                <CreditCard className='h-4 w-4 mr-2' />
+                {t('serviceForm.book', { fallback: 'Book Now' })}
+              </button>
+            </div>
           </div>
         </div>
-      )}
-
-      {/* Form actions */}
-      <div className='flex justify-end space-x-3'>
-        <button
-          type='button'
-          onClick={onCancel}
-          className='px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50'
-        >
-          {t('common.cancel')}
-        </button>
-
-        <button
-          type='submit'
-          className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
-        >
-          {t('common.confirm')}
-        </button>
-      </div>
-    </form>
+      </form>
+    </motion.div>
   );
 };
 

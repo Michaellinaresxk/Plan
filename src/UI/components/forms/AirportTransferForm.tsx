@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
   CreditCard,
+  Info,
 } from 'lucide-react';
 import ServiceManager from '@/constants/services/ServiceManager';
 
@@ -33,6 +34,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     returnDate: '',
     returnFlightNumber: '',
     passengerCount: 1,
+    kidsCount: 1,
     needsCarSeat: false,
     carSeatCount: 0,
     vehicleType: '',
@@ -81,7 +83,34 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     service.price,
   ]);
 
+  const isSameDay = (dateString: string): boolean => {
+    if (!dateString) return false;
+
+    const today = new Date();
+    const selectedDate = new Date(dateString);
+
+    return (
+      today.getFullYear() === selectedDate.getFullYear() &&
+      today.getMonth() === selectedDate.getMonth() &&
+      today.getDate() === selectedDate.getDate()
+    );
+  };
+
   // Handle form submission
+  const hasMinimum24Hours = (dateString: string): boolean => {
+    if (!dateString) return false;
+
+    const now = new Date();
+    const selectedDate = new Date(dateString);
+
+    // Calcula la diferencia en milisegundos
+    const differenceMs = selectedDate.getTime() - now.getTime();
+    const hours = differenceMs / (1000 * 60 * 60);
+
+    return hours >= 24;
+  };
+
+  // Modifica la función handleSubmit para incluir esta validación
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -102,6 +131,25 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
 
     if (formData.isRoundTrip && !formData.returnFlightNumber) {
       newErrors.returnFlightNumber = t('form.errors.required');
+    }
+
+    // Nueva validación para la reserva del mismo día
+    if (isSameDay(formData.date)) {
+      // Mostrar diálogo de confirmación en lugar de un error
+      if (
+        !window.confirm(
+          t('services.airportTransfer.form.sameDayConfirmation', {
+            fallback:
+              'You are booking for today. This requires immediate confirmation from our team. Continue?',
+          })
+        )
+      ) {
+        return; // El usuario canceló la confirmación
+      }
+    } else if (!hasMinimum24Hours(formData.date)) {
+      newErrors.date = t('services.airportTransfer.form.minimum24Hours', {
+        fallback: 'Bookings must be made at least 24 hours in advance',
+      });
     }
 
     setErrors(newErrors);
@@ -140,6 +188,16 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       passengerCount: increment
         ? prev.passengerCount + 1
         : Math.max(1, prev.passengerCount - 1),
+    }));
+  };
+
+  // Handle passenger count changes
+  const updateKidsCount = (increment: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      kidsCount: increment
+        ? prev.kidsCount + 1
+        : Math.max(1, prev.kidsCount - 1),
     }));
   };
 
@@ -219,6 +277,25 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                 )}
               </div>
             </div>
+
+            {isSameDay(formData.date) && (
+              <p className='text-amber-600 text-xs mt-1 flex items-center'>
+                <Info className='w-3 h-3 mr-1' />
+                {t('services.airportTransfer.form.sameDayWarning', {
+                  fallback: 'Same-day bookings require immediate confirmation',
+                })}
+              </p>
+            )}
+            {!isSameDay(formData.date) &&
+              !hasMinimum24Hours(formData.date) &&
+              formData.date && (
+                <p className='text-amber-600 text-xs mt-1 flex items-center'>
+                  <Info className='w-3 h-3 mr-1' />
+                  {t('services.airportTransfer.form.advanceBookingRequired', {
+                    fallback: 'Please book at least 24 hours in advance',
+                  })}
+                </p>
+              )}
 
             {/* Round Trip Toggle - Luxury Style */}
             <div className='mt-2'>
@@ -348,6 +425,33 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                   <button
                     type='button'
                     onClick={() => updatePassengerCount(true)}
+                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* kids Count */}
+              <div>
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                  <Users className='w-4 h-4 mr-2 text-blue-700' />
+                  {t('services.airportTransfer.form.kids')}
+                </label>
+                <div className='flex border border-gray-300 rounded-lg overflow-hidden bg-white'>
+                  <button
+                    type='button'
+                    onClick={() => updateKidsCount(false)}
+                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                  >
+                    -
+                  </button>
+                  <div className='flex-1 py-2 text-center'>
+                    {formData.kidsCount}
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => updateKidsCount(true)}
                     className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
                   >
                     +

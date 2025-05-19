@@ -1,7 +1,7 @@
 import React from 'react';
 import { Service } from '@/types/type';
 import AirportTransferForm from './AirportTransferForm';
-import ChefForm from './ChefFrom';
+import ChefForm from './chef/ChefFrom';
 import DefaultServiceForm from './DefaultServiceForm';
 import BabysitterForm from './BabysitterForm';
 import CustomDecorationForm from './CustomDecorationForm';

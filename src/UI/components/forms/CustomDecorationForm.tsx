@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service, BookingDate } from '@/types/type';
-import { Upload, Calendar, MapPin, MessageSquare, Tag } from 'lucide-react';
+import {
+  Upload,
+  Calendar,
+  MessageSquare,
+  Tag,
+  Clock,
+  AlertCircle,
+  Home,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import ColorPicker from '../ColorPicker';
+
 interface CustomDecorationFormProps {
   service: Service;
   onBookService: (
@@ -23,16 +32,19 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
   const { t } = useTranslation();
 
   // Form state
-  const [date, setDate] = useState<Date | null>(new Date());
+  const [date, setDate] = useState<Date | null>(getMinimumDate());
   const [time, setTime] = useState<string>('12:00');
   const [location, setLocation] = useState<string>('');
+  const [exactAddress, setExactAddress] = useState<string>('');
   const [occasion, setOccasion] = useState<string>('');
+  const [customOccasion, setCustomOccasion] = useState<string>('');
   const [colors, setColors] = useState<string[]>(['#FFCD61', '#ffffff']);
   const [notes, setNotes] = useState<string>('');
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [invalidDateMessage, setInvalidDateMessage] = useState<string>('');
 
   // Decoration occasion options
   const occasionOptions = [
@@ -44,14 +56,37 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     { id: 'other', label: t('decorationForm.occasions.other') },
   ];
 
-  // Location options
-  const locationOptions = [
-    { id: 'indoor', label: t('decorationForm.locations.indoor') },
-    { id: 'outdoor', label: t('decorationForm.locations.outdoor') },
-    { id: 'poolside', label: t('decorationForm.locations.poolside') },
-    { id: 'beach', label: t('decorationForm.locations.beach') },
-    { id: 'terrace', label: t('decorationForm.locations.terrace') },
-  ];
+  // Get the minimum date (72 hours from now)
+  function getMinimumDate(): Date {
+    const minDate = new Date();
+    minDate.setHours(minDate.getHours() + 72); // Add 72 hours
+    return minDate;
+  }
+
+  // Format minimum date as YYYY-MM-DD for the date input
+  function formatMinDateForInput(): string {
+    const minDate = getMinimumDate();
+    return minDate.toISOString().split('T')[0];
+  }
+
+  // Check date is valid (minimum 72 hours in advance)
+  useEffect(() => {
+    if (date) {
+      const now = new Date();
+      const minBookingTime = new Date(now.getTime() + 72 * 60 * 60 * 1000); // 72 hours from now
+
+      if (date < minBookingTime) {
+        setInvalidDateMessage(
+          t('decorationForm.errors.minAdvanceTime', {
+            fallback:
+              'Decoration services require minimum 72 hours advance booking',
+          })
+        );
+      } else {
+        setInvalidDateMessage('');
+      }
+    }
+  }, [date, t]);
 
   // Handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,19 +129,50 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!date) {
-      newErrors.date = t('forms.errors.dateRequired');
+      newErrors.date = t('forms.errors.dateRequired', {
+        fallback: 'Date is required',
+      });
+    } else {
+      const now = new Date();
+      const minBookingTime = new Date(now.getTime() + 72 * 60 * 60 * 1000); // 72 hours from now
+      if (date < minBookingTime) {
+        newErrors.date = t('decorationForm.errors.minAdvanceTime', {
+          fallback:
+            'Decoration services require minimum 72 hours advance booking',
+        });
+      }
     }
 
     if (!time) {
-      newErrors.time = t('forms.errors.timeRequired');
+      newErrors.time = t('forms.errors.timeRequired', {
+        fallback: 'Time is required',
+      });
     }
 
     if (!occasion) {
-      newErrors.occasion = t('forms.errors.occasionRequired');
+      newErrors.occasion = t('forms.errors.occasionRequired', {
+        fallback: 'Occasion is required',
+      });
+    } else if (occasion === 'other' && !customOccasion.trim()) {
+      newErrors.customOccasion = t('forms.errors.customOccasionRequired', {
+        fallback: 'Please specify the occasion',
+      });
     }
 
     if (!location) {
-      newErrors.location = t('forms.errors.locationRequired');
+      newErrors.location = t('forms.errors.locationRequired', {
+        fallback: 'Location type is required',
+      });
+    }
+
+    if (!exactAddress.trim()) {
+      newErrors.exactAddress = t('forms.errors.addressRequired', {
+        fallback: 'Exact address in Punta Cana is required',
+      });
+    } else if (!exactAddress.toLowerCase().includes('punta cana')) {
+      newErrors.exactAddress = t('forms.errors.puntaCanaOnly', {
+        fallback: 'This service is only available in Punta Cana area',
+      });
     }
 
     setErrors(newErrors);
@@ -130,12 +196,16 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
       endDate: dateObj,
     };
 
+    // Determine final occasion value (either selected option or custom text)
+    const finalOccasion = occasion === 'other' ? customOccasion : occasion;
+
     // Create form data
     const formData = {
       date: dateObj,
       time,
-      occasion,
-      location,
+      occasion: finalOccasion,
+      locationType: location,
+      exactAddress,
       colors,
       notes,
       referenceImage,
@@ -160,11 +230,31 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
       className={isPremium ? 'text-white' : ''}
     >
       <form onSubmit={handleSubmit} className='space-y-6'>
+        {/* Service Location Notice */}
+        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4'>
+          <div className='flex'>
+            <div className='flex-shrink-0'>
+              <AlertCircle className='h-5 w-5 text-blue-600' />
+            </div>
+            <div className='ml-3'>
+              <p className='text-sm text-blue-700'>
+                {t('decorationForm.serviceAreaNotice', {
+                  fallback:
+                    'Our decoration services are currently available only in the Punta Cana area. Please ensure your event location is within this region.',
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Date and Time Selection */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
             <label className='block text-gray-700 font-medium mb-2'>
-              {t('decorationForm.date')}
+              {t('decorationForm.date')} <span className='text-red-500'>*</span>
+              <span className='ml-1 text-sm text-gray-500 font-normal'>
+                (min. 72h in advance)
+              </span>
             </label>
             <div className='relative'>
               <div className='flex items-center'>
@@ -180,9 +270,9 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                       : null;
                     setDate(newDate);
                   }}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={formatMinDateForInput()}
                   className={`w-full pl-10 py-2 border rounded-lg ${
-                    errors.date
+                    errors.date || invalidDateMessage
                       ? 'border-red-500'
                       : isPremium
                       ? 'premium-input'
@@ -190,17 +280,22 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                   }`}
                 />
               </div>
-              {errors.date && (
-                <p className='mt-1 text-red-500 text-sm'>{errors.date}</p>
+              {(errors.date || invalidDateMessage) && (
+                <p className='mt-1 text-red-500 text-sm'>
+                  {errors.date || invalidDateMessage}
+                </p>
               )}
             </div>
           </div>
 
           <div>
             <label className='block text-gray-700 font-medium mb-2'>
-              {t('decorationForm.time')}
+              {t('decorationForm.time')} <span className='text-red-500'>*</span>
             </label>
             <div className='relative flex items-center'>
+              <span className='absolute left-3 text-gray-400'>
+                <Clock size={18} />
+              </span>
               <input
                 type='time'
                 value={time}
@@ -213,9 +308,6 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                     : 'border-gray-300'
                 }`}
               />
-              <span className='absolute left-3 text-gray-400'>
-                <Calendar size={18} />
-              </span>
               {errors.time && (
                 <p className='mt-1 text-red-500 text-sm'>{errors.time}</p>
               )}
@@ -226,7 +318,8 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
         {/* Occasion */}
         <div>
           <label className='block text-gray-700 font-medium mb-2'>
-            {t('decorationForm.occasion')}
+            {t('decorationForm.occasion')}{' '}
+            <span className='text-red-500'>*</span>
           </label>
           <div className='relative'>
             <span className='absolute left-3 top-3 text-gray-400'>
@@ -265,44 +358,73 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
           </div>
         </div>
 
-        {/* Location */}
+        {/* Custom Occasion (only shown when 'other' is selected) */}
+        {occasion === 'other' && (
+          <div>
+            <label className='block text-gray-700 font-medium mb-2'>
+              {t('decorationForm.customOccasion', {
+                fallback: 'Specify your occasion',
+              })}{' '}
+              <span className='text-red-500'>*</span>
+            </label>
+            <div className='relative'>
+              <span className='absolute left-3 top-3 text-gray-400'>
+                <Tag size={18} />
+              </span>
+              <input
+                type='text'
+                value={customOccasion}
+                onChange={(e) => setCustomOccasion(e.target.value)}
+                placeholder={t('decorationForm.customOccasionPlaceholder', {
+                  fallback: 'e.g., Corporate event, Garden party',
+                })}
+                className={`w-full pl-10 py-2 border rounded-lg ${
+                  errors.customOccasion
+                    ? 'border-red-500'
+                    : isPremium
+                    ? 'premium-input'
+                    : 'border-gray-300'
+                }`}
+              />
+              {errors.customOccasion && (
+                <p className='mt-1 text-red-500 text-sm'>
+                  {errors.customOccasion}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Exact Address */}
         <div>
           <label className='block text-gray-700 font-medium mb-2'>
-            {t('decorationForm.location')}
+            {t('decorationForm.exactAddress', {
+              fallback: 'Exact Address in Punta Cana',
+            })}{' '}
+            <span className='text-red-500'>*</span>
           </label>
           <div className='relative'>
             <span className='absolute left-3 top-3 text-gray-400'>
-              <MapPin size={18} />
+              <Home size={18} />
             </span>
-            <select
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className={`w-full pl-10 py-2 border rounded-lg appearance-none ${
-                errors.location
+            <textarea
+              value={exactAddress}
+              onChange={(e) => setExactAddress(e.target.value)}
+              rows={3}
+              placeholder={t('decorationForm.addressPlaceholder', {
+                fallback:
+                  'Full address in Punta Cana area (hotel name, villa number, street, etc.)',
+              })}
+              className={`w-full pl-10 py-2 border rounded-lg resize-none ${
+                errors.exactAddress
                   ? 'border-red-500'
                   : isPremium
-                  ? 'premium-select'
+                  ? 'premium-input'
                   : 'border-gray-300'
               }`}
-            >
-              <option value=''>{t('forms.select')}</option>
-              {locationOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
-              <svg
-                className='fill-current h-4 w-4'
-                xmlns='http://www.w3.org/2000/svg'
-                viewBox='0 0 20 20'
-              >
-                <path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
-              </svg>
-            </div>
-            {errors.location && (
-              <p className='mt-1 text-red-500 text-sm'>{errors.location}</p>
+            ></textarea>
+            {errors.exactAddress && (
+              <p className='mt-1 text-red-500 text-sm'>{errors.exactAddress}</p>
             )}
           </div>
         </div>
@@ -438,6 +560,12 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
           </div>
         </div>
 
+        {/* Required fields notice */}
+        <p className='text-sm text-gray-500'>
+          <span className='text-red-500'>*</span>{' '}
+          {t('forms.requiredFields', { fallback: 'Required fields' })}
+        </p>
+
         {/* Submit Button */}
         <div className='flex justify-end space-x-3'>
           <button
@@ -449,13 +577,15 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
           </button>
           <button
             type='submit'
-            disabled={isSubmitting}
+            disabled={isSubmitting || !!invalidDateMessage}
             className={`px-4 py-2 ${
               isPremium
                 ? 'luxury-button text-black font-medium'
                 : 'bg-amber-500 text-black hover:bg-amber-600'
             } rounded-lg transition-colors ${
-              isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+              isSubmitting || !!invalidDateMessage
+                ? 'opacity-70 cursor-not-allowed'
+                : ''
             }`}
           >
             {isSubmitting ? t('forms.submitting') : t('forms.confirmBooking')}

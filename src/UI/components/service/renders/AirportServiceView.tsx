@@ -143,6 +143,137 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
 
   return (
     <div className='space-y-16'>
+      {/* Trip options section */}
+      <div
+        className={`rounded-xl ${
+          isPremium
+            ? 'bg-gradient-to-br from-amber-50 to-amber-100/30'
+            : 'bg-gradient-to-br from-blue-50 to-blue-100/30'
+        } p-8 md:p-10`}
+      >
+        <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8'>
+          <div>
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className='text-3xl font-bold text-gray-900 mb-2'
+            >
+              Trip Options
+            </motion.h2>
+            <p className='text-gray-600'>
+              Choose a one-way or round-trip transfer for maximum convenience
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className={`px-5 py-3 ${
+              isPremium
+                ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            } rounded-lg font-medium shadow-md transition-colors duration-300 whitespace-nowrap`}
+          >
+            Book Now
+          </button>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {Object.entries(tripOptions).map(([key, option], index) => (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className='flex bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300'
+            >
+              <div
+                className={`w-2 ${isPremium ? 'bg-amber-500' : 'bg-blue-500'}`}
+              ></div>
+              <div className='flex items-center p-6 w-full'>
+                <div
+                  className={`p-3 rounded-full mr-4 ${
+                    isPremium
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-blue-100 text-blue-700'
+                  } flex-shrink-0`}
+                >
+                  {key === 'oneWay' ? <ArrowRight /> : <Repeat />}
+                </div>
+
+                <div className='flex-grow'>
+                  <h3 className='text-lg font-semibold text-gray-900'>
+                    {typeof option === 'object' && 'nameKey' in option
+                      ? t(option.nameKey, {
+                          fallback: formatTripOptionName(key),
+                        })
+                      : formatTripOptionName(key)}
+                  </h3>
+                  <p className='text-gray-600 text-sm'>
+                    {key === 'oneWay'
+                      ? 'One-way transfer to or from the airport'
+                      : 'Return transfers included, for arrival and departure'}
+                  </p>
+                </div>
+
+                <div className='flex-shrink-0 ml-4'>
+                  {typeof option === 'object' && 'price' in option && (
+                    <div className='text-right'>
+                      {option.price === 'double' ? (
+                        <span className='text-sm font-medium text-gray-500'>
+                          2x base price
+                        </span>
+                      ) : option.price > 0 ? (
+                        <span
+                          className={`text-sm font-medium text-${primaryColor}-600`}
+                        >
+                          +${option.price}
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Gallery section - stylish design */}
+      <div>
+        <div className='flex items-center justify-between mb-8'>
+          <h2 className='text-3xl font-bold text-gray-900'>
+            Our Service Gallery
+          </h2>
+        </div>
+
+        <div className='grid grid-cols-3 gap-4'>
+          {galleryImages.map((image, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={`relative ${
+                index === 0
+                  ? 'col-span-3 md:col-span-2 h-80'
+                  : 'col-span-3 md:col-span-1 h-64'
+              } rounded-xl overflow-hidden group`}
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                className='object-cover transition-transform duration-700 group-hover:scale-110'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'>
+                <p className='p-6 text-white font-medium'>{image.caption}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
       {/* Traveler tips section */}
       <div
         className={`rounded-xl ${
@@ -429,137 +560,6 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
               </ul>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Gallery section - stylish design */}
-      <div>
-        <div className='flex items-center justify-between mb-8'>
-          <h2 className='text-3xl font-bold text-gray-900'>
-            Our Service Gallery
-          </h2>
-        </div>
-
-        <div className='grid grid-cols-3 gap-4'>
-          {galleryImages.map((image, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative ${
-                index === 0
-                  ? 'col-span-3 md:col-span-2 h-80'
-                  : 'col-span-3 md:col-span-1 h-64'
-              } rounded-xl overflow-hidden group`}
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className='object-cover transition-transform duration-700 group-hover:scale-110'
-              />
-              <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'>
-                <p className='p-6 text-white font-medium'>{image.caption}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Trip options section */}
-      <div
-        className={`rounded-xl ${
-          isPremium
-            ? 'bg-gradient-to-br from-amber-50 to-amber-100/30'
-            : 'bg-gradient-to-br from-blue-50 to-blue-100/30'
-        } p-8 md:p-10`}
-      >
-        <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8'>
-          <div>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className='text-3xl font-bold text-gray-900 mb-2'
-            >
-              Trip Options
-            </motion.h2>
-            <p className='text-gray-600'>
-              Choose a one-way or round-trip transfer for maximum convenience
-            </p>
-          </div>
-
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className={`px-5 py-3 ${
-              isPremium
-                ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            } rounded-lg font-medium shadow-md transition-colors duration-300 whitespace-nowrap`}
-          >
-            Book Now
-          </button>
-        </div>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {Object.entries(tripOptions).map(([key, option], index) => (
-            <motion.div
-              key={key}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className='flex bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300'
-            >
-              <div
-                className={`w-2 ${isPremium ? 'bg-amber-500' : 'bg-blue-500'}`}
-              ></div>
-              <div className='flex items-center p-6 w-full'>
-                <div
-                  className={`p-3 rounded-full mr-4 ${
-                    isPremium
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-blue-100 text-blue-700'
-                  } flex-shrink-0`}
-                >
-                  {key === 'oneWay' ? <ArrowRight /> : <Repeat />}
-                </div>
-
-                <div className='flex-grow'>
-                  <h3 className='text-lg font-semibold text-gray-900'>
-                    {typeof option === 'object' && 'nameKey' in option
-                      ? t(option.nameKey, {
-                          fallback: formatTripOptionName(key),
-                        })
-                      : formatTripOptionName(key)}
-                  </h3>
-                  <p className='text-gray-600 text-sm'>
-                    {key === 'oneWay'
-                      ? 'One-way transfer to or from the airport'
-                      : 'Return transfers included, for arrival and departure'}
-                  </p>
-                </div>
-
-                <div className='flex-shrink-0 ml-4'>
-                  {typeof option === 'object' && 'price' in option && (
-                    <div className='text-right'>
-                      {option.price === 'double' ? (
-                        <span className='text-sm font-medium text-gray-500'>
-                          2x base price
-                        </span>
-                      ) : option.price > 0 ? (
-                        <span
-                          className={`text-sm font-medium text-${primaryColor}-600`}
-                        >
-                          +${option.price}
-                        </span>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
         </div>
       </div>
 
