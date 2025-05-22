@@ -1,0 +1,13 @@
+export type ReservationProperties = {
+  bookingId: string;
+  serviceId: string;
+  serviceName: string;
+  bookingDate: Date;
+  status: string;
+  totalPrice: number;
+  clientName: string;
+  clientEmail: string;
+  clientPhone: string;
+  formData: Record<string, any>; // Objeto dinámico con propiedades específicas por servicio
+  notes?: string;
+};
