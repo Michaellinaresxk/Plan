@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { Service, BookingDate } from '@/types/type';
@@ -7,7 +7,6 @@ import {
   ArrowUpRight,
   Clock,
   DollarSign,
-  Sparkles,
   Star,
   Plus,
   Diamond,
@@ -30,7 +29,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   isSelected,
   packageType,
-  onToggle,
   onBookService,
   viewContext,
 }) => {
@@ -79,9 +77,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(service.price);
-  // Get colors based on whether it's premium or standard
-  const mainColor = isPremiumStyle ? 'amber' : 'blue';
-  const gradientDirection = isPremiumStyle ? 'to-tr' : 'to-r';
+
   // Render the premium luxury card
   if (isPremiumStyle) {
     return (

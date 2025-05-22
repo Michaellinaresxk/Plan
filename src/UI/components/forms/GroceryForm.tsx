@@ -37,18 +37,12 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
     specialRequests: '',
     allergyDetails: '',
     acceptAllergensForOthers: false,
+    allergyAcknowledgement: false,
   });
 
-  // Confirmation dialog state
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-  // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Current price calculation
   const [currentPrice, setCurrentPrice] = useState(service.price);
-
-  // Available delivery time slots
   const timeSlots = ['9:00 - 13:00', '14:00 - 18:00'];
 
   // Calculate total price based on selected items and delivery options
@@ -68,38 +62,31 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
     setCurrentPrice(totalPrice);
   }, [service.price, selectedItems]);
 
-  // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value, type } = e.target as HTMLInputElement;
 
     if (type === 'checkbox') {
-      setFormData({
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         [name]: (e.target as HTMLInputElement).checked,
-      });
-    } else if (type === 'radio') {
-      // For radio buttons
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+      }));
     } else {
-      setFormData({
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         [name]: value,
-      });
+      }));
     }
 
-    // Clear error for this field when user types
+    // Limpia errores cuando el usuario escribe
     if (errors[name]) {
-      setErrors({
-        ...errors,
+      setErrors((prev) => ({
+        ...prev,
         [name]: '',
-      });
+      }));
     }
   };
 
@@ -154,13 +141,24 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
       });
     }
 
-    if (formData.hasAllergies === 'yes' && !formData.allergyDetails) {
+    // Allergy-related validations
+    if (formData.hasAllergies === 'yes' && !formData.allergyDetails.trim()) {
       newErrors.allergyDetails = t('form.errors.required', {
         fallback: 'Please provide details about the allergies',
       });
     }
 
-    // Optional: You might want to add validation for the disclaimer checkbox
+    // Check acknowledgement checkbox for allergies
+    if (formData.hasAllergies === 'yes' && !formData.allergyAcknowledgement) {
+      newErrors.allergyAcknowledgement = t(
+        'form.errors.acknowledgementRequired',
+        {
+          fallback: 'Please acknowledge this statement',
+        }
+      );
+    }
+
+    // Validate acceptance of allergens for others
     if (formData.hasAllergies === 'yes' && !formData.acceptAllergensForOthers) {
       newErrors.acceptAllergensForOthers = t('form.errors.required', {
         fallback: 'Please acknowledge the disclaimer',
@@ -430,79 +428,104 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
                     </label>
                   </div>
                 </div>
-              </div>
 
-              {/* Show allergy details input when hasAllergies is 'yes' */}
-              {formData.hasAllergies === 'yes' && (
-                <div className='space-y-4 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg'>
-                  {/* Allergy Details Input */}
-                  <div>
+                {/* Campo adicional que aparece cuando se selecciona "Yes" */}
+                {formData.hasAllergies === 'yes' && (
+                  <div className='mt-4 pl-6 border-l-4 border-blue-300 bg-blue-50 p-4 rounded-r-lg'>
                     <label className='block text-sm font-medium text-gray-700 mb-2'>
                       {t('grocery.form.allergyDetails', {
-                        fallback: 'Please specify the allergies in detail',
+                        fallback: 'Please specify your allergies:',
                       })}
-                      *
+                      <span className='text-red-500'> *</span>
                     </label>
                     <textarea
                       name='allergyDetails'
-                      value={formData.allergyDetails}
+                      value={formData.allergyDetails || ''}
                       onChange={handleChange}
                       placeholder={t('grocery.form.allergyDetailsPlaceholder', {
                         fallback:
-                          'List specific food items and ingredients that cause allergic reactions',
+                          'List specific food items, ingredients, or products you are allergic to...',
                       })}
                       className={`w-full p-3 border ${
                         errors.allergyDetails
                           ? 'border-red-500'
-                          : 'border-amber-300'
+                          : 'border-blue-300'
                       } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-white min-h-[100px]`}
-                      required
+                      required={formData.hasAllergies === 'yes'}
                     ></textarea>
                     {errors.allergyDetails && (
-                      <p className='text-red-500 text-xs mt-1'>
+                      <p className='text-red-500 text-sm mt-1'>
                         {errors.allergyDetails}
                       </p>
                     )}
-                  </div>
 
-                  {/* Disclaimer and Checkbox */}
-                  <div className='mt-4'>
-                    <div className='p-3 bg-white rounded-lg border border-amber-300'>
-                      <p className='text-amber-800 text-sm mb-3 font-medium'>
-                        {t('grocery.form.allergyDisclaimer', {
-                          fallback:
-                            'Disclaimer: If you authorize the purchase of ingredients that may cause allergies, please understand that these are intended for other guests who can safely consume them. We will follow your instructions, but the responsibility for ensuring proper handling and consumption after delivery is yours.',
-                        })}
-                      </p>
-
+                    {/* Checkbox para confirmar conocimiento de los riesgos */}
+                    <div className='mt-4 bg-white p-3 rounded-lg border border-blue-200'>
                       <div className='flex items-center'>
                         <input
                           type='checkbox'
-                          id='acceptAllergensForOthers'
-                          name='acceptAllergensForOthers'
-                          checked={formData.acceptAllergensForOthers}
+                          id='allergyAcknowledgement'
+                          name='allergyAcknowledgement'
+                          checked={formData.allergyAcknowledgement || false}
                           onChange={handleChange}
                           className='h-4 w-4 text-blue-700 focus:ring-blue-500 border-gray-300 rounded'
                         />
                         <label
-                          htmlFor='acceptAllergensForOthers'
-                          className='ml-2 text-gray-700 text-sm'
+                          htmlFor='allergyAcknowledgement'
+                          className='ml-2 text-sm text-gray-700'
                         >
-                          {t('grocery.form.acceptAllergensForOthers', {
+                          {t('grocery.form.allergyAcknowledgement', {
                             fallback:
-                              'I understand and authorize the purchase of ingredients that may cause allergies, as they are intended for other guests.',
+                              'I understand that while special care will be taken, I should verify ingredients upon delivery.',
                           })}
                         </label>
                       </div>
-                      {errors.acceptAllergensForOthers && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.acceptAllergensForOthers}
+                      {errors.allergyAcknowledgement && (
+                        <p className='text-red-500 text-sm mt-1'>
+                          {errors.allergyAcknowledgement}
                         </p>
                       )}
                     </div>
+
+                    {/* Disclaimer and Checkbox for allowing allergens for others */}
+                    <div className='mt-4'>
+                      <div className='p-3 bg-white rounded-lg border border-amber-300'>
+                        <p className='text-amber-800 text-sm mb-3 font-medium'>
+                          {t('grocery.form.allergyDisclaimer', {
+                            fallback:
+                              'Disclaimer: If you authorize the purchase of ingredients that may cause allergies, please understand that these are intended for other guests who can safely consume them. We will follow your instructions, but the responsibility for ensuring proper handling and consumption after delivery is yours.',
+                          })}
+                        </p>
+
+                        <div className='flex items-center'>
+                          <input
+                            type='checkbox'
+                            id='acceptAllergensForOthers'
+                            name='acceptAllergensForOthers'
+                            checked={formData.acceptAllergensForOthers}
+                            onChange={handleChange}
+                            className='h-4 w-4 text-blue-700 focus:ring-blue-500 border-gray-300 rounded'
+                          />
+                          <label
+                            htmlFor='acceptAllergensForOthers'
+                            className='ml-2 text-gray-700 text-sm'
+                          >
+                            {t('grocery.form.acceptAllergensForOthers', {
+                              fallback:
+                                'I understand and authorize the purchase of ingredients that may cause allergies, as they are intended for other guests.',
+                            })}
+                          </label>
+                        </div>
+                        {errors.acceptAllergensForOthers && (
+                          <p className='text-red-500 text-xs mt-1'>
+                            {errors.acceptAllergensForOthers}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
               {/* Special Requests */}
               <div>

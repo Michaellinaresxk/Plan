@@ -3,7 +3,6 @@ import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import {
   Plane,
-  Car,
   Calendar,
   Users,
   Baby,

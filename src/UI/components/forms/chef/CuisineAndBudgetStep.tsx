@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Utensils, Check, ChefHat } from 'lucide-react';
 import {
@@ -25,28 +25,96 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
     !!formData.selectedSpecialMenu
   );
 
+  // Local state to ensure UI updates properly
+  const [selectedCuisine, setSelectedCuisine] = useState(
+    formData.cuisineType || ''
+  );
+  const [selectedBudget, setSelectedBudget] = useState(
+    formData.budgetOption || ''
+  );
+  const [selectedSpecialMenu, setSelectedSpecialMenu] = useState(
+    formData.selectedSpecialMenu || ''
+  );
+
+  // Debug log when component mounts and when form data changes
+  useEffect(() => {
+    console.log('Current form data:', formData);
+    console.log('Selected cuisine:', selectedCuisine);
+  }, [formData, selectedCuisine]);
+
+  // Mapeo explícito entre menús especiales y tipos de cocina
+  // Esto es crucial para asegurar que se seleccione el tipo de cocina correcto
+  const menuToCuisineMap: Record<string, string> = {
+    mediterranean: 'mediterranean', // el id del menú especial -> id del tipo de cocina
+    // Añade todos los mapeos necesarios aquí
+    italian: 'italian',
+    asian: 'asian',
+    // etc...
+  };
+
   // Handle cuisine type selection
   const handleCuisineSelect = (cuisineId: string) => {
+    console.log(`Selecting cuisine: ${cuisineId}`);
+
+    // Actualizar tanto el estado local como el estado del formulario padre
+    setSelectedCuisine(cuisineId);
     onChange('cuisineType', cuisineId);
-    onChange('selectedSpecialMenu', ''); // Reset special menu when cuisine changes
+
+    // Reset special menu when cuisine changes
+    setSelectedSpecialMenu('');
+    onChange('selectedSpecialMenu', '');
+
+    // Debugging
+    console.log('Updated cuisineType to:', cuisineId);
   };
 
   // Handle budget option selection
   const handleBudgetSelect = (budgetId: string) => {
+    console.log(`Selecting budget: ${budgetId}`);
+
+    setSelectedBudget(budgetId);
     onChange('budgetOption', budgetId);
   };
 
   // Handle special menu selection
   const handleSpecialMenuSelect = (menuId: string) => {
+    console.log(`Selecting special menu: ${menuId}`);
+
     const selectedMenu = chefsSpecialMenus.find((menu) => menu.id === menuId);
 
     if (selectedMenu) {
+      // Usar el mapeo para obtener el tipo de cocina correspondiente
+      // Si no existe en el mapeo, usar el ID del menú como fallback
+      const cuisineTypeValue = menuToCuisineMap[menuId] || menuId;
+
+      console.log(
+        `Mapping special menu ${menuId} to cuisine type ${cuisineTypeValue}`
+      );
+
+      // Actualizar estados
+      setSelectedSpecialMenu(menuId);
+      setSelectedCuisine(cuisineTypeValue);
+
+      // Actualizar estado del padre - ESTO ES LO MÁS IMPORTANTE
       onChange('selectedSpecialMenu', menuId);
-      onChange('cuisineType', selectedMenu.id); // Set matching cuisine type
+      onChange('cuisineType', cuisineTypeValue);
+
+      // Log para debug
+      console.log('After update - cuisineType should be:', cuisineTypeValue);
     } else {
+      setSelectedSpecialMenu('');
       onChange('selectedSpecialMenu', '');
     }
   };
+
+  // Este efecto es importante - asegúrate de que los cambios en el estado local
+  // se reflejen en el estado del formulario padre
+  useEffect(() => {
+    if (selectedCuisine && selectedCuisine !== formData.cuisineType) {
+      onChange('cuisineType', selectedCuisine);
+      console.log('Sync effect - updated cuisineType to:', selectedCuisine);
+    }
+  }, [selectedCuisine]);
 
   return (
     <div className='space-y-6'>
@@ -54,6 +122,33 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
         <Utensils className='w-5 h-5 mr-2 text-amber-600' />
         {t('chef.form.step3.title', { fallback: 'Cuisine & Budget' })}
       </h3>
+
+      {/* Debug información */}
+      <div className='p-2 bg-gray-100 text-xs mb-4 rounded'>
+        <p>Selected Cuisine: {selectedCuisine || 'none'}</p>
+        <p>Form Data Cuisine: {formData.cuisineType || 'none'}</p>
+        {/* Botón para forzar actualizaciones */}
+        <button
+          type='button'
+          onClick={() => {
+            // Forzar actualización directa
+            onChange('cuisineType', selectedCuisine);
+            console.log('Forced update of cuisineType to:', selectedCuisine);
+          }}
+          className='mt-2 p-1 bg-gray-200 rounded text-xs'
+        >
+          Forzar Actualización
+        </button>
+      </div>
+
+      {/* Campos ocultos para asegurar que el formulario tiene los valores */}
+      <input type='hidden' name='cuisineType' value={selectedCuisine} />
+      <input type='hidden' name='budgetOption' value={selectedBudget} />
+      <input
+        type='hidden'
+        name='selectedSpecialMenu'
+        value={selectedSpecialMenu}
+      />
 
       {!showSpecialMenu ? (
         <>
@@ -68,13 +163,14 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               {cuisineTypes.map((cuisine) => (
-                <div
+                <button
                   key={cuisine.id}
+                  type='button'
                   onClick={() => handleCuisineSelect(cuisine.id)}
                   className={`
-                    p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md
+                    p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md text-left w-full
                     ${
-                      formData.cuisineType === cuisine.id
+                      selectedCuisine === cuisine.id
                         ? 'border-amber-500 bg-amber-50'
                         : 'border-gray-200 hover:border-amber-300'
                     }
@@ -94,14 +190,14 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
                     {cuisine.description}
                   </p>
 
-                  {formData.cuisineType === cuisine.id && (
+                  {selectedCuisine === cuisine.id && (
                     <div className='mt-2 flex justify-end'>
                       <div className='w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center'>
                         <Check className='w-4 h-4 text-white' />
                       </div>
                     </div>
                   )}
-                </div>
+                </button>
               ))}
             </div>
 
@@ -122,8 +218,8 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
           </div>
         </>
       ) : (
+        // Chef's Special Menu Selection
         <>
-          {/* Chef's Special Menu Selection */}
           <div>
             <div className='flex justify-between items-center mb-3'>
               <label className='block text-lg font-medium text-gray-800'>
@@ -142,13 +238,14 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
 
             <div className='space-y-4'>
               {chefsSpecialMenus.map((menu) => (
-                <div
+                <button
                   key={menu.id}
+                  type='button'
                   onClick={() => handleSpecialMenuSelect(menu.id)}
                   className={`
-                    p-5 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md
+                    p-5 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md w-full text-left
                     ${
-                      formData.selectedSpecialMenu === menu.id
+                      selectedSpecialMenu === menu.id
                         ? 'border-amber-500 bg-amber-50'
                         : 'border-gray-200 hover:border-amber-300'
                     }
@@ -182,14 +279,14 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
                     </ul>
                   </div>
 
-                  {formData.selectedSpecialMenu === menu.id && (
+                  {selectedSpecialMenu === menu.id && (
                     <div className='mt-2 flex justify-end'>
                       <div className='w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center'>
                         <Check className='w-4 h-4 text-white' />
                       </div>
                     </div>
                   )}
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -207,13 +304,14 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
 
         <div className='grid grid-cols-1 gap-4'>
           {budgetOptions.map((option) => (
-            <div
+            <button
               key={option.id}
+              type='button'
               onClick={() => handleBudgetSelect(option.id)}
               className={`
-                p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md
+                p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md text-left w-full
                 ${
-                  formData.budgetOption === option.id
+                  selectedBudget === option.id
                     ? 'border-amber-500 bg-amber-50'
                     : 'border-gray-200 hover:border-amber-300'
                 }
@@ -229,14 +327,14 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
               </div>
               <p className='text-sm text-gray-600 mt-1'>{option.description}</p>
 
-              {formData.budgetOption === option.id && (
+              {selectedBudget === option.id && (
                 <div className='mt-2 flex justify-end'>
                   <div className='w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center'>
                     <Check className='w-4 h-4 text-white' />
                   </div>
                 </div>
               )}
-            </div>
+            </button>
           ))}
         </div>
 
@@ -244,6 +342,27 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
           <p className='text-red-500 text-sm mt-2'>{errors.budgetOption}</p>
         )}
       </div>
+
+      {/* Botón para guardar selecciones antes de continuar */}
+      <button
+        type='button'
+        onClick={() => {
+          // Forzar actualización directa de todos los campos
+          onChange('cuisineType', selectedCuisine);
+          onChange('budgetOption', selectedBudget);
+          onChange('selectedSpecialMenu', selectedSpecialMenu);
+
+          console.log('Selecciones guardadas explícitamente');
+          console.log({
+            cuisineType: selectedCuisine,
+            budgetOption: selectedBudget,
+            selectedSpecialMenu: selectedSpecialMenu,
+          });
+        }}
+        className='mt-4 w-full py-3 bg-amber-100 text-amber-800 rounded-lg font-medium hover:bg-amber-200 transition-colors'
+      >
+        Guardar selecciones
+      </button>
     </div>
   );
 };

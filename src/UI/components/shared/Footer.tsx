@@ -43,7 +43,6 @@ const Footer = () => {
               </a>
             </div>
           </div>
-
           {/* Quick Links */}
           <div className='md:col-span-1'>
             <h3 className='text-lg font-semibold mb-4'>
@@ -84,7 +83,6 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-
           {/* Contact Info */}
           <div className='md:col-span-1'>
             <h3 className='text-lg font-semibold mb-4'>
@@ -108,27 +106,6 @@ const Footer = () => {
                 <span className='text-gray-400'>info@puntacanaplan.com</span>
               </li>
             </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div className='md:col-span-1'>
-            <h3 className='text-lg font-semibold mb-4'>Newsletter</h3>
-            <p className='text-gray-400 mb-4'>
-              Subscribe to our newsletter for exclusive offers and updates.
-            </p>
-            <form className='space-y-2'>
-              <input
-                type='email'
-                placeholder='Your email'
-                className='w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-              />
-              <button
-                type='submit'
-                className='w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg font-medium transition-colors'
-              >
-                Subscribe
-              </button>
-            </form>
           </div>
         </div>
 

@@ -6,6 +6,7 @@ import DefaultServiceForm from './DefaultServiceForm';
 import BabysitterForm from './BabysitterForm';
 import CustomDecorationForm from './CustomDecorationForm';
 import GroceryForm from './GroceryForm';
+import YogaServiceForm from './YogaServiceForm';
 interface ServiceFormFactoryProps {
   service: Service;
   onSubmit: (formData: any) => void;
@@ -43,6 +44,17 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
     if (service.id.includes('custom-decorations')) {
       return (
         <CustomDecorationForm
+          service={service}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+        />
+      );
+    }
+
+    // Check for airport transfer service
+    if (service.id.includes('yoga-standard')) {
+      return (
+        <YogaServiceForm
           service={service}
           onSubmit={onSubmit}
           onCancel={onCancel}
