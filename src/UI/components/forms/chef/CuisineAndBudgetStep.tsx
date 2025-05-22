@@ -123,24 +123,6 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
         {t('chef.form.step3.title', { fallback: 'Cuisine & Budget' })}
       </h3>
 
-      {/* Debug información */}
-      <div className='p-2 bg-gray-100 text-xs mb-4 rounded'>
-        <p>Selected Cuisine: {selectedCuisine || 'none'}</p>
-        <p>Form Data Cuisine: {formData.cuisineType || 'none'}</p>
-        {/* Botón para forzar actualizaciones */}
-        <button
-          type='button'
-          onClick={() => {
-            // Forzar actualización directa
-            onChange('cuisineType', selectedCuisine);
-            console.log('Forced update of cuisineType to:', selectedCuisine);
-          }}
-          className='mt-2 p-1 bg-gray-200 rounded text-xs'
-        >
-          Forzar Actualización
-        </button>
-      </div>
-
       {/* Campos ocultos para asegurar que el formulario tiene los valores */}
       <input type='hidden' name='cuisineType' value={selectedCuisine} />
       <input type='hidden' name='budgetOption' value={selectedBudget} />

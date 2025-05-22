@@ -154,8 +154,8 @@ const ReservationSuccessPage: React.FC<ReservationSuccessPageProps> = ({
             </h3>
             <div className='mt-2 text-sm text-blue-700 space-y-1'>
               <p>
-                Our team will review your request and you'll receive a
-                confirmation email within 24 hours.
+                Our team will review your request and you will receive a
+                confirmation email within as soon as posible.
               </p>
               <p>
                 Once confirmed, a payment link will be sent to your email to

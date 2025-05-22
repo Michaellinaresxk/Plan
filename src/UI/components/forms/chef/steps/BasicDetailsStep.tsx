@@ -1,23 +1,12 @@
-// steps/BasicDetailsStep.jsx
-import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Gift } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/client';
-import { formatDate } from '@/utils/chefFormUtils';
 import { occasionTypes } from '@/constants/chefFormConsts';
+import { useDateSelection } from '@/hooks/useDateSelection';
+import { useTranslation } from '@/lib/i18n/client';
+import CalendarPicker from '@/UI/components/calendar/CalendarPicker';
+import SelectedDatesSummary from '@/UI/components/calendar/SelectedDatesSummary';
+import { Calendar, Clock, Gift, MapPin } from 'lucide-react';
 
-interface BasicDetailsStepProps {
-  formData: any;
-  onChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => void;
-  onDateSelect: (dates: string[]) => void;
-  errors: Record<string, string>;
-  getMinDate: () => string;
-}
-
-const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
+// Main Basic Details Step Component
+const BasicDetailsStep = ({
   formData,
   onChange,
   onDateSelect,
@@ -25,46 +14,10 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
   getMinDate,
 }) => {
   const { t } = useTranslation();
-  const [calendar, setCalendar] = useState<Set<string>>(
-    new Set(formData.dates)
-  );
 
-  // Helper function to toggle date selection for multiple days service
-  const toggleDateSelection = (dateStr: string) => {
-    const newDates = new Set(calendar);
-
-    if (newDates.has(dateStr)) {
-      newDates.delete(dateStr);
-    } else {
-      newDates.add(dateStr);
-    }
-
-    setCalendar(newDates);
-    onDateSelect(Array.from(newDates));
-  };
-
-  // Generate calendar days for multiple days selection
-  const generateCalendarDays = () => {
-    const days = [];
-    const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() + 1); // Start from tomorrow
-
-    // Generate 30 days from tomorrow
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
-
-      days.push({
-        date,
-        dateStr,
-        selected: calendar.has(dateStr),
-      });
-    }
-
-    return days;
-  };
+  // Use the custom hook for date selection
+  const { selectedDates, toggleDate, removeDate, clearAllDates } =
+    useDateSelection(formData.dates || [], onDateSelect);
 
   return (
     <div className='space-y-6'>
@@ -72,6 +25,39 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
         <Calendar className='w-5 h-5 mr-2 text-amber-600' />
         {t('chef.form.step1.title', { fallback: 'When & Where' })}
       </h3>
+
+      {/* Service Type Toggle - Optional, based on your needs */}
+      {formData.serviceType && (
+        <div className='mb-6'>
+          <label className='text-sm font-medium text-gray-700 mb-3 block'>
+            Service Type
+          </label>
+          <div className='flex gap-4'>
+            <label className='flex items-center cursor-pointer'>
+              <input
+                type='radio'
+                name='serviceType'
+                value='single'
+                checked={formData.serviceType === 'single'}
+                onChange={onChange}
+                className='mr-2 text-amber-600 focus:ring-amber-500'
+              />
+              <span className='text-gray-700'>Single Day Service</span>
+            </label>
+            <label className='flex items-center cursor-pointer'>
+              <input
+                type='radio'
+                name='serviceType'
+                value='multiple'
+                checked={formData.serviceType === 'multiple'}
+                onChange={onChange}
+                className='mr-2 text-amber-600 focus:ring-amber-500'
+              />
+              <span className='text-gray-700'>Multiple Days Service</span>
+            </label>
+          </div>
+        </div>
+      )}
 
       {/* Date Selection */}
       {formData.serviceType === 'single' ? (
@@ -98,101 +84,26 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
       ) : (
         /* Multiple Days Service */
         <div>
-          <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+          <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
             <Calendar className='w-4 h-4 mr-2 text-amber-700' />
             {t('chef.form.selectDates', { fallback: 'Select Dates' })} *
           </label>
 
           {errors.dates && (
-            <p className='text-red-500 text-xs mb-2'>{errors.dates}</p>
+            <p className='text-red-500 text-xs mb-3'>{errors.dates}</p>
           )}
 
-          <div className='bg-gray-50 rounded-lg border border-gray-300 p-4'>
-            <div className='grid grid-cols-7 gap-2 text-center text-xs font-medium text-gray-500 mb-2'>
-              <div>Sun</div>
-              <div>Mon</div>
-              <div>Tue</div>
-              <div>Wed</div>
-              <div>Thu</div>
-              <div>Fri</div>
-              <div>Sat</div>
-            </div>
+          <CalendarPicker
+            selectedDates={selectedDates}
+            onDateToggle={toggleDate}
+            minDate={getMinDate()}
+          />
 
-            <div className='grid grid-cols-7 gap-2'>
-              {generateCalendarDays().map((day) => {
-                const dayOfWeek = day.date.getDay();
-
-                // If this is the first day and it doesn't start on Sunday,
-                // add empty placeholders for the days of the week before it
-                if (day === generateCalendarDays()[0]) {
-                  const placeholders = [];
-                  for (let i = 0; i < dayOfWeek; i++) {
-                    placeholders.push(
-                      <div key={`placeholder-${i}`} className='h-10'></div>
-                    );
-                  }
-
-                  if (placeholders.length > 0) {
-                    return [
-                      ...placeholders,
-                      <button
-                        key={day.dateStr}
-                        type='button'
-                        onClick={() => toggleDateSelection(day.dateStr)}
-                        className={`h-10 rounded-lg flex items-center justify-center font-medium
-                          ${
-                            day.selected
-                              ? 'bg-amber-600 text-white'
-                              : 'bg-white border border-gray-300 hover:bg-amber-50'
-                          }
-                        `}
-                      >
-                        {day.date.getDate()}
-                      </button>,
-                    ];
-                  }
-                }
-
-                return (
-                  <button
-                    key={day.dateStr}
-                    type='button'
-                    onClick={() => toggleDateSelection(day.dateStr)}
-                    className={`h-10 rounded-lg flex items-center justify-center font-medium 
-                      ${
-                        day.selected
-                          ? 'bg-amber-600 text-white'
-                          : 'bg-white border border-gray-300 hover:bg-amber-50'
-                      }
-                    `}
-                  >
-                    {day.date.getDate()}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Selected Dates Summary */}
-          {calendar.size > 0 && (
-            <div className='mt-3 p-3 bg-amber-50 rounded-lg border border-amber-100'>
-              <div className='text-sm font-medium text-amber-800 mb-1'>
-                Selected dates: {calendar.size}
-              </div>
-              <div className='flex flex-wrap gap-2'>
-                {Array.from(calendar)
-                  .sort()
-                  .map((dateStr) => (
-                    <div
-                      key={dateStr}
-                      className='text-xs bg-white px-2 py-1 rounded border border-amber-200'
-                    >
-                      {formatDate(dateStr)}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
+          <SelectedDatesSummary
+            selectedDates={selectedDates}
+            onRemoveDate={removeDate}
+            onClearAll={clearAllDates}
+          />
         </div>
       )}
 
@@ -221,7 +132,7 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {/* Location Field - Direct Address Input */}
+        {/* Location Field */}
         <div>
           <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
             <MapPin className='w-4 h-4 mr-2 text-amber-700' />
@@ -276,7 +187,7 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
           {/* Show custom occasion input if "Other" is selected */}
           {formData.occasion === 'other' && (
             <div className='mt-3'>
-              <label className='text-sm font-medium text-gray-700 mb-2'>
+              <label className='text-sm font-medium text-gray-700 mb-2 block'>
                 Please specify the occasion *
               </label>
               <input
@@ -298,6 +209,22 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
           )}
         </div>
       </div>
+
+      {/* Summary Footer */}
+      {formData.serviceType === 'multiple' && selectedDates.size > 0 && (
+        <div className='pt-4 border-t border-gray-100'>
+          <div className='flex items-center justify-between text-sm'>
+            <span className='text-gray-600 flex items-center'>
+              <Calendar className='w-4 h-4 mr-1' />
+              {selectedDates.size} date{selectedDates.size !== 1 ? 's' : ''}{' '}
+              selected
+            </span>
+            <span className='text-amber-600 font-medium'>
+              Ready to continue
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

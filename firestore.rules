@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Reglas para usuarios
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Reglas para reservations - MÁS PERMISIVAS PARA DESARROLLO
+    match /reservations/{reservationId} {
+      // Permitir TODAS las operaciones si el usuario está autenticado
+      allow read, write: if request.auth != null;
+      
+      // TEMPORAL: Para testing, permitir lectura sin autenticación
+      // ELIMINAR EN PRODUCCIÓN
+      allow read: if true;
+    }
+    
+    // Regla temporal para debugging - ELIMINAR EN PRODUCCIÓN
+    match /{document=**} {
+      allow read: if request.auth != null;
+    }
+  }
+}
