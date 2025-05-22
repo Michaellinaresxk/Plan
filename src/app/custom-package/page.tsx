@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
 import Image from 'next/image';
-import CustomPackageBuilder from '@/UI/components/CustomPackageBuilder';
+import CustomPackageBuilder from '@/UI/components/layout/CustomPackageBuilder';
 import CustomPackageOrchestrator from '@/UI/components/packageBuilder/CustomPackageOrchestrator';
 import ServiceManager from '@/constants/services/ServiceManager';
 
@@ -88,14 +88,11 @@ export default function CustomPackagePage() {
           </div>
 
           <h2 className='text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent'>
-            {t('customPackagePage.chooseExperience')}
+            {t('customPackagePage.chooseExperienceTitle')}
           </h2>
 
           <p className='text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-12'>
-            {t('customPackagePage.chooseExperienceSubtitle', {
-              fallback:
-                'Choose how you want to create your perfect Punta Cana experience',
-            })}
+            {t('customPackagePage.chooseExperienceSubTitle')}
           </p>
         </motion.div>
       </div>

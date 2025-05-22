@@ -11,7 +11,7 @@ import {
   Home,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import ColorPicker from '../ColorPicker';
+import ColorPicker from '../shared/ColorPicker';
 
 interface CustomDecorationFormProps {
   service: Service;

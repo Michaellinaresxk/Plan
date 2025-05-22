@@ -71,12 +71,6 @@ const serviceCategories = [
     icon: <Music size={20} />,
     description: 'Entertainment and convenience services',
   },
-  {
-    id: 'luxury',
-    name: 'Luxury Experiences',
-    icon: <Star size={20} />,
-    description: 'Premium and exclusive services',
-  },
 ];
 
 const ServiceList: React.FC<EnhancedServiceListProps> = ({

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
-import { Service } from '@/types/type';
+import { BookingDate, Service } from '@/types/type';
 import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import BookingModal from '@/UI/components/modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
-import { BookingDate } from '@/types/type';
+
 import GroceryShoppingService from '../../grocery/GroceryShoppingService';
 
 // Interface for grocery items

@@ -375,7 +375,12 @@
     "createCustomPackageSubTitle": "Select services to create your personalized experience",
     "services": "Services Available",
     "ready": "Ready to Create Your Dream Vacation?",
-    "readyText": "Build your bespoke Punta Cana experience now and let us take care of every detail. Your perfect vacation awaits."
+    "readyText": "Build your bespoke Punta Cana experience now and let us take care of every detail. Your perfect vacation awaits.",
+    "chooseExperienceTitle": "Choose Your Experience",
+    "chooseExperienceSubTitle": "Select the package that fits your vacation needs. Each option offers unique services to enhance your stay.",
+    "guideList1": "Recomendaciones de los expertos",
+    "guideList2": "Guía paso a paso",
+    "guideList3": "Optimizado para tus preferencias"
   },
   "faqs": {
     "title": "Frequently Asked Questions",

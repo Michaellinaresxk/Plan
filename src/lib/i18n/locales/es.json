@@ -373,7 +373,12 @@
     "createCustomPackageSubTitle": "Selecciona servicios para crear tu experiencia personalizada",
     "services": "Servicios Disponibles",
     "ready": "Listo para crear las vacaciones de sus sueños?",
-    "readyText": "Construya ahora su experiencia a medida en Punta Cana y deje que nos encarguemos de todos los detalles. Sus vacaciones perfectas le esperan."
+    "readyText": "Construya ahora su experiencia a medida en Punta Cana y deje que nos encarguemos de todos los detalles. Sus vacaciones perfectas le esperan.",
+    "chooseExperienceTitle": "Elige tu experiencia",
+    "chooseExperienceSubTitle": "Seleccione el paquete que se adapte a sus necesidades vacacionales. Cada opción ofrece servicios únicos para mejorar su estancia.",
+    "guideList1": "Expert recommendations",
+    "guideList2": "Step-by-step guidance",
+    "guideList3": "Optimized for your preferences"
   },
   "dayByDayPlanner": {
     "title": "¿Cuándo planeas visitar Punta Cana?",
