@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { motion } from 'framer-motion';
@@ -11,7 +11,7 @@ interface DefaultServiceFormProps {
 }
 
 /**
- * Simplified Service Form
+ * Simplified Service Form - WITH DEBUG LOGGING
  *
  * A streamlined form for services with only essential fields:
  * - Date selection
@@ -32,6 +32,14 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [totalPrice, setTotalPrice] = useState(service.price);
 
+  // Debug initialization
+  React.useEffect(() => {
+    console.log('📝 DefaultServiceForm initialized for:', service.id);
+    console.log('📝 DefaultServiceForm onSubmit type:', typeof onSubmit);
+    console.log('📝 DefaultServiceForm onCancel type:', typeof onCancel);
+    console.log('📝 DefaultServiceForm service object:', service);
+  }, [service.id, onSubmit, onCancel, service]);
+
   // Handle input changes
   const handleChange = (
     e: React.ChangeEvent<
@@ -39,6 +47,8 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
     >
   ) => {
     const { name, value } = e.target;
+    console.log(`📝 DefaultServiceForm - Field changed: ${name} = ${value}`);
+
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when field is filled
@@ -53,24 +63,31 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
 
   // Handle guest count updates
   const updateGuestCount = (increment: boolean) => {
+    const newCount = increment
+      ? formData.guestCount + 1
+      : Math.max(1, formData.guestCount - 1);
+
+    console.log(`📝 DefaultServiceForm - Guest count updated: ${newCount}`);
+
     setFormData((prev) => ({
       ...prev,
-      guestCount: increment
-        ? prev.guestCount + 1
-        : Math.max(1, prev.guestCount - 1),
+      guestCount: newCount,
     }));
   };
 
   // Calculate price based on guest count
-  React.useEffect(() => {
-    // You can implement a more complex pricing calculation if needed
+  useEffect(() => {
     const basePrice = service.price;
     const guestPrice = basePrice * formData.guestCount;
+    console.log(
+      `📝 DefaultServiceForm - Price calculated: ${guestPrice} (${basePrice} x ${formData.guestCount})`
+    );
     setTotalPrice(guestPrice);
   }, [formData.guestCount, service.price]);
 
   // Validate form before submission
   const validateForm = (): boolean => {
+    console.log('📝 DefaultServiceForm - Starting validation');
     const newErrors: Record<string, string> = {};
 
     if (!formData.date) {
@@ -91,6 +108,7 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
       });
     }
 
+    console.log('📝 DefaultServiceForm - Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -99,9 +117,15 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('📝 DefaultServiceForm - handleSubmit called');
+    console.log('📝 DefaultServiceForm - Current formData:', formData);
+
     if (!validateForm()) {
+      console.log('❌ DefaultServiceForm - Validation failed');
       return;
     }
+
+    console.log('✅ DefaultServiceForm - Validation passed');
 
     // Add calculated total price to form data
     const submissionData = {
@@ -111,8 +135,25 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
       serviceName: service.name,
     };
 
-    onSubmit(submissionData);
+    console.log(
+      '🚀 DefaultServiceForm - Calling onSubmit with:',
+      submissionData
+    );
+
+    try {
+      onSubmit(submissionData);
+      console.log('✅ DefaultServiceForm - onSubmit called successfully');
+    } catch (error) {
+      console.error('💥 DefaultServiceForm - Error calling onSubmit:', error);
+    }
   };
+
+  // Y TAMBIÉN AGREGA este useEffect al principio del componente:
+  React.useEffect(() => {
+    console.log('📝 DefaultServiceForm initialized for:', service.id);
+    console.log('📝 DefaultServiceForm onSubmit type:', typeof onSubmit);
+    console.log('📝 DefaultServiceForm onCancel type:', typeof onCancel);
+  }, [service.id, onSubmit, onCancel]);
 
   // Get isPremium status based on package type
   const isPremium = service.packageType.includes('premium');
@@ -276,7 +317,10 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
             <div className='flex space-x-4'>
               <button
                 type='button'
-                onClick={onCancel}
+                onClick={() => {
+                  console.log('❌ DefaultServiceForm - Cancel button clicked');
+                  onCancel();
+                }}
                 className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition-colors'
               >
                 {t('common.cancel', { fallback: 'Cancel' })}
@@ -285,6 +329,9 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
               <button
                 type='submit'
                 className={`px-8 py-3 bg-${colorScheme}-600 hover:bg-${colorScheme}-500 text-white rounded-lg transition-colors flex items-center`}
+                onClick={() =>
+                  console.log('🖱️ DefaultServiceForm - Submit button clicked')
+                }
               >
                 <CreditCard className='h-4 w-4 mr-2' />
                 {t('serviceForm.book', { fallback: 'Book Now' })}

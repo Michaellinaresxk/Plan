@@ -13,7 +13,8 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.11.0",
+    "firebase": "^11.8.1",
+    "framer-motion": "^12.12.1",
     "i": "^0.3.7",
     "lucide-react": "^0.488.0",
     "next": "15.3.1",
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/firebase": "^2.4.32",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

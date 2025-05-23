@@ -29,6 +29,19 @@ interface ServiceTimeSlot {
   timeSlot: string;
 }
 
+// NEW: Interface for reservation data
+export interface ReservationData {
+  service: Service;
+  formData: Record<string, any>;
+  totalPrice: number;
+  bookingDate: Date;
+  clientInfo?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+}
+
 // Extended interface for booking context
 interface BookingContextType {
   packageType: PackageType | null;
@@ -40,8 +53,10 @@ interface BookingContextType {
   totalPrice: number;
   serviceTimeSlots: ServiceTimeSlot[];
   cartVisible: boolean;
-  // New property for service-specific booking details
   serviceBookings: ServiceBookingDetails[];
+
+  // NEW: Reservation properties
+  reservationData: ReservationData | null;
 
   // Existing methods
   setPackageType: (packageType: PackageType) => void;
@@ -62,8 +77,13 @@ interface BookingContextType {
   toggleCartVisibility: () => void;
   setCartVisible: (visible: boolean) => void;
 
-  // New methods for service-specific booking details
-  bookService: (service: Service, dates: BookingDate, guests: number) => void;
+  // Existing methods for service-specific booking details
+  bookService: (
+    service: Service,
+    dates: BookingDate,
+    guests: number,
+    additionalData?: Record<string, any>
+  ) => void;
   getServiceBooking: (serviceId: string) => ServiceBookingDetails | undefined;
   updateServiceBooking: (
     serviceId: string,
@@ -71,9 +91,12 @@ interface BookingContextType {
     guests: number
   ) => void;
   removeServiceBooking: (serviceId: string) => void;
-
-  // New method for reordering services
   reorderServices: (updatedServices: Service[]) => void;
+
+  // NEW: Reservation methods
+  setReservationData: (data: ReservationData) => void;
+  updateClientInfo: (clientInfo: ReservationData['clientInfo']) => void;
+  clearReservation: () => void;
 }
 
 const defaultBookingContext: BookingContextType = {
@@ -87,6 +110,7 @@ const defaultBookingContext: BookingContextType = {
   serviceTimeSlots: [],
   cartVisible: false,
   serviceBookings: [],
+  reservationData: null,
 
   setPackageType: () => {},
   addService: () => {},
@@ -112,17 +136,30 @@ const defaultBookingContext: BookingContextType = {
   toggleCartVisibility: () => {},
   setCartVisible: () => {},
 
-  // New method implementations
   bookService: () => {},
   getServiceBooking: () => undefined,
   updateServiceBooking: () => {},
   removeServiceBooking: () => {},
   reorderServices: () => {},
+
+  // NEW: Reservation method defaults
+  setReservationData: () => {},
+  updateClientInfo: () => {},
+  clearReservation: () => {},
 };
 
 const BookingContext = createContext<BookingContextType>(defaultBookingContext);
 
 export const useBooking = () => useContext(BookingContext);
+export const useReservation = () => {
+  const context = useContext(BookingContext);
+  return {
+    reservationData: context.reservationData,
+    setReservationData: context.setReservationData,
+    updateClientInfo: context.updateClientInfo,
+    clearReservation: context.clearReservation,
+  };
+};
 
 export const BookingProvider = ({ children }: { children: ReactNode }) => {
   const [packageType, setPackageType] = useState<PackageType | null>(null);
@@ -136,10 +173,13 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     []
   );
   const [cartVisible, setCartVisible] = useState<boolean>(false);
-  // New state for service-specific booking details
   const [serviceBookings, setServiceBookings] = useState<
     ServiceBookingDetails[]
   >([]);
+
+  // NEW: Reservation state
+  const [reservationData, setReservationDataState] =
+    useState<ReservationData | null>(null);
 
   // Recover data from localStorage on init
   useEffect(() => {
@@ -343,11 +383,12 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     setCartVisible(!cartVisible);
   };
 
-  // New methods for service-specific booking details
+  // Updated bookService method to handle additional form data
   const bookService = (
     service: Service,
     dates: BookingDate,
-    guests: number
+    guests: number,
+    additionalData?: Record<string, any>
   ) => {
     // Add the service to selected services if not already present
     if (!selectedServices.some((s) => s.id === service.id)) {
@@ -411,7 +452,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     calculateTotalPrice();
   };
 
-  // New method to reorder services
+  // Method to reorder services
   const reorderServices = (updatedServices: Service[]) => {
     if (!updatedServices || updatedServices.length === 0) return;
 
@@ -433,6 +474,48 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // NEW: Reservation methods
+  const setReservationData = (data: ReservationData) => {
+    console.log('📋 BookingContext - setReservationData called with:', data);
+    console.log(
+      '📋 BookingContext - Previous reservationData state:',
+      reservationData
+    );
+
+    setReservationDataState(data);
+    console.log('📋 BookingContext - setReservationDataState called');
+  };
+
+  const updateClientInfo = (clientInfo: ReservationData['clientInfo']) => {
+    console.log(
+      '👤 BookingContext - updateClientInfo called with:',
+      clientInfo
+    );
+    console.log(
+      '👤 BookingContext - Current reservationData:',
+      reservationData
+    );
+
+    if (reservationData) {
+      const updatedData = {
+        ...reservationData,
+        clientInfo,
+      };
+      console.log(
+        '👤 BookingContext - Updated reservation data will be:',
+        updatedData
+      );
+      setReservationDataState(updatedData);
+    } else {
+      console.warn('⚠️ BookingContext - No reservationData to update!');
+    }
+  };
+  const clearReservation = () => {
+    console.log('🗑️ BookingContext - clearReservation called');
+    setReservationDataState(null);
+    console.log('🗑️ BookingContext - Reservation data cleared');
+  };
+
   const value = {
     packageType,
     selectedServices,
@@ -444,6 +527,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     serviceTimeSlots,
     cartVisible,
     serviceBookings,
+    reservationData,
 
     setPackageType,
     addService,
@@ -467,6 +551,11 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     updateServiceBooking,
     removeServiceBooking,
     reorderServices,
+
+    // NEW: Reservation methods
+    setReservationData,
+    updateClientInfo,
+    clearReservation,
   };
 
   return (
