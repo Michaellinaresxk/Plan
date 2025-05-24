@@ -29,7 +29,7 @@ interface ServiceTimeSlot {
   timeSlot: string;
 }
 
-// NEW: Interface for reservation data
+// Interface for reservation data
 export interface ReservationData {
   service: Service;
   formData: Record<string, any>;
@@ -40,6 +40,13 @@ export interface ReservationData {
     email: string;
     phone: string;
   };
+}
+
+// Reservation result interface
+export interface ReservationResult {
+  reservation: any;
+  success: boolean;
+  error?: string;
 }
 
 // Extended interface for booking context
@@ -54,11 +61,9 @@ interface BookingContextType {
   serviceTimeSlots: ServiceTimeSlot[];
   cartVisible: boolean;
   serviceBookings: ServiceBookingDetails[];
-
-  // NEW: Reservation properties
   reservationData: ReservationData | null;
+  reservationResult: ReservationResult | null;
 
-  // Existing methods
   setPackageType: (packageType: PackageType) => void;
   addService: (service: Service) => void;
   removeService: (serviceId: string) => void;
@@ -70,14 +75,12 @@ interface BookingContextType {
   resetBooking: () => void;
   getBookingDetails: () => BookingDetails;
 
-  // Existing methods for time slots
   addServiceTimeSlot: (serviceTimeSlot: ServiceTimeSlot) => void;
   removeServiceTimeSlot: (serviceId: string) => void;
   getServiceTimeSlot: (serviceId: string) => ServiceTimeSlot | undefined;
   toggleCartVisibility: () => void;
   setCartVisible: (visible: boolean) => void;
 
-  // Existing methods for service-specific booking details
   bookService: (
     service: Service,
     dates: BookingDate,
@@ -93,10 +96,15 @@ interface BookingContextType {
   removeServiceBooking: (serviceId: string) => void;
   reorderServices: (updatedServices: Service[]) => void;
 
-  // NEW: Reservation methods
+  // Reservation methods
   setReservationData: (data: ReservationData) => void;
   updateClientInfo: (clientInfo: ReservationData['clientInfo']) => void;
   clearReservation: () => void;
+  setReservationResult: (result: ReservationResult) => void;
+  createReservationFromBooking: (
+    service: Service,
+    formData: Record<string, any>
+  ) => void;
 }
 
 const defaultBookingContext: BookingContextType = {
@@ -111,6 +119,7 @@ const defaultBookingContext: BookingContextType = {
   cartVisible: false,
   serviceBookings: [],
   reservationData: null,
+  reservationResult: null,
 
   setPackageType: () => {},
   addService: () => {},
@@ -142,10 +151,11 @@ const defaultBookingContext: BookingContextType = {
   removeServiceBooking: () => {},
   reorderServices: () => {},
 
-  // NEW: Reservation method defaults
   setReservationData: () => {},
   updateClientInfo: () => {},
   clearReservation: () => {},
+  setReservationResult: () => {},
+  createReservationFromBooking: () => {},
 };
 
 const BookingContext = createContext<BookingContextType>(defaultBookingContext);
@@ -158,7 +168,99 @@ export const useReservation = () => {
     setReservationData: context.setReservationData,
     updateClientInfo: context.updateClientInfo,
     clearReservation: context.clearReservation,
+    reservationResult: context.reservationResult,
+    setReservationResult: context.setReservationResult,
   };
+};
+
+// ===== UTILITY FUNCTIONS FOR DATE SERIALIZATION =====
+
+const serializeReservationData = (data: ReservationData) => {
+  return {
+    ...data,
+    bookingDate: data.bookingDate.toISOString(),
+  };
+};
+
+const deserializeReservationData = (data: any): ReservationData => {
+  return {
+    ...data,
+    bookingDate: new Date(data.bookingDate),
+  };
+};
+
+const serializeBookingData = (data: any) => {
+  const serialized = { ...data };
+
+  // Convert dates in main dates object
+  if (serialized.dates) {
+    serialized.dates = {
+      startDate: serialized.dates.startDate.toISOString(),
+      endDate: serialized.dates.endDate.toISOString(),
+    };
+  }
+
+  // Convert dates in serviceTimeSlots
+  if (serialized.serviceTimeSlots) {
+    serialized.serviceTimeSlots = serialized.serviceTimeSlots.map(
+      (slot: any) => ({
+        ...slot,
+        date: slot.date.toISOString(),
+      })
+    );
+  }
+
+  // Convert dates in serviceBookings
+  if (serialized.serviceBookings) {
+    serialized.serviceBookings = serialized.serviceBookings.map(
+      (booking: any) => ({
+        ...booking,
+        dates: {
+          startDate: booking.dates.startDate.toISOString(),
+          endDate: booking.dates.endDate.toISOString(),
+        },
+      })
+    );
+  }
+
+  return serialized;
+};
+
+const deserializeBookingData = (data: any) => {
+  const deserialized = { ...data };
+
+  // Convert string dates back to Date objects
+  if (deserialized.dates) {
+    deserialized.dates = {
+      startDate: new Date(deserialized.dates.startDate),
+      endDate: new Date(deserialized.dates.endDate),
+    };
+  }
+
+  // Convert dates in serviceTimeSlots
+  if (deserialized.serviceTimeSlots) {
+    deserialized.serviceTimeSlots = deserialized.serviceTimeSlots.map(
+      (slot: any) => ({
+        ...slot,
+        date: new Date(slot.date),
+      })
+    );
+  }
+
+  // Convert dates in serviceBookings
+  if (deserialized.serviceBookings) {
+    deserialized.serviceBookings = deserialized.serviceBookings.map(
+      (booking: any) => ({
+        ...booking,
+        dates: {
+          startDate: new Date(booking.dates.startDate),
+          endDate: new Date(booking.dates.endDate),
+        },
+      })
+    );
+  }
+
+  return deserialized;
 };
 
 export const BookingProvider = ({ children }: { children: ReactNode }) => {
@@ -177,73 +279,48 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     ServiceBookingDetails[]
   >([]);
 
-  // NEW: Reservation state
+  // Reservation state
   const [reservationData, setReservationDataState] =
     useState<ReservationData | null>(null);
+  const [reservationResult, setReservationResultState] =
+    useState<ReservationResult | null>(null);
 
   // Recover data from localStorage on init
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Recover regular booking data
       const storedBooking = localStorage.getItem('booking');
       if (storedBooking) {
         try {
           const parsedBooking = JSON.parse(storedBooking);
-
-          // Convert string dates to Date objects
-          if (parsedBooking.dates) {
-            parsedBooking.dates.startDate = new Date(
-              parsedBooking.dates.startDate
-            );
-            parsedBooking.dates.endDate = new Date(parsedBooking.dates.endDate);
-          }
-
-          // Convert dates in serviceTimeSlots
-          if (parsedBooking.serviceTimeSlots) {
-            parsedBooking.serviceTimeSlots = parsedBooking.serviceTimeSlots.map(
-              (slot: any) => ({
-                ...slot,
-                date: new Date(slot.date),
-              })
-            );
-          }
-
-          // Convert dates in serviceBookings
-          if (parsedBooking.serviceBookings) {
-            parsedBooking.serviceBookings = parsedBooking.serviceBookings.map(
-              (booking: any) => ({
-                ...booking,
-                dates: {
-                  startDate: new Date(booking.dates.startDate),
-                  endDate: new Date(booking.dates.endDate),
-                },
-              })
-            );
-          }
+          const deserializedBooking = deserializeBookingData(parsedBooking);
 
           // Set states from localStorage
-          if (parsedBooking.packageType)
-            setPackageType(parsedBooking.packageType);
-          if (parsedBooking.selectedServices)
-            setSelectedServices(parsedBooking.selectedServices);
-          if (parsedBooking.dates) setDates(parsedBooking.dates);
-          if (parsedBooking.guests) setGuests(parsedBooking.guests);
-          if (parsedBooking.specialRequests)
-            setSpecialRequests(parsedBooking.specialRequests);
-          if (parsedBooking.serviceTimeSlots)
-            setServiceTimeSlots(parsedBooking.serviceTimeSlots);
-          if (parsedBooking.serviceBookings)
-            setServiceBookings(parsedBooking.serviceBookings);
+          if (deserializedBooking.packageType)
+            setPackageType(deserializedBooking.packageType);
+          if (deserializedBooking.selectedServices)
+            setSelectedServices(deserializedBooking.selectedServices);
+          if (deserializedBooking.dates) setDates(deserializedBooking.dates);
+          if (deserializedBooking.guests) setGuests(deserializedBooking.guests);
+          if (deserializedBooking.specialRequests)
+            setSpecialRequests(deserializedBooking.specialRequests);
+          if (deserializedBooking.serviceTimeSlots)
+            setServiceTimeSlots(deserializedBooking.serviceTimeSlots);
+          if (deserializedBooking.serviceBookings)
+            setServiceBookings(deserializedBooking.serviceBookings);
 
-          // Recalculate price
-          calculateTotalPrice();
+          console.log('✅ Booking data recovered from localStorage');
         } catch (error) {
-          console.error('Error parsing stored booking:', error);
+          console.error('❌ Error parsing stored booking:', error);
+          localStorage.removeItem('booking'); // Clear corrupted data
         }
       }
+
+      // Don't recover reservation data here - let the confirmation page handle it
     }
   }, []);
 
-  // Save data to localStorage when it changes
+  // Save regular booking data to localStorage when it changes
   useEffect(() => {
     if (typeof window !== 'undefined' && packageType) {
       const bookingData = {
@@ -256,7 +333,12 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         serviceBookings,
       };
 
-      localStorage.setItem('booking', JSON.stringify(bookingData));
+      try {
+        const serializedData = serializeBookingData(bookingData);
+        localStorage.setItem('booking', JSON.stringify(serializedData));
+      } catch (error) {
+        console.error('❌ Error saving booking data to localStorage:', error);
+      }
     }
   }, [
     packageType,
@@ -270,18 +352,11 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
 
   // Handle adding a service
   const addService = (service: Service) => {
-    // Check if service is already selected
     if (!selectedServices.some((s) => s.id === service.id)) {
       setSelectedServices([...selectedServices, service]);
       calculateTotalPrice();
-
-      // Show cart when service is added
       setCartVisible(true);
-
-      // Hide cart after 3 seconds
-      setTimeout(() => {
-        setCartVisible(false);
-      }, 3000);
+      setTimeout(() => setCartVisible(false), 3000);
     }
   };
 
@@ -290,13 +365,8 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     setSelectedServices(
       selectedServices.filter((service) => service.id !== serviceId)
     );
-
-    // Also remove any time slot associated with this service
     removeServiceTimeSlot(serviceId);
-
-    // Remove any service-specific booking details
     removeServiceBooking(serviceId);
-
     calculateTotalPrice();
   };
 
@@ -304,17 +374,14 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
   const calculateTotalPrice = () => {
     let total = 0;
 
-    // Calculate price for each service based on its booking details
     selectedServices.forEach((service) => {
       const serviceBooking = serviceBookings.find(
         (booking) => booking.serviceId === service.id
       );
 
       if (serviceBooking) {
-        // If service has specific booking details, multiply price by number of guests
         total += service.price * serviceBooking.guests;
       } else {
-        // Otherwise, just add the base service price
         total += service.price;
       }
     });
@@ -336,7 +403,6 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     setServiceBookings([]);
     setCartVisible(false);
 
-    // Clear localStorage
     if (typeof window !== 'undefined') {
       localStorage.removeItem('booking');
     }
@@ -360,12 +426,9 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
 
   // Methods for managing service time slots
   const addServiceTimeSlot = (serviceTimeSlot: ServiceTimeSlot) => {
-    // First remove any existing time slot for this service
     const updatedSlots = serviceTimeSlots.filter(
       (slot) => slot.serviceId !== serviceTimeSlot.serviceId
     );
-
-    // Then add the new time slot
     setServiceTimeSlots([...updatedSlots, serviceTimeSlot]);
   };
 
@@ -383,25 +446,22 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     setCartVisible(!cartVisible);
   };
 
-  // Updated bookService method to handle additional form data
+  // Service booking methods
   const bookService = (
     service: Service,
     dates: BookingDate,
     guests: number,
     additionalData?: Record<string, any>
   ) => {
-    // Add the service to selected services if not already present
     if (!selectedServices.some((s) => s.id === service.id)) {
       setSelectedServices((prev) => [...prev, service]);
     }
 
-    // Add or update service booking details
     const existingBookingIndex = serviceBookings.findIndex(
       (booking) => booking.serviceId === service.id
     );
 
     if (existingBookingIndex >= 0) {
-      // Update existing booking
       const updatedBookings = [...serviceBookings];
       updatedBookings[existingBookingIndex] = {
         serviceId: service.id,
@@ -410,7 +470,6 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       };
       setServiceBookings(updatedBookings);
     } else {
-      // Add new booking
       setServiceBookings([
         ...serviceBookings,
         {
@@ -421,10 +480,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       ]);
     }
 
-    // Show cart when service is booked
     setCartVisible(true);
-
-    // Recalculate total price
     calculateTotalPrice();
   };
 
@@ -452,38 +508,43 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     calculateTotalPrice();
   };
 
-  // Method to reorder services
   const reorderServices = (updatedServices: Service[]) => {
     if (!updatedServices || updatedServices.length === 0) return;
-
     setSelectedServices(updatedServices);
-
-    // Update localStorage
-    if (typeof window !== 'undefined' && packageType) {
-      const bookingData = {
-        packageType,
-        selectedServices: updatedServices,
-        dates,
-        guests,
-        specialRequests,
-        serviceTimeSlots,
-        serviceBookings,
-      };
-
-      localStorage.setItem('booking', JSON.stringify(bookingData));
-    }
   };
 
-  // NEW: Reservation methods
+  // ===== FIXED RESERVATION METHODS =====
+
   const setReservationData = (data: ReservationData) => {
     console.log('📋 BookingContext - setReservationData called with:', data);
-    console.log(
-      '📋 BookingContext - Previous reservationData state:',
-      reservationData
-    );
 
-    setReservationDataState(data);
-    console.log('📋 BookingContext - setReservationDataState called');
+    // Ensure bookingDate is a Date object
+    const processedData = {
+      ...data,
+      bookingDate:
+        data.bookingDate instanceof Date
+          ? data.bookingDate
+          : new Date(data.bookingDate),
+    };
+
+    setReservationDataState(processedData);
+
+    // Store in localStorage as backup with proper serialization
+    if (typeof window !== 'undefined') {
+      try {
+        const serializedData = serializeReservationData(processedData);
+        localStorage.setItem(
+          'tempReservationData',
+          JSON.stringify(serializedData)
+        );
+        console.log('✅ Reservation data saved to localStorage');
+      } catch (error) {
+        console.error(
+          '❌ Error saving reservation data to localStorage:',
+          error
+        );
+      }
+    }
   };
 
   const updateClientInfo = (clientInfo: ReservationData['clientInfo']) => {
@@ -491,29 +552,104 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
       '👤 BookingContext - updateClientInfo called with:',
       clientInfo
     );
-    console.log(
-      '👤 BookingContext - Current reservationData:',
-      reservationData
-    );
 
     if (reservationData) {
       const updatedData = {
         ...reservationData,
         clientInfo,
+        // Ensure bookingDate remains a Date object
+        bookingDate:
+          reservationData.bookingDate instanceof Date
+            ? reservationData.bookingDate
+            : new Date(reservationData.bookingDate),
       };
-      console.log(
-        '👤 BookingContext - Updated reservation data will be:',
-        updatedData
-      );
+
+      console.log('👤 BookingContext - Updated reservation data:', updatedData);
       setReservationDataState(updatedData);
+
+      // Update localStorage with proper serialization
+      if (typeof window !== 'undefined') {
+        try {
+          const serializedData = serializeReservationData(updatedData);
+          localStorage.setItem(
+            'tempReservationData',
+            JSON.stringify(serializedData)
+          );
+          console.log('✅ Updated reservation data saved to localStorage');
+        } catch (error) {
+          console.error(
+            '❌ Error updating reservation data in localStorage:',
+            error
+          );
+        }
+      }
     } else {
       console.warn('⚠️ BookingContext - No reservationData to update!');
     }
   };
+
   const clearReservation = () => {
     console.log('🗑️ BookingContext - clearReservation called');
     setReservationDataState(null);
-    console.log('🗑️ BookingContext - Reservation data cleared');
+    setReservationResultState(null);
+
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('tempReservationData');
+      console.log('✅ Reservation data cleared from localStorage');
+    }
+  };
+
+  const setReservationResult = (result: ReservationResult) => {
+    console.log(
+      '🎯 BookingContext - setReservationResult called with:',
+      result
+    );
+    setReservationResultState(result);
+  };
+
+  const createReservationFromBooking = (
+    service: Service,
+    formData: Record<string, any>
+  ) => {
+    console.log('🏗️ BookingContext - createReservationFromBooking called');
+
+    const reservationData: ReservationData = {
+      service,
+      formData,
+      totalPrice: calculateTotalPrice(),
+      bookingDate: new Date(), // Always create a new Date object
+    };
+
+    setReservationData(reservationData);
+    console.log(
+      '✅ BookingContext - Reservation data created from booking state'
+    );
+  };
+
+  // Method to recover reservation data from localStorage (for confirmation page)
+  const recoverReservationFromStorage = (): ReservationData | null => {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const tempData = localStorage.getItem('tempReservationData');
+      if (tempData) {
+        const parsedData = JSON.parse(tempData);
+        const deserializedData = deserializeReservationData(parsedData);
+        console.log(
+          '✅ Reservation data recovered from localStorage:',
+          deserializedData
+        );
+        return deserializedData;
+      }
+    } catch (error) {
+      console.error(
+        '❌ Error recovering reservation data from localStorage:',
+        error
+      );
+      localStorage.removeItem('tempReservationData'); // Clear corrupted data
+    }
+
+    return null;
   };
 
   const value = {
@@ -528,6 +664,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     cartVisible,
     serviceBookings,
     reservationData,
+    reservationResult,
 
     setPackageType,
     addService,
@@ -552,10 +689,12 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     removeServiceBooking,
     reorderServices,
 
-    // NEW: Reservation methods
     setReservationData,
     updateClientInfo,
     clearReservation,
+    setReservationResult,
+    createReservationFromBooking,
+    recoverReservationFromStorage, // Add this for the confirmation page
   };
 
   return (
