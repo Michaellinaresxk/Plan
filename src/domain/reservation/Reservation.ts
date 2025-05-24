@@ -1,4 +1,3 @@
-import { ReservationStatus } from '@/types/reservation';
 import type { ReservationProperties } from '@/types/properties';
 
 export class Reservation {
@@ -12,41 +11,52 @@ export class Reservation {
     public readonly clientName: string,
     public readonly clientEmail: string,
     public readonly clientPhone: string,
-    public readonly formData: Record<string, any>, // Propiedades dinámicas por servicio
+    public readonly formData: Record<string, any>,
     public readonly notes?: string
   ) {}
 
-  static fromProperties(properties: ReservationProperties): Reservation {
-    const {
-      bookingId,
-      serviceId,
-      serviceName,
-      bookingDate,
-      status,
-      totalPrice,
-      clientName,
-      clientEmail,
-      clientPhone,
-      formData,
-      notes,
-    } = properties;
-
-    // Calcular timeAgo basado en bookingDate
-    const timeAgo = calculateTimeAgo(bookingDate);
+  static create(
+    properties: Omit<ReservationProperties, 'bookingId'>
+  ): Reservation {
+    // Auto-generate a temporary ID if not provided (Firebase will replace it)
+    const bookingId = `temp_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
 
     return new Reservation(
       bookingId,
-      serviceId,
-      serviceName,
-      bookingDate,
-      status,
-      totalPrice,
-      clientName,
-      clientEmail,
-      clientPhone,
-      formData || {},
-      notes,
-      timeAgo
+      properties.serviceId,
+      properties.serviceName,
+      properties.bookingDate,
+      properties.status || 'pending',
+      properties.totalPrice,
+      properties.clientName,
+      properties.clientEmail,
+      properties.clientPhone,
+      properties.formData || {},
+      properties.notes
+    );
+  }
+
+  static fromProperties(properties: ReservationProperties): Reservation {
+    if (!properties.bookingId) {
+      throw new Error(
+        'BookingId is required when creating from existing properties'
+      );
+    }
+
+    return new Reservation(
+      properties.bookingId,
+      properties.serviceId,
+      properties.serviceName,
+      properties.bookingDate,
+      properties.status,
+      properties.totalPrice,
+      properties.clientName,
+      properties.clientEmail,
+      properties.clientPhone,
+      properties.formData || {},
+      properties.notes
     );
   }
 
@@ -65,6 +75,17 @@ export class Reservation {
       notes: this.notes,
     });
   }
-}
 
-export default Reservation;
+  // Business logic methods
+  canBeModified(): boolean {
+    return this.status === 'pending';
+  }
+
+  isConfirmed(): boolean {
+    return this.status === 'approved';
+  }
+
+  isPending(): boolean {
+    return this.status === 'pending';
+  }
+}

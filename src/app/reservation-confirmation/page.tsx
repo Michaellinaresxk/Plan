@@ -1,10 +1,10 @@
-// app/reservation-confirmation/page.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n/client';
 import { useReservation } from '@/context/BookingContext';
+import { useReservation as useReservationHook } from '@/hooks/useReservation';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -27,9 +27,66 @@ const ReservationConfirmationPage = () => {
     updateClientInfo,
     clearReservation,
     setReservationData,
+    setReservationResult,
   } = useReservation();
+
+  // Use the reservation hook
+  const {
+    createReservation,
+    isLoading: isCreatingReservation,
+    error: reservationError,
+    clearError,
+  } = useReservationHook();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [hasTriedRecovery, setHasTriedRecovery] = useState(false);
+
+  // Recovery method with proper error handling
+  const recoverReservationData = () => {
+    if (typeof window === 'undefined' || hasTriedRecovery) return null;
+
+    console.log(
+      '🔄 Attempting to recover reservation data from localStorage...'
+    );
+    setHasTriedRecovery(true);
+
+    try {
+      const tempData = localStorage.getItem('tempReservationData');
+      if (tempData) {
+        const parsedData = JSON.parse(tempData);
+
+        // Properly deserialize the data
+        const deserializedData = {
+          ...parsedData,
+          bookingDate: new Date(parsedData.bookingDate), // Convert string back to Date
+        };
+
+        console.log(
+          '✅ Successfully recovered reservation data:',
+          deserializedData
+        );
+        setReservationData(deserializedData);
+
+        // Clean up localStorage after successful recovery
+        localStorage.removeItem('tempReservationData');
+        console.log('🧹 Cleaned up temporary localStorage data');
+
+        return deserializedData;
+      } else {
+        console.log('❌ No reservation data found in localStorage');
+      }
+    } catch (error) {
+      console.error('❌ Error recovering reservation data:', error);
+
+      // Clean up corrupted data
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('tempReservationData');
+      }
+    }
+
+    return null;
+  };
 
   useEffect(() => {
     console.log('🏁 RESERVATION CONFIRMATION PAGE LOADED');
@@ -40,27 +97,31 @@ const ReservationConfirmationPage = () => {
     // If we have reservation data, we're good to go
     if (reservationData) {
       console.log('✅ Reservation Data found in context:', reservationData);
+
+      // Validate that bookingDate is a proper Date object
+      if (
+        reservationData.bookingDate &&
+        !(reservationData.bookingDate instanceof Date)
+      ) {
+        console.log('⚠️ Fixing bookingDate that is not a Date object');
+        const fixedData = {
+          ...reservationData,
+          bookingDate: new Date(reservationData.bookingDate),
+        };
+        setReservationData(fixedData);
+      }
+
       return; // Exit early, no need to check localStorage or redirect
     }
 
     // Only if we don't have reservation data, try localStorage
     console.log('⚠️ No reservation data in context, checking localStorage...');
 
-    try {
-      const tempData = localStorage.getItem('tempReservationData');
-      if (tempData) {
-        const parsedData = JSON.parse(tempData);
-        console.log('✅ Found reservation data in localStorage:', parsedData);
-        setReservationData(parsedData);
-        // Clean up localStorage after successful recovery
-        localStorage.removeItem('tempReservationData');
-        console.log('✅ Reservation data restored from localStorage');
-        return; // Exit early, let the component re-render with new data
-      } else {
-        console.log('❌ No data found in localStorage either');
-      }
-    } catch (error) {
-      console.error('❌ Error reading from localStorage:', error);
+    const recoveredData = recoverReservationData();
+
+    if (recoveredData) {
+      console.log('✅ Reservation data recovered successfully');
+      return; // Exit early, let the component re-render with new data
     }
 
     // Only redirect if we truly have no data anywhere
@@ -88,52 +149,120 @@ const ReservationConfirmationPage = () => {
   }, [reservationData, router, setReservationData]);
 
   const handleClientInfoSubmit = (clientInfo: any) => {
+    console.log('👤 Submitting client info:', clientInfo);
     updateClientInfo(clientInfo);
     setCurrentStep(3);
   };
 
+  // Fixed payment handler with better error handling
   const handlePayment = async () => {
+    if (!reservationData) {
+      console.error('❌ No reservation data available');
+      alert('No reservation data available. Please try again.');
+      return;
+    }
+
+    if (!reservationData.clientInfo) {
+      console.error('❌ No client info available');
+      alert(
+        'Client information is required. Please go back and fill in your details.'
+      );
+      return;
+    }
+
+    // Validate that bookingDate is a proper Date object
+    if (!(reservationData.bookingDate instanceof Date)) {
+      console.error('❌ Invalid booking date:', reservationData.bookingDate);
+      alert('Invalid booking date. Please try again.');
+      return;
+    }
+
     setIsProcessing(true);
+    clearError(); // Clear any previous errors
 
     try {
-      // Here you would integrate with your Firebase service
-      // For now, we'll simulate the API call
+      console.log('🚀 Starting reservation creation process...');
+      console.log('📋 Current reservation data:', reservationData);
 
-      const bookingData = {
-        serviceId: reservationData!.service.id,
-        bookingDate: new Date().toISOString(),
-        status: 'pending',
-        totalPrice: reservationData!.totalPrice,
-        clientName: reservationData!.clientInfo?.name,
-        clientEmail: reservationData!.clientInfo?.email,
-        clientPhone: reservationData!.clientInfo?.phone,
-        formData: reservationData!.formData,
+      // Prepare the data for the reservation service
+      const createReservationData = {
+        serviceId: reservationData.service.id,
+        serviceName: reservationData.service.name,
+        totalPrice: reservationData.totalPrice,
+        clientName: reservationData.clientInfo.name,
+        clientEmail: reservationData.clientInfo.email,
+        clientPhone: reservationData.clientInfo.phone,
+        formData: reservationData.formData,
         notes: '', // Can be filled by admin later
       };
 
-      console.log('Booking data to be sent to Firebase:', bookingData);
+      console.log('📋 Reservation data prepared:', createReservationData);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Create the reservation using the use case
+      const createdReservation = await createReservation(createReservationData);
 
-      // TODO: Replace with actual Firebase call
-      // const result = await createReservation(bookingData);
+      console.log('✅ Reservation created successfully:', createdReservation);
 
-      alert(
-        'Reservation created successfully! You will receive a confirmation email shortly.'
-      );
+      // Store the result in context
+      setReservationResult({
+        reservation: createdReservation,
+        success: true,
+      });
+
+      // Show success message with better formatting
+      const successMessage = `Reservation created successfully! 
+
+📋 Booking ID: ${createdReservation.bookingId}
+📧 Email: ${reservationData.clientInfo.email}
+💰 Amount: $${reservationData.totalPrice.toFixed(2)}
+
+You will receive a confirmation email shortly. Our team will review your request and send you a payment link once approved.`;
+
+      alert(successMessage);
+
+      // Clear the temporary reservation data
       clearReservation();
+
+      // Redirect to home or success page
       router.push('/');
     } catch (error) {
-      console.error('Error creating reservation:', error);
+      console.error('❌ Error creating reservation:', error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unexpected error occurred';
+
+      setReservationResult({
+        reservation: null,
+        success: false,
+        error: errorMessage,
+      });
+
       alert(
-        'There was an error processing your reservation. Please try again.'
+        `There was an error processing your reservation: ${errorMessage}. Please try again.`
       );
     } finally {
       setIsProcessing(false);
     }
   };
 
+  // Loading state while trying to recover data
+  if (!reservationData && !hasTriedRecovery) {
+    return (
+      <div className='min-h-screen flex items-center justify-center bg-gray-50'>
+        <div className='text-center max-w-md mx-auto p-8'>
+          <div className='animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4'></div>
+          <h2 className='text-2xl font-bold text-gray-900 mb-2'>
+            Loading your reservation...
+          </h2>
+          <p className='text-gray-600'>
+            Please wait while we prepare your booking details.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // No data found state
   if (!reservationData) {
     return (
       <div className='min-h-screen flex items-center justify-center bg-gray-50'>
@@ -214,7 +343,7 @@ const ReservationConfirmationPage = () => {
                       </h3>
                       <div className='flex items-center text-blue-700 mb-2'>
                         <span className='bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded-full uppercase tracking-wide'>
-                          {reservationData.service.packageType}
+                          {reservationData.service.packageType || 'Service'}
                         </span>
                       </div>
                     </div>
@@ -392,39 +521,63 @@ const ReservationConfirmationPage = () => {
                   <button
                     onClick={() => setCurrentStep(2)}
                     className='flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors'
+                    disabled={isProcessing || isCreatingReservation}
                   >
                     {t('common.back', { fallback: 'Back' })}
                   </button>
 
                   <button
                     onClick={handlePayment}
-                    disabled={isProcessing}
+                    disabled={isProcessing || isCreatingReservation}
                     className={`
                       flex-1 px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium
                       ${
-                        isProcessing
+                        isProcessing || isCreatingReservation
                           ? 'bg-green-400 cursor-not-allowed'
                           : 'bg-green-600 hover:bg-green-700'
                       } text-white
                     `}
                   >
-                    {isProcessing ? (
+                    {isProcessing || isCreatingReservation ? (
                       <>
                         <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
                         {t('reservation.processing', {
-                          fallback: 'Processing...',
+                          fallback: 'Creating Reservation...',
                         })}
                       </>
                     ) : (
                       <>
                         <CreditCard className='w-4 w-4 mr-2' />
                         {t('reservation.confirmBooking', {
-                          fallback: 'Confirm Booking',
+                          fallback: 'Create Reservation',
                         })}
                       </>
                     )}
                   </button>
                 </div>
+
+                {/* Show error if any */}
+                {reservationError && (
+                  <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+                    <div className='flex items-start'>
+                      <AlertCircle className='w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0' />
+                      <div className='flex-grow'>
+                        <p className='text-red-700 text-sm font-medium mb-1'>
+                          Error Creating Reservation
+                        </p>
+                        <p className='text-red-600 text-sm'>
+                          {reservationError}
+                        </p>
+                        <button
+                          onClick={clearError}
+                          className='mt-2 text-sm text-red-600 hover:text-red-800 underline'
+                        >
+                          Dismiss
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </div>
