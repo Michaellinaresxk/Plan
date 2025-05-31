@@ -7,17 +7,12 @@ import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
 import {
   Music,
-  Users,
-  Clock,
   Calendar,
-  Star,
   Check,
   Sparkles,
   Heart,
   X,
   PlayCircle,
-  Headphones,
-  Radio,
 } from 'lucide-react';
 import BookingModal from '@/UI/components/modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';

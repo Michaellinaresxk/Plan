@@ -44,19 +44,11 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
   const yogaStyles = serviceData?.metaData?.yogaStyles || [
     'Hatha',
     'Vinyasa',
+    'Ashtanga',
+    'Yin (Stretching)',
     'Restorative',
-    'Meditation',
-    'Yin',
   ];
   const equipmentIncluded = serviceData?.metaData?.equipmentProvided !== false;
-  const experienceLevels = extractExperienceLevels(serviceData) || [
-    'beginner',
-    'intermediate',
-    'advanced',
-  ];
-
-  // Extracting locations
-  const locations = serviceData?.options?.location?.subOptions || {};
 
   // Gallery images - In a real app these would come from your serviceData
   const galleryImages = [
@@ -137,37 +129,30 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               <div className='flex items-center bg-blue-500/20 backdrop-blur-sm px-3 py-1 rounded-full border border-blue-500/40'>
                 <Leaf className='h-4 w-4 text-blue-300 mr-2' />
                 <span className='text-xs font-semibold uppercase tracking-wider text-blue-100'>
-                  Signature Experience
+                  {t('services.standard.yoga.tagline')}
                 </span>
               </div>
             )}
           </div>
           <h1 className='text-3xl md:text-5xl font-bold mb-4 leading-tight'>
-            {isPremium
-              ? 'Transcendent Luxury Yoga & Massage'
-              : 'Restore Body & Mind Through Yoga'}
+            {t('services.standard.yoga.title')}
           </h1>
           <h2 className='text-xl md:text-2xl opacity-90 mb-8 max-w-3xl font-light'>
-            {isPremium
-              ? 'A personalized sanctuary where ancient wellness traditions meet modern luxury'
-              : 'Expert-led sessions tailored to your needs in the comfort of your space'}
+            {t('services.standard.yoga.short')}
           </h2>
 
           <div className='flex flex-wrap items-center gap-4 text-sm'>
             <div className='flex items-center'>
               <Clock className='h-5 w-5 mr-2 opacity-80' />
-              <span>
-                {service.duration} hour{' '}
-                {service.duration > 1 ? 'sessions' : 'session'}
-              </span>
+              <span>{t('services.standard.yoga.duration')}</span>
             </div>
             <div className='flex items-center'>
               <CalendarDays className='h-5 w-5 mr-2 opacity-80' />
-              <span>Flexible scheduling</span>
+              <span>{t('services.standard.yoga.flexible')}</span>
             </div>
             <div className='flex items-center'>
               <MapPin className='h-5 w-5 mr-2 opacity-80' />
-              <span>In-villa or beachside</span>
+              <span>{t('services.standard.yoga.where')}</span>
             </div>
           </div>
         </div>
@@ -212,28 +197,12 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               isPremium ? 'text-amber-800' : 'text-blue-800'
             }`}
           >
-            {serviceData?.titleKey
-              ? t(serviceData.titleKey)
-              : isPremium
-              ? 'Transformative Wellness Journey'
-              : 'Your Personal Yoga Experience'}
+            {t('services.standard.yoga.slogan2')}
           </h2>
           <div className='prose max-w-none text-gray-700'>
-            <p className='text-lg mb-4'>
-              {serviceData?.descriptionKey
-                ? t(serviceData.descriptionKey)
-                : isPremium
-                ? 'Our premium yoga and massage service combines ancient techniques with modern luxury, tailored specifically to your needs and goals. We bring the full spa experience to your private space.'
-                : 'Our personalized yoga sessions are designed to bring balance, strength, and peace to your body and mind, all in the comfort of your preferred setting.'}
-            </p>
-            {serviceData?.fullDescriptionKey && (
-              <p className='mb-4'>{t(serviceData.fullDescriptionKey)}</p>
-            )}
-            <p>
-              {isPremium
-                ? 'Each session begins with a consultation to understand your specific needs, followed by a fully customized experience that combines breath work, movement, and mindfulness practices.'
-                : 'Our approach focuses on proper alignment, breath control, and mindfulness to ensure you receive maximum benefits from each session.'}
-            </p>
+            <p className='text-lg mb-4'>{t('services.standard.yoga.full')}</p>
+
+            <p>{t('services.standard.yoga.full2')}</p>
           </div>
         </div>
       </motion.div>
@@ -252,7 +221,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
             } flex items-center`}
           >
             <Instagram className='mr-3' size={24} />
-            Experience Gallery
+            {t('services.standard.yoga.gallery')}
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             {galleryImages.map((image, index) => (
@@ -290,7 +259,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               } flex items-center`}
             >
               <Leaf className='mr-3' size={24} />
-              {t('yogaDetails.availableStyles')}
+              {t('services.standard.yoga.styles')}
             </h2>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
               {yogaStyles.map((style: string, index: number) => (
@@ -328,167 +297,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
         </motion.div>
       )}
 
-      {/* Experience Levels and Locations */}
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-        {/* Experience Levels */}
-        {experienceLevels.length > 0 && (
-          <motion.div
-            className='bg-white rounded-2xl shadow-xl overflow-hidden'
-            initial='hidden'
-            animate='visible'
-            variants={fadeIn}
-          >
-            <div className='p-8'>
-              <h2
-                className={`text-2xl font-bold mb-6 ${
-                  isPremium ? 'text-amber-800' : 'text-blue-800'
-                } flex items-center`}
-              >
-                <User className='mr-3' size={24} />
-                {t('yogaDetails.experienceLevels')}
-              </h2>
-              <div className='space-y-4'>
-                {experienceLevels.map((level: string, index: number) => (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-lg ${
-                      isPremium ? 'bg-amber-50' : 'bg-blue-50'
-                    } flex items-start`}
-                  >
-                    <div
-                      className={`h-8 w-8 rounded-full ${
-                        isPremium
-                          ? 'bg-amber-100 text-amber-600'
-                          : 'bg-blue-100 text-blue-600'
-                      } flex-shrink-0 flex items-center justify-center mr-4`}
-                    >
-                      {index + 1}
-                    </div>
-                    <div>
-                      <h3
-                        className={`font-medium ${
-                          isPremium ? 'text-amber-800' : 'text-blue-800'
-                        } capitalize mb-1`}
-                      >
-                        {level.trim()}
-                      </h3>
-                      <p className='text-gray-600 text-sm'>
-                        {getLevelDescription(level)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Locations */}
-        <motion.div
-          className='bg-white rounded-2xl shadow-xl overflow-hidden'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='p-8'>
-            <h2
-              className={`text-2xl font-bold mb-6 ${
-                isPremium ? 'text-amber-800' : 'text-blue-800'
-              } flex items-center`}
-            >
-              <MapPin className='mr-3' size={24} />
-              {t('yogaDetails.locations')}
-            </h2>
-
-            <div className='space-y-4'>
-              {Object.keys(locations).length > 0
-                ? Object.entries(locations).map(([key, location]) => (
-                    <div
-                      key={key}
-                      className={`p-4 rounded-lg ${
-                        isPremium ? 'bg-amber-50' : 'bg-blue-50'
-                      } flex items-start`}
-                    >
-                      <div
-                        className={`h-8 w-8 rounded-full ${
-                          isPremium
-                            ? 'bg-amber-100 text-amber-600'
-                            : 'bg-blue-100 text-blue-600'
-                        } flex-shrink-0 flex items-center justify-center mr-4`}
-                      >
-                        <MapPin className='h-4 w-4' />
-                      </div>
-                      <div>
-                        <h3
-                          className={`font-medium ${
-                            isPremium ? 'text-amber-800' : 'text-blue-800'
-                          } capitalize mb-1`}
-                        >
-                          {typeof location === 'object' && 'nameKey' in location
-                            ? t(location.nameKey, {
-                                fallback: formatLocationName(key),
-                              })
-                            : formatLocationName(key)}
-                        </h3>
-                        <p className='text-gray-600 text-sm'>
-                          {getLocationDescription(key)}
-                        </p>
-                        {typeof location === 'object' &&
-                          'price' in location &&
-                          location.price !== 0 && (
-                            <p
-                              className={`text-sm mt-1 font-medium ${
-                                Number(location.price) > 0
-                                  ? 'text-amber-600'
-                                  : 'text-green-600'
-                              }`}
-                            >
-                              {location.price > 0
-                                ? `+$${location.price}`
-                                : `-$${Math.abs(Number(location.price))}`}
-                            </p>
-                          )}
-                      </div>
-                    </div>
-                  ))
-                : // Default locations if none provided in data
-                  ['beach', 'pool', 'garden', 'indoor'].map(
-                    (location, index) => (
-                      <div
-                        key={index}
-                        className={`p-4 rounded-lg ${
-                          isPremium ? 'bg-amber-50' : 'bg-blue-50'
-                        } flex items-start`}
-                      >
-                        <div
-                          className={`h-8 w-8 rounded-full ${
-                            isPremium
-                              ? 'bg-amber-100 text-amber-600'
-                              : 'bg-blue-100 text-blue-600'
-                          } flex-shrink-0 flex items-center justify-center mr-4`}
-                        >
-                          <MapPin className='h-4 w-4' />
-                        </div>
-                        <div>
-                          <h3
-                            className={`font-medium ${
-                              isPremium ? 'text-amber-800' : 'text-blue-800'
-                            } capitalize mb-1`}
-                          >
-                            {formatLocationName(location)}
-                          </h3>
-                          <p className='text-gray-600 text-sm'>
-                            {getLocationDescription(location)}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  )}
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
       {/* Equipment and Benefits */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
         {/* Equipment Section */}
@@ -505,7 +313,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               } flex items-center`}
             >
               <Shield className='mr-3' size={24} />
-              {t('yogaDetails.equipment')}
+              {t('services.standard.yoga.includesTitle')}
             </h2>
             <div className='relative overflow-hidden rounded-lg aspect-video mb-6'>
               <Image
@@ -588,6 +396,45 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
         </motion.div>
       </div>
 
+      {/* Call-to-Action Section */}
+      <motion.div
+        className={`rounded-2xl overflow-hidden ${
+          isPremium
+            ? 'bg-gradient-to-r from-amber-600 to-amber-800'
+            : 'bg-gradient-to-r from-blue-600 to-blue-800'
+        }`}
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <div className='p-10 md:p-16 text-white text-center'>
+          <h2 className='text-3xl md:text-4xl font-bold mb-4'>
+            Ready to Transform Your Experience?
+          </h2>
+          <p className='text-xl opacity-90 mb-8 max-w-2xl mx-auto'>
+            {isPremium
+              ? 'Book your premium session today and embark on a journey of luxury wellness'
+              : 'Schedule your personal yoga session and start your journey to balance and wellness'}
+          </p>
+          <button
+            onClick={() => {
+              setIsModalOpen(true);
+              bookService({
+                service,
+                bookingDate: {} as BookingDate,
+                isPremium,
+              });
+            }}
+            className={`py-3 px-8 rounded-full bg-white flex items-center mx-auto font-medium ${
+              isPremium ? 'text-amber-700' : 'text-blue-700'
+            }`}
+          >
+            Book Now
+            <ArrowRight className='ml-2 h-5 w-5' />
+          </button>
+        </div>
+      </motion.div>
+
       {/* Testimonials Section */}
       <motion.div
         className={`rounded-2xl overflow-hidden ${
@@ -642,45 +489,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               service={service}
             />
           )}
-        </div>
-      </motion.div>
-
-      {/* Call-to-Action Section */}
-      <motion.div
-        className={`rounded-2xl overflow-hidden ${
-          isPremium
-            ? 'bg-gradient-to-r from-amber-600 to-amber-800'
-            : 'bg-gradient-to-r from-blue-600 to-blue-800'
-        }`}
-        initial='hidden'
-        animate='visible'
-        variants={fadeIn}
-      >
-        <div className='p-10 md:p-16 text-white text-center'>
-          <h2 className='text-3xl md:text-4xl font-bold mb-4'>
-            Ready to Transform Your Experience?
-          </h2>
-          <p className='text-xl opacity-90 mb-8 max-w-2xl mx-auto'>
-            {isPremium
-              ? 'Book your premium session today and embark on a journey of luxury wellness'
-              : 'Schedule your personal yoga session and start your journey to balance and wellness'}
-          </p>
-          <button
-            onClick={() => {
-              setIsModalOpen(true);
-              bookService({
-                service,
-                bookingDate: {} as BookingDate,
-                isPremium,
-              });
-            }}
-            className={`py-3 px-8 rounded-full bg-white flex items-center mx-auto font-medium ${
-              isPremium ? 'text-amber-700' : 'text-blue-700'
-            }`}
-          >
-            Book Now
-            <ArrowRight className='ml-2 h-5 w-5' />
-          </button>
         </div>
       </motion.div>
     </div>

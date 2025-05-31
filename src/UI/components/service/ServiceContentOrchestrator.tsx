@@ -3,8 +3,6 @@ import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { motion } from 'framer-motion';
-
-// Import content blocks
 import DescriptionBlock from './blocks/DescriptionBlock';
 import FeaturesBlock from './blocks/FeaturesBlock';
 import IncludesBlock from './blocks/IncludesBlock';
@@ -18,7 +16,6 @@ import DisclaimerBlock from './blocks/DisclaimerBlock';
 import GroceryBlock from './blocks/GroceryBlock';
 import GalleryBlock from './blocks/GalleryBlock';
 
-// Block types supported by the orchestrator - define as string literals for simplicity
 export enum BlockType {
   DESCRIPTION = 'description',
   FEATURES = 'features',

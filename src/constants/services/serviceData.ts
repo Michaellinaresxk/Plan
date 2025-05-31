@@ -119,7 +119,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   // YOGA SERVICE
   [SERVICE_IDS.YOGA]: {
     id: SERVICE_IDS.YOGA,
-    titleKey: 'services.standard.yogaStandard.name',
+    titleKey: 'services.standard.yogaStandard.tagline',
     descriptionKey: 'services.standard.yogaStandard.description',
     fullDescriptionKey: 'services.standard.yogaStandard.full',
     basePrice: 50,

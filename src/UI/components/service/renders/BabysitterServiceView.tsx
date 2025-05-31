@@ -10,15 +10,10 @@ import {
   Users,
   Shield,
   Heart,
-  Check,
   Info,
   Sparkles,
   Star,
   ArrowRight,
-  PlayCircle,
-  BookOpen,
-  Baby,
-  SmilePlus,
   Activity,
   MessageCircle,
   Instagram,
@@ -55,106 +50,6 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
 
   const isPremium =
     service.packageType.includes('premium') || viewContext === 'premium-view';
-
-  // Extract data from serviceData
-  const minimumBooking =
-    serviceData?.metaData?.minimumBooking?.toString() || '3 hours';
-  const availability =
-    serviceData?.metaData?.availability?.toString() ||
-    'Day & evening; overnight upon request';
-  const ageRange =
-    serviceData?.metaData?.ageRange?.toString() || '6 months to 12 years';
-  const safetyStandards = serviceData?.metaData?.safetyStandards
-    ? (serviceData.metaData.safetyStandards as string).split(',')
-    : ['CPR-trained', 'First-aid certified', 'Background-checked'];
-
-
-  // Sample activities by age group
-  const activities = [
-    {
-      ageGroup: 'Infants (6-18 months)',
-      activities: [
-        'Sensory play with textures and sounds',
-        'Gentle movement and stretching',
-        'Interactive reading with colorful board books',
-        'Soothing music and lullabies',
-      ],
-      icon: <Baby />,
-    },
-    {
-      ageGroup: 'Toddlers (1.5-3 years)',
-      activities: [
-        'Simple arts and crafts with safe materials',
-        'Music and movement games',
-        'Outdoor exploration (weather permitting)',
-        'Imaginative play with puppets and toys',
-      ],
-      icon: <SmilePlus />,
-    },
-    {
-      ageGroup: 'Preschoolers (3-5 years)',
-      activities: [
-        'Storytelling and puppet shows',
-        'Guided creative play',
-        'Simple cooking activities',
-        'Educational games and puzzles',
-      ],
-      icon: <PlayCircle />,
-    },
-    {
-      ageGroup: 'School-Age (6-12 years)',
-      activities: [
-        'Arts, crafts, and DIY projects',
-        'Board games and age-appropriate card games',
-        'Physical activities and outdoor games',
-        'Assistance with homework (if needed)',
-      ],
-      icon: <BookOpen />,
-    },
-  ];
-
-  // Testimonials
-  const testimonials = [
-    {
-      text: 'Our children absolutely adored their babysitter! She was punctual, professional, and had an amazing rapport with the kids. We could enjoy our evening knowing they were in safe, caring hands.',
-      author: 'Sarah M.',
-      rating: 5,
-    },
-    {
-      text: 'The level of professionalism was outstanding. Our babysitter came prepared with age-appropriate activities that kept our children engaged throughout the evening.',
-      author: 'David L.',
-      rating: 5,
-    },
-    {
-      text: 'This is the only babysitting service I trust with my little ones. The screening process for caregivers is thorough, and the sitter assigned to us was exceptional.',
-      author: 'Michelle K.',
-      rating: 5,
-    },
-  ];
-
-  // Sample FAQ
-  const faq = [
-    {
-      question: 'How are your babysitters screened?',
-      answer:
-        'All our babysitters undergo a rigorous screening process including background checks, reference verification, interviews, CPR and first aid certification, and regular performance reviews.',
-    },
-    {
-      question: 'Can I meet the babysitter before booking?',
-      answer:
-        'Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.',
-    },
-    {
-      question: 'What happens if my child gets sick?',
-      answer:
-        'Our babysitters are trained to handle minor health concerns. For emergencies, they will contact you immediately and follow predetermined emergency protocols.',
-    },
-    {
-      question: 'What if I need to extend the babysitting time?',
-      answer:
-        'Extensions are possible subject to the babysitter is availability. Please notify us as soon as possible, and we will confirm with your assigned sitter.',
-    },
-  ];
 
   // Animation variants
   const fadeIn = {
@@ -197,7 +92,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               <div className='flex items-center bg-blue-500/20 backdrop-blur-sm px-3 py-1 rounded-full border border-blue-500/40'>
                 <Heart className='h-4 w-4 text-blue-300 mr-2' />
                 <span className='text-xs font-semibold uppercase tracking-wider text-blue-100'>
-                  Professional Childcare
+                  {t('services.standard.babysitter.chip')}
                 </span>
               </div>
             )}
@@ -208,23 +103,21 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               : 'Professional Babysitting Services'}
           </h1>
           <h2 className='text-xl md:text-2xl opacity-90 mb-8 max-w-3xl font-light'>
-            {isPremium
-              ? 'Exceptional childcare that lets parents enjoy their vacation while children thrive'
-              : 'Trusted, certified caregivers to keep your children safe, happy, and engaged'}
+            {t('services.standard.babysitter.CTAHeaderSubTitle')}
           </h2>
 
           <div className='flex flex-wrap items-center gap-6 text-sm'>
             <div className='flex items-center'>
               <Shield className='h-5 w-5 mr-2 opacity-80' />
-              <span>Certified & Background-Checked</span>
+              <span> {t('services.standard.babysitter.headerOption1')}</span>
             </div>
             <div className='flex items-center'>
               <Users className='h-5 w-5 mr-2 opacity-80' />
-              <span>Age-Appropriate Activities</span>
+              <span> {t('services.standard.babysitter.headerOption2')}</span>
             </div>
             <div className='flex items-center'>
               <Calendar className='h-5 w-5 mr-2 opacity-80' />
-              <span>Flexible Scheduling</span>
+              <span> {t('services.standard.babysitter.headerOption3')}</span>
             </div>
           </div>
         </div>
@@ -254,13 +147,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
                 ? 'bg-gradient-to-t from-black/80 to-transparent'
                 : 'bg-gradient-to-t from-black/70 to-transparent'
             }`}
-          >
-            <p className='text-white text-sm md:text-base'>
-              {isPremium
-                ? 'Elite childcare professionals with advanced training in child development'
-                : 'Professional caregivers focused on providing engaging, safe experiences'}
-            </p>
-          </div>
+          ></div>
         </div>
 
         <div>
@@ -290,9 +177,11 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               </div>
               <div>
                 <p className='font-medium text-gray-700'>
-                  {t('services.booking.minimum')}
+                  {t('services.standard.babysitter.ageRange')}
                 </p>
-                <p className='text-gray-600'>{minimumBooking}</p>
+                <p className='text-gray-600'>
+                  {t('services.standard.babysitter.ageRangeAnswer')}
+                </p>
               </div>
             </div>
 
@@ -310,29 +199,9 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               </div>
               <div>
                 <p className='font-medium text-gray-700'>
-                  {t('services.booking.availability')}
+                  {t('services.standard.babysitter.availability')}
                 </p>
-                <p className='text-gray-600'>{availability}</p>
-              </div>
-            </div>
-
-            <div className='flex items-start'>
-              <div
-                className={`h-8 w-8 rounded-full ${
-                  isPremium ? 'bg-amber-100' : 'bg-blue-100'
-                } flex items-center justify-center mr-3 flex-shrink-0 mt-1`}
-              >
-                <Users
-                  className={`h-4 w-4 ${
-                    isPremium ? 'text-amber-600' : 'text-blue-600'
-                  }`}
-                />
-              </div>
-              <div>
-                <p className='font-medium text-gray-700'>
-                  {t('services.babysitter.ageRange')}
-                </p>
-                <p className='text-gray-600'>{ageRange}</p>
+                {t('services.standard.babysitter.availabilityAnswer')}
               </div>
             </div>
 
@@ -350,79 +219,13 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               </div>
               <div>
                 <p className='font-medium text-gray-700'>
-                  {t('services.babysitter.safetyStandards')}
+                  {t('services.standard.babysitter.safety')}
                 </p>
-                <p className='text-gray-600'>{safetyStandards?.join(' • ')}</p>
+                <p className='text-gray-600'>
+                  {t('services.standard.babysitter.safetyAnswer')}
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Service Options */}
-      <motion.div
-        className='bg-white rounded-2xl shadow-xl overflow-hidden'
-        initial='hidden'
-        animate='visible'
-        variants={fadeIn}
-      ></motion.div>
-
-      {/* Age-Appropriate Activities */}
-      <motion.div
-        className='bg-white rounded-2xl shadow-xl overflow-hidden'
-        initial='hidden'
-        animate='visible'
-        variants={fadeIn}
-      >
-        <div className='p-8'>
-          <h2
-            className={`text-2xl font-bold mb-6 ${
-              isPremium ? 'text-amber-800' : 'text-blue-800'
-            } flex items-center`}
-          >
-            <Activity className='mr-3' size={24} />
-            Age-Appropriate Activities
-          </h2>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {activities.map((ageGroup, index) => (
-              <div
-                key={index}
-                className={`p-6 rounded-xl ${
-                  isPremium
-                    ? 'bg-gradient-to-br from-amber-50 to-amber-100/50'
-                    : 'bg-gradient-to-br from-blue-50 to-blue-100/50'
-                }`}
-              >
-                <div className='flex items-center mb-4'>
-                  <div
-                    className={`h-10 w-10 rounded-full ${
-                      isPremium
-                        ? 'bg-amber-100 text-amber-600'
-                        : 'bg-blue-100 text-blue-600'
-                    } flex items-center justify-center mr-3`}
-                  >
-                    {ageGroup.icon}
-                  </div>
-                  <h3 className='text-lg font-semibold text-gray-800'>
-                    {ageGroup.ageGroup}
-                  </h3>
-                </div>
-
-                <ul className='space-y-2'>
-                  {ageGroup.activities.map((activity, idx) => (
-                    <li key={idx} className='flex items-start'>
-                      <Check
-                        className={`h-5 w-5 ${
-                          isPremium ? 'text-amber-500' : 'text-blue-500'
-                        } mr-2 mt-0.5 flex-shrink-0`}
-                      />
-                      <span className='text-gray-700'>{activity}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
           </div>
         </div>
       </motion.div>
@@ -482,6 +285,44 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
         </div>
       </motion.div>
 
+      {/* Service Options */}
+      <motion.div
+        className='bg-white rounded-2xl shadow-xl overflow-hidden'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      ></motion.div>
+
+      {/* Age-Appropriate Activities */}
+      <motion.div initial='hidden' animate='visible' variants={fadeIn}>
+        <div className='p-8'>
+          <h2
+            className={`text-2xl font-bold mb-6 ${
+              isPremium ? 'text-amber-800' : 'text-blue-800'
+            } flex items-center`}
+          >
+            <Activity className='mr-3' size={24} />
+            {t('services.standard.babysitter.subTitle1')}
+          </h2>
+
+          <div className='grid grid-cols-1 md:grid-cols-1 gap-6'>
+            <div
+              className={`p-6 rounded-xl ${
+                isPremium
+                  ? 'bg-gradient-to-br from-amber-50 to-amber-100/50'
+                  : 'bg-gradient-to-br from-blue-50 to-blue-100/50'
+              }`}
+            >
+              <div className='flex items-center mb-4'>
+                <h3 className='text-lg font-semibold text-gray-800'>
+                  {t('services.standard.babysitter.full')}
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Testimonials Section */}
       <motion.div
         className={`rounded-2xl overflow-hidden ${
@@ -498,33 +339,62 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
             } flex items-center`}
           >
             <MessageCircle className='mr-3' size={24} />
-            What Parents Say
+            {t('services.standard.babysitter.testimonialTitle')}
           </h2>
 
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className='bg-white p-6 rounded-xl shadow-sm'>
-                <div className='flex mb-4'>
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      className={`${
-                        isPremium
-                          ? 'text-amber-400 fill-amber-400'
-                          : 'text-blue-400 fill-blue-400'
-                      } mr-1`}
-                    />
-                  ))}
-                </div>
-                <p className='italic text-gray-700 mb-4'>
-                  "{testimonial.text}"
-                </p>
-                <p className='text-sm font-medium text-gray-900'>
-                  {testimonial.author}
-                </p>
+            <div className='bg-white p-6 rounded-xl shadow-sm'>
+              <div className='flex mb-4'>
+                <Star
+                  size={16}
+                  className={`${
+                    isPremium
+                      ? 'text-amber-400 fill-amber-400'
+                      : 'text-blue-400 fill-blue-400'
+                  } mr-1`}
+                />
               </div>
-            ))}
+              <p className='italic text-gray-700 mb-4'>
+                {' '}
+                {t('services.standard.babysitter.testimonial1')}
+              </p>
+              <p className='text-sm font-medium text-gray-900'>Sarah M.</p>
+            </div>
+            <div className='bg-white p-6 rounded-xl shadow-sm'>
+              <div className='flex mb-4'>
+                <Star
+                  size={16}
+                  className={`${
+                    isPremium
+                      ? 'text-amber-400 fill-amber-400'
+                      : 'text-blue-400 fill-blue-400'
+                  } mr-1`}
+                />
+              </div>
+              <p className='italic text-gray-700 mb-4'>
+                {' '}
+                {t('services.standard.babysitter.testimonial2')}
+              </p>
+              <p className='text-sm font-medium text-gray-900'>David L.</p>
+            </div>
+
+            <div className='bg-white p-6 rounded-xl shadow-sm'>
+              <div className='flex mb-4'>
+                <Star
+                  size={16}
+                  className={`${
+                    isPremium
+                      ? 'text-amber-400 fill-amber-400'
+                      : 'text-blue-400 fill-blue-400'
+                  } mr-1`}
+                />
+              </div>
+              <p className='italic text-gray-700 mb-4'>
+                {' '}
+                {t('services.standard.babysitter.testimonial3')}
+              </p>
+              <p className='text-sm font-medium text-gray-900'>Michael R.</p>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -543,27 +413,44 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
             } flex items-center`}
           >
             <Info className='mr-3' size={24} />
-            Frequently Asked Questions
+            {t('services.standard.babysitter.faqsTitle')}
           </h2>
 
           <div className='space-y-4'>
-            {faq.map((item, index) => (
-              <div
-                key={index}
-                className={`p-6 rounded-xl border ${
-                  isPremium ? 'border-amber-200' : 'border-blue-200'
+            <div
+              className={`p-6 rounded-xl border ${
+                isPremium ? 'border-amber-200' : 'border-blue-200'
+              }`}
+            >
+              <h3
+                className={`text-lg font-medium mb-2 ${
+                  isPremium ? 'text-amber-800' : 'text-blue-800'
                 }`}
               >
-                <h3
-                  className={`text-lg font-medium mb-2 ${
-                    isPremium ? 'text-amber-800' : 'text-blue-800'
-                  }`}
-                >
-                  {item.question}
-                </h3>
-                <p className='text-gray-700'>{item.answer}</p>
-              </div>
-            ))}
+                {t('services.standard.babysitter.faqQuestion1')}
+              </h3>
+              <p className='text-gray-700'>
+                {' '}
+                {t('services.standard.babysitter.faqAnswer1')}
+              </p>
+            </div>
+            <div
+              className={`p-6 rounded-xl border ${
+                isPremium ? 'border-amber-200' : 'border-blue-200'
+              }`}
+            >
+              <h3
+                className={`text-lg font-medium mb-2 ${
+                  isPremium ? 'text-amber-800' : 'text-blue-800'
+                }`}
+              >
+                {t('services.standard.babysitter.faqQuestion2')}
+              </h3>
+              <p className='text-gray-700'>
+                {' '}
+                {t('services.standard.babysitter.faqAnswer2')}
+              </p>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -581,12 +468,10 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
       >
         <div className='p-10 md:p-16 text-white text-center'>
           <h2 className='text-3xl md:text-4xl font-bold mb-4'>
-            Ready to Enjoy Your Time While Your Children are in Great Hands?
+            {t('services.standard.babysitter.CTATitle')}
           </h2>
           <p className='text-xl opacity-90 mb-8 max-w-2xl mx-auto'>
-            {isPremium
-              ? 'Book our premium babysitting service and give your children an enriching experience while you enjoy your time away'
-              : 'Schedule professional, reliable childcare and treat yourself to worry-free time away'}
+            {t('services.standard.babysitter.CTASubTitle')}
           </p>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -594,7 +479,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               isPremium ? 'text-amber-700' : 'text-blue-700'
             }`}
           >
-            Book Now
+            {t('common.footer.bookNow')}
             <ArrowRight className='ml-2 h-5 w-5' />
           </button>
         </div>

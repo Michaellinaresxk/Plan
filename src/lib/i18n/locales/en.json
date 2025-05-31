@@ -100,85 +100,19 @@
     "standard": {
       "yoga": {
         "name": "Yoga",
-        "short": "PCP yoga sessions at our beachfront pavilion",
-        "full": "Immerse yourself in the harmony of nature and awaken your inner balance in Punta Cana. Our classes — suitable for all levels — are led by certified instructors in dreamlike settings: beaches, tropical gardens, or scenic terraces. Inhale peace, exhale stress, and renew your energy. Book your yoga experience today and embrace wellness in paradise.",
+        "title": "EXPERIENCE A PERSONALIZED PRACTICE:",
+        "short": "Expert-led sessions tailored to your needs in the comfort of your space",
+        "full": "Enjoy a 60-minute private yoga class in the serene comfort of your vacation rental. Whether you are new to yoga or deepening your practice, our internationally certified instructors tailor each session to your goals and preferred style.",
+        "full2": "This isn’t just a yoga class—it’s a customized wellness experience designed around you. Whether you are focusing on flexibility, strength, mindfulness, mobility, or prenatal care, every detail is thoughtfully adapted to your unique journey.",
         "tagline": "Your Space. Your Flow.",
         "slogan": "EXPERIENCE A PERSONALIZED PRACTICE",
-        "options": {
-          "title": "Choose from:",
-          "items": [
-            "Hatha",
-            "Vinyasa",
-            "Ashtanga",
-            "Yin (Stretching)",
-            "Restorative"
-          ]
-        },
-        "includes": {
-          "title": "What's Included:",
-          "items": [
-            "Yoga Mats",
-            "Props & Supports (as needed)",
-            "Personalized Guidance from Certified Instructors"
-          ]
-        },
-        "notIncluded": {
-          "title": "Not Included:",
-          "items": ["Gratuity (optional, appreciated)"]
-        },
-        "itinerary": {
-          "title": "What to Expect:",
-          "steps": [
-            "Instructor arrives & sets the space",
-            "Quick welcome and goal discussion",
-            "Move, breathe, and flow",
-            "Finish with a grounding relaxation"
-          ]
-        },
-        "whyChoose": {
-          "title": "Why Choose Us?",
-          "description": "This isn't just a yoga class—it's a customized wellness experience designed around you. Whether you're focusing on flexibility, strength, mindfulness, mobility, or prenatal care, every detail is thoughtfully adapted to your unique journey.",
-          "extraInfo": "Unlike large group sessions or impersonal apps, our sessions offer real-time feedback, adjustments, and encouragement from professionals who care deeply about your experience.",
-          "tagline": "Let us bring wellness to your door."
-        },
-        "details": {
-          "title": "Good to Know",
-          "overview": {
-            "title": "Overview",
-            "duration": {
-              "label": "Duration",
-              "value": "60 minutes"
-            },
-            "meetingPoint": {
-              "label": "Meeting point",
-              "value": "Your Vacation Rental"
-            },
-            "cancellations": {
-              "label": "Cancellations",
-              "value": "Cancellations made more than 24 hours before the start time are allowed. However, during the holiday season (Dec 20th - Jan 4th), all bookings are final and non-refundable."
-            },
-            "age": {
-              "label": "Age",
-              "value": "9+"
-            }
-          },
-          "timeInfo": {
-            "label": "Start & End Time:",
-            "value": "Promptly at the scheduled hour"
-          },
-          "wearInfo": {
-            "label": "What to Wear:",
-            "value": "Stretch-friendly clothing"
-          },
-          "agePolicy": {
-            "label": "Age Policy:",
-            "value": "Minors are welcome with adult supervision"
-          },
-          "adaptability": {
-            "label": "Adaptability:",
-            "value": "Sessions can be adapted for pregnancy or mobility needs"
-          }
-        },
+        "duration": "60 Minutes",
+        "flexible": "Flexible scheduling",
+        "where": "Your Vacation Rental",
+        "gallery": "Experience Gallery",
+        "slogan2": "Let us bring wellness to your door.",
+        "styles": "Choose from:",
+        "includesTitle": "Includes:",
         "disclaimer": "For your safety and peace of mind, we recommend consulting with your physician before beginning any new physical activity—especially if pregnant, recovering from an injury, or managing a health condition. Participation is at your own discretion.",
         "finalMessage": "Listen to your body. This is your time. Your space. Your pace."
       },
@@ -208,9 +142,39 @@
         "full": "Stay in shape during your vacation with our personal training sessions. Work out with certified professionals who tailor each session to your level, goals, and schedule. Book today and become your best self in Punta Cana."
       },
       "babysitter": {
+        "chip": "Professional Childcare",
+        "headerOption1": "Certified & Background-Checked",
+        "headerOption2": "Age-Appropriate Activities",
+        "headerOption3": "Flexible Scheduling",
         "name": "Babysitter",
         "short": "Professional childcare services",
-        "full": "Trust your little ones with our qualified childcare professionals. Our babysitters are carefully selected for their experience and warmth, ensuring your children's safety and enjoyment in the comfort of your resort, villa, or apartment. Relax, enjoy, and make memories while we take care of them. Book your babysitting service today and experience Punta Cana your way."
+        "full": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort. Whether you need a few hours of evening respite or full-day childcare, our professionals engage children with safe, age-appropriate activities and attentive supervision.",
+        "slogan": "ENJOY WORRY-FREE VACATION TIME",
+        "ageRange": "Age Range",
+        "ageRangeAnswer": "From 6 months - 12 years",
+        "availability": "Availability:",
+        "availabilityAnswer": "Day, afternoon and evening; night service on request.",
+        "safety": "Estándares de Seguridad:",
+        "safetyAnswer": "CPR-trained, first-aid certified",
+        "subTitle1": "ENJOY WORRY-FREE VACATION TIME",
+        "option1": "Evening Babysitting",
+        "option2": "Daytime Supervision",
+        "option3": "Group Care (siblings)",
+        "option4": "Overnight Sitting",
+        "CTAHeaderSubTitle": "Your Peace of Mind. Their Happiness.",
+        "CTATitle": "Ready to Enjoy Your Time While Your Children are in Great Hands?",
+        "CTASubTitle": "Schedule professional, reliable childcare and treat yourself to worry-free time away",
+        "faqsTitle": "Frequently Asked Questions",
+        "faqQuestion1": "What if I need to extend the babysitting time?",
+        "faqAnswer1": "Extensions are possible subject to the babysitter is availability. Please notify us as soon as possible, and we will confirm with your assigned sitter.",
+        "faqQuestion2": "Can I meet the babysitter before booking?",
+        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
+        "faqQuestion3": "What happens if my child gets sick?",
+        "faqAnswer3": "Our babysitters are trained to handle minor health concerns. For emergencies, they will contact you immediately and follow predetermined emergency protocols.",
+        "testimonialTitle": "What Parents Say",
+        "testimonial1": "'Our children absolutely adored their babysitter! She was punctual, professional, and had an amazing rapport with the kids. We could enjoy our evening knowing they were in safe, caring hands.'",
+        "testimonial2": "The level of professionalism was outstanding. Our babysitter came prepared with age-appropriate activities that kept our children engaged throughout the evening.",
+        "testimonial3": "This is the only babysitting service I trust with my little ones. The screening process for caregivers is thorough, and the sitter assigned to us was exceptional."
       },
       "horsebackRiding": {
         "name": "Horseback Riding",

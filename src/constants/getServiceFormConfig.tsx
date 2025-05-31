@@ -552,27 +552,19 @@ export const getServiceFormConfig = (
               options: [
                 {
                   value: 'vinyasa',
-                  label: t('modal.yogaStyles.vinyasa', {
-                    fallback: 'Vinyasa Flow',
-                  }),
+                  label: t('modal.yogaStyles.vinyasa'),
                 },
                 {
-                  value: 'hatha',
-                  label: t('modal.yogaStyles.hatha', {
-                    fallback: 'Hatha Yoga',
-                  }),
+                  value: 'Duration',
+                  label: t('modal.yogaStyles.hatha'),
                 },
                 {
                   value: 'restorative',
-                  label: t('modal.yogaStyles.restorative', {
-                    fallback: 'Restorative Yoga',
-                  }),
+                  label: t('modal.yogaStyles.restorative'),
                 },
                 {
                   value: 'power',
-                  label: t('modal.yogaStyles.power', {
-                    fallback: 'Power Yoga',
-                  }),
+                  label: t('modal.yogaStyles.power'),
                 },
               ],
             },

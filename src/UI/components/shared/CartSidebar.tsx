@@ -91,7 +91,8 @@ const CartSidebar: React.FC = () => {
                       <div>
                         <h4 className='font-medium'>{service.name}</h4>
                         <p className='text-sm text-gray-500'>
-                          {service.packageType.join(', ')}
+                          {/* {service.packageType.join(', ')} */}
+                          {service.packageType}
                         </p>
                       </div>
                       <button

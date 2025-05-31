@@ -98,106 +98,21 @@
     "standard": {
       "yoga": {
         "name": "Yoga",
-        "short": "Sesiones relajantes de yoga en nuestro pabellón frente a la playa",
-        "full": "Sumérgete en la armonía de la naturaleza y despierta tu equilibrio interior en Punta Cana. Nuestras clases —aptas para todos los niveles— son impartidas por instructores certificados en escenarios de ensueño: playas, jardines tropicales o terrazas. Inhala paz, exhala estrés y renueva tu energía. Reserva hoy mismo tu experiencia de yoga y vive el bienestar en el paraíso.",
+        "title": "EXPERIMENTA UNA PRÁCTICA PERSONALIZADA",
+        "short": "Sesiones dirigidas por expertos y adaptadas a sus necesidades en la comodidad de su espacio",
+        "full": "Disfruta de una clase privada de yoga de 60 minutos en la tranquilidad de tu alojamiento vacacional. Ya sea que estés comenzando o profundizando tu práctica, nuestros instructores certificados internacionalmente adaptan cada sesión a tus objetivos & estilo preferido.",
+        "full2": "Esto no es solo una clase de yoga, es una experiencia de bienestar personalizada. Ya sea que busques mejorar tu flexibilidad, fuerza, conciencia plena, movilidad o cuidados prenatales, cada detalle se adapta a tu viaje personal.",
         "tagline": "Tu Espacio. Tu Ritmo.",
         "slogan": "EXPERIMENTA UNA PRÁCTICA PERSONALIZADA",
-        "options": {
-          "title": "Elige entre:",
-          "items": [
-            "Hatha",
-            "Vinyasa",
-            "Ashtanga",
-            "Yin (Estiramientos)",
-            "Restaurativo"
-          ]
-        },
-        "includes": {
-          "title": "Incluye:",
-          "items": [
-            "Esterillas de yoga",
-            "Accesorios & soportes (según necesidad)",
-            "Instrucción personalizada por profesionales certificados"
-          ]
-        },
-        "notIncluded": {
-          "title": "No incluye:",
-          "items": ["Propina (opcional, se agradece)"]
-        },
-        "itinerary": {
-          "title": "Itinerario:",
-          "steps": [
-            "El instructor llega & prepara el espacio",
-            "Breve bienvenida & conversación sobre tus objetivos",
-            "Muévete, respira & fluye",
-            "Finaliza con una relajación profunda y guiada"
-          ]
-        },
-        "whyChoose": {
-          "title": "¿Por qué nosotros?",
-          "description": "Esto no es solo una clase de yoga, es una experiencia de bienestar personalizada. Ya sea que busques mejorar tu flexibilidad, fuerza, conciencia plena, movilidad o cuidados prenatales, cada detalle se adapta a tu viaje personal.",
-          "extraInfo": "A diferencia de clases grupales o aplicaciones impersonales, nuestras sesiones ofrecen atención personalizada, retroalimentación en tiempo real y apoyo continuo de profesionales que se preocupan por tu experiencia.",
-          "tagline": "Déjanos llevar el bienestar hasta tu puerta."
-        },
-        "details": {
-          "title": "Información Útil",
-          "overview": {
-            "title": "Descripción",
-            "duration": {
-              "label": "Duración",
-              "value": "60 minutos"
-            },
-            "meetingPoint": {
-              "label": "Punto de encuentro",
-              "value": "Su alquiler de vacaciones"
-            },
-            "cancellations": {
-              "label": "Cancelaciones",
-              "value": "Se permiten cancelaciones realizadas más de 24 horas antes de la hora de inicio. Sin embargo, durante la temporada de vacaciones (20 de diciembre - 4 de enero), todas las reservas son definitivas y no reembolsables."
-            },
-            "age": {
-              "label": "Edad",
-              "value": "9+"
-            }
-          },
-          "timeInfo": {
-            "label": "Horario:",
-            "value": "Comienza y termina puntual según lo programado"
-          },
-          "wearInfo": {
-            "label": "Vestimenta:",
-            "value": "Ropa cómoda & elástica"
-          },
-          "agePolicy": {
-            "label": "Política de Edad:",
-            "value": "Menores pueden participar con la supervisión de un adulto"
-          },
-          "adaptability": {
-            "label": "Adaptabilidad:",
-            "value": "Las sesiones pueden adaptarse para embarazadas o movilidad reducida"
-          }
-        },
+        "duration": "60 Minutos",
+        "flexible": "Horario flexible",
+        "where": "Su alquiler de vacaciones",
+        "slogan2": "Déjanos llevar el bienestar hasta tu puerta.",
+        "gallery": "Galeria de experiencias",
+        "styles": "Elige entre:",
+        "includesTitle": "Incluye:",
         "disclaimer": "Por tu seguridad y tranquilidad, recomendamos consultar con tu médico antes de comenzar cualquier nueva actividad física, especialmente si estás embarazada, en proceso de recuperación o tienes alguna condición médica. La participación es bajo tu propia responsabilidad.",
         "finalMessage": "Escucha a tu cuerpo. Este es tu momento. Tu espacio. Tu ritmo."
-      },
-      "massageDetails": {
-        "experience": "Experience",
-        "premiumExperience": "Premium Massage Experience",
-        "professionalExperience": "Professional Massage Experience",
-        "sessionDuration": "Session Duration",
-        "massageTypes": "Massage Types",
-        "durationOptions": "Duration Options",
-        "techniques": "Massage Techniques",
-        "technique1Description": "Relaxing technique that uses long, smooth strokes to release tension",
-        "technique2Description": "Targets deeper layers of muscle and connective tissue",
-        "technique3Description": "Combines massage with essential oils for enhanced relaxation",
-        "technique4Description": "Uses heated stones to ease muscle tension and improve circulation",
-        "benefits": "Benefits",
-        "sessionPreparation": "Preparing for Your Session",
-        "preparation1": "Arrive 10-15 minutes before your scheduled appointment",
-        "preparation2": "Communicate any preferences or concerns to your massage therapist",
-        "preparation3": "Stay hydrated before and after your massage session",
-        "preparation4": "Avoid heavy meals right before your massage"
       },
       "bikeRentals": {
         "name": "Alquiler de Bicicletas",
@@ -225,9 +140,39 @@
         "full": "Mantente en forma durante tus vacaciones con nuestras sesiones de entrenamiento personal. Entrena con profesionales certificados que se adaptan a tu nivel, tus objetivos y tu horario. Reserva hoy y alcanza tu mejor versión en Punta Cana."
       },
       "babysitter": {
+        "chip": "Atención infantil profesional",
+        "headerOption1": "Comprobación de antecedentes y certificados",
+        "headerOption2": "Actividades adecuadas a la edad",
+        "headerOption3": "Horario flexible",
         "name": "Niñera",
         "short": "Servicios profesionales de cuidado infantil",
-        "full": "Confía el cuidado de tus pequeños a nuestros profesionales calificados. Nuestros babysitters, cuidadosamente seleccionados por su experiencia y cariño, velarán por la seguridad y diversión de tus hijos en el entorno de tu resort, villa o apartamento. Relájate, disfruta y crea recuerdos mientras nosotros cuidamos de ellos. Reserva hoy mismo tu servicio de babysitting y vive Punta Cana a tu medida."
+        "full": "Confía en nuestras niñeras experimentadas y con verificación de antecedentes para cuidar a tus pequeños en la comodidad de tu villa o resort. Ya sea para unas horas por la noche o cuidado diario, nuestros profesionales entretienen a los niños con actividades seguras y supervisión atenta.",
+        "slogan": "DISFRUTA DE TU TIEMPO SIN PREOCUPACIONES",
+        "ageRange": "Rango de edad:",
+        "ageRangeAnswer": "De 6 meses a 12 años",
+        "availability": "Disponibilidad:",
+        "availabilityAnswer": "Día, tarde y noche; servicio nocturno bajo petición",
+        "safety": "Estándares de Seguridad:",
+        "safetyAnswer": "Formación en RCP & primeros auxilios",
+        "subTitle1": "DISFRUTA TUS VACACIONES SIN PREOCUPACIONES",
+        "option1": "Cuidado Nocturno",
+        "option2": "Supervisión Diurna",
+        "option3": "Cuidado Grupal (hermanos)",
+        "option4": "Servicio Nocturno Completo",
+        "CTAHeaderSubTitle": "Tu Tranquilidad. Su Felicidad.",
+        "CTATitle": "¿Listo para disfrutar de su tiempo mientras sus hijos están en buenas manos?",
+        "CTASubTitle": "Programe un servicio de guardería profesional y fiable y disfrute de un tiempo libre sin preocupaciones.",
+        "faqsTitle": "Preguntas Frecuentes",
+        "faqQuestion1": " ¿Qué pasa si necesito extender el tiempo de la babysitter?",
+        "faqAnswer1": "Las extensiones son posibles sujeto a la niñera es la disponibilidad. Por favor, notifíquenos tan pronto como sea posible, y vamos a confirmar con su niñera asignado.",
+        "faqQuestion2": "Can I meet the babysitter before booking?",
+        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
+        "faqQuestion3": "¿Puedo conocer a la canguro antes de reservar?",
+        "faqAnswer3": "Por supuesto. Le animamos a que se reúna con nosotros antes del servicio programado. Esto se puede arreglar en persona o por videollamada.",
+        "testimonialTitle": "Qué dicen los padres",
+        "testimonial1": "'Nuestros hijos adoraban a su niñera. Era puntual, profesional y tenía una relación increíble con los niños. Pudimos disfrutar de nuestra velada sabiendo que estaban en buenas manos.'",
+        "testimonial2": "El nivel de profesionalidad fue excepcional. Nuestra niñera vino preparada con actividades apropiadas para cada edad que mantuvieron a nuestros hijos ocupados durante toda la velada.",
+        "testimonial3": "Este es el único servicio de canguro en el que confío a mis pequeños. El proceso de selección de los cuidadores es exhaustivo y la canguro que nos asignaron era excepcional."
       },
       "horsebackRiding": {
         "name": "Paseos a Caballo",

@@ -7,10 +7,7 @@ import { motion } from 'framer-motion';
 import {
   Ship,
   Users,
-  Clock,
-  Map,
   Utensils,
-  Calendar,
   Camera,
   ArrowRight,
   Star,
