@@ -39,6 +39,7 @@ const SERVICE_CATEGORY_MAP: Record<ServiceId, ServiceCategory> = {
   [SERVICE_IDS.PERSONAL_TRAINER]: 'wellness',
   [SERVICE_IDS.LUXE_YOGA]: 'wellness',
   [SERVICE_IDS.LUXE_FITNESS]: 'wellness',
+  [SERVICE_IDS.MASSAGE]: 'massage',
   [SERVICE_IDS.LUXE_MASSEUSE]: 'wellness',
 
   // Food and Drinks

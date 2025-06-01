@@ -295,6 +295,8 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
                 )}
               </div>
             </div>
+
+            
           </div>
 
           {/* Form Footer with Price and Actions */}

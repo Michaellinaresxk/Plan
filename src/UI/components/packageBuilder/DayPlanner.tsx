@@ -1,380 +1,366 @@
-// DayPlanner.tsx
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useTranslation } from '@/lib/i18n/client';
-import {
-  MapPin,
-  Users,
-  Heart,
-  ChevronRight,
-  CalendarIcon,
-  ChefHat,
-  Home,
-  Anchor,
-  Fish,
-  Music,
-} from 'lucide-react';
+// UI/components/packageBuilder/dayPlanner/DayByDayPlanner.tsx
+'use client';
+
+import React, { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
 import { useBooking } from '@/context/BookingContext';
-import { Service, PackageType, BookingDate, TravelPurpose } from '@/types/type';
-import { DayPlan, ServiceTimeSlot } from '@/types/dayPlanner';
-import { getRecommendedServices } from '@/utils/recommendationEngine';
-import ServiceManager from '@/constants/services/ServiceManager';
+import { useTranslation } from '@/lib/i18n/client';
+import { Service } from '@/types/type';
+import { useDayPlanner } from '@/hooks/useDayPlanner';
+import { useServiceConfig } from '@/hooks/useServiceConfig';
+import { DateSelectionStep } from './dayPlanner/steps/DateSelectionStep';
+import { DayPlanningStep } from './dayPlanner/steps/DayPlanningStep';
+import { ReviewStep } from './dayPlanner/steps/ReviewStep';
+import { ServiceConfigModal } from './dayPlanner/ServiceConfigModal';
 
-// Step components
-const DayPlanner: React.FC = () => {
-  const { t } = useTranslation();
-  const { packageType, selectedServices } = useBooking();
+// Tipos simplificados
+type SimplifiedPlannerStep = 'select-dates' | 'day-planning' | 'review';
 
-  // Core state
-  const [currentStep, setCurrentStep] = useState(1);
-  const [currentDay, setCurrentDay] = useState(1);
-  const [daysCount, setDaysCount] = useState(1);
-  const [travelPurpose, setTravelPurpose] = useState<TravelPurpose>('couple');
-  const [days, setDays] = useState<DayPlan[]>([
+interface SimplifiedDayByDayPlannerProps {
+  services: Service[];
+  onComplete: () => void;
+}
+
+// Indicador de progreso mejorado
+const SimplifiedProgressIndicator = ({
+  currentStep,
+  currentDayIndex,
+  totalDays,
+}: {
+  currentStep: SimplifiedPlannerStep;
+  currentDayIndex: number;
+  totalDays: number;
+}) => {
+  const steps = [
+    { key: 'select-dates', label: 'Fechas' },
     {
-      id: '1',
-      date: new Date(),
-      services: [],
+      key: 'day-planning',
+      label: `Planificar Días (${currentDayIndex + 1}/${totalDays})`,
     },
-  ]);
+    { key: 'review', label: 'Revisar Plan' },
+  ];
 
-  // UI state
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
-  const [recommendedServices, setRecommendedServices] = useState<Service[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [showServiceModal, setShowServiceModal] = useState(false);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [showOptionsModal, setShowOptionsModal] = useState(false);
-
-  // Initialize recommended services when travel purpose changes
-  useEffect(() => {
-    if (travelPurpose) {
-      const availableServices = ServiceManager.getByPackageType(
-        packageType || 'standard'
-      );
-      const recommendations = getRecommendedServices(
-        travelPurpose,
-        availableServices
-      );
-      setRecommendedServices(recommendations);
-    }
-  }, [travelPurpose, packageType]);
-
-  // Handlers
-  const handleTimeSlotToggle = (timeSlot: string) => {
-    setSelectedTimeSlot(timeSlot);
-    setShowServiceModal(true);
-  };
-
-  const handleServiceSelect = (service: Service) => {
-    setSelectedService(service);
-    setShowServiceModal(false);
-    setShowOptionsModal(true);
-  };
-
-  const handleServiceOptionsConfirm = (options: any) => {
-    if (!selectedService || !selectedTimeSlot) return;
-
-    const newServiceSlot: ServiceTimeSlot = {
-      serviceId: selectedService.id,
-      serviceName: selectedService.name,
-      timeSlot: selectedTimeSlot,
-      duration: selectedService.duration || 1,
-      price: options.calculatedPrice || selectedService.price,
-      options: options,
-    };
-
-    const updatedDays = [...days];
-    updatedDays[currentDay - 1].services.push(newServiceSlot);
-    setDays(updatedDays);
-
-    // Reset states
-    setShowOptionsModal(false);
-    setSelectedService(null);
-    setSelectedTimeSlot(null);
-  };
-
-  const handleServiceRemove = (serviceId: string) => {
-    const updatedDays = [...days];
-    updatedDays[currentDay - 1].services = updatedDays[
-      currentDay - 1
-    ].services.filter((s) => s.serviceId !== serviceId);
-    setDays(updatedDays);
-  };
-
-  const handleAddDay = () => {
-    setDaysCount((prev) => prev + 1);
-    setDays((prev) => [
-      ...prev,
-      {
-        id: `${prev.length + 1}`,
-        date: new Date(new Date().setDate(new Date().getDate() + prev.length)),
-        services: [],
-      },
-    ]);
-  };
-
-  const handleRemoveDay = () => {
-    if (daysCount > 1) {
-      setDaysCount((prev) => prev - 1);
-      setDays((prev) => prev.slice(0, -1));
-      if (currentDay > daysCount - 1) {
-        setCurrentDay(currentDay - 1);
-      }
-    }
-  };
-
-  // Render current step content
-  const renderStepContent = () => {
+  const getProgressWidth = () => {
     switch (currentStep) {
-      case 1:
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className='max-w-4xl mx-auto text-center'
-          >
-            <h1 className='text-4xl font-bold mb-4'>
-              {t('dayplanner.welcome.title')}
-            </h1>
-            <p className='text-lg text-gray-600 mb-8'>
-              {t('dayplanner.welcome.subtitle')}
-            </p>
-            <button
-              onClick={() => setCurrentStep(2)}
-              className='px-8 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600'
-            >
-              {t('dayplanner.welcome.start')}
-            </button>
-          </motion.div>
-        );
-
-      case 2:
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className='max-w-4xl mx-auto'
-          >
-            <h2 className='text-3xl font-bold mb-8'>
-              {t('dayplanner.purpose.selectPurpose')}
-            </h2>
-            <motion.div
-              variants={containerVariants}
-              initial='hidden'
-              animate='visible'
-              className='grid md:grid-cols-2 gap-6'
-            >
-              {travelPurposes.map((purpose) => (
-                <motion.div
-                  key={purpose.id}
-                  variants={cardVariants}
-                  whileHover='hover'
-                  whileTap='tap'
-                  onClick={() => {
-                    setTravelPurpose(purpose.id);
-                    setCurrentStep(3);
-                  }}
-                  className={`cursor-pointer rounded-xl overflow-hidden shadow-lg ${
-                    travelPurpose === purpose.id ? 'ring-4 ring-blue-500' : ''
-                  }`}
-                >
-                  <div
-                    className='h-48 bg-gradient-to-r p-6 flex items-center justify-center text-white'
-                    style={{
-                      background: `linear-gradient(135deg, ${
-                        purpose.color.split(' ')[1]
-                      } 0%, ${purpose.color.split(' ')[3]} 100%)`,
-                    }}
-                  >
-                    <div className='text-center'>
-                      <h3 className='text-2xl font-bold mb-2'>
-                        {purpose.name}
-                      </h3>
-                      <p className='text-sm opacity-90'>{purpose.desc}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-        );
-
-      case 3:
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className='max-w-5xl mx-auto'
-          >
-            <h2 className='text-3xl font-bold mb-8'>
-              {t('dayplanner.recommendations.title')}
-            </h2>
-
-            <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8'>
-              {recommendedServices.map((service) => (
-                <motion.div
-                  key={service.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`bg-white rounded-lg p-4 cursor-pointer ${
-                    selectedIds.has(service.id) ? 'ring-2 ring-blue-500' : ''
-                  }`}
-                  onClick={() => {
-                    const newSelectedIds = new Set(selectedIds);
-                    if (newSelectedIds.has(service.id)) {
-                      newSelectedIds.delete(service.id);
-                    } else {
-                      newSelectedIds.add(service.id);
-                    }
-                    setSelectedIds(newSelectedIds);
-                  }}
-                >
-                  <img
-                    src={service.img}
-                    alt={service.name}
-                    className='w-full h-32 object-cover rounded-lg mb-4'
-                  />
-                  <h3 className='font-semibold'>{service.name}</h3>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    {service.description}
-                  </p>
-                  <div className='mt-4 text-blue-600 font-semibold'>
-                    ${service.price}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className='flex justify-between'>
-              <button
-                onClick={() => setCurrentStep(2)}
-                className='px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200'
-              >
-                {t('common.back')}
-              </button>
-              <button
-                onClick={() => setCurrentStep(4)}
-                className='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600'
-              >
-                {t('common.continue')}
-              </button>
-            </div>
-          </motion.div>
-        );
-
-      case 4:
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className='max-w-6xl mx-auto'
-          >
-            <DayPlanHeader
-              currentDay={currentDay}
-              daysCount={daysCount}
-              onPrevious={() => setCurrentDay((prev) => Math.max(1, prev - 1))}
-              onNext={() =>
-                setCurrentDay((prev) => Math.min(daysCount, prev + 1))
-              }
-              onAddDay={handleAddDay}
-              onRemoveDay={handleRemoveDay}
-            />
-
-            <div className='grid lg:grid-cols-2 gap-6'>
-              <DayTimeGrid
-                selectedIds={selectedIds}
-                currentDay={days[currentDay - 1]}
-                onSlotToggle={handleTimeSlotToggle}
-                onServiceRemove={handleServiceRemove}
-              />
-
-              <div className='bg-white rounded-lg shadow-sm p-6'>
-                <h3 className='text-lg font-semibold mb-4'>
-                  {t('dayplanner.recommendedServices')}
-                </h3>
-                <div className='space-y-4'>
-                  {recommendedServices.map((service) => (
-                    <div
-                      key={service.id}
-                      className='flex items-center justify-between p-4 bg-gray-50 rounded-lg'
-                    >
-                      <div className='flex items-center space-x-4'>
-                        <img
-                          src={service.img}
-                          alt={service.name}
-                          className='w-16 h-16 rounded-lg object-cover'
-                        />
-                        <div>
-                          <h4 className='font-medium'>{service.name}</h4>
-                          <p className='text-sm text-gray-600'>
-                            {service.duration}h - ${service.price}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className='flex justify-between mt-8'>
-              <button
-                onClick={() => setCurrentStep(3)}
-                className='px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200'
-              >
-                {t('common.back')}
-              </button>
-              <button
-                onClick={() => setCurrentStep(5)}
-                className='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600'
-              >
-                {t('dayplanner.reviewItinerary')}
-              </button>
-            </div>
-          </motion.div>
-        );
-
-      case 5:
-        return (
-          <ItinerarySummary
-            days={days}
-            services={selectedServices}
-            onEdit={() => setCurrentStep(4)}
-            onContinue={() => {
-              console.log('Continue to payment');
-              // Here you would navigate to payment or next step
-            }}
-          />
-        );
-
+      case 'select-dates':
+        return '33%';
+      case 'day-planning':
+        // Progress dentro del día planning basado en el día actual
+        const dayProgress =
+          totalDays > 0 ? ((currentDayIndex + 1) / totalDays) * 34 : 0;
+        return `${33 + dayProgress}%`;
+      case 'review':
+        return '100%';
       default:
-        return null;
+        return '0%';
     }
   };
 
   return (
-    <div className='min-h-screen bg-gray-50 py-12'>
-      <div className='container mx-auto px-4'>
-        <ProgressIndicator currentStep={currentStep} totalSteps={5} />
-        {renderStepContent()}
+    <div className='mb-12 pt-4'>
+      {/* Progress bar principal */}
+      <div className='relative h-2 bg-gray-200 rounded-full max-w-4xl mx-auto mb-8'>
+        <motion.div
+          className='absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full'
+          initial={{ width: '0%' }}
+          animate={{ width: getProgressWidth() }}
+          transition={{ duration: 0.5 }}
+        />
       </div>
 
-      <ServiceSearchModal
-        isOpen={showServiceModal}
-        onClose={() => setShowServiceModal(false)}
-        availableServices={recommendedServices}
-        onServiceSelect={handleServiceSelect}
-      />
+      {/* Step indicators */}
+      <div className='flex justify-between max-w-4xl mx-auto px-4'>
+        {steps.map((step, index) => {
+          const isActive = currentStep === step.key;
+          const isCompleted =
+            (currentStep === 'day-planning' && step.key === 'select-dates') ||
+            (currentStep === 'review' &&
+              (step.key === 'select-dates' || step.key === 'day-planning'));
 
-      <ServiceOptionsModal
-        service={selectedService}
-        isOpen={showOptionsModal}
-        onClose={() => setShowOptionsModal(false)}
-        onConfirm={handleServiceOptionsConfirm}
-      />
+          return (
+            <div key={step.key} className='flex flex-col items-center'>
+              <motion.div
+                className={`
+                  w-12 h-12 rounded-full flex items-center justify-center mb-2 font-semibold
+                  ${
+                    isCompleted
+                      ? 'bg-gradient-to-r from-green-400 to-green-500 text-white'
+                      : isActive
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
+                      : 'bg-gray-200 text-gray-400'
+                  }
+                `}
+                animate={{
+                  scale: isActive ? [1, 1.1, 1] : 1,
+                  boxShadow: isActive
+                    ? '0 4px 12px rgba(79, 70, 229, 0.3)'
+                    : 'none',
+                }}
+                transition={{
+                  duration: 0.5,
+                  repeat: isActive ? Infinity : 0,
+                  repeatType: 'reverse',
+                }}
+              >
+                {index + 1}
+              </motion.div>
+              <span
+                className={`text-sm font-medium text-center ${
+                  isActive ? 'text-blue-600' : 'text-gray-600'
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Indicador adicional para el día actual cuando estamos planificando */}
+      {currentStep === 'day-planning' && totalDays > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className='mt-6 max-w-2xl mx-auto'
+        >
+          <div className='bg-blue-50 rounded-xl p-4 border border-blue-200'>
+            <div className='flex justify-between items-center mb-2'>
+              <span className='text-sm font-medium text-blue-800'>
+                Progreso de planificación diaria
+              </span>
+              <span className='text-sm text-blue-600'>
+                {currentDayIndex + 1} de {totalDays} días
+              </span>
+            </div>
+
+            <div className='h-2 bg-blue-100 rounded-full overflow-hidden'>
+              <motion.div
+                className='h-full bg-gradient-to-r from-blue-400 to-blue-600'
+                initial={{ width: '0%' }}
+                animate={{
+                  width: `${((currentDayIndex + 1) / totalDays) * 100}%`,
+                }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+
+            <div className='flex justify-between mt-2'>
+              {Array.from({ length: totalDays }, (_, i) => (
+                <div
+                  key={i}
+                  className={`w-3 h-3 rounded-full ${
+                    i < currentDayIndex
+                      ? 'bg-green-400'
+                      : i === currentDayIndex
+                      ? 'bg-blue-500 ring-2 ring-blue-300'
+                      : 'bg-gray-200'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };
 
-export default DayPlanner;
+const DayByDayPlanner: React.FC<SimplifiedDayByDayPlannerProps> = ({
+  services,
+  onComplete,
+}) => {
+  const {
+    packageType,
+    selectedServices,
+    dates,
+    setDates,
+    addService,
+    guests,
+    setGuests,
+  } = useBooking();
+  const { t } = useTranslation();
+
+  // Step management simplificado
+  const [currentStep, setCurrentStep] =
+    useState<SimplifiedPlannerStep>('select-dates');
+
+  // Custom hooks para manejo de estado
+  const {
+    dateRange,
+    setDateRange,
+    travelPurpose,
+    setTravelPurpose,
+    dailyActivities,
+    setDailyActivities,
+    currentDayIndex,
+    setCurrentDayIndex,
+    daysArray,
+    currentDay,
+    currentDayStr,
+    numDays,
+    getTotalActivitiesCount,
+    calculateTotalPrice,
+  } = useDayPlanner(dates);
+
+  const {
+    configuringService,
+    setConfiguringService,
+    handleStartServiceConfig,
+    handleCancelServiceConfig,
+    handleConfirmServiceConfig,
+    handleIncrementGuests,
+    handleDecrementGuests,
+  } = useServiceConfig(dailyActivities, setDailyActivities, currentDayStr);
+
+  // Estado de carga
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Manejar la finalización del proceso de planificación
+  const handleFinishPlanning = useCallback(() => {
+    // Agregar los servicios planificados al contexto de reserva
+    Object.values(dailyActivities).forEach((activities) => {
+      activities.forEach((activity) => {
+        const service = services.find((s) => s.id === activity.serviceId);
+        if (service && !selectedServices.some((s) => s.id === service.id)) {
+          addService(service);
+        }
+      });
+    });
+
+    // Guardar el plan diario en localStorage
+    try {
+      localStorage.setItem('dailyPlan', JSON.stringify(dailyActivities));
+    } catch (error) {
+      console.error('Error guardando plan diario:', error);
+    }
+
+    onComplete();
+  }, [dailyActivities, services, selectedServices, addService, onComplete]);
+
+  // Obtener servicio por ID
+  const getServiceById = useCallback(
+    (serviceId: string) => {
+      return services.find((s) => s.id === serviceId);
+    },
+    [services]
+  );
+
+  // Manejar transición de fechas directamente a planificación
+  const handleDateSelectionNext = () => {
+    // Inicializar actividades diarias directamente
+    const activities: Record<string, any[]> = {};
+    daysArray.forEach((day) => {
+      const dateStr = format(day, 'yyyy-MM-dd');
+      activities[dateStr] = [];
+    });
+    setDailyActivities(activities);
+
+    // Ir directamente a planificación de días
+    setCurrentStep('day-planning');
+  };
+
+  return (
+    <div className='w-full py-8 px-4 bg-gradient-to-br from-white to-blue-50 min-h-screen'>
+      <SimplifiedProgressIndicator
+        currentStep={currentStep}
+        currentDayIndex={currentDayIndex}
+        totalDays={numDays}
+      />
+
+      <AnimatePresence mode='wait'>
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.4 }}
+          className='max-w-5xl mx-auto'
+        >
+          {currentStep === 'select-dates' && (
+            <DateSelectionStep
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+              guests={guests}
+              setGuests={setGuests}
+              numDays={numDays}
+              onNext={handleDateSelectionNext}
+            />
+          )}
+
+          {currentStep === 'day-planning' && (
+            <DayPlanningStep
+              currentDay={currentDay}
+              currentDayIndex={currentDayIndex}
+              daysArray={daysArray}
+              dailyActivities={dailyActivities}
+              currentDayStr={currentDayStr}
+              services={services}
+              packageType={packageType}
+              travelPurpose='general' // Valor por defecto ya que eliminamos el paso
+              onServiceConfig={handleStartServiceConfig}
+              onRemoveActivity={(serviceId) => {
+                if (!currentDayStr) return;
+                setDailyActivities((prev) => {
+                  const dayActivities = prev[currentDayStr] || [];
+                  return {
+                    ...prev,
+                    [currentDayStr]: dayActivities.filter(
+                      (a) => a.serviceId !== serviceId
+                    ),
+                  };
+                });
+              }}
+              onNextDay={() => {
+                if (currentDayIndex < daysArray.length - 1) {
+                  setCurrentDayIndex(currentDayIndex + 1);
+                } else {
+                  setCurrentStep('review');
+                }
+              }}
+              onPrevDay={() => {
+                if (currentDayIndex > 0) {
+                  setCurrentDayIndex(currentDayIndex - 1);
+                }
+              }}
+              getServiceById={getServiceById}
+            />
+          )}
+
+          {currentStep === 'review' && (
+            <ReviewStep
+              dateRange={dateRange}
+              dailyActivities={dailyActivities}
+              daysArray={daysArray}
+              guests={guests}
+              numDays={numDays}
+              getTotalActivitiesCount={getTotalActivitiesCount}
+              calculateTotalPrice={() => calculateTotalPrice(services)}
+              getServiceById={getServiceById}
+              onEdit={() => {
+                setCurrentStep('day-planning');
+                setCurrentDayIndex(0);
+              }}
+              onComplete={handleFinishPlanning}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {configuringService && (
+          <ServiceConfigModal
+            service={getServiceById(configuringService.serviceId)}
+            configuration={configuringService}
+            onConfirm={handleConfirmServiceConfig}
+            onCancel={handleCancelServiceConfig}
+            onIncrementGuests={handleIncrementGuests}
+            onDecrementGuests={handleDecrementGuests}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default DayByDayPlanner;

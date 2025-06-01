@@ -10,6 +10,7 @@ import BabysitterForm from './BabysitterForm';
 import CustomDecorationForm from './CustomDecorationForm';
 import GroceryForm from './GroceryForm';
 import YogaServiceForm from './YogaServiceForm';
+import LiveMusicForm from './LiveMusicForm';
 
 interface ServiceFormFactoryProps {
   service: Service;
@@ -134,6 +135,12 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
       name: 'BabysitterForm',
       component: BabysitterForm,
       icon: '👶',
+    },
+    {
+      condition: (id: string) => id.includes('live-music'),
+      name: 'LiveMusicForm',
+      component: LiveMusicForm,
+      icon: 'music',
     },
   ];
 

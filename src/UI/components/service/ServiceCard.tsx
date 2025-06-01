@@ -242,11 +242,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         {isSelected ? (
                           <>
                             <Check size={16} className='mr-1.5' />
-                            <span>
-                              {t('services.actions.selected', {
-                                fallback: 'Selected',
-                              })}
-                            </span>
+                            <span>{t('services.actions.selected')}</span>
                           </>
                         ) : (
                           <>
@@ -387,10 +383,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       (4.0)
                     </span>
                   </div>
-                  <div className='flex items-center text-blue-600'>
+                  {/* <div className='flex items-center text-blue-600'>
                     <DollarSign className='h-4 w-4 mr-0.5' />
                     <span className='font-bold text-lg'>{formattedPrice}</span>
-                  </div>
+                  </div> */}
                 </div>
                 {/* Service title */}
                 <h3 className='text-2xl font-bold mb-3 text-gray-900 tracking-tight'>

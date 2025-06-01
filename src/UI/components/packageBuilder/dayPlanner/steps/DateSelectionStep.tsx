@@ -1,8 +1,7 @@
-// UI/components/packageBuilder/dayPlanner/steps/DateSelectionStep.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { DayPicker, DateRange } from 'react-day-picker';
-import { format, differenceInDays, addDays } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
