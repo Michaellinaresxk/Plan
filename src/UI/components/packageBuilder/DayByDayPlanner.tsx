@@ -1,58 +1,55 @@
-// UI/components/packageBuilder/dayPlanner/LuxuryDayByDayPlanner.tsx
+// UI/components/packageBuilder/dayPlanner/DayByDayPlanner.tsx
 'use client';
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
 import { useBooking } from '@/context/BookingContext';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { useDayPlanner } from '@/hooks/useDayPlanner';
-import { PlannerStep } from '@/constants/dayplanner';
 import { useServiceConfig } from '@/hooks/useServiceConfig';
 import { DateSelectionStep } from './dayPlanner/steps/DateSelectionStep';
-import { PurposeStep } from './dayPlanner/steps/PurposeStep';
 import { DayPlanningStep } from './dayPlanner/steps/DayPlanningStep';
 import { ReviewStep } from './dayPlanner/steps/ReviewStep';
 import { ServiceConfigModal } from './dayPlanner/ServiceConfigModal';
 
-interface LuxuryDayByDayPlannerProps {
+// Tipos simplificados
+type SimplifiedPlannerStep = 'select-dates' | 'day-planning' | 'review';
+
+interface SimplifiedDayByDayPlannerProps {
   services: Service[];
   onComplete: () => void;
 }
 
-// Custom ProgressIndicator component with luxury style
-const LuxuryProgressIndicator = ({
+// Indicador de progreso mejorado - SIN paso de propósito
+const SimplifiedProgressIndicator = ({
   currentStep,
+  currentDayIndex,
+  totalDays,
 }: {
-  currentStep: PlannerStep;
+  currentStep: SimplifiedPlannerStep;
+  currentDayIndex: number;
+  totalDays: number;
 }) => {
   const steps = [
-    {
-      key: 'select-dates',
-      label: 'Fechas',
-      completed: currentStep !== 'select-dates',
-    },
-    {
-      key: 'purpose',
-      label: 'Propósito',
-      completed: currentStep !== 'select-dates' && currentStep !== 'purpose',
-    },
+    { key: 'select-dates', label: 'Seleccionar Fechas' },
     {
       key: 'day-planning',
-      label: 'Experiencias',
-      completed: currentStep === 'review',
+      label: `Planificar Días (${currentDayIndex + 1}/${totalDays})`,
     },
-    { key: 'review', label: 'Revisar', completed: false },
+    { key: 'review', label: 'Revisar Plan' },
   ];
 
   const getProgressWidth = () => {
     switch (currentStep) {
       case 'select-dates':
-        return '25%';
-      case 'purpose':
-        return '50%';
+        return '33%';
       case 'day-planning':
-        return '75%';
+        // Progress dentro del día planning basado en el día actual
+        const dayProgress =
+          totalDays > 0 ? ((currentDayIndex + 1) / totalDays) * 34 : 0;
+        return `${33 + dayProgress}%`;
       case 'review':
         return '100%';
       default:
@@ -62,8 +59,8 @@ const LuxuryProgressIndicator = ({
 
   return (
     <div className='mb-12 pt-4'>
-      {/* Progress bar */}
-      <div className='relative h-1 bg-gray-200 rounded-full max-w-3xl mx-auto mb-8'>
+      {/* Progress bar principal */}
+      <div className='relative h-2 bg-gray-200 rounded-full max-w-4xl mx-auto mb-8'>
         <motion.div
           className='absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full'
           initial={{ width: '0%' }}
@@ -73,17 +70,21 @@ const LuxuryProgressIndicator = ({
       </div>
 
       {/* Step indicators */}
-      <div className='flex justify-between max-w-3xl mx-auto px-4'>
+      <div className='flex justify-between max-w-4xl mx-auto px-4'>
         {steps.map((step, index) => {
           const isActive = currentStep === step.key;
+          const isCompleted =
+            (currentStep === 'day-planning' && step.key === 'select-dates') ||
+            (currentStep === 'review' &&
+              (step.key === 'select-dates' || step.key === 'day-planning'));
 
           return (
             <div key={step.key} className='flex flex-col items-center'>
               <motion.div
                 className={`
-                  w-10 h-10 rounded-full flex items-center justify-center mb-2 
+                  w-12 h-12 rounded-full flex items-center justify-center mb-2 font-semibold
                   ${
-                    step.completed
+                    isCompleted
                       ? 'bg-gradient-to-r from-green-400 to-green-500 text-white'
                       : isActive
                       ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
@@ -105,7 +106,7 @@ const LuxuryProgressIndicator = ({
                 {index + 1}
               </motion.div>
               <span
-                className={`text-sm font-medium ${
+                className={`text-sm font-medium text-center ${
                   isActive ? 'text-blue-600' : 'text-gray-600'
                 }`}
               >
@@ -119,7 +120,7 @@ const LuxuryProgressIndicator = ({
   );
 };
 
-const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
+const DayByDayPlanner: React.FC<SimplifiedDayByDayPlannerProps> = ({
   services,
   onComplete,
 }) => {
@@ -134,15 +135,14 @@ const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
   } = useBooking();
   const { t } = useTranslation();
 
-  // Step management
-  const [currentStep, setCurrentStep] = useState<PlannerStep>('select-dates');
+  // Step management simplificado
+  const [currentStep, setCurrentStep] =
+    useState<SimplifiedPlannerStep>('select-dates');
 
-  // Custom hooks for state management
+  // Custom hooks para manejo de estado
   const {
     dateRange,
     setDateRange,
-    travelPurpose,
-    setTravelPurpose,
     dailyActivities,
     setDailyActivities,
     currentDayIndex,
@@ -165,12 +165,12 @@ const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
     handleDecrementGuests,
   } = useServiceConfig(dailyActivities, setDailyActivities, currentDayStr);
 
-  // Loading state
+  // Estado de carga
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handle completing the planning process
+  // Manejar la finalización del proceso de planificación
   const handleFinishPlanning = useCallback(() => {
-    // Add the planned services to the booking context
+    // Agregar los servicios planificados al contexto de reserva
     Object.values(dailyActivities).forEach((activities) => {
       activities.forEach((activity) => {
         const service = services.find((s) => s.id === activity.serviceId);
@@ -180,18 +180,17 @@ const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
       });
     });
 
-    // Save the daily plan to localStorage
+    // Guardar el plan diario en localStorage
     try {
       localStorage.setItem('dailyPlan', JSON.stringify(dailyActivities));
     } catch (error) {
-      console.error('Error saving daily plan:', error);
+      console.error('Error guardando plan diario:', error);
     }
 
-    // Complete the planning
     onComplete();
   }, [dailyActivities, services, selectedServices, addService, onComplete]);
 
-  // Get service by ID
+  // Obtener servicio por ID
   const getServiceById = useCallback(
     (serviceId: string) => {
       return services.find((s) => s.id === serviceId);
@@ -199,9 +198,27 @@ const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
     [services]
   );
 
+  // Manejar transición de fechas directamente a planificación
+  const handleDateSelectionNext = () => {
+    // Inicializar actividades diarias directamente
+    const activities: Record<string, any[]> = {};
+    daysArray.forEach((day) => {
+      const dateStr = format(day, 'yyyy-MM-dd');
+      activities[dateStr] = [];
+    });
+    setDailyActivities(activities);
+
+    // Ir directamente a planificación de días
+    setCurrentStep('day-planning');
+  };
+
   return (
     <div className='w-full py-8 px-4 bg-gradient-to-br from-white to-blue-50 min-h-screen'>
-      <LuxuryProgressIndicator currentStep={currentStep} />
+      <SimplifiedProgressIndicator
+        currentStep={currentStep}
+        currentDayIndex={currentDayIndex}
+        totalDays={numDays}
+      />
 
       <AnimatePresence mode='wait'>
         <motion.div
@@ -219,25 +236,7 @@ const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
               guests={guests}
               setGuests={setGuests}
               numDays={numDays}
-              onNext={() => setCurrentStep('purpose')}
-            />
-          )}
-
-          {currentStep === 'purpose' && (
-            <PurposeStep
-              travelPurpose={travelPurpose}
-              setTravelPurpose={setTravelPurpose}
-              daysArray={daysArray}
-              setDailyActivities={setDailyActivities}
-              onNext={() => {
-                setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  setCurrentStep('day-planning');
-                }, 800);
-              }}
-              onBack={() => setCurrentStep('select-dates')}
-              isLoading={isLoading}
+              onNext={handleDateSelectionNext}
             />
           )}
 
@@ -250,7 +249,7 @@ const DayByDayPlanner: React.FC<LuxuryDayByDayPlannerProps> = ({
               currentDayStr={currentDayStr}
               services={services}
               packageType={packageType}
-              travelPurpose={travelPurpose}
+              travelPurpose='general' // Valor por defecto ya que eliminamos el paso
               onServiceConfig={handleStartServiceConfig}
               onRemoveActivity={(serviceId) => {
                 if (!currentDayStr) return;

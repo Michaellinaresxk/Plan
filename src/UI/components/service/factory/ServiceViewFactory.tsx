@@ -11,7 +11,10 @@ import LiveMusicServiceView from '../renders/LiveMusicServiceView';
 import KaraokeServiceView from '../renders/KaraokeServiceView';
 import SaonaIslandTourServiceView from '../renders/SaonaIslandTourServiceView';
 import CustomDecorationsServiceView from '../renders/CustomDecorationsServiceView';
+import PersonalTrainerServiceView from '../renders/PersonalTrainerServiceView';
+import BikeRentalServiceView from '../renders/BikeRentalServiceView';
 import DefaultServiceView from './DefaultServiceView';
+import MassageServiceView from '../renders/MassageServiceView';
 
 interface ServiceViewFactoryProps {
   service: Service;
@@ -45,6 +48,9 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'live-music': LiveMusicServiceView,
     karaoke: KaraokeServiceView,
     'custom-decorations': CustomDecorationsServiceView,
+    'personal-training': PersonalTrainerServiceView,
+    'bike-rentals': BikeRentalServiceView,
+    'standard-massage': MassageServiceView,
 
     // Premium services
     'luxe-yoga': YogaServiceView,

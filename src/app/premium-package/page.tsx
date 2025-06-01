@@ -149,16 +149,16 @@ const PremiumPackage = () => {
               </motion.p>
 
               <motion.div variants={fadeInUp} className='flex flex-wrap gap-4'>
-                <Link href='#included-services'>
+                <Link href='/custom-package'>
                   <button className='px-6 py-3 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors flex items-center shadow-lg shadow-amber-500/20'>
-                    Explore Premium Services
+                    Explore Custom Package
                     <ChevronRight className='ml-2 h-5 w-5' />
                   </button>
                 </Link>
 
-                <Link href='/custom-package'>
+                <Link href='/standard-package'>
                   <button className='px-6 py-3 bg-transparent border border-white/30 hover:border-white text-white font-medium rounded-lg transition-colors flex items-center'>
-                    Customize Your Experience
+                    Explore Standard Experience
                   </button>
                 </Link>
               </motion.div>

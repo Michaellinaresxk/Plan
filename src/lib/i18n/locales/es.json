@@ -212,7 +212,104 @@
       "liveMusic": {
         "name": "Entretenimiento con Música en Vivo",
         "short": "Músicos locales actuando en tu evento",
-        "full": "Dale un toque especial a tu celebración con entretenimiento de música en vivo. Desde ritmos caribeños hasta clásicos internacionales, contamos con talentosos músicos que crearán el ambiente perfecto para tu evento. Reserva hoy y haz que la música transforme tu noche en una experiencia inolvidable."
+        "full": "Dale un toque especial a tu celebración con entretenimiento de música en vivo. Desde ritmos caribeños hasta clásicos internacionales, contamos con talentosos músicos que crearán el ambiente perfecto para tu evento. Reserva hoy y haz que la música transforme tu noche en una experiencia inolvidable.",
+        "transformYourEvent": "Transforma Tu Evento",
+        "exploreOptions": "Explorar Opciones",
+        "gallery": "Galería de Presentaciones",
+        "readyToBook": "¿Listo para Reservar tu Experiencia Musical Perfecta?",
+        "limitedAvailability": "Disponibilidad limitada - asegura tu fecha hoy",
+        "advantages": {
+          "1": {
+            "title": "Excelencia Profesional",
+            "description": "Músicos certificados con años de experiencia profesional y equipo de primera calidad"
+          },
+          "2": {
+            "title": "Ambiente Memorable",
+            "description": "Crea momentos inolvidables con música en vivo que conecta con tus invitados"
+          },
+          "3": {
+            "title": "Interpretación Flexible",
+            "description": "Repertorio adaptable desde clásico hasta contemporáneo, personalizado a tus preferencias"
+          }
+        },
+        "booking": {
+          "title": "Personaliza tu Experiencia Musical",
+          "subtitle": "Configura cada detalle para crear la atmósfera perfecta para tu evento",
+          "sections": {
+            "dateTime": {
+              "title": "Fecha y Hora",
+              "date": "Fecha del Evento",
+              "time": "Hora de Inicio"
+            },
+            "performerType": {
+              "title": "Tipo de Intérprete",
+              "soloist": {
+                "name": "Solista",
+                "description": "Un músico con guitarra o piano"
+              },
+              "duo": {
+                "name": "Dúo",
+                "description": "Dos músicos con armonías vocales"
+              },
+              "trio": {
+                "name": "Trío",
+                "description": "Tres músicos con instrumentos variados"
+              },
+              "band": {
+                "name": "Banda Completa",
+                "description": "Banda de 4-5 músicos"
+              }
+            },
+            "songSelection": {
+              "title": "Selección de Canciones",
+              "hasSpecific": "Tengo una lista específica de canciones",
+              "placeholder": "Lista las canciones que te gustaría escuchar..."
+            },
+            "duration": {
+              "title": "Duración y Programación",
+              "regular": {
+                "name": "Programación Regular",
+                "description": "2 sets de 45 min (Total: 1:30h)"
+              },
+              "triple": {
+                "name": "Sesiones Cortas",
+                "description": "3 sets de 30 min (Total: 1:30h)"
+              },
+              "continuous": {
+                "name": "Sesión Continua",
+                "description": "1:30h corrido sin parar"
+              },
+              "labels": {
+                "sets": "Sets",
+                "perSet": "Por Set",
+                "break": "Descanso"
+              }
+            },
+            "priceBreakdown": {
+              "title": "Resumen de Precio",
+              "performerType": "Tipo de Intérprete:",
+              "pricePerSet": "Precio por Set:",
+              "numberOfSets": "Número de Sets:",
+              "total": "Total:"
+            },
+            "additionalInfo": {
+              "title": "Información Adicional",
+              "placeholder": "Requisitos especiales, temas musicales preferidos, instrucciones del venue..."
+            }
+          },
+          "buttons": {
+            "confirmBooking": "Confirmar Reserva",
+            "configureBooking": "Configurar Reserva",
+            "processing": "Procesando..."
+          }
+        },
+        "errors": {
+          "dateRequired": "La fecha es requerida",
+          "timeRequired": "La hora es requerida",
+          "performerTypeRequired": "Por favor selecciona un tipo de intérprete",
+          "durationRequired": "Por favor selecciona una duración",
+          "specificSongsRequired": "Por favor especifica tus preferencias de canciones"
+        }
       },
       "karaokeDetails": {
         "songLibrary": "Song Library",

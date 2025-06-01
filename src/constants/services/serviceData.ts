@@ -201,6 +201,154 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
+  // MESSAGE
+  [SERVICE_IDS.MASSAGE]: {
+    id: SERVICE_IDS.MASSAGE,
+    titleKey: 'services.standard.massage.name',
+    descriptionKey: 'services.standard.massage.short',
+    fullDescriptionKey: 'services.standard.massage.full',
+    basePrice: 100,
+    priceUnit: 'services.priceUnits.perSession',
+    category: 'wellness',
+    packageType: ['standard'],
+    imageUrl:
+      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: 1,
+    bookingDuration: {
+      min: 0.5,
+      max: 4,
+      unit: 'hours',
+    },
+    options: {
+      massageType: {
+        id: 'massageType',
+        nameKey: 'services.massage.options.massageType.title',
+        subOptions: {
+          relaxing: {
+            id: 'relaxing',
+            nameKey: 'services.massage.options.massageType.options.relaxing',
+            price: 120,
+            duration: 60,
+          },
+          deep: {
+            id: 'deep',
+            nameKey: 'services.massage.options.massageType.options.deep',
+            price: 130,
+            duration: 60,
+          },
+          sport: {
+            id: 'sport',
+            nameKey: 'services.massage.options.massageType.options.sport',
+            price: 150,
+            duration: 90,
+          },
+          head: {
+            id: 'head',
+            nameKey: 'services.massage.options.massageType.options.head',
+            price: 50,
+            duration: 30,
+          },
+          foot: {
+            id: 'foot',
+            nameKey: 'services.massage.options.massageType.options.foot',
+            price: 50,
+            duration: 30,
+          },
+          thai: {
+            id: 'thai',
+            nameKey: 'services.massage.options.massageType.options.thai',
+            price: 100,
+            duration: 60,
+          },
+          pregnancy: {
+            id: 'pregnancy',
+            nameKey: 'services.massage.options.massageType.options.pregnancy',
+            price: 100,
+            duration: 60,
+          },
+          bfParadise: {
+            id: 'bfParadise',
+            nameKey: 'services.massage.options.massageType.options.bfParadise',
+            price: 120,
+            duration: 60,
+          },
+        },
+      },
+      duration: {
+        id: 'duration',
+        nameKey: 'services.massage.options.duration.title',
+        subOptions: {
+          30: {
+            id: '30',
+            nameKey: 'services.massage.options.duration.options.30',
+            price: 0,
+          },
+          60: {
+            id: '60',
+            nameKey: 'services.massage.options.duration.options.60',
+            price: 0,
+          },
+          90: {
+            id: '90',
+            nameKey: 'services.massage.options.duration.options.90',
+            price: 20,
+          },
+        },
+      },
+      therapyType: {
+        id: 'therapyType',
+        nameKey: 'services.massage.options.therapyType.title',
+        subOptions: {
+          stone: {
+            id: 'stone',
+            nameKey: 'services.massage.options.therapyType.options.stone',
+            price: 160,
+            duration: 90,
+          },
+          bamboo: {
+            id: 'bamboo',
+            nameKey: 'services.massage.options.therapyType.options.bamboo',
+            price: 160,
+            duration: 90,
+          },
+          cupping: {
+            id: 'cupping',
+            nameKey: 'services.massage.options.therapyType.options.cupping',
+            price: 160,
+            duration: 90,
+          },
+          lymphatic: {
+            id: 'lymphatic',
+            nameKey: 'services.massage.options.therapyType.options.lymphatic',
+            price: 150,
+            duration: 90,
+          },
+        },
+      },
+    },
+    additionalInfoKeys: [
+      'services.massage.additionalInfo.1',
+      'services.massage.additionalInfo.2',
+      'services.massage.additionalInfo.3',
+    ],
+    specialRender: 'massage',
+    relatedServices: [SERVICE_IDS.YOGA],
+    tags: ['wellness', 'relaxation', 'therapy', 'spa'],
+    availability: {
+      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
+      hoursOfDay: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+    },
+    metaData: {
+      professionalTherapists: true,
+      allAges: true,
+      customDuration: true,
+      inRoomService: true,
+      organicProducts: true,
+      languages: 'english,spanish',
+      specialties: 'relaxation,therapeutic,couples,pregnancy,kids',
+    },
+  },
+
   // SAONA ISLAND TOUR
   [SERVICE_IDS.SAONA_TOUR]: {
     id: SERVICE_IDS.SAONA_TOUR,
@@ -356,6 +504,116 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       songsAvailable: 5000,
       languages: 'english,spanish,italian,french',
       equipmentIncluded: 'microphones,speakers,screen,lights',
+    },
+  },
+
+  // PERSONAL_TRAINER SERVICE
+  [SERVICE_IDS.PERSONAL_TRAINER]: {
+    id: SERVICE_IDS.PERSONAL_TRAINER,
+    titleKey: 'services.standard.personalTraining.name',
+    descriptionKey: 'services.standard.personalTraining.short',
+    fullDescriptionKey: 'services.standard.personalTraining.full',
+    basePrice: 80,
+    priceUnit: 'services.priceUnits.perSession',
+    category: 'wellness',
+    packageType: ['standard'],
+    imageUrl:
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: 1,
+    bookingDuration: {
+      min: 1,
+      max: 5,
+      unit: 'hours',
+    },
+    options: {
+      trainingType: {
+        id: 'trainingType',
+        nameKey: 'services.personalTraining.options.trainingType.title',
+        subOptions: {
+          strength: {
+            id: 'strength',
+            nameKey:
+              'services.personalTraining.options.trainingType.options.strength',
+            price: 0,
+          },
+          hiit: {
+            id: 'hiit',
+            nameKey:
+              'services.personalTraining.options.trainingType.options.hiit',
+            price: 0,
+          },
+          functional: {
+            id: 'functional',
+            nameKey:
+              'services.personalTraining.options.trainingType.options.functional',
+            price: 0,
+          },
+          flexibility: {
+            id: 'flexibility',
+            nameKey:
+              'services.personalTraining.options.trainingType.options.flexibility',
+            price: -10,
+          },
+          prenatal: {
+            id: 'prenatal',
+            nameKey:
+              'services.personalTraining.options.trainingType.options.prenatal',
+            price: 15,
+          },
+          cardioKickboxing: {
+            id: 'cardioKickboxing',
+            nameKey:
+              'services.personalTraining.options.trainingType.options.cardioKickboxing',
+            price: 10,
+          },
+        },
+      },
+      location: {
+        id: 'location',
+        nameKey: 'services.personalTraining.options.location.title',
+        subOptions: {
+          villa: {
+            id: 'villa',
+            nameKey: 'services.personalTraining.options.location.options.villa',
+            price: 0,
+          },
+          resortGym: {
+            id: 'resortGym',
+            nameKey:
+              'services.personalTraining.options.location.options.resortGym',
+            price: 0,
+          },
+          beachside: {
+            id: 'beachside',
+            nameKey:
+              'services.personalTraining.options.location.options.beachside',
+            price: 20,
+          },
+        },
+      },
+    },
+    additionalInfoKeys: [
+      'services.personalTraining.additionalInfo.1',
+      'services.personalTraining.additionalInfo.2',
+      'services.personalTraining.additionalInfo.3',
+    ],
+    specialRender: 'personalTraining',
+    relatedServices: [SERVICE_IDS.YOGA],
+    tags: ['wellness', 'fitness', 'personal', 'training'],
+    availability: {
+      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
+      hoursOfDay: [6, 7, 8, 9, 10, 16, 17, 18, 19],
+    },
+    metaData: {
+      equipmentProvided: true,
+      languages: 'english,spanish',
+      experienceLevel: 'beginner,intermediate,advanced',
+      sessionDuration: 60,
+      agePolicy: '16+',
+      adaptable: true,
+      certifiedTrainers: true,
+      customWorkoutPlan: true,
+      disclaimer: 'services.personalTraining.disclaimer',
     },
   },
 
@@ -705,7 +963,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     basePrice: 200,
     priceUnit: 'services.priceUnits.perPerformance',
     category: 'leisure',
-    packageType: ['standard', 'premium'],
+    packageType: ['standard'],
     imageUrl:
       'https://plus.unsplash.com/premium_photo-1719467541072-7b53ae7e93c4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: 2, // Duración en horas (estándar)
@@ -796,6 +1054,110 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       setupLocation: 'Indoor or outdoor',
       electricityRequired: true,
       standardSessionLength: '60-90 minutes',
+    },
+  },
+
+  // BIKE_RENTALS SERVICE
+  [SERVICE_IDS.BIKE_RENTALS]: {
+    id: SERVICE_IDS.BIKE_RENTALS,
+    titleKey: 'services.standard.bikeRental.name',
+    descriptionKey: 'services.standard.bikeRental.short',
+    fullDescriptionKey: 'services.standard.bikeRental.full',
+    basePrice: 25,
+    priceUnit: 'services.priceUnits.perDay',
+    category: 'adventure',
+    packageType: ['standard'],
+    imageUrl:
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: 1,
+    bookingDuration: {
+      min: 1,
+      max: 7,
+      unit: 'days',
+    },
+    options: {
+      bikeType: {
+        id: 'bikeType',
+        nameKey: 'services.bikeRental.options.bikeType.title',
+        subOptions: {
+          beachCruiser: {
+            id: 'beachCruiser',
+            nameKey:
+              'services.bikeRental.options.bikeType.options.beachCruiser',
+            price: 0,
+          },
+          cityBike: {
+            id: 'cityBike',
+            nameKey: 'services.bikeRental.options.bikeType.options.cityBike',
+            price: 5,
+          },
+          mountainBike: {
+            id: 'mountainBike',
+            nameKey:
+              'services.bikeRental.options.bikeType.options.mountainBike',
+            price: 10,
+          },
+          eBike: {
+            id: 'eBike',
+            nameKey: 'services.bikeRental.options.bikeType.options.eBike',
+            price: 20,
+          },
+        },
+      },
+      rentalDuration: {
+        id: 'rentalDuration',
+        nameKey: 'services.bikeRental.options.rentalDuration.title',
+        subOptions: {
+          halfDay: {
+            id: 'halfDay',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.halfDay',
+            price: -10,
+          },
+          fullDay: {
+            id: 'fullDay',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.fullDay',
+            price: 0,
+          },
+          twoDays: {
+            id: 'twoDays',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.twoDays',
+            price: 20,
+          },
+          weekly: {
+            id: 'weekly',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.weekly',
+            price: 100,
+          },
+        },
+      },
+    },
+    additionalInfoKeys: [
+      'services.bikeRental.additionalInfo.1',
+      'services.bikeRental.additionalInfo.2',
+      'services.bikeRental.additionalInfo.3',
+    ],
+    specialRender: 'bikeRental',
+    relatedServices: [],
+    tags: ['adventure', 'exploration', 'outdoor', 'cycling'],
+    availability: {
+      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
+      hoursOfDay: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    },
+    metaData: {
+      deliveryIncluded: true,
+      pickupIncluded: true,
+      helmetIncluded: true,
+      lockIncluded: true,
+      support24h: true,
+      deliveryZone: 'Punta Cana area',
+      childrenBikesAvailable: true,
+      maintenanceStandard: 'highest',
+      languages: 'english,spanish',
+      disclaimer: 'services.bikeRental.disclaimer',
     },
   },
 

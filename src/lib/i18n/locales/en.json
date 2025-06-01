@@ -258,7 +258,85 @@
       "liveMusic": {
         "name": "Live Music Entertainment",
         "short": "Local musicians performing at your event",
-        "full": "Add a special touch to your celebration with live music entertainment. From Caribbean rhythms to international classics, our talented musicians will set the perfect mood for your event. Book today and let the music turn your night into an unforgettable experience."
+        "full": "Add a special touch to your celebration with live music entertainment. From Caribbean rhythms to international classics, our talented musicians will set the perfect mood for your event. Book today and let the music turn your night into an unforgettable experience.",
+        "booking": {
+          "title": "Customize Your Musical Experience",
+          "subtitle": "Configure every detail to create the perfect atmosphere for your event",
+          "sections": {
+            "dateTime": {
+              "title": "Date & Time",
+              "date": "Event Date",
+              "time": "Start Time"
+            },
+            "performerType": {
+              "title": "Performer Type",
+              "soloist": {
+                "name": "Soloist",
+                "description": "One musician with guitar or piano"
+              },
+              "duo": {
+                "name": "Duo",
+                "description": "Two musicians with vocal harmonies"
+              },
+              "trio": {
+                "name": "Trio",
+                "description": "Three musicians with varied instruments"
+              },
+              "band": {
+                "name": "Full Band",
+                "description": "Band of 4-5 musicians"
+              }
+            },
+            "songSelection": {
+              "title": "Song Selection",
+              "hasSpecific": "I have a specific song list",
+              "placeholder": "List the songs you'd like to hear..."
+            },
+            "duration": {
+              "title": "Duration & Programming",
+              "regular": {
+                "name": "Regular Programming",
+                "description": "2 sets of 45 min (Total: 1:30h)"
+              },
+              "triple": {
+                "name": "Short Sessions",
+                "description": "3 sets of 30 min (Total: 1:30h)"
+              },
+              "continuous": {
+                "name": "Continuous Session",
+                "description": "1:30h non-stop"
+              },
+              "labels": {
+                "sets": "Sets",
+                "perSet": "Per Set",
+                "break": "Break"
+              }
+            },
+            "priceBreakdown": {
+              "title": "Price Summary",
+              "performerType": "Performer Type:",
+              "pricePerSet": "Price per Set:",
+              "numberOfSets": "Number of Sets:",
+              "total": "Total:"
+            },
+            "additionalInfo": {
+              "title": "Additional Information",
+              "placeholder": "Special requirements, preferred musical themes, venue instructions..."
+            }
+          },
+          "buttons": {
+            "confirmBooking": "Confirm Booking",
+            "configureBooking": "Configure Booking",
+            "processing": "Processing..."
+          }
+        },
+        "errors": {
+          "dateRequired": "Date is required",
+          "timeRequired": "Time is required",
+          "performerTypeRequired": "Please select a performer type",
+          "durationRequired": "Please select a duration",
+          "specificSongsRequired": "Please specify your song preferences"
+        }
       },
       "groceryShopping": {
         "name": "Grocery Shopping Assistance",

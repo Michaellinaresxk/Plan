@@ -1,4 +1,4 @@
-
+// UI/components/packageBuilder/dayPlanner/components/RecommendedServices.tsx
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Filter, Search, Calendar, Clock, Tag } from 'lucide-react';
@@ -13,6 +13,83 @@ interface RecommendedServicesProps {
   isTimeSlotAvailable: (timeSlot: string) => boolean;
   onServiceConfig: (serviceId: string, timeSlot: string) => void;
 }
+
+// Lógica inteligente para categorizar servicios sin duplicados
+const smartCategorizeServices = (services: Service[], currentDayActivities: DailyActivity[]) => {
+  const currentDaySelectedIds = new Set(
+    currentDayActivities.map((activity) => activity.serviceId)
+  );
+
+  // Servicios ya seleccionados para hoy (siempre se muestran primero)
+  const currentlySelectedServices = services.filter(service => 
+    currentDaySelectedIds.has(service.id)
+  );
+
+  // Servicios disponibles (no seleccionados hoy)
+  const availableServices = services.filter(service => 
+    !currentDaySelectedIds.has(service.id)
+  );
+
+  // Función para asignar a una categoría principal (sin duplicar)
+  const assignToPrimaryCategory = (service: Service) => {
+    // Orden de prioridad para evitar duplicados
+    if (service.packageType.includes('premium')) {
+      return 'premium';
+    }
+    if (service.duration <= 2) {
+      return 'short';
+    }
+    if (service.duration > 3) {
+      return 'long';
+    }
+    if (service.price >= 100) {
+      return 'expensive';
+    }
+    if (service.price < 50) {
+      return 'affordable';
+    }
+    return 'standard';
+  };
+
+  // Categorizar servicios disponibles
+  const categorizedServices = {
+    currentlySelectedServices,
+    premiumServices: [],
+    standardServices: [],
+    shortServices: [],
+    longServices: [],
+    expensiveServices: [],
+    affordableServices: []
+  };
+
+  // Asignar cada servicio a UNA SOLA categoría
+  availableServices.forEach(service => {
+    const category = assignToPrimaryCategory(service);
+    
+    switch (category) {
+      case 'premium':
+        categorizedServices.premiumServices.push(service);
+        break;
+      case 'short':
+        categorizedServices.shortServices.push(service);
+        break;
+      case 'long':
+        categorizedServices.longServices.push(service);
+        break;
+      case 'expensive':
+        categorizedServices.expensiveServices.push(service);
+        break;
+      case 'affordable':
+        categorizedServices.affordableServices.push(service);
+        break;
+      default:
+        categorizedServices.standardServices.push(service);
+        break;
+    }
+  });
+
+  return categorizedServices;
+};
 
 export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
   services,
@@ -47,7 +124,7 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
         service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         service.description.toLowerCase().includes(searchTerm.toLowerCase());
       
-      // Mejorar la lógica de categorización para que sea más inclusiva
+      // Lógica de categorización mejorada
       const matchesCategory = 
         selectedCategory === 'all' ||
         service.id.includes(selectedCategory) ||
@@ -61,59 +138,10 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
     });
   }, [services, searchTerm, selectedCategory]);
 
-  // Categorizar los servicios para mejor visualización
-  const getServiceCategories = () => {
-    // Ver si hay servicios ya seleccionados en el día actual
-    const currentlySelectedServices = filteredServices.filter(service => 
-      currentDayActivities.some(activity => activity.serviceId === service.id)
-    );
-
-    // Servicios premium vs estándar
-    const premiumServices = filteredServices.filter(s => 
-      s.packageType.includes('premium') && 
-      !currentlySelectedServices.some(selected => selected.id === s.id)
-    );
-    
-    const standardServices = filteredServices.filter(s => 
-      s.packageType.includes('standard') && 
-      !s.packageType.includes('premium') && 
-      !currentlySelectedServices.some(selected => selected.id === s.id)
-    );
-    
-    // Servicios por precio
-    const expensiveServices = filteredServices.filter(s => 
-      s.price >= 100 && 
-      !currentlySelectedServices.some(selected => selected.id === s.id)
-    );
-    
-    const affordableServices = filteredServices.filter(s => 
-      s.price < 100 && 
-      !currentlySelectedServices.some(selected => selected.id === s.id)
-    );
-    
-    // Servicios por duración
-    const shortServices = filteredServices.filter(s => 
-      s.duration <= 2 && 
-      !currentlySelectedServices.some(selected => selected.id === s.id)
-    );
-    
-    const longServices = filteredServices.filter(s => 
-      s.duration > 2 && 
-      !currentlySelectedServices.some(selected => selected.id === s.id)
-    );
-
-    return {
-      currentlySelectedServices,
-      premiumServices,
-      standardServices,
-      expensiveServices,
-      affordableServices,
-      shortServices,
-      longServices
-    };
-  };
-
-  const serviceCategories = getServiceCategories();
+  // Usar la categorización inteligente
+  const serviceCategories = useMemo(() => {
+    return smartCategorizeServices(filteredServices, currentDayActivities);
+  }, [filteredServices, currentDayActivities]);
 
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
@@ -125,7 +153,6 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
     if (available.length > 0) {
       setShowConfigModal(true);
     } else {
-      // Mostrar mensaje si no hay horarios disponibles
       alert('No hay horarios disponibles para este día. Por favor, seleccione otro día o elimine alguna actividad existente.');
     }
   };
@@ -146,52 +173,7 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
   return (
     <>
     <div className="mb-8">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-gray-800 flex items-center">
-          <Star className="mr-2 h-5 w-5 text-amber-500" />
-          Experiencias Recomendadas
-        </h3>
-        
-        <div className="flex items-center space-x-4">
-          {/* Input de búsqueda */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar experiencias..."
-              className="pl-9 pr-4 py-2 w-60 text-sm bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          
-          {/* Dropdown de filtro */}
-          <div className="relative group">
-            <button className="flex items-center space-x-1 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors">
-              <Filter className="h-4 w-4 text-gray-400" />
-              <span>Filtrar</span>
-            </button>
-            
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 p-2 hidden group-hover:block z-10">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`w-full text-left px-4 py-2 text-sm rounded-lg ${
-                    selectedCategory === category.id 
-                      ? 'bg-blue-50 text-blue-700 font-medium' 
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sliders de servicios categorizados */}
+      {/* Sliders de servicios categorizados - SIN DUPLICADOS */}
       {serviceCategories.currentlySelectedServices.length > 0 && (
         <ServiceSlider
           services={serviceCategories.currentlySelectedServices}
@@ -207,17 +189,7 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
           services={serviceCategories.premiumServices}
           currentDayActivities={currentDayActivities}
           onServiceSelect={handleServiceSelect}
-          title="Experiencias Premium"
-          className="mb-8"
-        />
-      )}
-      
-      {serviceCategories.standardServices.length > 0 && (
-        <ServiceSlider
-          services={serviceCategories.standardServices}
-          currentDayActivities={currentDayActivities}
-          onServiceSelect={handleServiceSelect}
-          title="Experiencias Estándar"
+          title={<div className="flex items-center"><Star className="mr-2 h-5 w-5 text-amber-500" />Experiencias Premium</div>}
           className="mb-8"
         />
       )}
@@ -227,7 +199,7 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
           services={serviceCategories.shortServices}
           currentDayActivities={currentDayActivities}
           onServiceSelect={handleServiceSelect}
-          title={<div className="flex items-center"><Clock className="mr-2 h-5 w-5 text-blue-500" />Experiencias Cortas (2h / 3h)</div>}
+          title={<div className="flex items-center"><Clock className="mr-2 h-5 w-5 text-blue-500" />Experiencias Cortas (≤ 2h)</div>}
           className="mb-8"
         />
       )}
@@ -237,20 +209,20 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
           services={serviceCategories.longServices}
           currentDayActivities={currentDayActivities}
           onServiceSelect={handleServiceSelect}
-          title={<div className="flex items-center"><Clock className="mr-2 h-5 w-5 text-purple-500" />Experiencias Largas (> 2h)</div>}
+          title={<div className="flex items-center"><Clock className="mr-2 h-5 w-5 text-purple-500" />Experiencias Largas (> 3h)</div>}
           className="mb-8"
         />
       )}
       
- {serviceCategories.affordableServices.length > 0 && (
-  <ServiceSlider
-    services={serviceCategories.affordableServices}
-    currentDayActivities={currentDayActivities}
-    onServiceSelect={handleServiceSelect}
-    title={<span className="flex items-center"><Tag className="mr-2 h-5 w-5 text-green-500" />Experiencias Accesibles (menos de $100)</span>}
-    className="mb-8"
-  />
-)}
+      {serviceCategories.affordableServices.length > 0 && (
+        <ServiceSlider
+          services={serviceCategories.affordableServices}
+          currentDayActivities={currentDayActivities}
+          onServiceSelect={handleServiceSelect}
+          title={<div className="flex items-center"><Tag className="mr-2 h-5 w-5 text-green-500" />Experiencias Accesibles (&lt; $50)</div>}
+          className="mb-8"
+        />
+      )}
       
       {serviceCategories.expensiveServices.length > 0 && (
         <ServiceSlider
@@ -258,6 +230,16 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
           currentDayActivities={currentDayActivities}
           onServiceSelect={handleServiceSelect}
           title={<div className="flex items-center"><Tag className="mr-2 h-5 w-5 text-amber-500" />Experiencias Exclusivas (≥ $100)</div>}
+          className="mb-8"
+        />
+      )}
+
+      {serviceCategories.standardServices.length > 0 && (
+        <ServiceSlider
+          services={serviceCategories.standardServices}
+          currentDayActivities={currentDayActivities}
+          onServiceSelect={handleServiceSelect}
+          title="Experiencias Estándar"
           className="mb-8"
         />
       )}

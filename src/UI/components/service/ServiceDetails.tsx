@@ -27,7 +27,7 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
 
   return (
     <div
-      className={`bg-gray-50 min-h-screen pb-16 ${
+      className={`bg-gray-50 min-h-screen pb-16  ${
         isPremium ? 'bg-gray-900' : ''
       }`}
     >
