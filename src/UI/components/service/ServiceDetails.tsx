@@ -1,4 +1,4 @@
-// ServiceDetails.tsx (sin sidebar)
+// ServiceDetails.tsx (with 90% width)
 
 import React from 'react';
 import Image from 'next/image';
@@ -47,7 +47,7 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
           }`}
         />
 
-        {/* Hero content */}
+        {/* Hero content - Keep container for hero only */}
         <div className='container mx-auto px-6 relative h-full flex flex-col justify-end pb-10'>
           <Link
             href='/services'
@@ -74,9 +74,8 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
         </div>
       </div>
 
-      {/* Main Content Area - Ahora con ancho completo */}
-      <div className='container mx-auto px-6 pt-12'>
-        {/* Sin grid, solo el contenido principal */}
+      {/* Main Content Area - Now with 90% width */}
+      <div className='w-[90%] mx-auto px-4 pt-12'>
         <ServiceViewFactory
           service={service}
           serviceData={serviceData}

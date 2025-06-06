@@ -1,3 +1,13 @@
+import AirportTransferForm from '@/UI/components/forms/AirportTransferForm';
+import BabysitterForm from '@/UI/components/forms/BabysitterForm';
+import BikeForm from '@/UI/components/forms/BikeForm';
+import ChefForm from '@/UI/components/forms/chef/ChefFrom';
+import CustomDecorationForm from '@/UI/components/forms/CustomDecorationForm';
+import GroceryForm from '@/UI/components/forms/GroceryForm';
+import LiveMusicForm from '@/UI/components/forms/LiveMusicForm';
+import MassageForm from '@/UI/components/forms/MassageForm';
+import YogaServiceForm from '@/UI/components/forms/YogaServiceForm';
+
 export interface ServiceFormField {
   id: string;
   type:
@@ -89,4 +99,94 @@ export interface BookingModalProps {
   service: Service | null;
 }
 
+// Service mapping configuration with better organization
+export const SERVICE_FORM_CONFIG = {
+  // Grocery Services
+  'grocery-shopping': {
+    component: GroceryForm,
+    requiredProps: ['selectedItems'],
+    type: 'grocery',
+  },
+  'luxe-grocery': {
+    component: GroceryForm,
+    requiredProps: ['selectedItems'],
+    type: 'grocery',
+  },
 
+  // Transportation Services
+  'airport-transfers': {
+    component: AirportTransferForm,
+    requiredProps: [],
+    type: 'transportation',
+  },
+  'luxe-arrival': {
+    component: AirportTransferForm,
+    requiredProps: [],
+    type: 'transportation',
+  },
+
+  // Childcare Services
+  babysitter: {
+    component: BabysitterForm,
+    requiredProps: [],
+    type: 'childcare',
+  },
+  'luxe-childcare': {
+    component: BabysitterForm,
+    requiredProps: [],
+    type: 'childcare',
+  },
+
+  // Wellness Services
+  'standard-massage': {
+    component: MassageForm,
+    requiredProps: [],
+    type: 'wellness',
+  },
+  'luxe-spa': {
+    component: MassageForm,
+    requiredProps: [],
+    type: 'wellness',
+  },
+  'yoga-session': {
+    component: YogaServiceForm,
+    requiredProps: [],
+    type: 'wellness',
+  },
+
+  // Recreation Services
+  'bike-rental': {
+    component: BikeForm,
+    requiredProps: [],
+    type: 'recreation',
+  },
+  'live-music': {
+    component: LiveMusicForm,
+    requiredProps: [],
+    type: 'entertainment',
+  },
+
+  // Culinary Services
+  'personal-chef': {
+    component: ChefForm,
+    requiredProps: [],
+    type: 'culinary',
+  },
+  'luxe-dining': {
+    component: ChefForm,
+    requiredProps: [],
+    type: 'culinary',
+  },
+
+  // Decoration Services
+  'custom-decorations': {
+    component: CustomDecorationForm,
+    requiredProps: [],
+    type: 'decoration',
+  },
+  'luxe-decorations': {
+    component: CustomDecorationForm,
+    requiredProps: [],
+    type: 'decoration',
+  },
+} as const;

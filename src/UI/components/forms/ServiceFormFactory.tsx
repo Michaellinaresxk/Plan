@@ -1,216 +1,263 @@
-// components/forms/ServiceFormFactory.tsx
-import React from 'react';
-import { useRouter } from 'next/navigation';
+// src/UI/components/forms/ServiceFormFactory.tsx
+import React, { useMemo, Suspense } from 'react';
 import { Service } from '@/types/type';
-import { useReservation } from '@/context/BookingContext';
-import AirportTransferForm from './AirportTransferForm';
-import ChefForm from './chef/ChefFrom';
-import DefaultServiceForm from './DefaultServiceForm';
-import BabysitterForm from './BabysitterForm';
-import CustomDecorationForm from './CustomDecorationForm';
-import GroceryForm from './GroceryForm';
-import YogaServiceForm from './YogaServiceForm';
-import LiveMusicForm from './LiveMusicForm';
+import { useTranslation } from '@/lib/i18n/client';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import { findFormForService } from '@/utils/formRegistry';
+
+interface GroceryItem {
+  id: string;
+  name: string;
+  category: string;
+  subcategory?: string;
+  translationKey?: string;
+}
 
 interface ServiceFormFactoryProps {
   service: Service;
+  selectedItems?: GroceryItem[];
+  additionalData?: any;
   onCancel: () => void;
 }
 
 /**
- * Service Form Factory Component with Enhanced Debugging
+ * Ultra-Clean ServiceFormFactory
+ *
+ * Solo 3 responsabilidades:
+ * 1. Encontrar el formulario correcto (auto-detección)
+ * 2. Validar requisitos
+ * 3. Renderizar con lazy loading
+ *
+ * Todo lo demás está en el sistema de registro automático
  */
 const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
   service,
+  selectedItems = [],
+  additionalData = {},
   onCancel,
 }) => {
-  const router = useRouter();
-  const { setReservationData } = useReservation();
+  const { t } = useTranslation();
 
-  console.log('🏭 ServiceFormFactory initialized for service:', service.id);
+  // 1. Auto-detectar formulario
+  const formConfig = useMemo(() => {
+    const registration = findFormForService(service.id);
 
-  /**
-   * Enhanced form submission handler with debugging
-   */
-  const createDebuggedOnSubmit = (formName: string) => {
-    return (formData: Record<string, any>) => {
-      console.log(`🚀 ${formName} - handleFormSubmit called with:`, formData);
-
-      // Calculate total price
-      const totalPrice =
-        formData.calculatedPrice || formData.totalPrice || service.price;
-
-      // Create reservation data structure
-      const reservationData = {
-        service,
-        formData,
-        totalPrice,
-        bookingDate: new Date(),
-      };
-
-      console.log(
-        `💾 ${formName} - Setting reservation data:`,
-        reservationData
+    if (!registration) {
+      console.warn(
+        `⚠️ No form found for service: ${service.id}, using default`
       );
-
-      try {
-        // Store in context for the confirmation page
-        setReservationData(reservationData);
-        console.log(`✅ ${formName} - Reservation data stored in context`);
-
-        // ALSO store in localStorage as backup
-        localStorage.setItem(
-          'tempReservationData',
-          JSON.stringify(reservationData)
-        );
-        console.log(
-          `✅ ${formName} - Reservation data stored in localStorage as backup`
-        );
-
-        // CLOSE THE MODAL FIRST before navigating
-        console.log(`🔒 ${formName} - Closing modal before navigation`);
-        onCancel(); // This should close the modal
-
-        // Small delay to ensure modal closes before navigation
-        setTimeout(() => {
-          console.log(
-            `🔄 ${formName} - Navigating to /reservation-confirmation`
-          );
-          router.replace('/reservation-confirmation'); // Use replace instead of push
-        }, 100);
-      } catch (error) {
-        console.error(`💥 ${formName} - Error in handleFormSubmit:`, error);
-      }
-    };
-  };
-
-  /**
-   * Enhanced cancel handler with debugging
-   */
-  const createDebuggedOnCancel = (formName: string) => {
-    return () => {
-      console.log(`❌ ${formName} - Cancel called`);
-      onCancel();
-    };
-  };
-
-  /**
-   * Form mapping with automatic debugging
-   */
-  const formMapping = [
-    {
-      condition: (id: string) =>
-        id.includes('airport-transfer') || id.includes('airportTransfer'),
-      name: 'AirportTransferForm',
-      component: AirportTransferForm,
-      icon: '✈️',
-    },
-    {
-      condition: (id: string) => id.includes('custom-decorations'),
-      name: 'CustomDecorationForm',
-      component: CustomDecorationForm,
-      icon: '🎨',
-      isSpecial: true, // Uses different prop structure
-    },
-    {
-      condition: (id: string) => id.includes('yoga-standard'),
-      name: 'YogaServiceForm',
-      component: YogaServiceForm,
-      icon: '🧘',
-    },
-    {
-      condition: (id: string) => id.includes('grocery-shopping'),
-      name: 'GroceryForm',
-      component: GroceryForm,
-      icon: '🛒',
-    },
-    {
-      condition: (id: string) => id.includes('chef'),
-      name: 'ChefForm',
-      component: ChefForm,
-      icon: '👨‍🍳',
-    },
-    {
-      condition: (id: string) => id.includes('babysitter'),
-      name: 'BabysitterForm',
-      component: BabysitterForm,
-      icon: '👶',
-    },
-    {
-      condition: (id: string) => id.includes('live-music'),
-      name: 'LiveMusicForm',
-      component: LiveMusicForm,
-      icon: 'music',
-    },
-  ];
-
-  /**
-   * Determine which form to render based on service.id
-   */
-  const renderFormByServiceType = () => {
-    console.log('🔍 Determining form type for service ID:', service.id);
-
-    // Find matching form
-    const matchedForm = formMapping.find((form) => form.condition(service.id));
-
-    if (matchedForm) {
-      console.log(`${matchedForm.icon} Rendering ${matchedForm.name}`);
-
-      const FormComponent = matchedForm.component;
-      const debuggedOnSubmit = createDebuggedOnSubmit(matchedForm.name);
-      const debuggedOnCancel = createDebuggedOnCancel(matchedForm.name);
-
-      // Handle special cases
-      if (
-        matchedForm.isSpecial &&
-        matchedForm.name === 'CustomDecorationForm'
-      ) {
-        return (
-          <FormComponent
-            service={service}
-            onBookService={(
-              service: Service,
-              dates: any,
-              guests: number,
-              formData: any
-            ) => {
-              console.log('🎨 CustomDecorationForm - onBookService called');
-              const standardFormData = { ...formData, dates, guests };
-              debuggedOnSubmit(standardFormData);
-            }}
-            onClose={debuggedOnCancel}
-          />
-        );
-      }
-
-      // Standard form structure
-      return (
-        <FormComponent
-          service={service}
-          onSubmit={debuggedOnSubmit}
-          onCancel={debuggedOnCancel}
-          {...(matchedForm.name === 'GroceryForm' ? { selectedItems: [] } : {})}
-        />
-      );
+      return findFormForService('*'); // Default fallback
     }
 
-    // Default fallback
-    console.log('📝 Rendering DefaultServiceForm (fallback)');
-    const debuggedOnSubmit = createDebuggedOnSubmit('DefaultServiceForm');
-    const debuggedOnCancel = createDebuggedOnCancel('DefaultServiceForm');
+    console.log(`✅ Form found for ${service.id}: ${registration.name}`);
+    return registration;
+  }, [service.id]);
+
+  // 2. Validar requisitos
+  const validation = useMemo(() => {
+    if (!formConfig) {
+      return { isValid: false, error: 'no_form_config' };
+    }
+
+    if (
+      formConfig.requiresItems &&
+      (!selectedItems || selectedItems.length === 0)
+    ) {
+      return { isValid: false, error: 'items_required' };
+    }
+
+    return { isValid: true, error: null };
+  }, [formConfig, selectedItems]);
+
+  // 3. Preparar props
+  const formProps = useMemo(() => {
+    if (!formConfig) return {};
+    return formConfig.propsMapper(
+      service,
+      selectedItems,
+      additionalData,
+      onCancel
+    );
+  }, [formConfig, service, selectedItems, additionalData, onCancel]);
+
+  // Manejar errores de validación
+  if (!validation.isValid) {
+    const isGroceryError = validation.error === 'items_required';
 
     return (
-      <DefaultServiceForm
-        service={service}
-        onSubmit={debuggedOnSubmit}
-        onCancel={debuggedOnCancel}
-      />
+      <div className='p-6 text-center'>
+        <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4'>
+          <AlertCircle className='w-8 h-8 text-amber-600' />
+        </div>
+        <h3 className='text-lg font-medium text-gray-900 mb-2'>
+          {isGroceryError
+            ? t('serviceForm.noItemsSelected', {
+                fallback: 'No Items Selected',
+              })
+            : t('serviceForm.configError', { fallback: 'Configuration Error' })}
+        </h3>
+        <p className='text-gray-600 mb-4'>
+          {isGroceryError
+            ? t('serviceForm.pleaseSelectItems', {
+                fallback:
+                  'Please select items from the grocery list before proceeding.',
+              })
+            : t('serviceForm.configErrorMessage', {
+                fallback: 'Form configuration not found for this service.',
+              })}
+        </p>
+        <button
+          onClick={onCancel}
+          className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
+        >
+          {t('common.goBack', { fallback: 'Go Back' })}
+        </button>
+      </div>
     );
-  };
+  }
 
+  // 4. Renderizar formulario
   return (
-    <div className='service-form-container'>{renderFormByServiceType()}</div>
+    <div className='service-form-container'>
+      <Suspense
+        fallback={
+          <div className='flex items-center justify-center p-12'>
+            <Loader2 className='w-8 h-8 animate-spin text-blue-600' />
+            <span className='ml-3 text-gray-600'>Loading form...</span>
+          </div>
+        }
+      >
+        <LazyFormRenderer formConfig={formConfig!} formProps={formProps} />
+      </Suspense>
+    </div>
   );
 };
 
+// Componente separado para renderizar formularios lazy
+const LazyFormRenderer: React.FC<{
+  formConfig: any;
+  formProps: any;
+}> = ({ formConfig, formProps }) => {
+  const [FormComponent, setFormComponent] =
+    React.useState<React.ComponentType<any> | null>(null);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    formConfig
+      .component()
+      .then((module: any) => {
+        setFormComponent(() => module.default || module);
+      })
+      .catch((error: Error) => {
+        console.error(`❌ Failed to load ${formConfig.name}:`, error);
+        setLoadError(error.message);
+      });
+  }, [formConfig]);
+
+  if (loadError) {
+    return (
+      <div className='p-6 text-center'>
+        <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4'>
+          <AlertCircle className='w-8 h-8 text-red-600' />
+        </div>
+        <h3 className='text-lg font-medium text-gray-900 mb-2'>
+          Form Loading Error
+        </h3>
+        <p className='text-gray-600 mb-4'>
+          Failed to load the form component. Please try again.
+        </p>
+        <details className='text-xs text-gray-500'>
+          <summary>Error details</summary>
+          <code>{loadError}</code>
+        </details>
+      </div>
+    );
+  }
+
+  if (!FormComponent) {
+    return (
+      <div className='flex items-center justify-center p-12'>
+        <Loader2 className='w-8 h-8 animate-spin text-blue-600' />
+        <span className='ml-3 text-gray-600'>Loading {formConfig.name}...</span>
+      </div>
+    );
+  }
+
+  return <FormComponent {...formProps} />;
+};
+
 export default ServiceFormFactory;
+
+// ===================================
+// INSTRUCCIONES DE USO
+// ===================================
+
+/*
+PARA AGREGAR UN NUEVO FORMULARIO:
+
+1. Crea tu componente de formulario normalmente
+2. Agrega una línea en formRegistry.ts:
+
+registerForm({
+  name: 'MiNuevoForm',
+  component: () => import('@/components/forms/MiNuevoForm'),
+  servicePatterns: ['mi-servicio', 'otro-servicio-id'],
+  requiresItems: false, // true si necesita selectedItems
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit: additionalData?.onSubmit || ((data) => console.log('Submitted:', data)),
+    onCancel,
+    // ... otros props específicos
+  }),
+});
+
+3. ¡YA ESTÁ! El sistema detectará automáticamente cuándo usar tu formulario.
+
+VENTAJAS DE ESTA ARQUITECTURA:
+
+✅ ESCALABLE: Agregar nuevos formularios es solo 1 paso
+✅ MANTENIBLE: Cada formulario maneja sus propios props
+✅ PERFORMANTE: Lazy loading automático
+✅ FLEXIBLE: Auto-detección inteligente por patrones
+✅ CLEAN: ServiceFormFactory es ultra-simple (50 líneas)
+✅ DEBUGGEABLE: Logs automáticos en desarrollo
+✅ TYPE-SAFE: TypeScript completo
+✅ TESTEABLE: Cada parte se puede testear independientemente
+
+PATRÓN DE NOMENCLATURA RECOMENDADO:
+
+Para servicios: 'categoria-tipo' o 'luxe-categoria'
+Ejemplos: 'massage-relaxing', 'luxe-spa', 'bike-mountain', 'yoga-beginner'
+
+El sistema buscará automáticamente por:
+1. Coincidencia exacta del ID
+2. Patrones que contengan palabras clave
+3. Fallback al formulario default
+
+DEBUG EN DESARROLLO:
+
+El sistema mostrará automáticamente en console:
+- Qué formulario se detectó para cada servicio
+- Qué props se están pasando
+- Errores de carga o configuración
+- Patrones de búsqueda utilizados
+
+ARQUITECTURA COMPLETA:
+
+BookingModal.tsx
+    ↓
+ServiceFormFactory.tsx (ultra-simple)
+    ↓
+formRegistry.ts (auto-registro)
+    ↓
+[Formulario específico].tsx
+
+MIGRACIÓN DESDE SISTEMA ANTERIOR:
+
+Si tienes formularios existentes que no funcionan:
+1. Abre la consola del navegador
+2. Busca logs como "⚠️ No form found for service: X"
+3. Agrega el ID faltante a servicePatterns en formRegistry.ts
+4. Reinicia y debería funcionar automáticamente
+
+*/

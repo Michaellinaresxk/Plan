@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+// views/GroceryServiceView.tsx - FINAL FIXED VERSION
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
-import { BookingDate, Service } from '@/types/type';
+import { Service } from '@/types/type';
 import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -13,17 +14,20 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import BookingModal from '@/UI/components/modal/BookingModal';
-import { useBooking } from '@/context/BookingContext';
+import {
+  GROCERY_CATEGORIES,
+  SPIRIT_CATEGORIES,
+} from '@/constants/GroceryShopping';
 
 import GroceryShoppingService from '../../grocery/GroceryShoppingService';
 
-// Interface for grocery items
+// Interface for grocery items - UPDATED to match our schema
 interface GroceryItem {
   id: string;
   name: string;
-  price: number;
-  unit: string;
-  quantity?: number;
+  category: string;
+  subcategory?: string;
+  translationKey?: string;
 }
 
 interface GroceryServiceViewProps {
@@ -42,59 +46,114 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
   viewContext,
 }) => {
   const { t } = useTranslation();
-  const { bookService } = useBooking();
 
-  // State
+  // State - UPDATED to store proper item structure
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<GroceryItem[]>([]);
-  const [formData, setFormData] = useState({
-    date: '',
-    hour: '',
-    foodRestrictions: '',
-    hasAllergies: false,
-    specialRequests: '',
-  });
+
+  // Use ref to track last processed items to prevent duplicate processing
+  const lastProcessedIds = useRef<string[]>([]);
 
   // Determine if this is a premium service
   const isPremium = service.packageType.includes('premium');
 
-  // Handle selected items from the grocery selector
-  const handleItemsSelected = (items: GroceryItem[]) => {
-    setSelectedItems(items);
-  };
-  const handleOpenBookingModal = () => {
+  // FIXED: Memoize all categories to prevent recreation
+  const allCategories = useMemo(
+    () => [...GROCERY_CATEGORIES, ...SPIRIT_CATEGORIES],
+    []
+  );
+
+  // FIXED: Convert item IDs to proper GroceryItem objects - wrapped in useCallback
+  const convertIdsToItems = useCallback(
+    (itemIds: string[]): GroceryItem[] => {
+      console.log('🛒 GroceryServiceView - Converting IDs to items:', itemIds);
+
+      const groceryItems: GroceryItem[] = [];
+
+      itemIds.forEach((itemId) => {
+        // Find the item in all categories
+        for (const category of allCategories) {
+          const foundItem = category.items.find((item) => item.id === itemId);
+          if (foundItem) {
+            groceryItems.push({
+              id: itemId,
+              name: foundItem.translationKey
+                ? t(foundItem.translationKey, { fallback: itemId })
+                : itemId,
+              category: category.id,
+              subcategory: category.id, // You can enhance this based on your category structure
+              translationKey: foundItem.translationKey,
+            });
+            break;
+          }
+        }
+      });
+
+      console.log(
+        '🛒 GroceryServiceView - Converted to grocery items:',
+        groceryItems
+      );
+      return groceryItems;
+    },
+    [allCategories, t]
+  );
+
+  // FIXED: Handle selected items from the grocery selector without causing setState during render
+  const handleItemsSelected = useCallback(
+    (itemIds: string[]) => {
+      console.log('🛒 GroceryServiceView - Raw selected item IDs:', itemIds);
+
+      // Check if IDs actually changed to prevent unnecessary processing
+      const idsChanged =
+        lastProcessedIds.current.length !== itemIds.length ||
+        !lastProcessedIds.current.every((id, index) => id === itemIds[index]);
+
+      if (idsChanged) {
+        console.log('🛒 GroceryServiceView - IDs changed, processing...');
+
+        // Update ref to track last processed IDs
+        lastProcessedIds.current = itemIds;
+
+        // Convert IDs to items and update state
+        const groceryItems = convertIdsToItems(itemIds);
+        setSelectedItems(groceryItems);
+      } else {
+        console.log(
+          '🛒 GroceryServiceView - IDs unchanged, skipping processing'
+        );
+      }
+    },
+    [convertIdsToItems]
+  );
+
+  // FIXED: Wrap modal handlers in useCallback
+  const handleOpenBookingModal = useCallback(() => {
+    console.log(
+      '🛒 GroceryServiceView - Opening modal with items:',
+      selectedItems
+    );
+
+    if (selectedItems.length === 0) {
+      console.warn(
+        '⚠️ GroceryServiceView - No items selected, cannot open modal'
+      );
+      return;
+    }
+
     setIsModalOpen(true);
-  };
+  }, [selectedItems]);
 
-  // Handle booking confirmation
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    // Add the selected grocery items as additional data
-    const bookingData = {
-      groceryItems: selectedItems,
-      totalPrice: calculateTotal(selectedItems),
-    };
-
-    // Book the service with the grocery items data
-    bookService(service, dates, guests, bookingData);
-
-    // Close the modal
+  const handleCloseModal = useCallback(() => {
+    console.log('🛒 GroceryServiceView - Closing modal');
     setIsModalOpen(false);
+  }, []);
 
-    // Navigate to payment page
-    // In a real application, you might use router.push('/payment') or similar
-  };
-  // Calculate total price based on selected items
-  const calculateTotal = (): number => {
-    const itemsTotal = selectedItems.reduce((total, item) => {
-      return total + item.price * (item.quantity || 1);
-    }, 0);
-
-    return service.price + itemsTotal;
-  };
+  // FIXED: Memoize the total calculation
+  const estimatedTotal = useMemo(() => {
+    const basePrice = service.price;
+    const estimatedItemCost = selectedItems.length * 5; // $5 per item estimate
+    return basePrice + estimatedItemCost;
+  }, [service.price, selectedItems.length]);
 
   return (
     <div className='space-y-12'>
@@ -149,11 +208,10 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
             </div>
           </div>
 
-          {/* CTA Button - opens the book now form */}
+          {/* CTA Button - opens the grocery selection */}
           <div className='mt-8'>
             <button
               onClick={() => {
-                // Scroll to the grocery selection section
                 document
                   .getElementById('grocery-selection')
                   ?.scrollIntoView({ behavior: 'smooth' });
@@ -171,7 +229,7 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
         </div>
       </motion.div>
 
-      {/* Grocery Selection Section */}
+      {/* Grocery Selection Section - UPDATED */}
       <div id='grocery-selection'>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -179,12 +237,69 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <GroceryShoppingService
-            onItemsSelected={handleItemsSelected}
+            onItemsSelected={handleItemsSelected} // FIXED: Now passes proper function
             handleOpenBookingModal={handleOpenBookingModal}
             service={service}
           />
         </motion.div>
       </div>
+
+      {/* Selected Items Summary - NEW SECTION */}
+      {selectedItems.length > 0 && (
+        <motion.div
+          className={`rounded-2xl overflow-hidden ${
+            isPremium
+              ? 'bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200'
+              : 'bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200'
+          }`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <div className='p-8 text-center'>
+            <h2
+              className={`text-2xl font-bold mb-4 ${
+                isPremium ? 'text-amber-900' : 'text-blue-900'
+              }`}
+            >
+              Ready to Complete Your Order?
+            </h2>
+            <p
+              className={`text-lg mb-6 ${
+                isPremium ? 'text-amber-800' : 'text-blue-800'
+              }`}
+            >
+              You have selected {selectedItems.length} items for delivery
+            </p>
+
+            <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
+              <div
+                className={`px-4 py-2 rounded-lg ${
+                  isPremium
+                    ? 'bg-amber-200 text-amber-900'
+                    : 'bg-blue-200 text-blue-900'
+                }`}
+              >
+                <span className='font-medium'>
+                  Estimated Total: ${estimatedTotal.toFixed(2)}
+                </span>
+              </div>
+
+              <button
+                onClick={handleOpenBookingModal}
+                className={`flex items-center px-6 py-3 ${
+                  isPremium
+                    ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                } rounded-lg font-medium shadow-lg transition-all duration-300`}
+              >
+                Book Your Delivery
+                <ArrowRight className='ml-2 h-5 w-5' />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* How It Works Section */}
       <motion.div
@@ -273,7 +388,7 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
         }`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
       >
         <div className='p-10 md:p-16 text-white text-center'>
           <h2 className='text-3xl md:text-4xl font-bold mb-4'>
@@ -305,7 +420,7 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
         className='bg-gray-50 rounded-lg p-4 flex items-start'
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.5 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
       >
         <Check className='h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0' />
         <p className='text-sm text-gray-600'>
@@ -317,20 +432,14 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
         </p>
       </motion.div>
 
-      {/* Booking Modal */}
+      {/* Booking Modal - UPDATED with selectedItems */}
       <AnimatePresence>
         {isModalOpen && (
           <BookingModal
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onConfirm={handleBookingConfirm}
+            onClose={handleCloseModal}
             service={service}
-            additionalData={{
-              groceryItems: selectedItems,
-              formData: formData,
-              totalPrice: calculateTotal(),
-              serviceType: 'grocery',
-            }}
+            selectedItems={selectedItems} // FIXED: Now passes the selected items
           />
         )}
       </AnimatePresence>

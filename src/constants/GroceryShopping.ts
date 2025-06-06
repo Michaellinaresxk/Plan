@@ -128,6 +128,7 @@ export const GROCERY_CATEGORIES: GroceryCategory[] = [
     translationKey: 'grocery.categories.water',
     items: [
       { id: 'evian-water', translationKey: 'grocery.items.evianWater' },
+      { id: 'dasani-water', translationKey: 'grocery.items.dasaniWater' },
       { id: 'san-pellegrino', translationKey: 'grocery.items.sanPellegrino' },
       { id: 'perrier', translationKey: 'grocery.items.perrier' },
     ],

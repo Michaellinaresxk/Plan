@@ -120,7 +120,7 @@ const PersonalTrainerServiceView: React.FC<PersonalTrainerServiceViewProps> = ({
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'>
-      <div className='max-w-6xl mx-auto space-y-16 pb-16'>
+      <div className='max-w-8xl mx-auto space-y-16 pb-16'>
         {/* Hero Section */}
         <motion.div
           className='relative overflow-hidden rounded-3xl mx-4 mt-8'

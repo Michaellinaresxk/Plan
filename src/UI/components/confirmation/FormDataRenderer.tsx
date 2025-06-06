@@ -1,323 +1,280 @@
-// components/confirmation/FormDataRenderer.tsx
 import React from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import {
   Calendar,
   Clock,
+  MapPin,
   Users,
-  Plane,
+  ShoppingBag,
   Baby,
   Car,
-  MapPin,
-  Info,
-  CheckCircle,
-  XCircle,
+  Music,
+  Palette,
+  Heart,
 } from 'lucide-react';
+
+interface GroceryItem {
+  id: string;
+  name: string;
+  category: string;
+  subcategory?: string;
+  translationKey?: string;
+}
 
 interface FormDataRendererProps {
   formData: Record<string, any>;
-  serviceId: string;
+  serviceType?: string;
 }
 
-/**
- * Dynamic Form Data Renderer
- *
- * This component intelligently renders form data based on the service type
- * and field types, providing a clean, organized view of the user's selections.
- */
 const FormDataRenderer: React.FC<FormDataRendererProps> = ({
   formData,
-  serviceId,
+  serviceType,
 }) => {
   const { t } = useTranslation();
 
-  // Field mappings for better display
-  const getFieldIcon = (key: string, value: any) => {
-    const iconMap: Record<string, React.ReactNode> = {
-      date: <Calendar className='w-4 h-4' />,
-      returnDate: <Calendar className='w-4 h-4' />,
-      startTime: <Clock className='w-4 h-4' />,
-      endTime: <Clock className='w-4 h-4' />,
-      flightNumber: <Plane className='w-4 h-4' />,
-      returnFlightNumber: <Plane className='w-4 h-4' />,
-      passengerCount: <Users className='w-4 h-4' />,
-      guestCount: <Users className='w-4 h-4' />,
-      childrenCount: <Baby className='w-4 h-4' />,
-      kidsCount: <Baby className='w-4 h-4' />,
-      vehicleType: <Car className='w-4 h-4' />,
-      location: <MapPin className='w-4 h-4' />,
-    };
+  // Helper function to safely render any value
+  const renderValue = (value: any): React.ReactNode => {
+    if (value === null || value === undefined) {
+      return <span className='text-gray-400 italic'>Not specified</span>;
+    }
 
-    return iconMap[key] || <Info className='w-4 h-4' />;
+    if (typeof value === 'boolean') {
+      return value ? 'Yes' : 'No';
+    }
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      return value.toString();
+    }
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        return <span className='text-gray-400 italic'>None</span>;
+      }
+
+      // Special handling for grocery items
+      if (value.length > 0 && typeof value[0] === 'object' && value[0]?.id) {
+        return renderGroceryItems(value as GroceryItem[]);
+      }
+
+      // Regular array
+      return (
+        <ul className='list-disc list-inside space-y-1'>
+          {value.map((item, index) => (
+            <li key={index} className='text-sm text-gray-700'>
+              {renderValue(item)}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (typeof value === 'object') {
+      // Special handling for categorized items
+      if (value.categorizedItems) {
+        return renderCategorizedItems(value.categorizedItems);
+      }
+
+      // Regular object
+      return (
+        <div className='space-y-2'>
+          {Object.entries(value).map(([key, val]) => (
+            <div key={key} className='flex justify-between text-sm'>
+              <span className='font-medium capitalize text-gray-600'>
+                {key.replace(/([A-Z])/g, ' $1').trim()}:
+              </span>
+              <span className='text-gray-700'>{renderValue(val)}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return String(value);
   };
 
-  // Get field labels with translations
-  const getFieldLabel = (key: string, serviceId: string): string => {
+  // Render grocery items in a clean format
+  const renderGroceryItems = (items: GroceryItem[]) => {
+    // Group by category
+    const categorized = items.reduce((acc, item) => {
+      const category = item.category || 'other';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(item);
+      return acc;
+    }, {} as Record<string, GroceryItem[]>);
+
+    return (
+      <div className='space-y-3'>
+        {Object.entries(categorized).map(([category, categoryItems]) => (
+          <div key={category} className='border-l-2 border-blue-200 pl-3'>
+            <h4 className='font-semibold text-gray-800 capitalize mb-1'>
+              {category} ({categoryItems.length})
+            </h4>
+            <div className='flex flex-wrap gap-2'>
+              {categoryItems.map((item, index) => (
+                <span
+                  key={item.id || index}
+                  className='inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full'
+                >
+                  {item.name || item.id}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Render categorized items structure
+  const renderCategorizedItems = (categorizedItems: any) => {
+    return (
+      <div className='space-y-4'>
+        {Object.entries(categorizedItems).map(
+          ([category, categoryData]: [string, any]) => (
+            <div
+              key={category}
+              className='border border-gray-200 rounded-lg p-3'
+            >
+              <h4 className='font-semibold text-gray-800 capitalize mb-2'>
+                {category}
+              </h4>
+              {categoryData.subcategories && (
+                <div className='space-y-2'>
+                  {Object.entries(categoryData.subcategories).map(
+                    ([subcat, items]: [string, any]) => (
+                      <div key={subcat} className='ml-2'>
+                        <span className='text-sm font-medium text-gray-600 capitalize'>
+                          {subcat}:
+                        </span>
+                        <div className='flex flex-wrap gap-1 mt-1'>
+                          {Array.isArray(items) &&
+                            items.map((item, index) => (
+                              <span
+                                key={item?.id || index}
+                                className='inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded'
+                              >
+                                {item?.name || item?.id || item}
+                              </span>
+                            ))}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        )}
+      </div>
+    );
+  };
+
+  // Get icon for field type
+  const getFieldIcon = (key: string) => {
+    const iconMap: Record<string, React.ReactNode> = {
+      date: <Calendar className='h-4 w-4' />,
+      time: <Clock className='h-4 w-4' />,
+      hour: <Clock className='h-4 w-4' />,
+      deliveryAddress: <MapPin className='h-4 w-4' />,
+      exactAddress: <MapPin className='h-4 w-4' />,
+      location: <MapPin className='h-4 w-4' />,
+      guests: <Users className='h-4 w-4' />,
+      passengerCount: <Users className='h-4 w-4' />,
+      children: <Baby className='h-4 w-4' />,
+      childrenCount: <Baby className='h-4 w-4' />,
+      vehicleType: <Car className='h-4 w-4' />,
+      flightNumber: <Car className='h-4 w-4' />,
+      items: <ShoppingBag className='h-4 w-4' />,
+      categorizedItems: <ShoppingBag className='h-4 w-4' />,
+      performer: <Music className='h-4 w-4' />,
+      occasion: <Heart className='h-4 w-4' />,
+      colors: <Palette className='h-4 w-4' />,
+    };
+
+    return iconMap[key] || null;
+  };
+
+  // Get field label
+  const getFieldLabel = (key: string): string => {
     const labelMap: Record<string, string> = {
-      // Common fields
-      date: t('form.labels.date', { fallback: 'Date' }),
-      startTime: t('form.labels.startTime', { fallback: 'Start Time' }),
-      endTime: t('form.labels.endTime', { fallback: 'End Time' }),
-      location: t('form.labels.location', { fallback: 'Location' }),
-      guestCount: t('form.labels.guests', { fallback: 'Guests' }),
-
-      // Airport transfer specific
-      flightNumber: t('services.airportTransfer.form.flightNumber', {
-        fallback: 'Flight Number',
-      }),
-      returnDate: t('services.airportTransfer.form.returnDate', {
-        fallback: 'Return Date',
-      }),
-      returnFlightNumber: t(
-        'services.airportTransfer.form.returnFlightNumber',
-        { fallback: 'Return Flight' }
-      ),
-      passengerCount: t('services.airportTransfer.form.passengers', {
-        fallback: 'Passengers',
-      }),
-      kidsCount: t('services.airportTransfer.form.kids', {
-        fallback: 'Children',
-      }),
-      vehicleType: t('services.airportTransfer.form.vehicleType', {
-        fallback: 'Vehicle Type',
-      }),
-      isRoundTrip: t('services.airportTransfer.form.roundTrip', {
-        fallback: 'Round Trip',
-      }),
-      needsCarSeat: t('services.airportTransfer.form.needsCarSeat', {
-        fallback: 'Car Seat Required',
-      }),
-      carSeatCount: t('services.airportTransfer.form.carSeatCount', {
-        fallback: 'Car Seats',
-      }),
-
-      // Babysitter specific
-      childrenCount: t('services.babysitter.form.childrenCount', {
-        fallback: 'Number of Children',
-      }),
-      childrenAges: t('services.babysitter.form.childrenAges', {
-        fallback: 'Children Ages',
-      }),
-      hasSpecialNeeds: t('services.babysitter.form.specialNeeds', {
-        fallback: 'Special Needs',
-      }),
-      specialNeedsDetails: t('services.babysitter.form.specialNeedsDetails', {
-        fallback: 'Special Needs Details',
-      }),
-      specialRequests: t('services.babysitter.form.specialRequests', {
-        fallback: 'Special Requests',
-      }),
+      date: 'Date',
+      time: 'Time',
+      hour: 'Hour',
+      deliveryAddress: 'Delivery Address',
+      exactAddress: 'Exact Address',
+      location: 'Location',
+      guests: 'Guests',
+      passengerCount: 'Passengers',
+      children: 'Children',
+      childrenCount: 'Number of Children',
+      childrenAges: 'Children Ages',
+      vehicleType: 'Vehicle Type',
+      flightNumber: 'Flight Number',
+      airline: 'Airline',
+      items: 'Selected Items',
+      categorizedItems: 'Selected Items by Category',
+      hasAllergies: 'Has Allergies',
+      allergyDetails: 'Allergy Details',
+      foodRestrictions: 'Food Restrictions',
+      specialRequests: 'Special Requests',
+      performer: 'Performer',
+      occasion: 'Occasion',
+      colors: 'Colors',
+      theme: 'Theme',
+      startTime: 'Start Time',
+      endTime: 'End Time',
+      serviceType: 'Service Type',
     };
 
     return (
       labelMap[key] ||
-      key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
+      key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
     );
   };
 
-  // Format values for better display
-  const formatValue = (key: string, value: any): React.ReactNode => {
-    if (value === null || value === undefined || value === '') {
-      return <span className='text-gray-400 italic'>Not specified</span>;
-    }
+  // Filter out internal/system fields
+  const filteredData = Object.entries(formData).filter(([key]) => {
+    const internalFields = ['serviceType'];
+    return !internalFields.includes(key);
+  });
 
-    // Boolean values
-    if (typeof value === 'boolean') {
-      return (
-        <span
-          className={`flex items-center ${
-            value ? 'text-green-600' : 'text-gray-500'
-          }`}
-        >
-          {value ? (
-            <CheckCircle className='w-4 h-4 mr-1' />
-          ) : (
-            <XCircle className='w-4 h-4 mr-1' />
-          )}
-          {value ? 'Yes' : 'No'}
-        </span>
-      );
-    }
-
-    // Arrays (like children ages)
-    if (Array.isArray(value)) {
-      return (
-        <div className='flex flex-wrap gap-1'>
-          {value
-            .filter((item) => item !== '')
-            .map((item, index) => (
-              <span
-                key={index}
-                className='inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full'
-              >
-                {item}
-              </span>
-            ))}
-        </div>
-      );
-    }
-
-    // Date formatting
-    if (key.includes('date') || key.includes('Date')) {
-      try {
-        const date = new Date(value);
-        return date.toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-      } catch {
-        return value;
-      }
-    }
-
-    // Time formatting
-    if (key.includes('time') || key.includes('Time')) {
-      try {
-        const [hours, minutes] = value.split(':');
-        const date = new Date();
-        date.setHours(parseInt(hours), parseInt(minutes));
-        return date.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true,
-        });
-      } catch {
-        return value;
-      }
-    }
-
-    // Vehicle type formatting
-    if (key === 'vehicleType') {
-      return (
-        <span className='capitalize bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm'>
-          {value
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, (str) => str.toUpperCase())}
-        </span>
-      );
-    }
-
-    // Numeric values with context
-    if (typeof value === 'number') {
-      if (key.includes('Count') || key.includes('count')) {
-        return (
-          <span className='font-medium text-blue-600'>
-            {value} {value === 1 ? 'person' : 'people'}
-          </span>
-        );
-      }
-    }
-
-    // Long text values (textarea content)
-    if (typeof value === 'string' && value.length > 100) {
-      return (
-        <div className='bg-gray-50 p-3 rounded-lg border'>
-          <p className='text-sm text-gray-700 whitespace-pre-wrap'>{value}</p>
-        </div>
-      );
-    }
-
-    return <span className='font-medium'>{value}</span>;
-  };
-
-  // Group fields by category for better organization
-  const categorizeFields = (formData: Record<string, any>) => {
-    const categories = {
-      'Schedule & Timing': ['date', 'startTime', 'endTime', 'returnDate'],
-      'Flight Information': [
-        'flightNumber',
-        'returnFlightNumber',
-        'isRoundTrip',
-      ],
-      'Passenger Details': [
-        'passengerCount',
-        'guestCount',
-        'childrenCount',
-        'kidsCount',
-        'childrenAges',
-      ],
-      'Vehicle & Equipment': ['vehicleType', 'needsCarSeat', 'carSeatCount'],
-      'Location & Logistics': ['location'],
-      'Special Requirements': [
-        'hasSpecialNeeds',
-        'specialNeedsDetails',
-        'specialRequests',
-      ],
-      'Additional Information': [],
-    };
-
-    const categorizedData: Record<string, Array<[string, any]>> = {};
-    const usedKeys = new Set<string>();
-
-    // Categorize known fields
-    Object.entries(categories).forEach(([category, keys]) => {
-      const categoryData = keys
-        .filter((key) => key in formData)
-        .map((key) => {
-          usedKeys.add(key);
-          return [key, formData[key]] as [string, any];
-        });
-
-      if (categoryData.length > 0) {
-        categorizedData[category] = categoryData;
-      }
-    });
-
-    // Add remaining fields to "Additional Information"
-    const remainingFields = Object.entries(formData)
-      .filter(([key]) => !usedKeys.has(key))
-      .filter(
-        ([, value]) => value !== null && value !== undefined && value !== ''
-      );
-
-    if (remainingFields.length > 0) {
-      categorizedData['Additional Information'] = remainingFields;
-    }
-
-    return categorizedData;
-  };
-
-  const categorizedData = categorizeFields(formData);
+  if (filteredData.length === 0) {
+    return (
+      <div className='text-center py-4 text-gray-500 italic'>
+        No additional details provided
+      </div>
+    );
+  }
 
   return (
-    <div className='space-y-6'>
-      {Object.entries(categorizedData).map(([category, fields]) => (
-        <div key={category} className='bg-gray-50 rounded-lg p-4'>
-          <h4 className='font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide'>
-            {category}
-          </h4>
+    <div className='space-y-4'>
+      {filteredData.map(([key, value]) => {
+        const icon = getFieldIcon(key);
+        const label = getFieldLabel(key);
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-            {fields.map(([key, value]) => (
-              <div
-                key={key}
-                className='flex items-start space-x-3 p-3 bg-white rounded-md shadow-sm'
-              >
-                <div className='flex-shrink-0 mt-0.5 text-gray-400'>
-                  {getFieldIcon(key, value)}
-                </div>
-                <div className='flex-grow min-w-0'>
-                  <p className='text-sm font-medium text-gray-500 mb-1'>
-                    {getFieldLabel(key, serviceId)}
-                  </p>
-                  <div className='text-sm text-gray-900'>
-                    {formatValue(key, value)}
-                  </div>
+        return (
+          <div
+            key={key}
+            className='border-b border-gray-100 pb-3 last:border-b-0'
+          >
+            <div className='flex items-start gap-3'>
+              {icon && (
+                <div className='flex-shrink-0 mt-1 text-gray-500'>{icon}</div>
+              )}
+              <div className='flex-1 min-w-0'>
+                <h4 className='text-sm font-medium text-gray-800 mb-1'>
+                  {label}
+                </h4>
+                <div className='text-sm text-gray-700'>
+                  {renderValue(value)}
                 </div>
               </div>
-            ))}
+            </div>
           </div>
-        </div>
-      ))}
-
-      {Object.keys(categorizedData).length === 0 && (
-        <div className='text-center py-8 text-gray-500'>
-          <Info className='w-8 h-8 mx-auto mb-2 opacity-50' />
-          <p>No booking details available</p>
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 };

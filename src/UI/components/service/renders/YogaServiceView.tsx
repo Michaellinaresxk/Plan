@@ -154,6 +154,23 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               <MapPin className='h-5 w-5 mr-2 opacity-80' />
               <span>{t('services.standard.yoga.where')}</span>
             </div>
+
+            <button
+              onClick={() => {
+                setIsModalOpen(true);
+                bookService({
+                  service,
+                  bookingDate: {} as BookingDate,
+                  isPremium,
+                });
+              }}
+              className={`py-3 px-8 rounded-full bg-white flex items-center mx-auto font-medium ${
+                isPremium ? 'text-amber-700' : 'text-blue-700'
+              }`}
+            >
+              Book Now
+              <ArrowRight className='ml-2 h-5 w-5' />
+            </button>
           </div>
         </div>
       </motion.div>
