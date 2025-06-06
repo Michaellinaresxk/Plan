@@ -1,348 +1,378 @@
-import React, { useEffect, useState } from 'react';
+// src/UI/components/forms/DefaultServiceForm.tsx
+import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { motion } from 'framer-motion';
-import { Calendar, Users, CreditCard, MapPin } from 'lucide-react';
+import { Calendar, Clock, Users, AlertTriangle, Check, X } from 'lucide-react';
+import { useReservation } from '@/context/BookingContext';
+import { useRouter } from 'next/navigation';
 
 interface DefaultServiceFormProps {
   service: Service;
-  onSubmit: (formData: any) => void;
   onCancel: () => void;
 }
 
-/**
- * Simplified Service Form - WITH DEBUG LOGGING
- *
- * A streamlined form for services with only essential fields:
- * - Date selection
- * - Guest count
- * - Location
- */
+interface FormData {
+  date: string;
+  time: string;
+  guests: number;
+  specialRequests: string;
+}
+
 const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
   service,
-  onSubmit,
   onCancel,
 }) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  const { setReservationData } = useReservation();
+
+  const [formData, setFormData] = useState<FormData>({
     date: '',
-    guestCount: 1,
-    location: '',
+    time: '',
+    guests: 1,
+    specialRequests: '',
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [totalPrice, setTotalPrice] = useState(service.price);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Debug initialization
-  React.useEffect(() => {
-    console.log('📝 DefaultServiceForm initialized for:', service.id);
-    console.log('📝 DefaultServiceForm onSubmit type:', typeof onSubmit);
-    console.log('📝 DefaultServiceForm onCancel type:', typeof onCancel);
-    console.log('📝 DefaultServiceForm service object:', service);
-  }, [service.id, onSubmit, onCancel, service]);
+  // Generate time slots
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 8; hour <= 20; hour++) {
+      slots.push(`${hour.toString().padStart(2, '0')}:00`);
+      if (hour < 20) {
+        slots.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+    }
+    return slots;
+  };
 
-  // Handle input changes
-  const handleChange = (
+  const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const { name, value } = e.target;
-    console.log(`📝 DefaultServiceForm - Field changed: ${name} = ${value}`);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'guests' ? parseInt(value) || 1 : value,
+    }));
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Clear error when field is filled
-    if (errors[name] && value) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
-  // Handle guest count updates
-  const updateGuestCount = (increment: boolean) => {
-    const newCount = increment
-      ? formData.guestCount + 1
-      : Math.max(1, formData.guestCount - 1);
-
-    console.log(`📝 DefaultServiceForm - Guest count updated: ${newCount}`);
-
-    setFormData((prev) => ({
-      ...prev,
-      guestCount: newCount,
-    }));
-  };
-
-  // Calculate price based on guest count
-  useEffect(() => {
-    const basePrice = service.price;
-    const guestPrice = basePrice * formData.guestCount;
-    console.log(
-      `📝 DefaultServiceForm - Price calculated: ${guestPrice} (${basePrice} x ${formData.guestCount})`
-    );
-    setTotalPrice(guestPrice);
-  }, [formData.guestCount, service.price]);
-
-  // Validate form before submission
   const validateForm = (): boolean => {
-    console.log('📝 DefaultServiceForm - Starting validation');
     const newErrors: Record<string, string> = {};
 
     if (!formData.date) {
-      newErrors.date = t('form.errors.required', {
+      newErrors.date = t('form.errors.dateRequired', {
         fallback: 'Date is required',
       });
     }
 
-    if (!formData.guestCount || formData.guestCount < 1) {
-      newErrors.guestCount = t('form.errors.invalidGuestCount', {
-        fallback: 'Please select at least 1 guest',
+    if (!formData.time) {
+      newErrors.time = t('form.errors.timeRequired', {
+        fallback: 'Time is required',
       });
     }
 
-    if (!formData.location) {
-      newErrors.location = t('form.errors.required', {
-        fallback: 'Location is required',
+    if (formData.guests < 1 || formData.guests > 20) {
+      newErrors.guests = t('form.errors.guestsInvalid', {
+        fallback: 'Number of guests must be between 1 and 20',
       });
     }
 
-    console.log('📝 DefaultServiceForm - Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const calculateTotal = (): number => {
+    // Base service price
+    let total = service.price;
+
+    // Add extra cost for additional guests (if applicable)
+    if (formData.guests > 1) {
+      const extraGuestCost = service.price * 0.1; // 10% per extra guest
+      total += (formData.guests - 1) * extraGuestCost;
+    }
+
+    return total;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('📝 DefaultServiceForm - handleSubmit called');
-    console.log('📝 DefaultServiceForm - Current formData:', formData);
-
     if (!validateForm()) {
-      console.log('❌ DefaultServiceForm - Validation failed');
       return;
     }
 
-    console.log('✅ DefaultServiceForm - Validation passed');
-
-    // Add calculated total price to form data
-    const submissionData = {
-      ...formData,
-      calculatedPrice: totalPrice,
-      serviceId: service.id,
-      serviceName: service.name,
-    };
-
-    console.log(
-      '🚀 DefaultServiceForm - Calling onSubmit with:',
-      submissionData
-    );
+    setIsSubmitting(true);
 
     try {
-      onSubmit(submissionData);
-      console.log('✅ DefaultServiceForm - onSubmit called successfully');
+      console.log('📝 DefaultServiceForm - Submitting reservation:', formData);
+
+      // Create reservation data
+      const reservationData = {
+        service,
+        formData: {
+          ...formData,
+          serviceType: 'default',
+        },
+        totalPrice: calculateTotal(),
+        bookingDate: new Date(`${formData.date}T${formData.time}`),
+        clientInfo: undefined, // Will be filled in the confirmation page
+      };
+
+      console.log(
+        '📝 DefaultServiceForm - Reservation data created:',
+        reservationData
+      );
+
+      // Store in context
+      setReservationData(reservationData);
+
+      // Navigate to confirmation page
+      router.push('/reservation-confirmation');
     } catch (error) {
-      console.error('💥 DefaultServiceForm - Error calling onSubmit:', error);
+      console.error('❌ DefaultServiceForm - Error submitting form:', error);
+      setErrors({
+        submit: t('form.errors.submitError', {
+          fallback: 'Failed to submit reservation. Please try again.',
+        }),
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // Y TAMBIÉN AGREGA este useEffect al principio del componente:
-  React.useEffect(() => {
-    console.log('📝 DefaultServiceForm initialized for:', service.id);
-    console.log('📝 DefaultServiceForm onSubmit type:', typeof onSubmit);
-    console.log('📝 DefaultServiceForm onCancel type:', typeof onCancel);
-  }, [service.id, onSubmit, onCancel]);
-
-  // Get isPremium status based on package type
   const isPremium = service.packageType.includes('premium');
-  const colorScheme = isPremium ? 'amber' : 'blue';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-    >
-      <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
-        <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-          {/* Form Header */}
-          <div
-            className={`bg-gradient-to-r from-${colorScheme}-900 via-${colorScheme}-800 to-${colorScheme}-900 p-6 text-white`}
-          >
-            <h2 className='text-2xl font-light tracking-wide'>
-              {t('serviceForm.title', {
-                service: service.name,
-                fallback: `Book ${service.name}`,
-              })}
-            </h2>
-            <p className='text-${colorScheme}-100 mt-1 font-light'>
-              {t('serviceForm.description', {
-                fallback: 'Fill in the details below to book your experience',
-              })}
-            </p>
+    <div className='space-y-6'>
+      <form onSubmit={handleSubmit} className='space-y-6'>
+        {/* Date and Time */}
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          {/* Date */}
+          <div>
+            <label
+              htmlFor='date'
+              className='block text-sm font-medium text-gray-700 mb-2'
+            >
+              <Calendar className='h-4 w-4 inline mr-1' />
+              {t('form.date', { fallback: 'Date' })} *
+            </label>
+            <input
+              type='date'
+              id='date'
+              name='date'
+              value={formData.date}
+              onChange={handleInputChange}
+              min={new Date().toISOString().split('T')[0]}
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                errors.date
+                  ? 'border-red-300 focus:ring-red-500'
+                  : isPremium
+                  ? 'border-amber-300 focus:ring-amber-500'
+                  : 'border-blue-300 focus:ring-blue-500'
+              }`}
+            />
+            {errors.date && (
+              <p className='mt-1 text-sm text-red-600 flex items-center'>
+                <AlertTriangle className='h-4 w-4 mr-1' />
+                {errors.date}
+              </p>
+            )}
           </div>
 
-          {/* Form Body */}
-          <div className='p-8 space-y-8'>
-            {/* Date Selection */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Calendar className='h-5 w-5 mr-2 text-${colorScheme}-600' />
-                {t('serviceForm.dateDetails', { fallback: 'Date' })}
-              </h3>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  {t('serviceForm.date', { fallback: 'Select Date' })}{' '}
-                  <span className='text-red-500'>*</span>
-                </label>
-                <div className='relative'>
-                  <span className='absolute left-3 top-3 text-gray-400'>
-                    <Calendar size={18} />
-                  </span>
-                  <input
-                    type='date'
-                    name='date'
-                    value={formData.date}
-                    onChange={handleChange}
-                    min={new Date().toISOString().split('T')[0]}
-                    className={`w-full pl-10 py-2 border rounded-lg appearance-none ${
-                      errors.date ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                  />
-                </div>
-                {errors.date && (
-                  <p className='mt-1 text-red-500 text-sm'>{errors.date}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Guest Count Section */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Users className='h-5 w-5 mr-2 text-${colorScheme}-600' />
-                {t('serviceForm.guestDetails', { fallback: 'Guests' })}
-              </h3>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  {t('serviceForm.guestCount', {
-                    fallback: 'Number of Guests',
-                  })}{' '}
-                  <span className='text-red-500'>*</span>
-                </label>
-                <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs'>
-                  <button
-                    type='button'
-                    onClick={() => updateGuestCount(false)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors'
-                  >
-                    -
-                  </button>
-                  <div className='flex-1 py-2 text-center'>
-                    {formData.guestCount}
-                  </div>
-                  <button
-                    type='button'
-                    onClick={() => updateGuestCount(true)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors'
-                  >
-                    +
-                  </button>
-                </div>
-                {errors.guestCount && (
-                  <p className='mt-1 text-red-500 text-sm'>
-                    {errors.guestCount}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Location Section */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <MapPin className='h-5 w-5 mr-2 text-${colorScheme}-600' />
-                {t('serviceForm.locationDetails', { fallback: 'Location' })}
-              </h3>
-
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  {t('serviceForm.location', { fallback: 'Service Location' })}{' '}
-                  <span className='text-red-500'>*</span>
-                </label>
-                <div className='relative'>
-                  <span className='absolute left-3 top-3 text-gray-400'>
-                    <MapPin size={18} />
-                  </span>
-                  <textarea
-                    name='location'
-                    value={formData.location}
-                    onChange={handleChange}
-                    placeholder={t('serviceForm.locationPlaceholder', {
-                      fallback:
-                        'Enter the full address where the service should take place...',
-                    })}
-                    className={`w-full pl-10 py-2 border rounded-lg resize-none ${
-                      errors.location ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    rows={3}
-                  ></textarea>
-                </div>
-                {errors.location && (
-                  <p className='mt-1 text-red-500 text-sm'>{errors.location}</p>
-                )}
-              </div>
-            </div>
-
-            
-          </div>
-
-          {/* Form Footer with Price and Actions */}
-          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
-            <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-              <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                {t('serviceForm.totalPrice', { fallback: 'Total Price' })}
-              </span>
-              <span className='text-3xl font-light'>
-                ${totalPrice.toFixed(2)}
-              </span>
-              {formData.guestCount > 1 && (
-                <span className='text-sm text-gray-400 mt-1'>
-                  ${service.price.toFixed(2)} x {formData.guestCount}{' '}
-                  {t('serviceForm.guests', { fallback: 'guests' })}
-                </span>
-              )}
-            </div>
-
-            <div className='flex space-x-4'>
-              <button
-                type='button'
-                onClick={() => {
-                  console.log('❌ DefaultServiceForm - Cancel button clicked');
-                  onCancel();
-                }}
-                className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition-colors'
-              >
-                {t('common.cancel', { fallback: 'Cancel' })}
-              </button>
-
-              <button
-                type='submit'
-                className={`px-8 py-3 bg-${colorScheme}-600 hover:bg-${colorScheme}-500 text-white rounded-lg transition-colors flex items-center`}
-                onClick={() =>
-                  console.log('🖱️ DefaultServiceForm - Submit button clicked')
-                }
-              >
-                <CreditCard className='h-4 w-4 mr-2' />
-                {t('serviceForm.book', { fallback: 'Book Now' })}
-              </button>
-            </div>
+          {/* Time */}
+          <div>
+            <label
+              htmlFor='time'
+              className='block text-sm font-medium text-gray-700 mb-2'
+            >
+              <Clock className='h-4 w-4 inline mr-1' />
+              {t('form.time', { fallback: 'Time' })} *
+            </label>
+            <select
+              id='time'
+              name='time'
+              value={formData.time}
+              onChange={handleInputChange}
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                errors.time
+                  ? 'border-red-300 focus:ring-red-500'
+                  : isPremium
+                  ? 'border-amber-300 focus:ring-amber-500'
+                  : 'border-blue-300 focus:ring-blue-500'
+              }`}
+            >
+              <option value=''>
+                {t('form.selectTime', { fallback: 'Select time' })}
+              </option>
+              {generateTimeSlots().map((slot) => (
+                <option key={slot} value={slot}>
+                  {slot}
+                </option>
+              ))}
+            </select>
+            {errors.time && (
+              <p className='mt-1 text-sm text-red-600 flex items-center'>
+                <AlertTriangle className='h-4 w-4 mr-1' />
+                {errors.time}
+              </p>
+            )}
           </div>
         </div>
+
+        {/* Number of Guests */}
+        <div>
+          <label
+            htmlFor='guests'
+            className='block text-sm font-medium text-gray-700 mb-2'
+          >
+            <Users className='h-4 w-4 inline mr-1' />
+            {t('form.guests', { fallback: 'Number of Guests' })} *
+          </label>
+          <select
+            id='guests'
+            name='guests'
+            value={formData.guests}
+            onChange={handleInputChange}
+            className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+              errors.guests
+                ? 'border-red-300 focus:ring-red-500'
+                : isPremium
+                ? 'border-amber-300 focus:ring-amber-500'
+                : 'border-blue-300 focus:ring-blue-500'
+            }`}
+          >
+            {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+              <option key={num} value={num}>
+                {num}{' '}
+                {num === 1
+                  ? t('form.guest', { fallback: 'guest' })
+                  : t('form.guests', { fallback: 'guests' })}
+              </option>
+            ))}
+          </select>
+          {errors.guests && (
+            <p className='mt-1 text-sm text-red-600 flex items-center'>
+              <AlertTriangle className='h-4 w-4 mr-1' />
+              {errors.guests}
+            </p>
+          )}
+        </div>
+
+        {/* Special Requests */}
+        <div>
+          <label
+            htmlFor='specialRequests'
+            className='block text-sm font-medium text-gray-700 mb-2'
+          >
+            {t('form.specialRequests', { fallback: 'Special Requests' })}
+          </label>
+          <textarea
+            id='specialRequests'
+            name='specialRequests'
+            value={formData.specialRequests}
+            onChange={handleInputChange}
+            rows={4}
+            placeholder={t('form.specialRequestsPlaceholder', {
+              fallback: 'Any special requests or preferences...',
+            })}
+            className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+              isPremium
+                ? 'border-amber-300 focus:ring-amber-500'
+                : 'border-blue-300 focus:ring-blue-500'
+            }`}
+          />
+        </div>
+
+        {/* Total Price */}
+        <div
+          className={`p-4 rounded-lg ${
+            isPremium ? 'bg-amber-50' : 'bg-blue-50'
+          }`}
+        >
+          <div className='flex items-center justify-between'>
+            <span
+              className={`text-sm font-medium ${
+                isPremium ? 'text-amber-800' : 'text-blue-800'
+              }`}
+            >
+              {t('form.total', { fallback: 'Total' })}:
+            </span>
+            <span
+              className={`text-lg font-bold ${
+                isPremium ? 'text-amber-900' : 'text-blue-900'
+              }`}
+            >
+              ${calculateTotal().toFixed(2)}
+            </span>
+          </div>
+          {formData.guests > 1 && (
+            <p className='text-xs text-gray-600 mt-1'>
+              {t('form.guestsPricing', {
+                fallback: `Base price + additional charge for ${
+                  formData.guests - 1
+                } extra guests`,
+              })}
+            </p>
+          )}
+        </div>
+
+        {/* Errors */}
+        {errors.submit && (
+          <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+            <p className='text-sm text-red-600 flex items-center'>
+              <X className='h-4 w-4 mr-1' />
+              {errors.submit}
+            </p>
+          </div>
+        )}
+
+        {/* Submit Buttons */}
+        <div className='flex flex-col sm:flex-row gap-3 pt-4'>
+          <button
+            type='button'
+            onClick={onCancel}
+            className='flex-1 py-3 px-6 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors'
+          >
+            {t('common.cancel', { fallback: 'Cancel' })}
+          </button>
+
+          <button
+            type='submit'
+            disabled={isSubmitting}
+            className={`flex-1 py-3 px-6 text-white rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
+              isSubmitting
+                ? 'bg-gray-400 cursor-not-allowed'
+                : isPremium
+                ? 'bg-amber-600 hover:bg-amber-700'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {isSubmitting ? (
+              <>
+                <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
+                {t('common.processing', { fallback: 'Processing...' })}
+              </>
+            ) : (
+              <>
+                <Check className='h-4 w-4 mr-2' />
+                {t('form.submitReservation', {
+                  fallback: 'Submit Reservation',
+                })}
+              </>
+            )}
+          </button>
+        </div>
       </form>
-    </motion.div>
+    </div>
   );
 };
 

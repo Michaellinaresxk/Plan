@@ -15,10 +15,9 @@ import {
   Clock,
   Building2,
   AlertTriangle,
+  Truck,
+  Bus,
 } from 'lucide-react';
-import ServiceManager from '@/constants/services/ServiceManager';
-
-// Types for better type safety
 interface VehicleOption {
   name: string;
   capacity: number;
@@ -51,6 +50,8 @@ interface FormData {
 
   // Vehicle
   vehicleType: string;
+
+  pickupName?: string;
 }
 
 interface FormErrors {
@@ -64,20 +65,34 @@ interface AirportTransferFormProps {
 }
 
 // Vehicle configuration
-const VEHICLE_OPTIONS: Record<string, VehicleOption> = {
+const VEHICLE_OPTIONS = {
   suv: {
-    name: 'SUV Premium',
+    name: 'SUV',
     capacity: 6,
-    additionalCost: 0,
-    description: 'Ideal para grupos pequeños y familias',
-    icon: <Car className='w-5 h-5' />,
+    additionalCost: 25,
+    description: 'Spacious and comfortable for medium groups',
+    icon: <Truck className='w-5 h-5 text-gray-600' />,
   },
   van: {
-    name: 'Van Ejecutiva',
-    capacity: 10,
-    additionalCost: 10,
-    description: 'Perfecta para grupos grandes',
-    icon: <Users className='w-5 h-5' />,
+    name: 'Van',
+    capacity: 15,
+    additionalCost: 50,
+    description: 'Large capacity for big groups, keeps everyone together',
+    icon: <Bus className='w-5 h-5 text-gray-600' />,
+  },
+  two_suvs: {
+    name: 'Two SUVs',
+    capacity: 12, // 2 SUVs × 6 passengers each
+    additionalCost: 75, // Costo de dos SUVs (25 + 50 por el segundo)
+    description:
+      'Two separate SUVs for flexibility and comfort in large groups',
+    icon: (
+      <div className='flex items-center'>
+        <Truck className='w-4 h-4 text-gray-600' />
+        <span className='mx-1 text-xs text-gray-500'>+</span>
+        <Truck className='w-4 h-4 text-gray-600' />
+      </div>
+    ),
   },
 };
 
@@ -118,7 +133,8 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     kidsCount: 0,
     needsCarSeat: false,
     carSeatCount: 0,
-    vehicleType: 'suv', // Default to SUV
+    vehicleType: 'suv',
+    pickupName: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -332,96 +348,200 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   const carSeatCounter = createCounterHandler('carSeatCount', 0);
 
   // Vehicle selection with recommendations
-  const VehicleSelector = () => (
-    <div className='space-y-4'>
-      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-        <Car className='w-4 h-4 mr-2 text-blue-700' />
-        Vehicle Type *
-      </label>
+  const VehicleSelector = () => {
+    // Función helper para determinar las opciones recomendadas
+    const getRecommendationMessage = () => {
+      if (totalPassengers > 10) {
+        return {
+          type: 'warning',
+          message: `For ${totalPassengers} passengers, we strongly recommend a Van or consider booking two SUVs.`,
+          showFor: ['suv', 'sedan'], // Mostrar advertencia si tienen seleccionado SUV o sedan
+        };
+      }
 
-      {/* Vehicle recommendation alert */}
-      {totalPassengers > 6 && formData.vehicleType === 'suv' && (
-        <div className='p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start'>
-          <AlertTriangle className='w-4 h-4 text-yellow-600 mr-2 mt-0.5' />
-          <div className='text-sm text-yellow-800'>
-            <strong>Recommendation:</strong> For {totalPassengers} passengers,
-            we recommend a Van or two SUVs.
-          </div>
-        </div>
-      )}
+      if (totalPassengers > 6) {
+        return {
+          type: 'info',
+          message: `For ${totalPassengers} passengers, we recommend a Van or two SUVs.`,
+          showFor: ['suv'],
+        };
+      }
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        {Object.entries(VEHICLE_OPTIONS).map(([key, vehicle]) => {
-          const isSelected = formData.vehicleType === key;
-          const isRecommended = key === recommendedVehicle;
-          const canAccommodate = totalPassengers <= vehicle.capacity;
+      return null;
+    };
 
-          return (
+    // Función para determinar si un vehículo puede acomodar a los pasajeros
+    const canVehicleAccommodate = (vehicleKey, vehicle) => {
+      if (totalPassengers <= vehicle.capacity) return true;
+
+      // Para más de 6 pasajeros, permitir VAN o dos SUVs
+      if (totalPassengers > 6) {
+        return vehicleKey === 'van' || vehicleKey === 'two_suvs';
+      }
+
+      return false;
+    };
+
+    // Función para determinar el vehículo recomendado
+    const getRecommendedVehicle = () => {
+      if (totalPassengers > 10) return 'van'; // Priorizar van para grupos muy grandes
+      if (totalPassengers > 6) return 'van'; // Recomendar van para grupos medianos
+      return recommendedVehicle; // Tu lógica existente
+    };
+
+    const recommendation = getRecommendationMessage();
+    const currentRecommended = getRecommendedVehicle();
+
+    return (
+      <div className='space-y-4'>
+        <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+          <Car className='w-4 h-4 mr-2 text-blue-700' />
+          Vehicle Type *
+        </label>
+
+        {/* Vehicle recommendation alert */}
+        {recommendation &&
+          recommendation.showFor.includes(formData.vehicleType) && (
             <div
-              key={key}
-              className={`relative p-4 border rounded-lg cursor-pointer transition-all ${
-                isSelected
-                  ? 'border-blue-500 bg-blue-50'
-                  : canAccommodate
-                  ? 'border-gray-300 hover:border-gray-400'
-                  : 'border-red-300 bg-red-50'
+              className={`p-3 border rounded-lg flex items-start ${
+                recommendation.type === 'warning'
+                  ? 'bg-red-50 border-red-200'
+                  : 'bg-yellow-50 border-yellow-200'
               }`}
-              onClick={() =>
-                canAccommodate &&
-                setFormData((prev) => ({ ...prev, vehicleType: key }))
-              }
             >
-              {isRecommended && (
-                <div className='absolute -top-2 left-4 bg-green-500 text-white text-xs px-2 py-1 rounded'>
-                  Recommended
-                </div>
-              )}
-
-              <div className='flex items-center justify-between mb-2'>
-                <div className='flex items-center'>
-                  {vehicle.icon}
-                  <span className='ml-2 font-medium'>{vehicle.name}</span>
-                </div>
-                {vehicle.additionalCost > 0 && (
-                  <span className='text-sm text-gray-600'>
-                    +${vehicle.additionalCost}
-                  </span>
-                )}
+              <AlertTriangle
+                className={`w-4 h-4 mr-2 mt-0.5 ${
+                  recommendation.type === 'warning'
+                    ? 'text-red-600'
+                    : 'text-yellow-600'
+                }`}
+              />
+              <div
+                className={`text-sm ${
+                  recommendation.type === 'warning'
+                    ? 'text-red-800'
+                    : 'text-yellow-800'
+                }`}
+              >
+                <strong>
+                  {recommendation.type === 'warning'
+                    ? 'Important:'
+                    : 'Recommendation:'}
+                </strong>{' '}
+                {recommendation.message}
               </div>
+            </div>
+          )}
 
-              <p className='text-sm text-gray-600 mb-2'>
-                {vehicle.description}
-              </p>
+        {/* Información adicional para más de 10 pasajeros */}
+        {totalPassengers > 10 && (
+          <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+            <div className='text-sm text-blue-800'>
+              <strong>Note:</strong> For groups larger than 10 passengers, you
+              can also consider:
+              <ul className='mt-1 ml-4 list-disc'>
+                <li>Booking two SUVs (more flexibility)</li>
+                <li>One Van (cost-effective, keeps group together)</li>
+              </ul>
+            </div>
+          </div>
+        )}
 
-              <div className='flex items-center justify-between text-sm'>
-                <span
-                  className={`${
-                    canAccommodate ? 'text-green-600' : 'text-red-600'
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          {Object.entries(VEHICLE_OPTIONS).map(([key, vehicle]) => {
+            const isSelected = formData.vehicleType === key;
+            const isRecommended = key === currentRecommended;
+            const canAccommodate = canVehicleAccommodate(key, vehicle);
+            const isDisabled = !canAccommodate;
+
+            return (
+              <div
+                key={key}
+                className={`relative p-4 border rounded-lg transition-all ${
+                  isDisabled
+                    ? 'border-red-300 bg-red-50 cursor-not-allowed opacity-75'
+                    : isSelected
+                    ? 'border-blue-500 bg-blue-50 cursor-pointer'
+                    : 'border-gray-300 hover:border-gray-400 cursor-pointer'
+                }`}
+                onClick={() => {
+                  if (!isDisabled) {
+                    setFormData((prev) => ({ ...prev, vehicleType: key }));
+                  }
+                }}
+              >
+                {isRecommended && canAccommodate && (
+                  <div className='absolute -top-2 left-4 bg-green-500 text-white text-xs px-2 py-1 rounded'>
+                    Recommended
+                  </div>
+                )}
+
+                <div className='flex items-center justify-between mb-2'>
+                  <div className='flex items-center'>
+                    {vehicle.icon}
+                    <span
+                      className={`ml-2 font-medium ${
+                        isDisabled ? 'text-gray-400' : ''
+                      }`}
+                    >
+                      {vehicle.name}
+                    </span>
+                  </div>
+                  {vehicle.additionalCost > 0 && (
+                    <span
+                      className={`text-sm ${
+                        isDisabled ? 'text-gray-400' : 'text-gray-600'
+                      }`}
+                    >
+                      +${vehicle.additionalCost}
+                    </span>
+                  )}
+                </div>
+
+                <p
+                  className={`text-sm mb-2 ${
+                    isDisabled ? 'text-gray-400' : 'text-gray-600'
                   }`}
                 >
-                  Capacity: {vehicle.capacity} passengers
-                </span>
-                {isSelected && (
-                  <CheckCircle className='w-4 h-4 text-blue-500' />
+                  {vehicle.description}
+                </p>
+
+                <div className='flex items-center justify-between text-sm'>
+                  <span
+                    className={`${
+                      canAccommodate ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
+                    Capacity: {vehicle.capacity} passengers
+                  </span>
+                  {isSelected && (
+                    <CheckCircle className='w-4 h-4 text-blue-500' />
+                  )}
+                </div>
+
+                {!canAccommodate && (
+                  <div className='mt-2'>
+                    <p className='text-xs text-red-600'>
+                      Insufficient capacity for {totalPassengers} passengers
+                    </p>
+                    {totalPassengers > 10 && key !== 'van' && (
+                      <p className='text-xs text-red-500 font-medium'>
+                        Consider Van or multiple vehicles
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
+            );
+          })}
+        </div>
 
-              {!canAccommodate && (
-                <p className='text-xs text-red-600 mt-2'>
-                  Insufficient capacity for {totalPassengers} passengers
-                </p>
-              )}
-            </div>
-          );
-        })}
+        {errors.vehicleType && (
+          <p className='text-red-500 text-xs'>{errors.vehicleType}</p>
+        )}
       </div>
-
-      {errors.vehicleType && (
-        <p className='text-red-500 text-xs'>{errors.vehicleType}</p>
-      )}
-    </div>
-  );
-
+    );
+  };
   // Counter component
   const Counter = ({
     label,
@@ -837,6 +957,27 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
               Vehicle Selection
             </h3>
             <VehicleSelector />
+          </div>
+
+          {/* Pickup name / alias */}
+          <div>
+            <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+              <Plane className='w-4 h-4 mr-2 text-blue-700' />
+              Pickup Name / Alias (opcional)
+            </label>
+            <input
+              type='text'
+              name='pickupName'
+              value={formData.pickupName}
+              onChange={handleInputChange}
+              placeholder='Pickup Name'
+              className={`w-full p-3 border ${
+                errors.pickupName ? 'border-red-500' : 'border-gray-300'
+              } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
+            />
+            {errors.pickupName && (
+              <p className='text-red-500 text-xs mt-1'>{errors.pickupName}</p>
+            )}
           </div>
         </div>
 

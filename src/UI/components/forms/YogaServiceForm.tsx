@@ -306,7 +306,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     </div>
                     <p className='text-gray-500 text-sm mt-2 ml-8'>
                       {t('services.yoga.morningTime', {
-                        fallback: '8:00 AM - 10:00 AM',
+                        fallback: '7:00 AM - 11:00 AM',
                       })}
                     </p>
                   </div>
@@ -363,7 +363,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     </div>
                     <p className='text-gray-500 text-sm mt-2 ml-8'>
                       {t('services.yoga.eveningTime', {
-                        fallback: '5:00 PM - 7:00 PM',
+                        fallback: '1:00 PM - 6:00 PM',
                       })}
                     </p>
                   </div>

@@ -322,7 +322,7 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
 
   return (
     <div className='min-h-screen bg-gradient-to-b from-stone-50 via-amber-25 to-stone-100'>
-      <div className='max-w-7xl mx-auto'>
+      <div className='max-w-8xl mx-auto'>
         {/* 🌅 Hero Section Expandido */}
         <motion.section
           className='relative h-screen flex items-center justify-center px-6'
@@ -374,14 +374,10 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
               variants={fadeUp}
             >
               <button
-                onClick={() => {
-                  document.getElementById('massage-selection')?.scrollIntoView({
-                    behavior: 'smooth',
-                  });
-                }}
+                onClick={() => setIsModalOpen(true)}
                 className='bg-white/10 backdrop-blur-md text-white px-12 py-6 rounded-2xl font-medium text-xl border border-white/30 hover:bg-white/20 transition-all duration-300 mb-8'
               >
-                Explorar Experiencias
+                Reserva tu Massage
               </button>
 
               <div className='text-white/70 text-sm'>

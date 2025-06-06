@@ -15,6 +15,7 @@ import PersonalTrainerServiceView from '../renders/PersonalTrainerServiceView';
 import BikeRentalServiceView from '../renders/BikeRentalServiceView';
 import DefaultServiceView from './DefaultServiceView';
 import MassageServiceView from '../renders/MassageServiceView';
+import LuxeYachtServiceView from '../renders/LuxeYachtServiceView';
 
 interface ServiceViewFactoryProps {
   service: Service;
@@ -57,7 +58,7 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'luxe-culinary': ChefServiceView,
     'luxe-arrival': AirportServiceView,
     'private-yacht': CatamaranServiceView,
-    'luxe-yacht': CatamaranServiceView,
+    'luxe-yacht': LuxeYachtServiceView,
   };
 
   // Get the specific view component for this service or fall back to the default view

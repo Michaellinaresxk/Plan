@@ -80,68 +80,6 @@ const ChefServiceView: React.FC<ChefServiceViewProps> = ({
     },
   ];
 
-  // Sample menu items
-  const sampleMenuItems = [
-    {
-      category: 'Starters',
-      items: [
-        {
-          name: 'Truffle Arancini',
-          description: 'Wild mushroom risotto balls with truffle aioli',
-          isSignature: true,
-        },
-        {
-          name: 'Scallop Ceviche',
-          description: 'Fresh scallops, citrus, avocado, chili',
-          isSignature: false,
-        },
-        {
-          name: 'Goat Cheese Tart',
-          description: 'Caramelized onions, fig jam, micro herbs',
-          isSignature: false,
-        },
-      ],
-    },
-    {
-      category: 'Main Courses',
-      items: [
-        {
-          name: 'Sous Vide Filet Mignon',
-          description:
-            'Truffle mashed potatoes, seasonal vegetables, red wine reduction',
-          isSignature: true,
-        },
-        {
-          name: 'Pan-Seared Sea Bass',
-          description: 'Saffron risotto, roasted fennel, lemon beurre blanc',
-          isSignature: false,
-        },
-        {
-          name: 'Wild Mushroom Ravioli',
-          description:
-            'House-made pasta, sage brown butter sauce, aged parmesan',
-          isSignature: false,
-        },
-      ],
-    },
-    {
-      category: 'Desserts',
-      items: [
-        {
-          name: 'Chocolate Fondant',
-          description:
-            'Warm chocolate cake, vanilla bean ice cream, berry coulis',
-          isSignature: true,
-        },
-        {
-          name: 'Crème Brûlée Trio',
-          description: 'Classic vanilla, espresso, and lavender infused',
-          isSignature: false,
-        },
-      ],
-    },
-  ];
-
   // Chef experience steps
   const chefExperienceSteps = [
     {

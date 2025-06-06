@@ -9,8 +9,16 @@ import {
   Clock,
   AlertCircle,
   Home,
+  Palette,
+  Camera,
+  MapPin,
+  Sparkles,
+  Heart,
+  Gift,
+  Cake,
+  Star,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ColorPicker from '../shared/ColorPicker';
 
 interface CustomDecorationFormProps {
@@ -45,35 +53,75 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [invalidDateMessage, setInvalidDateMessage] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState(1);
 
-  // Decoration occasion options
+  // Enhanced decoration occasion options with icons
   const occasionOptions = [
-    { id: 'birthday', label: t('decorationForm.occasions.birthday') },
-    { id: 'anniversary', label: t('decorationForm.occasions.anniversary') },
-    { id: 'proposal', label: t('decorationForm.occasions.proposal') },
-    { id: 'romantic', label: t('decorationForm.occasions.romantic') },
-    { id: 'baby-shower', label: t('decorationForm.occasions.babyShower') },
-    { id: 'other', label: t('decorationForm.occasions.other') },
+    {
+      id: 'birthday',
+      label: t('decorationForm.occasions.birthday', {
+        fallback: 'Birthday Party',
+      }),
+      icon: <Cake className='w-5 h-5' />,
+      color: 'from-pink-500 to-purple-500',
+    },
+    {
+      id: 'anniversary',
+      label: t('decorationForm.occasions.anniversary', {
+        fallback: 'Anniversary',
+      }),
+      icon: <Heart className='w-5 h-5' />,
+      color: 'from-red-500 to-pink-500',
+    },
+    {
+      id: 'proposal',
+      label: t('decorationForm.occasions.proposal', {
+        fallback: 'Marriage Proposal',
+      }),
+      icon: <Sparkles className='w-5 h-5' />,
+      color: 'from-amber-500 to-yellow-500',
+    },
+    {
+      id: 'romantic',
+      label: t('decorationForm.occasions.romantic', {
+        fallback: 'Romantic Dinner',
+      }),
+      icon: <Heart className='w-5 h-5' />,
+      color: 'from-rose-500 to-red-500',
+    },
+    {
+      id: 'baby-shower',
+      label: t('decorationForm.occasions.babyShower', {
+        fallback: 'Baby Shower',
+      }),
+      icon: <Gift className='w-5 h-5' />,
+      color: 'from-blue-500 to-cyan-500',
+    },
+    {
+      id: 'other',
+      label: t('decorationForm.occasions.other', { fallback: 'Other' }),
+      icon: <Star className='w-5 h-5' />,
+      color: 'from-gray-500 to-gray-600',
+    },
   ];
 
   // Get the minimum date (72 hours from now)
   function getMinimumDate(): Date {
     const minDate = new Date();
-    minDate.setHours(minDate.getHours() + 72); // Add 72 hours
+    minDate.setHours(minDate.getHours() + 72);
     return minDate;
   }
 
-  // Format minimum date as YYYY-MM-DD for the date input
   function formatMinDateForInput(): string {
     const minDate = getMinimumDate();
     return minDate.toISOString().split('T')[0];
   }
 
-  // Check date is valid (minimum 72 hours in advance)
+  // Check date is valid
   useEffect(() => {
     if (date) {
       const now = new Date();
-      const minBookingTime = new Date(now.getTime() + 72 * 60 * 60 * 1000); // 72 hours from now
+      const minBookingTime = new Date(now.getTime() + 72 * 60 * 60 * 1000);
 
       if (date < minBookingTime) {
         setInvalidDateMessage(
@@ -94,7 +142,6 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
       const file = e.target.files[0];
       setReferenceImage(file);
 
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -103,7 +150,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     }
   };
 
-  // Add/remove colors
+  // Color management
   const addColor = () => {
     if (colors.length < 5) {
       setColors([...colors, '#FFFFFF']);
@@ -134,7 +181,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
       });
     } else {
       const now = new Date();
-      const minBookingTime = new Date(now.getTime() + 72 * 60 * 60 * 1000); // 72 hours from now
+      const minBookingTime = new Date(now.getTime() + 72 * 60 * 60 * 1000);
       if (date < minBookingTime) {
         newErrors.date = t('decorationForm.errors.minAdvanceTime', {
           fallback:
@@ -156,12 +203,6 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     } else if (occasion === 'other' && !customOccasion.trim()) {
       newErrors.customOccasion = t('forms.errors.customOccasionRequired', {
         fallback: 'Please specify the occasion',
-      });
-    }
-
-    if (!location) {
-      newErrors.location = t('forms.errors.locationRequired', {
-        fallback: 'Location type is required',
       });
     }
 
@@ -189,17 +230,14 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
 
     setIsSubmitting(true);
 
-    // Create booking date object
     const dateObj = date ? new Date(date) : new Date();
     const bookingDate: BookingDate = {
       startDate: dateObj,
       endDate: dateObj,
     };
 
-    // Determine final occasion value (either selected option or custom text)
     const finalOccasion = occasion === 'other' ? customOccasion : occasion;
 
-    // Create form data
     const formData = {
       date: dateObj,
       time,
@@ -211,388 +249,454 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
       referenceImage,
     };
 
-    // Call onBookService with the required parameters
-    // Using 1 as a placeholder for guests since it's required by the interface
-    // but might not be relevant for decorations
     onBookService(service, bookingDate, 1, formData);
-
     setIsSubmitting(false);
     onClose();
   };
 
   const isPremium = service.packageType.includes('premium');
 
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
+
+  const stagger = {
+    visible: { transition: { staggerChildren: 0.1 } },
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      className={isPremium ? 'text-white' : ''}
-    >
-      <form onSubmit={handleSubmit} className='space-y-6'>
-        {/* Service Location Notice */}
-        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4'>
-          <div className='flex'>
+    <div className='min-h-screen bg-gray-50 p-6'>
+      <motion.div
+        className='max-w-4xl mx-auto'
+        initial='hidden'
+        animate='visible'
+        variants={stagger}
+      >
+        {/* Header */}
+        <motion.div className='text-center mb-8' variants={fadeInUp}>
+          <div className='inline-flex items-center bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-gray-200 mb-4'>
+            <Palette className='w-5 h-5 text-purple-600 mr-2' />
+            <span className='text-sm font-medium text-gray-700'>
+              Custom Decoration Service
+            </span>
+          </div>
+          <h1 className='text-4xl font-bold text-gray-900 mb-4'>
+            Design Your Perfect Event
+          </h1>
+          <p className='text-xl text-gray-600 max-w-2xl mx-auto'>
+            Let's create a magical atmosphere that matches your vision and makes
+            your celebration unforgettable
+          </p>
+        </motion.div>
+
+        {/* Service Area Notice */}
+        <motion.div
+          className='bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-6 mb-8'
+          variants={fadeInUp}
+        >
+          <div className='flex items-start'>
             <div className='flex-shrink-0'>
-              <AlertCircle className='h-5 w-5 text-blue-600' />
+              <MapPin className='w-6 h-6 text-blue-600' />
             </div>
-            <div className='ml-3'>
-              <p className='text-sm text-blue-700'>
-                {t('decorationForm.serviceAreaNotice', {
-                  fallback:
-                    'Our decoration services are currently available only in the Punta Cana area. Please ensure your event location is within this region.',
-                })}
+            <div className='ml-4'>
+              <h3 className='font-semibold text-blue-900 mb-2'>Service Area</h3>
+              <p className='text-blue-700'>
+                Our decoration services are available exclusively in the Punta
+                Cana area. Please ensure your event location is within this
+                region for our team to provide the best service.
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Date and Time Selection */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <div>
-            <label className='block text-gray-700 font-medium mb-2'>
-              {t('decorationForm.date')} <span className='text-red-500'>*</span>
-              <span className='ml-1 text-sm text-gray-500 font-normal'>
-                (min. 72h in advance)
-              </span>
-            </label>
-            <div className='relative'>
-              <div className='flex items-center'>
-                <span className='absolute left-3 text-gray-400'>
-                  <Calendar size={18} />
-                </span>
-                <input
-                  type='date'
-                  value={date ? date.toISOString().split('T')[0] : ''}
-                  onChange={(e) => {
-                    const newDate = e.target.value
-                      ? new Date(e.target.value)
-                      : null;
-                    setDate(newDate);
-                  }}
-                  min={formatMinDateForInput()}
-                  className={`w-full pl-10 py-2 border rounded-lg ${
-                    errors.date || invalidDateMessage
-                      ? 'border-red-500'
-                      : isPremium
-                      ? 'premium-input'
-                      : 'border-gray-300'
-                  }`}
-                />
-              </div>
-              {(errors.date || invalidDateMessage) && (
-                <p className='mt-1 text-red-500 text-sm'>
-                  {errors.date || invalidDateMessage}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className='block text-gray-700 font-medium mb-2'>
-              {t('decorationForm.time')} <span className='text-red-500'>*</span>
-            </label>
-            <div className='relative flex items-center'>
-              <span className='absolute left-3 text-gray-400'>
-                <Clock size={18} />
-              </span>
-              <input
-                type='time'
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className={`w-full pl-10 py-2 border rounded-lg ${
-                  errors.time
-                    ? 'border-red-500'
-                    : isPremium
-                    ? 'premium-input'
-                    : 'border-gray-300'
-                }`}
-              />
-              {errors.time && (
-                <p className='mt-1 text-red-500 text-sm'>{errors.time}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Occasion */}
-        <div>
-          <label className='block text-gray-700 font-medium mb-2'>
-            {t('decorationForm.occasion')}{' '}
-            <span className='text-red-500'>*</span>
-          </label>
-          <div className='relative'>
-            <span className='absolute left-3 top-3 text-gray-400'>
-              <Tag size={18} />
-            </span>
-            <select
-              value={occasion}
-              onChange={(e) => setOccasion(e.target.value)}
-              className={`w-full pl-10 py-2 border rounded-lg appearance-none ${
-                errors.occasion
-                  ? 'border-red-500'
-                  : isPremium
-                  ? 'premium-select'
-                  : 'border-gray-300'
-              }`}
-            >
-              <option value=''>{t('forms.select')}</option>
-              {occasionOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
-              <svg
-                className='fill-current h-4 w-4'
-                xmlns='http://www.w3.org/2000/svg'
-                viewBox='0 0 20 20'
+        <form onSubmit={handleSubmit}>
+          <div className='grid lg:grid-cols-2 gap-8'>
+            {/* Left Column */}
+            <div className='space-y-8'>
+              {/* Date and Time */}
+              <motion.div
+                className='bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/40'
+                variants={fadeInUp}
               >
-                <path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
-              </svg>
-            </div>
-            {errors.occasion && (
-              <p className='mt-1 text-red-500 text-sm'>{errors.occasion}</p>
-            )}
-          </div>
-        </div>
+                <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+                  <Calendar className='w-6 h-6 mr-3 text-purple-600' />
+                  When is your event?
+                </h2>
 
-        {/* Custom Occasion (only shown when 'other' is selected) */}
-        {occasion === 'other' && (
-          <div>
-            <label className='block text-gray-700 font-medium mb-2'>
-              {t('decorationForm.customOccasion', {
-                fallback: 'Specify your occasion',
-              })}{' '}
-              <span className='text-red-500'>*</span>
-            </label>
-            <div className='relative'>
-              <span className='absolute left-3 top-3 text-gray-400'>
-                <Tag size={18} />
-              </span>
-              <input
-                type='text'
-                value={customOccasion}
-                onChange={(e) => setCustomOccasion(e.target.value)}
-                placeholder={t('decorationForm.customOccasionPlaceholder', {
-                  fallback: 'e.g., Corporate event, Garden party',
-                })}
-                className={`w-full pl-10 py-2 border rounded-lg ${
-                  errors.customOccasion
-                    ? 'border-red-500'
-                    : isPremium
-                    ? 'premium-input'
-                    : 'border-gray-300'
-                }`}
-              />
-              {errors.customOccasion && (
-                <p className='mt-1 text-red-500 text-sm'>
-                  {errors.customOccasion}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
+                <div className='grid grid-cols-2 gap-6'>
+                  <div>
+                    <label className='block text-gray-700 font-medium mb-3'>
+                      Date <span className='text-red-500'>*</span>
+                    </label>
+                    <div className='relative'>
+                      <input
+                        type='date'
+                        value={date ? date.toISOString().split('T')[0] : ''}
+                        onChange={(e) => {
+                          const newDate = e.target.value
+                            ? new Date(e.target.value)
+                            : null;
+                          setDate(newDate);
+                        }}
+                        min={formatMinDateForInput()}
+                        className={`w-full px-4 py-4 border-2 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 ${
+                          errors.date || invalidDateMessage
+                            ? 'border-red-300 focus:border-red-400'
+                            : 'border-gray-200 focus:border-purple-400'
+                        }`}
+                      />
+                      {(errors.date || invalidDateMessage) && (
+                        <p className='mt-2 text-red-500 text-sm flex items-center'>
+                          <AlertCircle className='w-4 h-4 mr-1' />
+                          {errors.date || invalidDateMessage}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-        {/* Exact Address */}
-        <div>
-          <label className='block text-gray-700 font-medium mb-2'>
-            {t('decorationForm.exactAddress', {
-              fallback: 'Exact Address in Punta Cana',
-            })}{' '}
-            <span className='text-red-500'>*</span>
-          </label>
-          <div className='relative'>
-            <span className='absolute left-3 top-3 text-gray-400'>
-              <Home size={18} />
-            </span>
-            <textarea
-              value={exactAddress}
-              onChange={(e) => setExactAddress(e.target.value)}
-              rows={3}
-              placeholder={t('decorationForm.addressPlaceholder', {
-                fallback:
-                  'Full address in Punta Cana area (hotel name, villa number, street, etc.)',
-              })}
-              className={`w-full pl-10 py-2 border rounded-lg resize-none ${
-                errors.exactAddress
-                  ? 'border-red-500'
-                  : isPremium
-                  ? 'premium-input'
-                  : 'border-gray-300'
-              }`}
-            ></textarea>
-            {errors.exactAddress && (
-              <p className='mt-1 text-red-500 text-sm'>{errors.exactAddress}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Color Palette */}
-        <div>
-          <label className='block text-gray-700 font-medium mb-2'>
-            {t('decorationForm.colors')}
-          </label>
-          <div className='space-y-3'>
-            <div className='flex flex-wrap gap-3 items-center'>
-              {colors.map((color, index) => (
-                <div key={index} className='flex items-center'>
-                  <ColorPicker
-                    color={color}
-                    onChange={(newColor) => updateColor(index, newColor)}
-                  />
-                  {colors.length > 1 && (
-                    <button
-                      type='button'
-                      onClick={() => removeColor(index)}
-                      className='ml-2 text-gray-400 hover:text-red-500'
-                    >
-                      &times;
-                    </button>
-                  )}
+                  <div>
+                    <label className='block text-gray-700 font-medium mb-3'>
+                      Time <span className='text-red-500'>*</span>
+                    </label>
+                    <div className='relative'>
+                      <Clock className='absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
+                      <input
+                        type='time'
+                        value={time}
+                        onChange={(e) => setTime(e.target.value)}
+                        className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 ${
+                          errors.time
+                            ? 'border-red-300 focus:border-red-400'
+                            : 'border-gray-200 focus:border-purple-400'
+                        }`}
+                      />
+                      {errors.time && (
+                        <p className='mt-2 text-red-500 text-sm flex items-center'>
+                          <AlertCircle className='w-4 h-4 mr-1' />
+                          {errors.time}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              ))}
-              {colors.length < 5 && (
-                <button
-                  type='button'
-                  onClick={addColor}
-                  className='px-3 py-1 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100'
-                >
-                  + {t('decorationForm.addColor')}
-                </button>
-              )}
-            </div>
-            <p className='text-sm text-gray-500'>
-              {t('decorationForm.colorsHint')}
-            </p>
-          </div>
-        </div>
 
-        {/* Reference Image Upload */}
-        <div>
-          <label className='block text-gray-700 font-medium mb-2'>
-            {t('decorationForm.referenceImage')}
-          </label>
-          <div className='flex items-center justify-center w-full'>
-            <label
-              className={`flex flex-col w-full h-32 border-2 border-dashed rounded-lg cursor-pointer ${
-                isPremium
-                  ? 'border-amber-500/30 hover:border-amber-500/50 hover:bg-gray-800/30'
-                  : 'border-gray-300 hover:bg-gray-50'
+                <div className='mt-4 p-4 bg-purple-50 rounded-2xl'>
+                  <p className='text-sm text-purple-700 flex items-center'>
+                    <AlertCircle className='w-4 h-4 mr-2' />
+                    Minimum 72 hours advance booking required for proper
+                    preparation
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Occasion Selection */}
+              <motion.div
+                className='bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/40'
+                variants={fadeInUp}
+              >
+                <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+                  <Sparkles className='w-6 h-6 mr-3 text-purple-600' />
+                  What's the occasion?
+                </h2>
+
+                <div className='grid grid-cols-2 gap-4'>
+                  {occasionOptions.map((option) => (
+                    <motion.div
+                      key={option.id}
+                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                        occasion === option.id
+                          ? 'border-purple-400 bg-purple-50 scale-105'
+                          : 'border-gray-200 bg-white/50 hover:border-gray-300 hover:bg-white/80'
+                      }`}
+                      onClick={() => setOccasion(option.id)}
+                      whileHover={{ y: -2 }}
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-xl bg-gradient-to-r ${option.color} flex items-center justify-center text-white mb-3`}
+                      >
+                        {option.icon}
+                      </div>
+                      <h3 className='font-semibold text-gray-900 text-sm'>
+                        {option.label}
+                      </h3>
+
+                      {occasion === option.id && (
+                        <div className='absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center'>
+                          <span className='text-white text-xs'>✓</span>
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+
+                {errors.occasion && (
+                  <p className='mt-4 text-red-500 text-sm flex items-center'>
+                    <AlertCircle className='w-4 h-4 mr-1' />
+                    {errors.occasion}
+                  </p>
+                )}
+
+                <AnimatePresence>
+                  {occasion === 'other' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className='mt-6'
+                    >
+                      <label className='block text-gray-700 font-medium mb-3'>
+                        Specify your occasion{' '}
+                        <span className='text-red-500'>*</span>
+                      </label>
+                      <input
+                        type='text'
+                        value={customOccasion}
+                        onChange={(e) => setCustomOccasion(e.target.value)}
+                        placeholder='e.g., Corporate event, Garden party'
+                        className={`w-full px-4 py-4 border-2 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 ${
+                          errors.customOccasion
+                            ? 'border-red-300 focus:border-red-400'
+                            : 'border-gray-200 focus:border-purple-400'
+                        }`}
+                      />
+                      {errors.customOccasion && (
+                        <p className='mt-2 text-red-500 text-sm flex items-center'>
+                          <AlertCircle className='w-4 h-4 mr-1' />
+                          {errors.customOccasion}
+                        </p>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+
+              {/* Location */}
+              <motion.div
+                className='bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/40'
+                variants={fadeInUp}
+              >
+                <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+                  <Home className='w-6 h-6 mr-3 text-purple-600' />
+                  Where is your event?
+                </h2>
+
+                <div>
+                  <label className='block text-gray-700 font-medium mb-3'>
+                    Exact Address in Punta Cana{' '}
+                    <span className='text-red-500'>*</span>
+                  </label>
+                  <div className='relative'>
+                    <MapPin className='absolute left-4 top-4 text-gray-400 w-5 h-5' />
+                    <textarea
+                      value={exactAddress}
+                      onChange={(e) => setExactAddress(e.target.value)}
+                      rows={4}
+                      placeholder='Full address in Punta Cana area (hotel name, villa number, street, etc.)'
+                      className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 resize-none ${
+                        errors.exactAddress
+                          ? 'border-red-300 focus:border-red-400'
+                          : 'border-gray-200 focus:border-purple-400'
+                      }`}
+                    />
+                    {errors.exactAddress && (
+                      <p className='mt-2 text-red-500 text-sm flex items-center'>
+                        <AlertCircle className='w-4 h-4 mr-1' />
+                        {errors.exactAddress}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Column */}
+            <div className='space-y-8'>
+              {/* Color Palette */}
+              <motion.div
+                className='bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/40'
+                variants={fadeInUp}
+              >
+                <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+                  <Palette className='w-6 h-6 mr-3 text-purple-600' />
+                  Choose your colors
+                </h2>
+
+                <div className='space-y-6'>
+                  <div className='flex flex-wrap gap-4 items-center'>
+                    {colors.map((color, index) => (
+                      <div key={index} className='flex items-center group'>
+                        <div className='relative'>
+                          <ColorPicker
+                            color={color}
+                            onChange={(newColor) =>
+                              updateColor(index, newColor)
+                            }
+                          />
+                          {colors.length > 1 && (
+                            <button
+                              type='button'
+                              onClick={() => removeColor(index)}
+                              className='absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center'
+                            >
+                              ×
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    {colors.length < 5 && (
+                      <button
+                        type='button'
+                        onClick={addColor}
+                        className='w-12 h-12 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 flex items-center justify-center group'
+                      >
+                        <span className='text-2xl text-gray-400 group-hover:text-purple-600'>
+                          +
+                        </span>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className='p-4 bg-purple-50 rounded-2xl'>
+                    <p className='text-sm text-purple-700'>
+                      💡 Choose 2-5 colors that represent your event's theme.
+                      Our decorators will create a harmonious color scheme.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Reference Image */}
+              <motion.div
+                className='bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/40'
+                variants={fadeInUp}
+              >
+                <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+                  <Camera className='w-6 h-6 mr-3 text-purple-600' />
+                  Inspiration photo
+                </h2>
+
+                <div className='relative'>
+                  <label
+                    className={`flex flex-col w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ${
+                      imagePreview
+                        ? 'border-purple-300 bg-purple-50'
+                        : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
+                    }`}
+                  >
+                    <div className='flex flex-col items-center justify-center h-full'>
+                      {imagePreview ? (
+                        <div className='relative w-full h-full flex items-center justify-center p-4'>
+                          <img
+                            src={imagePreview}
+                            alt='Upload preview'
+                            className='max-h-full max-w-full object-contain rounded-xl'
+                          />
+                          <button
+                            type='button'
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setReferenceImage(null);
+                              setImagePreview(null);
+                            }}
+                            className='absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors'
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className='w-12 h-12 text-gray-400 mb-4' />
+                          <p className='text-lg font-medium text-gray-700 mb-2'>
+                            Upload inspiration photo
+                          </p>
+                          <p className='text-sm text-gray-500 text-center px-4'>
+                            Share a photo of decorations you love to help us
+                            understand your vision
+                          </p>
+                        </>
+                      )}
+                    </div>
+                    <input
+                      type='file'
+                      accept='image/*'
+                      className='hidden'
+                      onChange={handleImageUpload}
+                    />
+                  </label>
+                </div>
+              </motion.div>
+
+              {/* Additional Notes */}
+              <motion.div
+                className='bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/40'
+                variants={fadeInUp}
+              >
+                <h2 className='text-2xl font-bold text-gray-900 mb-6 flex items-center'>
+                  <MessageSquare className='w-6 h-6 mr-3 text-purple-600' />
+                  Additional details
+                </h2>
+
+                <div className='relative'>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={5}
+                    className='w-full px-4 py-4 border-2 border-gray-200 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-400 resize-none'
+                    placeholder='Tell us more about your vision, special requirements, or any specific decorations you have in mind...'
+                  />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <motion.div
+            className='flex justify-center gap-6 mt-12'
+            variants={fadeInUp}
+          >
+            <button
+              type='button'
+              onClick={onClose}
+              className='px-8 py-4 border-2 border-gray-300 bg-white/80 backdrop-blur-sm rounded-2xl text-gray-700 font-semibold hover:bg-white hover:border-gray-400 transition-all duration-300'
+            >
+              Cancel
+            </button>
+
+            <button
+              type='submit'
+              disabled={isSubmitting || !!invalidDateMessage}
+              className={`px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-2xl transition-all duration-300 hover:from-purple-700 hover:to-pink-700 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${
+                isSubmitting ? 'animate-pulse' : ''
               }`}
             >
-              <div className='flex flex-col items-center justify-center pt-5 pb-6'>
-                {imagePreview ? (
-                  <div className='relative w-full h-full flex items-center justify-center'>
-                    <img
-                      src={imagePreview}
-                      alt='Upload preview'
-                      className='h-24 object-contain'
-                    />
-                    <button
-                      type='button'
-                      onClick={() => {
-                        setReferenceImage(null);
-                        setImagePreview(null);
-                      }}
-                      className={`absolute top-0 right-0 ${
-                        isPremium
-                          ? 'bg-amber-500 text-black'
-                          : 'bg-red-500 text-white'
-                      } rounded-full p-1`}
-                    >
-                      &times;
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <Upload
-                      className={`w-8 h-8 ${
-                        isPremium ? 'text-amber-500/70' : 'text-gray-400'
-                      }`}
-                    />
-                    <p
-                      className={`mb-2 text-sm ${
-                        isPremium ? 'text-gray-300' : 'text-gray-500'
-                      }`}
-                    >
-                      {t('decorationForm.uploadInstruction')}
-                    </p>
-                    <p
-                      className={`text-xs ${
-                        isPremium ? 'text-gray-400' : 'text-gray-400'
-                      }`}
-                    >
-                      {t('decorationForm.uploadHint')}
-                    </p>
-                  </>
-                )}
-              </div>
-              <input
-                type='file'
-                accept='image/*'
-                className='hidden'
-                onChange={handleImageUpload}
-              />
-            </label>
-          </div>
-        </div>
+              {isSubmitting ? (
+                <span className='flex items-center'>
+                  <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3'></div>
+                  Creating your booking...
+                </span>
+              ) : (
+                <span className='flex items-center'>
+                  <Sparkles className='w-5 h-5 mr-2' />
+                  Confirm Booking
+                </span>
+              )}
+            </button>
+          </motion.div>
 
-        {/* Additional Notes */}
-        <div>
-          <label className='block text-gray-700 font-medium mb-2'>
-            {t('decorationForm.notes')}
-          </label>
-          <div className='relative'>
-            <span className='absolute left-3 top-3 text-gray-400'>
-              <MessageSquare size={18} />
-            </span>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-              className={`w-full pl-10 py-2 border rounded-lg resize-none ${
-                isPremium ? 'premium-input' : 'border-gray-300'
-              }`}
-              placeholder={t('decorationForm.notesPlaceholder')}
-            ></textarea>
-          </div>
-        </div>
-
-        {/* Required fields notice */}
-        <p className='text-sm text-gray-500'>
-          <span className='text-red-500'>*</span>{' '}
-          {t('forms.requiredFields', { fallback: 'Required fields' })}
-        </p>
-
-        {/* Submit Button */}
-        <div className='flex justify-end space-x-3'>
-          <button
-            type='button'
-            onClick={onClose}
-            className='px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100'
+          {/* Required fields notice */}
+          <motion.p
+            className='text-center text-sm text-gray-500 mt-6'
+            variants={fadeInUp}
           >
-            {t('forms.cancel')}
-          </button>
-          <button
-            type='submit'
-            disabled={isSubmitting || !!invalidDateMessage}
-            className={`px-4 py-2 ${
-              isPremium
-                ? 'luxury-button text-black font-medium'
-                : 'bg-amber-500 text-black hover:bg-amber-600'
-            } rounded-lg transition-colors ${
-              isSubmitting || !!invalidDateMessage
-                ? 'opacity-70 cursor-not-allowed'
-                : ''
-            }`}
-          >
-            {isSubmitting ? t('forms.submitting') : t('forms.confirmBooking')}
-          </button>
-        </div>
-      </form>
-    </motion.div>
+            <span className='text-red-500'>*</span> Required fields
+          </motion.p>
+        </form>
+      </motion.div>
+    </div>
   );
 };
 

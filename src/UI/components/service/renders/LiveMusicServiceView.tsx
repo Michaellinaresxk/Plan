@@ -1,627 +1,822 @@
-// views/LiveMusicServiceView.tsx (versión mejorada con sección de reserva)
-
-import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
+import { motion } from 'framer-motion';
 import {
   Music,
   Calendar,
-  Check,
-  Sparkles,
-  Heart,
-  X,
-  PlayCircle,
-  Clock,
   Users,
-  ListMusic,
-  Settings,
-  ChevronDown,
   Timer,
   DollarSign,
   CreditCard,
   AlertCircle,
+  Clock,
+  PlayCircle,
+  Mic,
+  Check,
+  ArrowRight,
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { BookingDate } from '@/types/type';
+import { useCallback, useMemo, useState } from 'react';
 
 interface LiveMusicServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
-  primaryColor: string;
+  primaryColor?: string;
 }
 
-// Tipos de performer
-const performerTypes = [
+// Constants
+const PERFORMER_TYPES = [
   {
     id: 'soloist',
-    name: 'Solista',
-    description: 'Un músico con guitarra o piano',
+    name: 'Solo Artist',
+    description: 'Acoustic guitar or piano',
     price: 150,
-    icon: '🎸',
+    duration: '60-90 min',
+    image:
+      'https://images.unsplash.com/photo-1501612780327-45045538702b?q=80&w=600&auto=format&fit=crop',
   },
   {
     id: 'duo',
-    name: 'Dúo',
-    description: 'Dos músicos con armonías vocales',
+    name: 'Musical Duo',
+    description: 'Vocal harmonies & instruments',
     price: 250,
-    icon: '🎭',
+    duration: '60-90 min',
+    image:
+      'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=600&auto=format&fit=crop',
   },
   {
     id: 'trio',
-    name: 'Trío',
-    description: 'Tres músicos con instrumentos variados',
+    name: 'Acoustic Trio',
+    description: 'Full harmonic experience',
     price: 350,
-    icon: '🎼',
+    duration: '90-120 min',
+    image:
+      'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=600&auto=format&fit=crop',
   },
   {
     id: 'band',
-    name: 'Banda Completa',
-    description: 'Banda de 4-5 músicos',
+    name: 'Full Band',
+    description: 'Complete musical ensemble',
     price: 500,
-    icon: '🎪',
+    duration: '120-180 min',
+    image:
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop',
+    popular: true,
   },
 ];
 
-// Opciones de duración y sets
-const durationOptions = [
+const MUSIC_GENRES = [
   {
-    id: 'regular',
-    name: 'Programación Regular',
-    description: '2 sets de 45 min (Total: 1:30h)',
-    duration: 90,
-    sets: 2,
-    setDuration: 45,
-    breakTime: 15,
+    id: 'acoustic',
+    name: 'Acoustic & Folk',
+    description: 'Intimate, unplugged performances',
+    icon: '🎸',
+    popular: ['Ed Sheeran', 'John Mayer', 'Taylor Swift', 'Bob Dylan'],
   },
   {
-    id: 'triple',
-    name: 'Sesiones Cortas',
-    description: '3 sets de 30 min (Total: 1:30h)',
-    duration: 90,
-    sets: 3,
-    setDuration: 30,
-    breakTime: 15,
+    id: 'jazz',
+    name: 'Jazz & Swing',
+    description: 'Sophisticated evening atmosphere',
+    icon: '🎷',
+    popular: ['Frank Sinatra', 'Ella Fitzgerald', 'Nina Simone', 'Miles Davis'],
   },
   {
-    id: 'continuous',
-    name: 'Sesión Continua',
-    description: '1:30h corrido sin parar',
-    duration: 90,
-    sets: 1,
-    setDuration: 90,
-    breakTime: 0,
+    id: 'latin',
+    name: 'Latin & Tropical',
+    description: 'Caribbean and Latin vibes',
+    icon: '🌴',
+    popular: ['Manu Chao', 'Jesse & Joy', 'Juan Luis Guerra', 'Buena Vista'],
+  },
+  {
+    id: 'pop',
+    name: 'Pop & Top 40',
+    description: 'Current hits and classics',
+    icon: '🎤',
+    popular: ['Bruno Mars', 'Adele', 'The Weeknd', 'Dua Lipa'],
+  },
+  {
+    id: 'rock',
+    name: 'Rock & Classic',
+    description: 'Energetic rock performances',
+    icon: '🤘',
+    popular: ['Queen', 'The Beatles', 'Coldplay', 'Red Hot Chili Peppers'],
+  },
+  {
+    id: 'romantic',
+    name: 'Romantic & Love Songs',
+    description: 'Perfect for special moments',
+    icon: '💕',
+    popular: ['All of Me', 'Perfect', 'Thinking Out Loud', 'A Thousand Years'],
   },
 ];
 
-// Galería de imágenes de música en vivo
-const musicGallery = [
+const FEATURES = [
+  'Professional sound equipment',
+  'Flexible song selection',
+  'Customizable set duration',
+  'Professional musicians',
+  'Setup and breakdown included',
+];
+
+const TESTIMONIALS = [
   {
-    src: 'https://images.unsplash.com/photo-1501612780327-45045538702b?q=80&w=2940&auto=format&fit=crop',
-    alt: 'Solo acoustic guitarist performing',
-    type: 'soloist',
+    name: 'Sarah & Michael',
+    event: 'Wedding Reception',
+    quote:
+      'The acoustic duo made our villa wedding absolutely magical. Every song was perfect!',
+    rating: 5,
   },
   {
-    src: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=2832&auto=format&fit=crop',
-    alt: 'Jazz duo performing at intimate venue',
-    type: 'duo',
+    name: 'Carlos R.',
+    event: 'Birthday Celebration',
+    quote:
+      'Amazing jazz trio! They created the perfect atmosphere for our sunset dinner party.',
+    rating: 5,
   },
   {
-    src: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2940&auto=format&fit=crop',
-    alt: 'String trio performing classical music',
-    type: 'trio',
+    name: 'Emma L.',
+    event: 'Anniversary Dinner',
+    quote:
+      'Professional, talented, and accommodating. They played our special song beautifully.',
+    rating: 5,
   },
 ];
+
+// Animation variants
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+
+const stagger = {
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
 const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
   service,
   serviceData,
-  primaryColor,
+  primaryColor = 'blue',
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-    null
-  );
 
-  // Estados para el formulario de reserva
   const [bookingForm, setBookingForm] = useState({
     date: '',
     time: '',
     performerType: '',
-    duration: '',
+    musicGenre: '',
     hasSpecificSongs: false,
     specificSongs: '',
+    songLinks: '',
     specialRequests: '',
   });
 
-  // Estados para validación y errores
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Calcular precio total
-  const selectedPerformer = performerTypes.find(
-    (p) => p.id === bookingForm.performerType
+  const selectedPerformer = useMemo(
+    () => PERFORMER_TYPES.find((p) => p.id === bookingForm.performerType),
+    [bookingForm.performerType]
   );
-  const selectedDuration = durationOptions.find(
-    (d) => d.id === bookingForm.duration
-  );
-  const totalPrice =
-    selectedPerformer && selectedDuration
-      ? selectedPerformer.price * (selectedDuration.sets || 1)
-      : 0;
 
-  // Validar formulario
-  const validateForm = (): boolean => {
+  const totalPrice = selectedPerformer?.price || 0;
+
+  const validateForm = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
-
-    if (!bookingForm.date) {
-      newErrors.date = t('form.errors.required', {
-        fallback: 'Date is required',
-      });
-    }
-
-    if (!bookingForm.time) {
-      newErrors.time = t('form.errors.required', {
-        fallback: 'Time is required',
-      });
-    }
-
-    if (!bookingForm.performerType) {
-      newErrors.performerType = t('form.errors.required', {
-        fallback: 'Please select a performer type',
-      });
-    }
-
-    if (!bookingForm.duration) {
-      newErrors.duration = t('form.errors.required', {
-        fallback: 'Please select a duration',
-      });
-    }
-
-    if (bookingForm.hasSpecificSongs && !bookingForm.specificSongs.trim()) {
-      newErrors.specificSongs = t('form.errors.required', {
-        fallback: 'Please specify your song preferences',
-      });
-    }
-
+    if (!bookingForm.date) newErrors.date = 'Date required';
+    if (!bookingForm.time) newErrors.time = 'Time required';
+    if (!bookingForm.performerType)
+      newErrors.performerType = 'Please select performer type';
+    if (!bookingForm.musicGenre)
+      newErrors.musicGenre = 'Please select music style';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [bookingForm]);
 
-  // Manejar la reserva
-  const handleBookingSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
+  const handleBookingSubmit = useCallback(async () => {
+    if (!validateForm()) return;
     setIsSubmitting(true);
 
     try {
-      // Crear datos de reserva
       const reservationData = {
         service,
-        formData: {
-          ...bookingForm,
-          calculatedPrice: totalPrice,
-          serviceId: service.id,
-          serviceName: service.name,
-        },
+        formData: { ...bookingForm, calculatedPrice: totalPrice },
         totalPrice,
         bookingDate: new Date(),
       };
 
-      console.log(
-        '🎵 LiveMusicServiceView - Setting reservation data:',
-        reservationData
-      );
-
-      // Guardar en contexto
       setReservationData(reservationData);
-
-      // Backup en localStorage
-      localStorage.setItem(
-        'tempReservationData',
-        JSON.stringify(reservationData)
-      );
-
-      // Navegar a confirmación
       router.push('/reservation-confirmation');
     } catch (error) {
-      console.error('💥 LiveMusicServiceView - Error in booking:', error);
+      console.error('Booking error:', error);
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [
+    bookingForm,
+    totalPrice,
+    service,
+    setReservationData,
+    router,
+    validateForm,
+  ]);
 
-  const handleFormChange = (field: string, value: any) => {
-    setBookingForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const handleFormChange = useCallback(
+    (field: string, value: any) => {
+      setBookingForm((prev) => ({ ...prev, [field]: value }));
+      if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+    },
+    [errors]
+  );
 
   return (
-    <div className='space-y-10'>
-      {/* Sección de Detalles de Reserva */}
-      <div
-        id='booking-details'
-        className='bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-2xl overflow-hidden'
-      >
-        <div className='p-8 md:p-12'>
-          <div className='text-center mb-12'>
-            <h2 className='text-3xl md:text-4xl font-bold text-white mb-4 flex items-center justify-center gap-3'>
-              <Settings className={`text-${primaryColor}-500`} size={36} />
-              Personaliza tu Experiencia Musical
+    <div className='min-h-screen bg-gray-50'>
+      <div className='max-w-5xl mx-auto px-6 py-12 space-y-20'>
+        {/* Hero Section */}
+        <motion.div
+          className='text-center space-y-8'
+          initial='hidden'
+          animate='visible'
+          variants={fadeIn}
+        >
+          <div className='space-y-6'>
+            <div className='inline-flex items-center bg-gray-100 px-4 py-2 rounded-full'>
+              <Music className='w-4 h-4 text-gray-600 mr-2' />
+              <span className='text-sm font-medium text-gray-700'>
+                Professional Live Entertainment
+              </span>
+            </div>
+
+            <h1 className='text-6xl md:text-7xl font-bold text-gray-900 leading-none'>
+              Live Music
+            </h1>
+
+            <div className='text-2xl md:text-3xl font-light text-gray-800 italic mb-4'>
+              "Where Memories Meet Melodies"
+            </div>
+
+            <p className='text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed'>
+              Transform your event with professional musicians who bring soul to
+              every celebration. From intimate villa dinners to grand
+              celebrations, we create the perfect soundtrack for your special
+              moments.
+            </p>
+
+            <div className='flex flex-wrap justify-center gap-8 text-sm text-gray-500'>
+              <div className='flex items-center gap-2'>
+                <div className='w-2 h-2 bg-green-500 rounded-full'></div>
+                <span>500+ Events</span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <div className='w-2 h-2 bg-green-500 rounded-full'></div>
+                <span>Professional Musicians</span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <div className='w-2 h-2 bg-green-500 rounded-full'></div>
+                <span>All Genres Available</span>
+              </div>
+            </div>
+          </div>
+
+          <div className='relative w-full h-64 md:h-80 rounded-3xl overflow-hidden'>
+            <Image
+              src='https://images.unsplash.com/photo-1496449903678-68ddcb189a24?q=80&w=1200&auto=format&fit=crop'
+              alt='Live music performance at villa'
+              fill
+              className='object-cover'
+              priority
+            />
+            <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
+              <div className='text-center space-y-4'>
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById('booking')
+                      ?.scrollIntoView({ behavior: 'smooth' })
+                  }
+                  className='bg-white text-gray-900 px-8 py-4 rounded-2xl font-semibold flex items-center gap-3 hover:bg-gray-100 transition-colors group mx-auto'
+                >
+                  <PlayCircle className='w-6 h-6 group-hover:scale-110 transition-transform' />
+                  Book Your Performance
+                </button>
+                <p className='text-white/90 text-sm'>
+                  Starting from $150 • Same day availability
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Music Genre Selection */}
+        <motion.section
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true }}
+          variants={stagger}
+          className='space-y-12'
+        >
+          <div className='text-center space-y-4'>
+            <h2 className='text-4xl font-bold text-gray-900'>
+              Choose Your Vibe
             </h2>
-            <p className='text-xl text-gray-300 max-w-3xl mx-auto'>
-              Configura cada detalle para crear la atmósfera perfecta para tu
-              evento
+            <p className='text-xl text-gray-600'>
+              What sound defines your perfect moment?
             </p>
           </div>
 
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-            {/* Columna Izquierda - Formulario */}
-            <div className='space-y-6'>
-              {/* Fecha y Hora */}
-              <div className='bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10'>
-                <h3 className='text-xl font-semibold text-white mb-4 flex items-center gap-2'>
-                  <Calendar className={`text-${primaryColor}-500`} size={20} />
-                  Fecha y Hora
-                </h3>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  <div>
-                    <label className='block text-sm font-medium text-gray-300 mb-2'>
-                      Fecha del Evento
-                    </label>
-                    <input
-                      type='date'
-                      value={bookingForm.date}
-                      onChange={(e) => handleFormChange('date', e.target.value)}
-                      className={`w-full px-4 py-3 border-2 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.date
-                          ? 'bg-red-900/20 border-red-500'
-                          : 'bg-white/10 border-white/20'
+          <div className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
+            {MUSIC_GENRES.map((genre) => (
+              <motion.div
+                key={genre.id}
+                variants={fadeIn}
+                className={`relative group cursor-pointer transition-all duration-200 ${
+                  bookingForm.musicGenre === genre.id
+                    ? 'scale-[1.02]'
+                    : 'hover:scale-[1.01]'
+                }`}
+                onClick={() => handleFormChange('musicGenre', genre.id)}
+              >
+                <div
+                  className={`h-32 rounded-2xl border-2 p-6 flex flex-col justify-between transition-all duration-200 ${
+                    bookingForm.musicGenre === genre.id
+                      ? 'border-gray-900 bg-gray-900 text-white shadow-lg'
+                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                  }`}
+                >
+                  <div className='flex items-center justify-between'>
+                    <h3
+                      className={`text-lg font-bold ${
+                        bookingForm.musicGenre === genre.id
+                          ? 'text-white'
+                          : 'text-gray-900'
                       }`}
-                    />
-                    {errors.date && (
-                      <p className='text-red-400 text-xs mt-1 flex items-center'>
-                        <AlertCircle className='w-3 h-3 mr-1' />
-                        {errors.date}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className='block text-sm font-medium text-gray-300 mb-2'>
-                      Hora de Inicio
-                    </label>
-                    <input
-                      type='time'
-                      value={bookingForm.time}
-                      onChange={(e) => handleFormChange('time', e.target.value)}
-                      className={`w-full px-4 py-3 border-2 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.time
-                          ? 'bg-red-900/20 border-red-500'
-                          : 'bg-white/10 border-white/20'
-                      }`}
-                    />
-                    {errors.time && (
-                      <p className='text-red-400 text-xs mt-1 flex items-center'>
-                        <AlertCircle className='w-3 h-3 mr-1' />
-                        {errors.time}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Tipo de Performer */}
-              <div className='bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10'>
-                <h3 className='text-xl font-semibold text-white mb-4 flex items-center gap-2'>
-                  <Users className={`text-${primaryColor}-500`} size={20} />
-                  Tipo de Performer
-                </h3>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-                  {performerTypes.map((performer) => (
-                    <div
-                      key={performer.id}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        bookingForm.performerType === performer.id
-                          ? `border-${primaryColor}-500 bg-${primaryColor}-500/20`
-                          : 'border-white/20 hover:border-white/40 bg-white/5'
-                      } ${
-                        errors.performerType ? 'ring-2 ring-red-500/50' : ''
-                      }`}
-                      onClick={() =>
-                        handleFormChange('performerType', performer.id)
-                      }
                     >
-                      <div className='flex items-center gap-3 mb-2'>
-                        <span className='text-2xl'>{performer.icon}</span>
-                        <div>
-                          <h4 className='font-semibold text-white'>
-                            {performer.name}
-                          </h4>
-                          <p className='text-sm text-gray-300'>
-                            {performer.description}
-                          </p>
-                        </div>
-                      </div>
-                      <div className='flex justify-between items-center'>
-                        <span className={`text-${primaryColor}-400 font-bold`}>
-                          ${performer.price}/set
-                        </span>
-                      </div>
+                      {genre.name}
+                    </h3>
+                    <div
+                      className={`text-2xl ${
+                        bookingForm.musicGenre === genre.id ? 'scale-110' : ''
+                      } transition-transform duration-200`}
+                    >
+                      {genre.icon}
                     </div>
-                  ))}
-                </div>
-                {errors.performerType && (
-                  <p className='text-red-400 text-xs mt-2 flex items-center'>
-                    <AlertCircle className='w-3 h-3 mr-1' />
-                    {errors.performerType}
+                  </div>
+
+                  <p
+                    className={`text-sm ${
+                      bookingForm.musicGenre === genre.id
+                        ? 'text-gray-200'
+                        : 'text-gray-600'
+                    }`}
+                  >
+                    {genre.description}
                   </p>
+
+                  {/* Selection indicator */}
+                  {bookingForm.musicGenre === genre.id && (
+                    <div className='absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center'>
+                      <Check className='w-4 h-4 text-gray-900' />
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {errors.musicGenre && (
+            <div className='text-center'>
+              <p className='text-red-500 text-sm'>{errors.musicGenre}</p>
+            </div>
+          )}
+        </motion.section>
+
+        <motion.section
+          id='booking'
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true }}
+          variants={stagger}
+          className='space-y-12'
+        >
+          <div className='text-center'>
+            <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+              Choose Your Musicians
+            </h2>
+            <p className='text-xl text-gray-600'>
+              Select the perfect performance for your event
+            </p>
+          </div>
+
+          <div className='grid md:grid-cols-2 gap-6'>
+            {PERFORMER_TYPES.map((performer) => (
+              <motion.div
+                key={performer.id}
+                variants={fadeIn}
+                className={`relative group cursor-pointer transition-all duration-300 ${
+                  bookingForm.performerType === performer.id
+                    ? 'scale-105'
+                    : 'hover:scale-102'
+                }`}
+                onClick={() => handleFormChange('performerType', performer.id)}
+              >
+                <div className='relative h-64 rounded-2xl overflow-hidden'>
+                  <Image
+                    src={performer.image}
+                    alt={performer.name}
+                    fill
+                    className='object-cover group-hover:scale-105 transition-transform duration-500'
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
+
+                  {performer.popular && (
+                    <div className='absolute top-4 right-4 bg-white text-gray-900 px-3 py-1 rounded-full text-sm font-semibold'>
+                      Most Popular
+                    </div>
+                  )}
+
+                  <div className='absolute bottom-0 left-0 right-0 p-6 text-white'>
+                    <h3 className='text-2xl font-bold mb-2'>
+                      {performer.name}
+                    </h3>
+                    <p className='text-white/80 mb-3'>
+                      {performer.description}
+                    </p>
+                    <div className='flex justify-between items-center'>
+                      <span className='text-sm text-white/60'>
+                        {performer.duration}
+                      </span>
+                      <span className='text-2xl font-bold'>
+                        ${performer.price}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={`absolute inset-0 rounded-2xl border-3 transition-all ${
+                    bookingForm.performerType === performer.id
+                      ? 'border-gray-900 shadow-xl'
+                      : 'border-transparent'
+                  }`}
+                />
+
+                {bookingForm.performerType === performer.id && (
+                  <div className='absolute -top-2 -right-2 w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center'>
+                    <Check className='w-5 h-5 text-white' />
+                  </div>
                 )}
+              </motion.div>
+            ))}
+          </div>
+
+          {errors.performerType && (
+            <p className='text-red-500 text-center flex items-center justify-center'>
+              <AlertCircle className='w-4 h-4 mr-1' />
+              {errors.performerType}
+            </p>
+          )}
+        </motion.section>
+
+        {/* Booking Form */}
+        {bookingForm.performerType && bookingForm.musicGenre && (
+          <motion.section
+            id='booking'
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className='bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100'
+          >
+            <div className='max-w-3xl mx-auto space-y-8'>
+              <div className='text-center'>
+                <h2 className='text-3xl font-bold text-gray-900 mb-2'>
+                  Event Details
+                </h2>
+                <p className='text-gray-600'>
+                  Let's finalize your musical experience
+                </p>
               </div>
 
-              {/* Selección de Canciones */}
-              <div className='bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10'>
-                <h3 className='text-xl font-semibold text-white mb-4 flex items-center gap-2'>
-                  <ListMusic className={`text-${primaryColor}-500`} size={20} />
-                  Selección de Canciones
-                </h3>
-                <div className='space-y-4'>
-                  <label className='flex items-center gap-3 cursor-pointer'>
+              {/* Date & Time */}
+              <div className='grid md:grid-cols-2 gap-6'>
+                <div>
+                  <label className='block text-sm font-semibold text-gray-900 mb-3'>
+                    Event Date
+                  </label>
+                  <input
+                    type='date'
+                    value={bookingForm.date}
+                    onChange={(e) => handleFormChange('date', e.target.value)}
+                    className={`w-full px-4 py-4 text-lg border-2 rounded-2xl focus:outline-none focus:ring-0 transition-colors ${
+                      errors.date
+                        ? 'border-red-300 bg-red-50 focus:border-red-400'
+                        : 'border-gray-200 focus:border-gray-400'
+                    }`}
+                  />
+                  {errors.date && (
+                    <p className='text-red-500 text-sm mt-2'>{errors.date}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className='block text-sm font-semibold text-gray-900 mb-3'>
+                    Start Time
+                  </label>
+                  <input
+                    type='time'
+                    value={bookingForm.time}
+                    onChange={(e) => handleFormChange('time', e.target.value)}
+                    className={`w-full px-4 py-4 text-lg border-2 rounded-2xl focus:outline-none focus:ring-0 transition-colors ${
+                      errors.time
+                        ? 'border-red-300 bg-red-50 focus:border-red-400'
+                        : 'border-gray-200 focus:border-gray-400'
+                    }`}
+                  />
+                  {errors.time && (
+                    <p className='text-red-500 text-sm mt-2'>{errors.time}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Song Preferences */}
+              <div className='space-y-6'>
+                <div className='text-center'>
+                  <h3 className='text-xl font-bold text-gray-900 mb-2'>
+                    Song Requests
+                  </h3>
+                  <p className='text-gray-600'>
+                    Help us play exactly what you want to hear
+                  </p>
+                </div>
+
+                <label className='flex items-center cursor-pointer group'>
+                  <div className='relative'>
                     <input
                       type='checkbox'
                       checked={bookingForm.hasSpecificSongs}
                       onChange={(e) =>
                         handleFormChange('hasSpecificSongs', e.target.checked)
                       }
-                      className={`w-5 h-5 rounded border-2 border-white/20 bg-white/10 checked:bg-${primaryColor}-500 checked:border-${primaryColor}-500 focus:ring-2 focus:ring-${primaryColor}-500`}
+                      className='sr-only'
                     />
-                    <span className='text-white font-medium'>
-                      Tengo una lista específica de canciones
-                    </span>
-                  </label>
-
-                  {bookingForm.hasSpecificSongs && (
-                    <textarea
-                      value={bookingForm.specificSongs}
-                      onChange={(e) =>
-                        handleFormChange('specificSongs', e.target.value)
-                      }
-                      placeholder='Lista las canciones que te gustaría escuchar...'
-                      rows={4}
-                      className={`w-full px-4 py-3 border-2 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
-                        errors.specificSongs
-                          ? 'bg-red-900/20 border-red-500'
-                          : 'bg-white/10 border-white/20'
-                      }`}
-                    />
-                  )}
-                  {errors.specificSongs && (
-                    <p className='text-red-400 text-xs mt-1 flex items-center'>
-                      <AlertCircle className='w-3 h-3 mr-1' />
-                      {errors.specificSongs}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Columna Derecha - Duración y Precio */}
-            <div className='space-y-6'>
-              {/* Duración y Sets */}
-              <div className='bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10'>
-                <h3 className='text-xl font-semibold text-white mb-4 flex items-center gap-2'>
-                  <Timer className={`text-${primaryColor}-500`} size={20} />
-                  Duración y Programación
-                </h3>
-                <div className='space-y-3'>
-                  {durationOptions.map((option) => (
                     <div
-                      key={option.id}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        bookingForm.duration === option.id
-                          ? `border-${primaryColor}-500 bg-${primaryColor}-500/20`
-                          : 'border-white/20 hover:border-white/40 bg-white/5'
-                      } ${errors.duration ? 'ring-2 ring-red-500/50' : ''}`}
-                      onClick={() => handleFormChange('duration', option.id)}
+                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${
+                        bookingForm.hasSpecificSongs
+                          ? 'bg-gray-900 border-gray-900'
+                          : 'border-gray-300 group-hover:border-gray-400'
+                      }`}
                     >
-                      <div className='flex justify-between items-start mb-2'>
-                        <h4 className='font-semibold text-white'>
-                          {option.name}
-                        </h4>
-                        <Clock className='text-gray-400' size={16} />
-                      </div>
-                      <p className='text-sm text-gray-300 mb-3'>
-                        {option.description}
-                      </p>
-                      <div className='grid grid-cols-3 gap-2 text-xs'>
-                        <div className='text-center p-2 bg-white/10 rounded'>
-                          <div className={`font-bold text-${primaryColor}-400`}>
-                            {option.sets}
-                          </div>
-                          <div className='text-gray-400'>Sets</div>
-                        </div>
-                        <div className='text-center p-2 bg-white/10 rounded'>
-                          <div className={`font-bold text-${primaryColor}-400`}>
-                            {option.setDuration}min
-                          </div>
-                          <div className='text-gray-400'>Por Set</div>
-                        </div>
-                        <div className='text-center p-2 bg-white/10 rounded'>
-                          <div className={`font-bold text-${primaryColor}-400`}>
-                            {option.breakTime}min
-                          </div>
-                          <div className='text-gray-400'>Descanso</div>
-                        </div>
-                      </div>
+                      {bookingForm.hasSpecificSongs && (
+                        <Check className='w-4 h-4 text-white' />
+                      )}
                     </div>
-                  ))}
-                </div>
-                {errors.duration && (
-                  <p className='text-red-400 text-xs mt-2 flex items-center'>
-                    <AlertCircle className='w-3 h-3 mr-1' />
-                    {errors.duration}
-                  </p>
+                  </div>
+                  <span className='ml-3 text-gray-900 font-medium'>
+                    I have specific song requests
+                  </span>
+                </label>
+
+                {bookingForm.hasSpecificSongs && (
+                  <div className='space-y-4 bg-gray-50 p-6 rounded-2xl'>
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-900 mb-3'>
+                        Song List
+                      </label>
+                      <textarea
+                        value={bookingForm.specificSongs}
+                        onChange={(e) =>
+                          handleFormChange('specificSongs', e.target.value)
+                        }
+                        placeholder="List your favorite songs (e.g., 'Perfect by Ed Sheeran', 'All of Me by John Legend')..."
+                        rows={4}
+                        className='w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-gray-400 resize-none text-lg'
+                      />
+                    </div>
+
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-900 mb-3'>
+                        Song Links (Optional)
+                        <span className='font-normal text-gray-500 block text-xs mt-1'>
+                          Share YouTube or Spotify links to ensure we play the
+                          exact version you want
+                        </span>
+                      </label>
+                      <textarea
+                        value={bookingForm.songLinks}
+                        onChange={(e) =>
+                          handleFormChange('songLinks', e.target.value)
+                        }
+                        placeholder='Paste YouTube or Spotify links here (one per line)...'
+                        rows={3}
+                        className='w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-gray-400 resize-none'
+                      />
+                      <p className='text-xs text-gray-500 mt-2'>
+                        💡 This helps us play the exact arrangement, tempo, and
+                        style you prefer
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {/* Resumen de Precio */}
-              {totalPrice > 0 && (
-                <div
-                  className={`bg-gradient-to-r from-${primaryColor}-600 to-${primaryColor}-500 rounded-xl p-6 text-white`}
-                >
-                  <h3 className='text-xl font-semibold mb-4 flex items-center gap-2'>
-                    <DollarSign size={20} />
-                    Resumen de Precio
-                  </h3>
-                  <div className='space-y-3'>
-                    <div className='flex justify-between items-center'>
-                      <span>Tipo de Performer:</span>
-                      <span className='font-semibold'>
-                        {selectedPerformer?.name}
-                      </span>
-                    </div>
-                    <div className='flex justify-between items-center'>
-                      <span>Precio por Set:</span>
-                      <span className='font-semibold'>
-                        ${selectedPerformer?.price}
-                      </span>
-                    </div>
-                    <div className='flex justify-between items-center'>
-                      <span>Número de Sets:</span>
-                      <span className='font-semibold'>
-                        {selectedDuration?.sets}
-                      </span>
-                    </div>
-                    <div className='border-t border-white/20 pt-3'>
-                      <div className='flex justify-between items-center text-xl font-bold'>
-                        <span>Total:</span>
-                        <span>${totalPrice}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleBookingSubmit}
-                    disabled={isSubmitting || totalPrice === 0}
-                    className={`w-full mt-6 py-3 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${
-                      isSubmitting || totalPrice === 0
-                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                        : 'bg-white text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700'></div>
-                        Procesando...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard size={18} />
-                        Confirmar Reserva
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
-
-              {/* Información Adicional */}
-              <div className='bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10'>
-                <h3 className='text-lg font-semibold text-white mb-3'>
-                  Información Adicional
-                </h3>
+              {/* Special Requests */}
+              <div>
+                <label className='block text-sm font-semibold text-gray-900 mb-3'>
+                  Special Requests{' '}
+                  <span className='font-normal text-gray-500'>(Optional)</span>
+                </label>
                 <textarea
                   value={bookingForm.specialRequests}
                   onChange={(e) =>
                     handleFormChange('specialRequests', e.target.value)
                   }
-                  placeholder='Requisitos especiales, temas musicales preferidos, instrucciones del venue...'
-                  rows={4}
-                  className='w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none'
+                  placeholder='Venue details, volume preferences, special moments to highlight, or any other requests...'
+                  rows={3}
+                  className='w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-gray-400 resize-none text-lg'
                 />
+              </div>
+
+              {/* Booking Summary */}
+              <div className='bg-gray-50 rounded-2xl p-6'>
+                <h4 className='font-bold text-gray-900 mb-4'>
+                  Booking Summary
+                </h4>
+                <div className='space-y-2 text-gray-700'>
+                  <div className='flex justify-between'>
+                    <span>Performance Type:</span>
+                    <span className='font-medium'>
+                      {selectedPerformer?.name}
+                    </span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Music Style:</span>
+                    <span className='font-medium'>
+                      {
+                        MUSIC_GENRES.find(
+                          (g) => g.id === bookingForm.musicGenre
+                        )?.name
+                      }
+                    </span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Duration:</span>
+                    <span className='font-medium'>
+                      {selectedPerformer?.duration}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {/* Why Choose Us / Social Proof */}
+        <motion.section
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true }}
+          variants={fadeIn}
+          className='bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100'
+        >
+          <div className='text-center space-y-8'>
+            <div>
+              <h2 className='text-3xl font-bold text-gray-900 mb-4'>
+                Why Choose Our Musicians?
+              </h2>
+              <p className='text-xl text-gray-600'>
+                Professional quality that makes a difference
+              </p>
+            </div>
+
+            <div className='grid md:grid-cols-4 gap-8'>
+              <div className='text-center'>
+                <div className='text-3xl font-bold text-gray-900 mb-2'>
+                  500+
+                </div>
+                <p className='text-gray-600'>Events Performed</p>
+              </div>
+              <div className='text-center'>
+                <div className='text-3xl font-bold text-gray-900 mb-2'>
+                  4.9/5
+                </div>
+                <p className='text-gray-600'>Average Rating</p>
+              </div>
+              <div className='text-center'>
+                <div className='text-3xl font-bold text-gray-900 mb-2'>24h</div>
+                <p className='text-gray-600'>Booking Confirmation</p>
+              </div>
+              <div className='text-center'>
+                <div className='text-3xl font-bold text-gray-900 mb-2'>
+                  100%
+                </div>
+                <p className='text-gray-600'>Satisfaction Rate</p>
+              </div>
+            </div>
+
+            <div className='space-y-6'>
+              <h3 className='text-xl font-bold text-gray-900'>
+                What Our Clients Say
+              </h3>
+              <div className='grid md:grid-cols-3 gap-6'>
+                {TESTIMONIALS.map((testimonial, index) => (
+                  <div key={index} className='bg-gray-50 p-6 rounded-2xl'>
+                    <div className='flex mb-3'>
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <span key={i} className='text-yellow-400 text-lg'>
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <p className='text-gray-700 italic mb-4'>
+                      "{testimonial.quote}"
+                    </p>
+                    <div>
+                      <p className='font-semibold text-gray-900'>
+                        {testimonial.name}
+                      </p>
+                      <p className='text-sm text-gray-600'>
+                        {testimonial.event}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Galería de imágenes */}
-      <div className='rounded-xl shadow-lg overflow-hidden bg-gray-900'>
-        <div className='p-6 md:p-8'>
-          <h2 className='text-2xl font-bold text-white mb-6 flex items-center'>
-            <Music className={`mr-2 text-${primaryColor}-500`} size={22} />
-            {t('musicDetails.gallery')}
-          </h2>
-
-          <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-            {musicGallery.map((image, index) => (
-              <div
-                key={index}
-                className='relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer group'
-                onClick={() => setSelectedImageIndex(index)}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  className='object-cover transition-transform duration-500 group-hover:scale-110'
-                />
-                <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3'>
-                  <p className='text-white text-sm font-medium'>
-                    {image.type.charAt(0).toUpperCase() + image.type.slice(1)}
-                  </p>
+        </motion.section>
+        <motion.section
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true }}
+          variants={fadeIn}
+          className='text-center space-y-8'
+        >
+          <h2 className='text-3xl font-bold text-gray-900'>What's Included</h2>
+          <div className='grid md:grid-cols-5 gap-6'>
+            {FEATURES.map((feature, index) => (
+              <div key={index} className='flex flex-col items-center space-y-3'>
+                <div className='w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center'>
+                  <Check className='w-6 h-6 text-gray-600' />
                 </div>
+                <p className='text-gray-700 font-medium text-center'>
+                  {feature}
+                </p>
               </div>
             ))}
           </div>
-        </div>
-      </div>
+        </motion.section>
 
-      {/* Hero section con imagen de fondo y call-to-action */}
-      <div className='relative overflow-hidden rounded-2xl shadow-xl'>
-        <div className='absolute inset-0 bg-black'>
-          <Image
-            src='https://images.unsplash.com/photo-1496449903678-68ddcb189a24?q=80&w=2940&auto=format&fit=crop'
-            alt='Live music performance'
-            fill
-            className='object-cover opacity-80'
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/30' />
-        </div>
-
-        <div className='relative z-10 px-8 py-16 md:py-24 md:px-12 max-w-4xl'>
-          <span
-            className={`inline-block px-3 py-1 rounded-full bg-${primaryColor}-500/20 text-${primaryColor}-400 text-sm font-medium mb-4`}
+        {/* Price Summary & Booking */}
+        {totalPrice > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className='bg-gray-900 rounded-3xl p-8 md:p-12 text-white text-center'
           >
-            {t('musicDetails.transformYourEvent')}
-          </span>
+            <div className='max-w-2xl mx-auto space-y-8'>
+              <div>
+                <h2 className='text-3xl font-bold mb-4'>Ready to Book?</h2>
+                <p className='text-gray-300 text-lg'>
+                  {selectedPerformer?.name} for your special event
+                </p>
+              </div>
 
-          <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight'>
-            {serviceData?.titleKey ? t(serviceData.titleKey) : service.name}
-          </h1>
+              <div className='bg-white/10 rounded-2xl p-6 space-y-4'>
+                <div className='flex justify-between text-xl'>
+                  <span>Performance Fee:</span>
+                  <span className='font-bold'>${totalPrice}</span>
+                </div>
+                <div className='text-sm text-gray-300'>
+                  Duration: {selectedPerformer?.duration} • Professional
+                  equipment included
+                </div>
+              </div>
 
-          <p className='text-lg md:text-xl text-gray-300 mb-8 leading-relaxed max-w-3xl'>
-            {serviceData?.descriptionKey
-              ? t(serviceData.descriptionKey)
-              : service.description}
-          </p>
-
-          <div className='flex flex-wrap gap-4'>
-            <a
-              href='#booking-details'
-              className={`px-6 py-3 bg-${primaryColor}-500 hover:bg-${primaryColor}-600 text-white font-medium rounded-lg transition-colors flex items-center gap-2`}
-            >
-              <Calendar size={18} />
-              {t('serviceDetails.bookNow')}
-            </a>
-          </div>
-        </div>
+              <button
+                onClick={handleBookingSubmit}
+                disabled={isSubmitting}
+                className='w-full max-w-md mx-auto py-4 bg-white text-gray-900 hover:bg-gray-100 font-bold text-lg rounded-2xl transition-colors flex items-center justify-center gap-3 disabled:opacity-50'
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900'></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className='w-5 h-5' />
+                    Confirm Booking
+                    <ArrowRight className='w-5 h-5' />
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
