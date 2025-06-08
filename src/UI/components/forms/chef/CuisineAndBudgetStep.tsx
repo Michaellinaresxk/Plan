@@ -275,56 +275,6 @@ const CuisineAndBudgetStep: React.FC<CuisineAndBudgetStepProps> = ({
         </>
       )}
 
-      {/* Budget Selection */}
-      <div className='mt-8'>
-        <label className='block text-lg font-medium text-gray-800 mb-3'>
-          {t('chef.form.budget', {
-            fallback: 'Choose your budget experience',
-          })}{' '}
-          *
-        </label>
-
-        <div className='grid grid-cols-1 gap-4'>
-          {budgetOptions.map((option) => (
-            <button
-              key={option.id}
-              type='button'
-              onClick={() => handleBudgetSelect(option.id)}
-              className={`
-                p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md text-left w-full
-                ${
-                  selectedBudget === option.id
-                    ? 'border-amber-500 bg-amber-50'
-                    : 'border-gray-200 hover:border-amber-300'
-                }
-              `}
-            >
-              <div className='flex justify-between items-center'>
-                <h4 className='font-medium text-gray-900'>{option.name}</h4>
-                {option.id === 'professional' && (
-                  <span className='text-amber-700 font-medium'>
-                    +${option.price - 120}
-                  </span>
-                )}
-              </div>
-              <p className='text-sm text-gray-600 mt-1'>{option.description}</p>
-
-              {selectedBudget === option.id && (
-                <div className='mt-2 flex justify-end'>
-                  <div className='w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center'>
-                    <Check className='w-4 h-4 text-white' />
-                  </div>
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {errors.budgetOption && (
-          <p className='text-red-500 text-sm mt-2'>{errors.budgetOption}</p>
-        )}
-      </div>
-
       {/* Botón para guardar selecciones antes de continuar */}
       <button
         type='button'

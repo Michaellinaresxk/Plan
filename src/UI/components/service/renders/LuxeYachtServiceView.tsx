@@ -168,7 +168,7 @@ const LuxeYachtServiceView: React.FC<LuxeYachtServiceViewProps> = ({
   );
 
   return (
-    <div className='max-w-6xl mx-auto px-6 py-8 space-y-16'>
+    <div className='max-w-7xl mx-auto px-6 py-8 space-y-16'>
       {/* Hero Section with Image Slider */}
       <motion.div
         className='relative overflow-hidden rounded-3xl shadow-2xl h-[70vh]'
@@ -287,7 +287,7 @@ const LuxeYachtServiceView: React.FC<LuxeYachtServiceViewProps> = ({
 
       {/* Choose Your Departure */}
       <motion.section
-        className='space-y-8'
+        className='space-y-8 gap-6'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}

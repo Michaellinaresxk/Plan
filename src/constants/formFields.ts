@@ -1,12 +1,14 @@
 import AirportTransferForm from '@/UI/components/forms/AirportTransferForm';
 import BabysitterForm from '@/UI/components/forms/BabysitterForm';
 import BikeForm from '@/UI/components/forms/BikeForm';
-import ChefForm from '@/UI/components/forms/chef/ChefFrom';
+import ChefForm from '@/UI/components/forms/chef/ChefForm';
 import CustomDecorationForm from '@/UI/components/forms/CustomDecorationForm';
 import GroceryForm from '@/UI/components/forms/GroceryForm';
 import LiveMusicForm from '@/UI/components/forms/LiveMusicForm';
 import MassageForm from '@/UI/components/forms/MassageForm';
 import YogaServiceForm from '@/UI/components/forms/YogaServiceForm';
+import SaonaIslandForm from '@/UI/components/forms/SaonaIslandForm';
+import KaraokeFrom from '@/UI/components/forms/KaraokeFrom';
 
 export interface ServiceFormField {
   id: string;
@@ -119,11 +121,6 @@ export const SERVICE_FORM_CONFIG = {
     requiredProps: [],
     type: 'transportation',
   },
-  'luxe-arrival': {
-    component: AirportTransferForm,
-    requiredProps: [],
-    type: 'transportation',
-  },
 
   // Childcare Services
   babysitter: {
@@ -188,5 +185,12 @@ export const SERVICE_FORM_CONFIG = {
     component: CustomDecorationForm,
     requiredProps: [],
     type: 'decoration',
+  },
+
+  // Decoration Services
+  'saona-island': {
+    component: SaonaIslandForm,
+    requiredProps: [],
+    type: 'travel',
   },
 } as const;
