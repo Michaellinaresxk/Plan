@@ -1,155 +1,248 @@
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useBooking } from '@/context/BookingContext';
+import { BookingDate } from '@/types/type';
+import BookingModal from '../../modal/BookingModal';
 import {
   Music,
-  Calendar,
   Users,
-  Timer,
-  DollarSign,
-  CreditCard,
-  AlertCircle,
   Clock,
-  PlayCircle,
-  Mic,
-  Check,
+  Star,
   ArrowRight,
+  CheckCircle,
+  Play,
+  Volume2,
+  Mic,
+  Guitar,
+  Piano,
+  Headphones,
+  Calendar,
+  MapPin,
+  Zap,
+  Settings,
+  Heart,
+  Quote,
+  X,
+  Gift,
+  Info,
+  AlertTriangle,
+  Timer,
+  Waves,
 } from 'lucide-react';
-import { useReservation } from '@/context/BookingContext';
-import { BookingDate } from '@/types/type';
-import { useCallback, useMemo, useState } from 'react';
 
 interface LiveMusicServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
   primaryColor?: string;
+  viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Constants
-const PERFORMER_TYPES = [
+// Professional data structures
+const ENSEMBLE_OPTIONS = [
   {
     id: 'soloist',
-    name: 'Solo Artist',
-    description: 'Acoustic guitar or piano',
-    price: 150,
-    duration: '60-90 min',
+    name: 'Soloist',
+    description:
+      'Intimate performances perfect for romantic dinners or quiet gatherings',
+    musicians: 1,
+    icon: <Mic className='w-6 h-6' />,
     image:
-      'https://images.unsplash.com/photo-1501612780327-45045538702b?q=80&w=600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=800',
+    instruments: ['Acoustic Guitar', 'Vocals', 'Piano'],
+    bestFor: ['Romantic dinners', 'Background ambiance', 'Intimate settings'],
   },
   {
     id: 'duo',
-    name: 'Musical Duo',
-    description: 'Vocal harmonies & instruments',
-    price: 250,
-    duration: '60-90 min',
+    name: 'Duo',
+    description: 'Perfect harmony for sophisticated events and celebrations',
+    musicians: 2,
+    icon: <Users className='w-6 h-6' />,
     image:
-      'https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=800',
+    instruments: ['Vocals & Guitar', 'Piano & Vocals', 'Acoustic Duo'],
+    bestFor: ['Cocktail hours', 'Wedding ceremonies', 'Private parties'],
   },
   {
     id: 'trio',
-    name: 'Acoustic Trio',
-    description: 'Full harmonic experience',
-    price: 350,
-    duration: '90-120 min',
+    name: 'Trio',
+    description: 'Rich musical arrangements for memorable occasions',
+    musicians: 3,
+    icon: <Music className='w-6 h-6' />,
     image:
-      'https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1571266028243-d220c9856446?auto=format&fit=crop&q=80&w=800',
+    instruments: ['Guitar, Bass, Vocals', 'Piano Trio', 'Jazz Ensemble'],
+    bestFor: ['Dinner parties', 'Corporate events', 'Celebrations'],
   },
   {
-    id: 'band',
-    name: 'Full Band',
-    description: 'Complete musical ensemble',
-    price: 500,
-    duration: '120-180 min',
+    id: 'quartet',
+    name: 'Quartet',
+    description: 'Full ensemble sound for sophisticated entertainment',
+    musicians: 4,
+    icon: <Guitar className='w-6 h-6' />,
     image:
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600&auto=format&fit=crop',
-    popular: true,
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800',
+    instruments: ['Full Band Setup', 'String Quartet', 'Jazz Quartet'],
+    bestFor: ['Large gatherings', 'Dance events', 'Special celebrations'],
+  },
+  {
+    id: 'quintet',
+    name: 'Quintet',
+    description: 'Complete musical experience for grand celebrations',
+    musicians: 5,
+    icon: <Piano className='w-6 h-6' />,
+    image:
+      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800',
+    instruments: ['Full Band', 'Extended Jazz', 'Chamber Ensemble'],
+    bestFor: ['Large parties', 'Dancing events', 'Premium celebrations'],
   },
 ];
 
-const MUSIC_GENRES = [
+const MUSIC_STYLES = [
   {
     id: 'acoustic',
-    name: 'Acoustic & Folk',
-    description: 'Intimate, unplugged performances',
-    icon: '🎸',
-    popular: ['Ed Sheeran', 'John Mayer', 'Taylor Swift', 'Bob Dylan'],
+    name: 'Smooth Acoustic',
+    description: 'Gentle, soothing melodies perfect for intimate atmospheres',
+    vibe: 'Relaxed & Romantic',
+  },
+  {
+    id: 'tropical',
+    name: 'Tropical Beats',
+    description: 'Island-inspired rhythms that capture the Caribbean spirit',
+    vibe: 'Upbeat & Tropical',
   },
   {
     id: 'jazz',
-    name: 'Jazz & Swing',
-    description: 'Sophisticated evening atmosphere',
-    icon: '🎷',
-    popular: ['Frank Sinatra', 'Ella Fitzgerald', 'Nina Simone', 'Miles Davis'],
+    name: 'Jazz Standards',
+    description: 'Classic jazz selections for sophisticated elegance',
+    vibe: 'Sophisticated & Classy',
+  },
+  {
+    id: 'contemporary',
+    name: 'Contemporary Hits',
+    description: 'Popular songs everyone knows and loves',
+    vibe: 'Familiar & Engaging',
+  },
+  {
+    id: 'classical',
+    name: 'Classical Elegance',
+    description: 'Timeless classical pieces for refined occasions',
+    vibe: 'Elegant & Refined',
   },
   {
     id: 'latin',
-    name: 'Latin & Tropical',
-    description: 'Caribbean and Latin vibes',
-    icon: '🌴',
-    popular: ['Manu Chao', 'Jesse & Joy', 'Juan Luis Guerra', 'Buena Vista'],
-  },
-  {
-    id: 'pop',
-    name: 'Pop & Top 40',
-    description: 'Current hits and classics',
-    icon: '🎤',
-    popular: ['Bruno Mars', 'Adele', 'The Weeknd', 'Dua Lipa'],
-  },
-  {
-    id: 'rock',
-    name: 'Rock & Classic',
-    description: 'Energetic rock performances',
-    icon: '🤘',
-    popular: ['Queen', 'The Beatles', 'Coldplay', 'Red Hot Chili Peppers'],
-  },
-  {
-    id: 'romantic',
-    name: 'Romantic & Love Songs',
-    description: 'Perfect for special moments',
-    icon: '💕',
-    popular: ['All of Me', 'Perfect', 'Thinking Out Loud', 'A Thousand Years'],
+    name: 'Latin Rhythms',
+    description: 'Energetic Latin music perfect for dancing',
+    vibe: 'Energetic & Danceable',
   },
 ];
 
-const FEATURES = [
-  'Professional sound equipment',
-  'Flexible song selection',
-  'Customizable set duration',
-  'Professional musicians',
-  'Setup and breakdown included',
+const WHATS_INCLUDED = [
+  {
+    icon: Users,
+    text: 'Professional Musicians',
+    desc: 'Experienced performers with extensive repertoires',
+  },
+  {
+    icon: Music,
+    text: 'Personalized Music Selection',
+    desc: 'Curated playlist tailored to your event',
+  },
+  {
+    icon: Volume2,
+    text: 'Sound Equipment (if needed)',
+    desc: 'Professional audio setup when required',
+  },
+  {
+    icon: Settings,
+    text: 'Setup & Breakdown on Site',
+    desc: 'Complete installation and removal service',
+  },
+  {
+    icon: Clock,
+    text: 'Coordination with Event Timeline',
+    desc: 'Seamless integration with your schedule',
+  },
 ];
+
+const NOT_INCLUDED = [{ icon: Gift, text: 'Gratuity (optional, appreciated)' }];
+
+const WHAT_TO_EXPECT_STEPS = [
+  {
+    step: '1',
+    title: 'Consultation to select your style and vibe',
+    description: 'We discuss your preferences and event requirements',
+    icon: Music,
+  },
+  {
+    step: '2',
+    title: 'Musicians arrive early for setup & soundcheck',
+    description: 'Professional preparation ensures perfect performance',
+    icon: Settings,
+  },
+  {
+    step: '3',
+    title: 'Live performance during your event',
+    description: 'Enjoy professional music tailored to your celebration',
+    icon: Play,
+  },
+  {
+    step: '4',
+    title: 'Professional breakdown and departure after performance',
+    description: 'Clean, efficient conclusion to the musical experience',
+    icon: CheckCircle,
+  },
+];
+
+const GOOD_TO_KNOW_INFO = {
+  bookingTime: 'Minimum 72 hours in advance',
+  duration: 'Standard sets of 60–90 minutes (customizable)',
+  setupRequirements: 'Electricity access for amplified sets (110V)',
+  customization: 'Special requests for song lists or first dances available',
+};
 
 const TESTIMONIALS = [
   {
-    name: 'Sarah & Michael',
+    text: 'The acoustic duo created the perfect ambiance for our anniversary dinner. Every song was beautifully performed and matched the romantic atmosphere we wanted.',
+    author: 'Elena & Carlos M.',
+    event: 'Anniversary Celebration',
+    image:
+      'https://images.unsplash.com/photo-1494790108755-2616b612b593?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
+    ensemble: 'Acoustic Duo',
+  },
+  {
+    text: 'The jazz trio elevated our corporate event to something truly special. Professional, talented, and they read the room perfectly throughout the evening.',
+    author: 'Michael Rodriguez',
+    event: 'Corporate Dinner',
+    image:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
+    ensemble: 'Jazz Trio',
+  },
+  {
+    text: 'Our wedding reception was magical thanks to the quintet. They played during dinner and got everyone dancing later. Absolutely perfect!',
+    author: 'Sarah & James Wilson',
     event: 'Wedding Reception',
-    quote:
-      'The acoustic duo made our villa wedding absolutely magical. Every song was perfect!',
+    image:
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150',
     rating: 5,
-  },
-  {
-    name: 'Carlos R.',
-    event: 'Birthday Celebration',
-    quote:
-      'Amazing jazz trio! They created the perfect atmosphere for our sunset dinner party.',
-    rating: 5,
-  },
-  {
-    name: 'Emma L.',
-    event: 'Anniversary Dinner',
-    quote:
-      'Professional, talented, and accommodating. They played our special song beautifully.',
-    rating: 5,
+    ensemble: 'Wedding Quintet',
   },
 ];
 
 // Animation variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+};
+
+const slideIn = {
+  hidden: { opacity: 0, x: -30 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
 };
 
 const stagger = {
@@ -159,665 +252,710 @@ const stagger = {
 const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
   service,
   serviceData,
-  primaryColor = 'blue',
+  primaryColor = 'slate',
+  viewContext,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { setReservationData } = useReservation();
+  const { bookService } = useBooking();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEnsemble, setSelectedEnsemble] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState('');
 
-  const [bookingForm, setBookingForm] = useState({
-    date: '',
-    time: '',
-    performerType: '',
-    musicGenre: '',
-    hasSpecificSongs: false,
-    specificSongs: '',
-    songLinks: '',
-    specialRequests: '',
-  });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const selectedPerformer = useMemo(
-    () => PERFORMER_TYPES.find((p) => p.id === bookingForm.performerType),
-    [bookingForm.performerType]
-  );
-
-  const totalPrice = selectedPerformer?.price || 0;
-
-  const validateForm = useCallback((): boolean => {
-    const newErrors: Record<string, string> = {};
-    if (!bookingForm.date) newErrors.date = 'Date required';
-    if (!bookingForm.time) newErrors.time = 'Time required';
-    if (!bookingForm.performerType)
-      newErrors.performerType = 'Please select performer type';
-    if (!bookingForm.musicGenre)
-      newErrors.musicGenre = 'Please select music style';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [bookingForm]);
-
-  const handleBookingSubmit = useCallback(async () => {
-    if (!validateForm()) return;
-    setIsSubmitting(true);
-
-    try {
-      const reservationData = {
-        service,
-        formData: { ...bookingForm, calculatedPrice: totalPrice },
-        totalPrice,
-        bookingDate: new Date(),
-      };
-
-      setReservationData(reservationData);
-      router.push('/reservation-confirmation');
-    } catch (error) {
-      console.error('Booking error:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [
-    bookingForm,
-    totalPrice,
-    service,
-    setReservationData,
-    router,
-    validateForm,
-  ]);
-
-  const handleFormChange = useCallback(
-    (field: string, value: any) => {
-      setBookingForm((prev) => ({ ...prev, [field]: value }));
-      if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
-    },
-    [errors]
-  );
+  const handleBookingConfirm = (
+    service: Service,
+    dates: BookingDate,
+    guests: number
+  ) => {
+    bookService(service, dates, guests);
+    setIsModalOpen(false);
+  };
 
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='max-w-5xl mx-auto px-6 py-12 space-y-20'>
+    <div className='min-h-screen bg-gradient-to-br from-slate-50 to-gray-100'>
+      <div className='max-w-8xl mx-auto space-y-16 pb-16'>
         {/* Hero Section */}
         <motion.div
-          className='text-center space-y-8'
+          className='relative overflow-hidden rounded-3xl mx-4 mt-8'
           initial='hidden'
           animate='visible'
-          variants={fadeIn}
+          variants={fadeInUp}
         >
-          <div className='space-y-6'>
-            <div className='inline-flex items-center bg-gray-100 px-4 py-2 rounded-full'>
-              <Music className='w-4 h-4 text-gray-600 mr-2' />
-              <span className='text-sm font-medium text-gray-700'>
-                Professional Live Entertainment
-              </span>
-            </div>
+          <div className='relative h-[85vh] bg-gradient-to-r from-slate-900/90 via-gray-800/80 to-slate-900/90'>
+            <Image
+              src='https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=1200'
+              alt='Professional live music performance'
+              fill
+              className='object-cover mix-blend-overlay opacity-60'
+              priority
+            />
 
-            <h1 className='text-6xl md:text-7xl font-bold text-gray-900 leading-none'>
-              Live Music
-            </h1>
+            {/* Subtle floating elements */}
+            <motion.div
+              className='absolute top-20 right-20 w-16 h-16 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center'
+              animate={{ y: [-10, 10, -10] }}
+              transition={{ duration: 6, repeat: Infinity }}
+            >
+              <Music className='w-6 h-6 text-white' />
+            </motion.div>
+            <motion.div
+              className='absolute bottom-32 left-16 w-12 h-12 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center'
+              animate={{ y: [10, -10, 10] }}
+              transition={{ duration: 8, repeat: Infinity }}
+            >
+              <Waves className='w-5 h-5 text-white' />
+            </motion.div>
 
-            <div className='text-2xl md:text-3xl font-light text-gray-800 italic mb-4'>
-              "Where Memories Meet Melodies"
-            </div>
+            <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
+              <div className='max-w-5xl'>
+                <motion.div
+                  className='inline-flex items-center bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-8'
+                  variants={slideIn}
+                >
+                  <Music className='w-5 h-5 text-white mr-3' />
+                  <span className='text-white font-medium text-lg'>
+                    Your Rhythm. Your Celebration.
+                  </span>
+                </motion.div>
 
-            <p className='text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed'>
-              Transform your event with professional musicians who bring soul to
-              every celebration. From intimate villa dinners to grand
-              celebrations, we create the perfect soundtrack for your special
-              moments.
-            </p>
+                <motion.h1
+                  className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
+                  variants={fadeInUp}
+                >
+                  Live Music
+                  <br />
+                  <span className='text-gray-300'>Entertainment</span>
+                </motion.h1>
 
-            <div className='flex flex-wrap justify-center gap-8 text-sm text-gray-500'>
-              <div className='flex items-center gap-2'>
-                <div className='w-2 h-2 bg-green-500 rounded-full'></div>
-                <span>500+ Events</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <div className='w-2 h-2 bg-green-500 rounded-full'></div>
-                <span>Professional Musicians</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <div className='w-2 h-2 bg-green-500 rounded-full'></div>
-                <span>All Genres Available</span>
+                <motion.p
+                  className='text-2xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed'
+                  variants={fadeInUp}
+                >
+                  Create unforgettable memories with live music at your villa,
+                  beach gathering, or private event
+                </motion.p>
+
+                <motion.div
+                  className='flex flex-wrap justify-center gap-8 mb-12'
+                  variants={slideIn}
+                >
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
+                    <Users className='w-6 h-6 text-white mr-3' />
+                    <div className='text-left'>
+                      <div className='text-white font-semibold'>
+                        1-5 Musicians
+                      </div>
+                      <div className='text-white/70 text-sm'>
+                        Soloist to Quintet
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
+                    <Clock className='w-6 h-6 text-white mr-3' />
+                    <div className='text-left'>
+                      <div className='text-white font-semibold'>
+                        60-90 Minutes
+                      </div>
+                      <div className='text-white/70 text-sm'>
+                        Customizable Sets
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
+                    <MapPin className='w-6 h-6 text-white mr-3' />
+                    <div className='text-left'>
+                      <div className='text-white font-semibold'>
+                        Any Location
+                      </div>
+                      <div className='text-white/70 text-sm'>
+                        Villa, Beach, Event
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.button
+                  onClick={() => setIsModalOpen(true)}
+                  className='group bg-slate-800 hover:bg-slate-700 text-white px-12 py-5 rounded-2xl font-semibold text-xl flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl border border-slate-600'
+                  variants={slideIn}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Play className='w-6 h-6' />
+                  Book Live Music
+                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
+                </motion.button>
               </div>
             </div>
           </div>
+        </motion.div>
 
-          <div className='relative w-full h-64 md:h-80 rounded-3xl overflow-hidden'>
-            <Image
-              src='https://images.unsplash.com/photo-1496449903678-68ddcb189a24?q=80&w=1200&auto=format&fit=crop'
-              alt='Live music performance at villa'
-              fill
-              className='object-cover'
-              priority
-            />
-            <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
-              <div className='text-center space-y-4'>
-                <button
+        {/* Ensemble Options */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={stagger}
+        >
+          <div className='text-center mb-16'>
+            <motion.h2
+              className='text-5xl font-bold text-gray-800 mb-6'
+              variants={fadeInUp}
+            >
+              Choose Your Ensemble
+            </motion.h2>
+            <motion.p
+              className='text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed'
+              variants={fadeInUp}
+            >
+              From intimate soloists to full quintets, we tailor the perfect
+              musical experience for your celebration
+            </motion.p>
+          </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6'>
+            {ENSEMBLE_OPTIONS.map((ensemble, index) => (
+              <motion.div
+                key={ensemble.id}
+                className={`relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 ${
+                  selectedEnsemble === ensemble.id
+                    ? 'border-slate-600 shadow-xl'
+                    : 'border-gray-200'
+                }`}
+                onClick={() =>
+                  setSelectedEnsemble(
+                    selectedEnsemble === ensemble.id ? '' : ensemble.id
+                  )
+                }
+                variants={fadeInUp}
+                whileHover={{ y: -4 }}
+              >
+                <div className='relative h-48'>
+                  <Image
+                    src={ensemble.image}
+                    alt={ensemble.name}
+                    fill
+                    className='object-cover transition-transform duration-500 group-hover:scale-105'
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
+
+                  <div className='absolute top-4 left-4'>
+                    <div className='w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30 text-white'>
+                      {ensemble.icon}
+                    </div>
+                  </div>
+
+                  <div className='absolute bottom-4 left-4 right-4 text-white'>
+                    <h3 className='text-lg font-bold mb-1'>{ensemble.name}</h3>
+                    <p className='text-sm text-white/90'>
+                      {ensemble.musicians} musician
+                      {ensemble.musicians > 1 ? 's' : ''}
+                    </p>
+                  </div>
+                </div>
+
+                <div className='p-4'>
+                  <p className='text-gray-600 text-sm mb-3 leading-relaxed'>
+                    {ensemble.description}
+                  </p>
+
+                  <div className='space-y-2'>
+                    <div>
+                      <h5 className='font-medium text-gray-800 text-xs uppercase tracking-wide mb-1'>
+                        Instruments
+                      </h5>
+                      <div className='flex flex-wrap gap-1'>
+                        {ensemble.instruments
+                          .slice(0, 2)
+                          .map((instrument, idx) => (
+                            <span
+                              key={idx}
+                              className='text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded'
+                            >
+                              {instrument}
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedEnsemble === ensemble.id && (
+                  <motion.div
+                    className='absolute inset-0 bg-slate-600/10 border-2 border-slate-600 rounded-2xl'
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Music Styles */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-white rounded-3xl shadow-xl p-12'>
+            <div className='text-center mb-12'>
+              <h2 className='text-4xl font-bold text-gray-800 mb-4'>
+                Musical Styles
+              </h2>
+              <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+                Whether you want smooth acoustic tunes, tropical beats, or
+                lively music for dancing, we tailor the vibe perfectly to your
+                occasion
+              </p>
+            </div>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+              {MUSIC_STYLES.map((style, index) => (
+                <motion.div
+                  key={style.id}
+                  className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 group ${
+                    selectedStyle === style.id
+                      ? 'border-slate-600 bg-slate-50 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                  }`}
                   onClick={() =>
-                    document
-                      .getElementById('booking')
-                      ?.scrollIntoView({ behavior: 'smooth' })
+                    setSelectedStyle(selectedStyle === style.id ? '' : style.id)
                   }
-                  className='bg-white text-gray-900 px-8 py-4 rounded-2xl font-semibold flex items-center gap-3 hover:bg-gray-100 transition-colors group mx-auto'
+                  variants={fadeInUp}
+                  whileHover={{ y: -2 }}
                 >
-                  <PlayCircle className='w-6 h-6 group-hover:scale-110 transition-transform' />
-                  Book Your Performance
+                  <h3 className='text-xl font-bold text-gray-800 mb-2'>
+                    {style.name}
+                  </h3>
+                  <p className='text-gray-600 mb-3 leading-relaxed'>
+                    {style.description}
+                  </p>
+                  <div className='text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full inline-block'>
+                    {style.vibe}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* What's Included */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-white rounded-3xl shadow-xl overflow-hidden'>
+            <div className='bg-slate-800 p-8 text-white text-center'>
+              <h2 className='text-3xl font-bold mb-4'>What's Included</h2>
+              <p className='text-xl opacity-90'>
+                Professional service from consultation to performance
+              </p>
+            </div>
+
+            <div className='p-8'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+                <div className='space-y-6'>
+                  {WHATS_INCLUDED.map((item, index) => (
+                    <div key={index} className='flex items-start space-x-4'>
+                      <div className='w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0'>
+                        <item.icon className='w-5 h-5 text-green-600' />
+                      </div>
+                      <div>
+                        <h4 className='text-lg font-semibold text-gray-800 mb-1'>
+                          {item.text}
+                        </h4>
+                        <p className='text-gray-600 text-sm'>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Not Included */}
+                  <div className='mt-8 pt-6 border-t border-gray-200'>
+                    <h4 className='font-bold text-gray-800 mb-4 flex items-center'>
+                      <X className='w-5 h-5 text-red-500 mr-2' />
+                      Not Included
+                    </h4>
+                    {NOT_INCLUDED.map((item, index) => (
+                      <div key={index} className='flex items-center'>
+                        <div className='w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mr-4'>
+                          <item.icon className='w-5 h-5 text-red-600' />
+                        </div>
+                        <span className='text-gray-600'>{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className='relative h-80 rounded-2xl overflow-hidden'>
+                  <Image
+                    src='https://images.unsplash.com/photo-1571266028243-d220c9856446?auto=format&fit=crop&q=80&w=600'
+                    alt='Professional musicians performing'
+                    fill
+                    className='object-cover'
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end'>
+                    <div className='p-6 text-white'>
+                      <h4 className='text-xl font-bold mb-2'>
+                        Professional Musicians
+                      </h4>
+                      <p className='text-white/90'>
+                        Experienced performers dedicated to making your event
+                        special
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* What to Expect */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-white rounded-3xl shadow-xl p-12'>
+            <div className='text-center mb-12'>
+              <h2 className='text-4xl font-bold text-gray-800 mb-4'>
+                What to Expect
+              </h2>
+              <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+                Music transforms moments. Our curated performances are designed
+                to enhance your celebration
+              </p>
+            </div>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+              {WHAT_TO_EXPECT_STEPS.map((step, index) => (
+                <div key={index} className='text-center'>
+                  <div className='w-16 h-16 bg-slate-800 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 font-bold text-xl'>
+                    {step.step}
+                  </div>
+                  <div className='mb-4'>
+                    <step.icon className='w-8 h-8 text-slate-600 mx-auto' />
+                  </div>
+                  <h3 className='text-lg font-bold text-gray-800 mb-2'>
+                    {step.title}
+                  </h3>
+                  <p className='text-gray-600 text-sm leading-relaxed'>
+                    {step.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className='text-center mt-12 p-6 bg-slate-50 rounded-2xl'>
+              <p className='text-lg text-slate-700 italic'>
+                "Feel the rhythm, dance, and make memories that last forever.{' '}
+                <strong>Let the music play!</strong>"
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Good to Know */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-white rounded-3xl shadow-xl p-8'>
+            <h2 className='text-3xl font-bold text-gray-800 mb-8 text-center'>
+              Good to Know
+            </h2>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div className='flex items-start space-x-4 p-4 bg-slate-50 rounded-xl'>
+                <div className='w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0'>
+                  <Timer className='w-5 h-5 text-slate-600' />
+                </div>
+                <div>
+                  <h3 className='font-bold text-gray-800 mb-1'>
+                    Recommended Booking Time
+                  </h3>
+                  <p className='text-gray-600 text-sm'>
+                    {GOOD_TO_KNOW_INFO.bookingTime}
+                  </p>
+                </div>
+              </div>
+
+              <div className='flex items-start space-x-4 p-4 bg-slate-50 rounded-xl'>
+                <div className='w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0'>
+                  <Clock className='w-5 h-5 text-slate-600' />
+                </div>
+                <div>
+                  <h3 className='font-bold text-gray-800 mb-1'>Duration</h3>
+                  <p className='text-gray-600 text-sm'>
+                    {GOOD_TO_KNOW_INFO.duration}
+                  </p>
+                </div>
+              </div>
+
+              <div className='flex items-start space-x-4 p-4 bg-slate-50 rounded-xl'>
+                <div className='w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0'>
+                  <Zap className='w-5 h-5 text-slate-600' />
+                </div>
+                <div>
+                  <h3 className='font-bold text-gray-800 mb-1'>
+                    Setup Requirements
+                  </h3>
+                  <p className='text-gray-600 text-sm'>
+                    {GOOD_TO_KNOW_INFO.setupRequirements}
+                  </p>
+                </div>
+              </div>
+
+              <div className='flex items-start space-x-4 p-4 bg-slate-50 rounded-xl'>
+                <div className='w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0'>
+                  <Heart className='w-5 h-5 text-slate-600' />
+                </div>
+                <div>
+                  <h3 className='font-bold text-gray-800 mb-1'>
+                    Customization
+                  </h3>
+                  <p className='text-gray-600 text-sm'>
+                    {GOOD_TO_KNOW_INFO.customization}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Testimonials */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='text-center mb-12'>
+            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
+              Client Experiences
+            </h2>
+            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+              Hear from guests who experienced the magic of live music at their
+              events
+            </p>
+          </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+            {TESTIMONIALS.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                className='bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group'
+                variants={fadeInUp}
+                whileHover={{ y: -4 }}
+              >
+                <div className='flex items-center mb-4'>
+                  <div className='relative w-12 h-12 rounded-full overflow-hidden mr-3'>
+                    <Image
+                      src={testimonial.image}
+                      alt={testimonial.author}
+                      fill
+                      className='object-cover'
+                    />
+                  </div>
+                  <div>
+                    <h4 className='font-bold text-gray-800'>
+                      {testimonial.author}
+                    </h4>
+                    <p className='text-gray-500 text-sm'>{testimonial.event}</p>
+                    <div className='flex mt-1'>
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className='w-4 h-4 text-yellow-400 fill-current'
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <Quote className='w-6 h-6 text-slate-500 mb-3' />
+                <p className='text-gray-700 mb-4 leading-relaxed italic'>
+                  "{testimonial.text}"
+                </p>
+
+                <div className='text-sm text-slate-600 font-medium bg-slate-100 px-3 py-1 rounded-full inline-block'>
+                  {testimonial.ensemble}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Call to Action */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='relative overflow-hidden rounded-3xl'>
+            <div className='absolute inset-0'>
+              <Image
+                src='https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=1200'
+                alt='Live music performance ambiance'
+                fill
+                className='object-cover'
+              />
+              <div className='absolute inset-0 bg-slate-900/80' />
+            </div>
+
+            <div className='relative z-10 p-16 text-center text-white'>
+              <motion.h2
+                className='text-5xl md:text-6xl font-bold mb-6'
+                variants={fadeInUp}
+              >
+                Bring Your Event to Life
+              </motion.h2>
+              <motion.p
+                className='text-2xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
+                variants={fadeInUp}
+              >
+                Whether it's a romantic dinner, family gathering, or lively
+                party night, let professional live music create the perfect
+                atmosphere for your celebration.
+              </motion.p>
+
+              <motion.div
+                className='flex flex-col sm:flex-row gap-6 justify-center items-center'
+                variants={fadeInUp}
+              >
+                <div className='text-center'>
+                  <div className='text-4xl font-bold'>${service.price}</div>
+                  <div className='text-white/70'>
+                    Starting price per performance
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className='group bg-white text-slate-900 hover:bg-gray-100 px-10 py-4 rounded-xl font-semibold text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-xl'
+                >
+                  <Music className='w-5 h-5' />
+                  Book Live Music
+                  <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
                 </button>
-                <p className='text-white/90 text-sm'>
-                  Starting from $150 • Same day availability
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Important Disclaimer */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-amber-50 border border-amber-200 rounded-2xl p-6'>
+            <div className='flex items-start'>
+              <AlertTriangle className='w-6 h-6 text-amber-600 mr-3 flex-shrink-0 mt-0.5' />
+              <div>
+                <h3 className='font-bold text-amber-800 mb-2'>
+                  Important Notice
+                </h3>
+                <p className='text-amber-700'>
+                  Please coordinate music timing with your event planner or
+                  villa host to respect local noise policies. Our team will work
+                  with you to ensure compliance with all venue requirements and
+                  local regulations.
                 </p>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Music Genre Selection */}
-        <motion.section
+        {/* Why Choose Us */}
+        <motion.div
+          className='px-4'
           initial='hidden'
-          whileInView='visible'
-          viewport={{ once: true }}
-          variants={stagger}
-          className='space-y-12'
+          animate='visible'
+          variants={fadeInUp}
         >
-          <div className='text-center space-y-4'>
-            <h2 className='text-4xl font-bold text-gray-900'>
-              Choose Your Vibe
+          <div className='bg-gradient-to-r from-slate-100 to-gray-100 rounded-3xl p-12 text-center'>
+            <h2 className='text-4xl font-bold text-gray-800 mb-8'>
+              Why Choose Our Live Music?
             </h2>
-            <p className='text-xl text-gray-600'>
-              What sound defines your perfect moment?
-            </p>
-          </div>
 
-          <div className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
-            {MUSIC_GENRES.map((genre) => (
-              <motion.div
-                key={genre.id}
-                variants={fadeIn}
-                className={`relative group cursor-pointer transition-all duration-200 ${
-                  bookingForm.musicGenre === genre.id
-                    ? 'scale-[1.02]'
-                    : 'hover:scale-[1.01]'
-                }`}
-                onClick={() => handleFormChange('musicGenre', genre.id)}
-              >
-                <div
-                  className={`h-32 rounded-2xl border-2 p-6 flex flex-col justify-between transition-all duration-200 ${
-                    bookingForm.musicGenre === genre.id
-                      ? 'border-gray-900 bg-gray-900 text-white shadow-lg'
-                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
-                  }`}
-                >
-                  <div className='flex items-center justify-between'>
-                    <h3
-                      className={`text-lg font-bold ${
-                        bookingForm.musicGenre === genre.id
-                          ? 'text-white'
-                          : 'text-gray-900'
-                      }`}
-                    >
-                      {genre.name}
-                    </h3>
-                    <div
-                      className={`text-2xl ${
-                        bookingForm.musicGenre === genre.id ? 'scale-110' : ''
-                      } transition-transform duration-200`}
-                    >
-                      {genre.icon}
-                    </div>
-                  </div>
-
-                  <p
-                    className={`text-sm ${
-                      bookingForm.musicGenre === genre.id
-                        ? 'text-gray-200'
-                        : 'text-gray-600'
-                    }`}
-                  >
-                    {genre.description}
-                  </p>
-
-                  {/* Selection indicator */}
-                  {bookingForm.musicGenre === genre.id && (
-                    <div className='absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center'>
-                      <Check className='w-4 h-4 text-gray-900' />
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {errors.musicGenre && (
-            <div className='text-center'>
-              <p className='text-red-500 text-sm'>{errors.musicGenre}</p>
-            </div>
-          )}
-        </motion.section>
-
-        <motion.section
-          id='booking'
-          initial='hidden'
-          whileInView='visible'
-          viewport={{ once: true }}
-          variants={stagger}
-          className='space-y-12'
-        >
-          <div className='text-center'>
-            <h2 className='text-4xl font-bold text-gray-900 mb-4'>
-              Choose Your Musicians
-            </h2>
-            <p className='text-xl text-gray-600'>
-              Select the perfect performance for your event
-            </p>
-          </div>
-
-          <div className='grid md:grid-cols-2 gap-6'>
-            {PERFORMER_TYPES.map((performer) => (
-              <motion.div
-                key={performer.id}
-                variants={fadeIn}
-                className={`relative group cursor-pointer transition-all duration-300 ${
-                  bookingForm.performerType === performer.id
-                    ? 'scale-105'
-                    : 'hover:scale-102'
-                }`}
-                onClick={() => handleFormChange('performerType', performer.id)}
-              >
-                <div className='relative h-64 rounded-2xl overflow-hidden'>
-                  <Image
-                    src={performer.image}
-                    alt={performer.name}
-                    fill
-                    className='object-cover group-hover:scale-105 transition-transform duration-500'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
-
-                  {performer.popular && (
-                    <div className='absolute top-4 right-4 bg-white text-gray-900 px-3 py-1 rounded-full text-sm font-semibold'>
-                      Most Popular
-                    </div>
-                  )}
-
-                  <div className='absolute bottom-0 left-0 right-0 p-6 text-white'>
-                    <h3 className='text-2xl font-bold mb-2'>
-                      {performer.name}
-                    </h3>
-                    <p className='text-white/80 mb-3'>
-                      {performer.description}
-                    </p>
-                    <div className='flex justify-between items-center'>
-                      <span className='text-sm text-white/60'>
-                        {performer.duration}
-                      </span>
-                      <span className='text-2xl font-bold'>
-                        ${performer.price}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className={`absolute inset-0 rounded-2xl border-3 transition-all ${
-                    bookingForm.performerType === performer.id
-                      ? 'border-gray-900 shadow-xl'
-                      : 'border-transparent'
-                  }`}
-                />
-
-                {bookingForm.performerType === performer.id && (
-                  <div className='absolute -top-2 -right-2 w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center'>
-                    <Check className='w-5 h-5 text-white' />
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-
-          {errors.performerType && (
-            <p className='text-red-500 text-center flex items-center justify-center'>
-              <AlertCircle className='w-4 h-4 mr-1' />
-              {errors.performerType}
-            </p>
-          )}
-        </motion.section>
-
-        {/* Booking Form */}
-        {bookingForm.performerType && bookingForm.musicGenre && (
-          <motion.section
-            id='booking'
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className='bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100'
-          >
-            <div className='max-w-3xl mx-auto space-y-8'>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mb-8'>
               <div className='text-center'>
-                <h2 className='text-3xl font-bold text-gray-900 mb-2'>
-                  Event Details
-                </h2>
+                <div className='w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4'>
+                  <Users className='w-8 h-8 text-white' />
+                </div>
+                <h3 className='text-xl font-bold text-gray-800 mb-2'>
+                  Professional Musicians
+                </h3>
                 <p className='text-gray-600'>
-                  Let's finalize your musical experience
+                  Experienced performers with extensive repertoires and
+                  professional training
                 </p>
               </div>
 
-              {/* Date & Time */}
-              <div className='grid md:grid-cols-2 gap-6'>
-                <div>
-                  <label className='block text-sm font-semibold text-gray-900 mb-3'>
-                    Event Date
-                  </label>
-                  <input
-                    type='date'
-                    value={bookingForm.date}
-                    onChange={(e) => handleFormChange('date', e.target.value)}
-                    className={`w-full px-4 py-4 text-lg border-2 rounded-2xl focus:outline-none focus:ring-0 transition-colors ${
-                      errors.date
-                        ? 'border-red-300 bg-red-50 focus:border-red-400'
-                        : 'border-gray-200 focus:border-gray-400'
-                    }`}
-                  />
-                  {errors.date && (
-                    <p className='text-red-500 text-sm mt-2'>{errors.date}</p>
-                  )}
+              <div className='text-center'>
+                <div className='w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4'>
+                  <Heart className='w-8 h-8 text-white' />
                 </div>
-
-                <div>
-                  <label className='block text-sm font-semibold text-gray-900 mb-3'>
-                    Start Time
-                  </label>
-                  <input
-                    type='time'
-                    value={bookingForm.time}
-                    onChange={(e) => handleFormChange('time', e.target.value)}
-                    className={`w-full px-4 py-4 text-lg border-2 rounded-2xl focus:outline-none focus:ring-0 transition-colors ${
-                      errors.time
-                        ? 'border-red-300 bg-red-50 focus:border-red-400'
-                        : 'border-gray-200 focus:border-gray-400'
-                    }`}
-                  />
-                  {errors.time && (
-                    <p className='text-red-500 text-sm mt-2'>{errors.time}</p>
-                  )}
-                </div>
+                <h3 className='text-xl font-bold text-gray-800 mb-2'>
+                  Personalized Experience
+                </h3>
+                <p className='text-gray-600'>
+                  Custom song selections and arrangements tailored to your event
+                  and preferences
+                </p>
               </div>
 
-              {/* Song Preferences */}
-              <div className='space-y-6'>
-                <div className='text-center'>
-                  <h3 className='text-xl font-bold text-gray-900 mb-2'>
-                    Song Requests
-                  </h3>
-                  <p className='text-gray-600'>
-                    Help us play exactly what you want to hear
-                  </p>
+              <div className='text-center'>
+                <div className='w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4'>
+                  <Settings className='w-8 h-8 text-white' />
                 </div>
-
-                <label className='flex items-center cursor-pointer group'>
-                  <div className='relative'>
-                    <input
-                      type='checkbox'
-                      checked={bookingForm.hasSpecificSongs}
-                      onChange={(e) =>
-                        handleFormChange('hasSpecificSongs', e.target.checked)
-                      }
-                      className='sr-only'
-                    />
-                    <div
-                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${
-                        bookingForm.hasSpecificSongs
-                          ? 'bg-gray-900 border-gray-900'
-                          : 'border-gray-300 group-hover:border-gray-400'
-                      }`}
-                    >
-                      {bookingForm.hasSpecificSongs && (
-                        <Check className='w-4 h-4 text-white' />
-                      )}
-                    </div>
-                  </div>
-                  <span className='ml-3 text-gray-900 font-medium'>
-                    I have specific song requests
-                  </span>
-                </label>
-
-                {bookingForm.hasSpecificSongs && (
-                  <div className='space-y-4 bg-gray-50 p-6 rounded-2xl'>
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-900 mb-3'>
-                        Song List
-                      </label>
-                      <textarea
-                        value={bookingForm.specificSongs}
-                        onChange={(e) =>
-                          handleFormChange('specificSongs', e.target.value)
-                        }
-                        placeholder="List your favorite songs (e.g., 'Perfect by Ed Sheeran', 'All of Me by John Legend')..."
-                        rows={4}
-                        className='w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-gray-400 resize-none text-lg'
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-900 mb-3'>
-                        Song Links (Optional)
-                        <span className='font-normal text-gray-500 block text-xs mt-1'>
-                          Share YouTube or Spotify links to ensure we play the
-                          exact version you want
-                        </span>
-                      </label>
-                      <textarea
-                        value={bookingForm.songLinks}
-                        onChange={(e) =>
-                          handleFormChange('songLinks', e.target.value)
-                        }
-                        placeholder='Paste YouTube or Spotify links here (one per line)...'
-                        rows={3}
-                        className='w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-gray-400 resize-none'
-                      />
-                      <p className='text-xs text-gray-500 mt-2'>
-                        💡 This helps us play the exact arrangement, tempo, and
-                        style you prefer
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Special Requests */}
-              <div>
-                <label className='block text-sm font-semibold text-gray-900 mb-3'>
-                  Special Requests{' '}
-                  <span className='font-normal text-gray-500'>(Optional)</span>
-                </label>
-                <textarea
-                  value={bookingForm.specialRequests}
-                  onChange={(e) =>
-                    handleFormChange('specialRequests', e.target.value)
-                  }
-                  placeholder='Venue details, volume preferences, special moments to highlight, or any other requests...'
-                  rows={3}
-                  className='w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-gray-400 resize-none text-lg'
-                />
-              </div>
-
-              {/* Booking Summary */}
-              <div className='bg-gray-50 rounded-2xl p-6'>
-                <h4 className='font-bold text-gray-900 mb-4'>
-                  Booking Summary
-                </h4>
-                <div className='space-y-2 text-gray-700'>
-                  <div className='flex justify-between'>
-                    <span>Performance Type:</span>
-                    <span className='font-medium'>
-                      {selectedPerformer?.name}
-                    </span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span>Music Style:</span>
-                    <span className='font-medium'>
-                      {
-                        MUSIC_GENRES.find(
-                          (g) => g.id === bookingForm.musicGenre
-                        )?.name
-                      }
-                    </span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span>Duration:</span>
-                    <span className='font-medium'>
-                      {selectedPerformer?.duration}
-                    </span>
-                  </div>
-                </div>
+                <h3 className='text-xl font-bold text-gray-800 mb-2'>
+                  Complete Service
+                </h3>
+                <p className='text-gray-600'>
+                  From setup to breakdown, we handle all technical aspects
+                  professionally
+                </p>
               </div>
             </div>
-          </motion.section>
-        )}
 
-        {/* Why Choose Us / Social Proof */}
-        <motion.section
-          initial='hidden'
-          whileInView='visible'
-          viewport={{ once: true }}
-          variants={fadeIn}
-          className='bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-gray-100'
-        >
-          <div className='text-center space-y-8'>
-            <div>
-              <h2 className='text-3xl font-bold text-gray-900 mb-4'>
-                Why Choose Our Musicians?
-              </h2>
-              <p className='text-xl text-gray-600'>
-                Professional quality that makes a difference
+            <div className='bg-white rounded-2xl p-8 max-w-4xl mx-auto'>
+              <Quote className='w-10 h-10 text-slate-500 mx-auto mb-4' />
+              <blockquote className='text-2xl font-medium text-gray-800 mb-4 italic leading-relaxed'>
+                "Music transforms moments into memories. Whether it's a romantic
+                dinner, a family gathering, or a lively party night, our
+                performances create the perfect soundtrack for your
+                celebration."
+              </blockquote>
+              <p className='text-lg text-slate-600 font-medium'>
+                Let the music play!
               </p>
             </div>
-
-            <div className='grid md:grid-cols-4 gap-8'>
-              <div className='text-center'>
-                <div className='text-3xl font-bold text-gray-900 mb-2'>
-                  500+
-                </div>
-                <p className='text-gray-600'>Events Performed</p>
-              </div>
-              <div className='text-center'>
-                <div className='text-3xl font-bold text-gray-900 mb-2'>
-                  4.9/5
-                </div>
-                <p className='text-gray-600'>Average Rating</p>
-              </div>
-              <div className='text-center'>
-                <div className='text-3xl font-bold text-gray-900 mb-2'>24h</div>
-                <p className='text-gray-600'>Booking Confirmation</p>
-              </div>
-              <div className='text-center'>
-                <div className='text-3xl font-bold text-gray-900 mb-2'>
-                  100%
-                </div>
-                <p className='text-gray-600'>Satisfaction Rate</p>
-              </div>
-            </div>
-
-            <div className='space-y-6'>
-              <h3 className='text-xl font-bold text-gray-900'>
-                What Our Clients Say
-              </h3>
-              <div className='grid md:grid-cols-3 gap-6'>
-                {TESTIMONIALS.map((testimonial, index) => (
-                  <div key={index} className='bg-gray-50 p-6 rounded-2xl'>
-                    <div className='flex mb-3'>
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <span key={i} className='text-yellow-400 text-lg'>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <p className='text-gray-700 italic mb-4'>
-                      "{testimonial.quote}"
-                    </p>
-                    <div>
-                      <p className='font-semibold text-gray-900'>
-                        {testimonial.name}
-                      </p>
-                      <p className='text-sm text-gray-600'>
-                        {testimonial.event}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
-        </motion.section>
-        <motion.section
-          initial='hidden'
-          whileInView='visible'
-          viewport={{ once: true }}
-          variants={fadeIn}
-          className='text-center space-y-8'
-        >
-          <h2 className='text-3xl font-bold text-gray-900'>What's Included</h2>
-          <div className='grid md:grid-cols-5 gap-6'>
-            {FEATURES.map((feature, index) => (
-              <div key={index} className='flex flex-col items-center space-y-3'>
-                <div className='w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center'>
-                  <Check className='w-6 h-6 text-gray-600' />
-                </div>
-                <p className='text-gray-700 font-medium text-center'>
-                  {feature}
-                </p>
-              </div>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* Price Summary & Booking */}
-        {totalPrice > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className='bg-gray-900 rounded-3xl p-8 md:p-12 text-white text-center'
-          >
-            <div className='max-w-2xl mx-auto space-y-8'>
-              <div>
-                <h2 className='text-3xl font-bold mb-4'>Ready to Book?</h2>
-                <p className='text-gray-300 text-lg'>
-                  {selectedPerformer?.name} for your special event
-                </p>
-              </div>
-
-              <div className='bg-white/10 rounded-2xl p-6 space-y-4'>
-                <div className='flex justify-between text-xl'>
-                  <span>Performance Fee:</span>
-                  <span className='font-bold'>${totalPrice}</span>
-                </div>
-                <div className='text-sm text-gray-300'>
-                  Duration: {selectedPerformer?.duration} • Professional
-                  equipment included
-                </div>
-              </div>
-
-              <button
-                onClick={handleBookingSubmit}
-                disabled={isSubmitting}
-                className='w-full max-w-md mx-auto py-4 bg-white text-gray-900 hover:bg-gray-100 font-bold text-lg rounded-2xl transition-colors flex items-center justify-center gap-3 disabled:opacity-50'
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900'></div>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className='w-5 h-5' />
-                    Confirm Booking
-                    <ArrowRight className='w-5 h-5' />
-                  </>
-                )}
-              </button>
-            </div>
-          </motion.div>
-        )}
+        </motion.div>
       </div>
+
+      {/* Booking Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBookingConfirm}
+            service={service}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
