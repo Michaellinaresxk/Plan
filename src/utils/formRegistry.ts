@@ -147,7 +147,7 @@ registerForm({
 // Massage Form
 registerForm({
   name: 'MassageForm',
-  component: () => import('@/UI/components/forms/MassageForm'),
+  component: () => import('@/UI/components/forms/massage/MassageForm'),
   servicePatterns: [
     'massage',
     'standard-massage',
@@ -264,6 +264,20 @@ registerForm({
     onSubmit:
       additionalData?.onSubmit ||
       ((data: any) => console.log('Karaoke:', data)),
+    onCancel,
+  }),
+});
+
+// Karaoke Form
+registerForm({
+  name: 'private-catamaran',
+  component: () => import('@/UI/components/forms/SaonaIslandForm'),
+  servicePatterns: ['private-catamaran'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit ||
+      ((data: any) => console.log('private-catamaran:', data)),
     onCancel,
   }),
 });

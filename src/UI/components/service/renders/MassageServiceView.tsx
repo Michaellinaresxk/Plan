@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
+import { useRouter } from 'next/navigation';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useBooking } from '@/context/BookingContext';
+import { useReservation } from '@/context/BookingContext'; // Cambio: usar useReservation en lugar de useBooking
 import { BookingDate } from '@/types/type';
-import { SPA_SERVICES } from '@/constants/spaServices'; // ← IMPORTAR LA CONSTANTE
+import { SPA_SERVICES } from '@/constants/spaServices';
 import {
   Leaf,
   Clock,
@@ -16,18 +17,15 @@ import {
   Heart,
   CheckCircle,
   Users,
-  Home,
   Timer,
   Phone,
-  MapPin,
-  Sparkles,
-  Quote,
   Calendar,
   Plus,
   Minus,
   X,
   Accessibility,
   Info,
+  CreditCard,
 } from 'lucide-react';
 
 interface MassageServiceViewProps {
@@ -49,7 +47,6 @@ const TIME_SLOTS = [
   '18:00',
 ];
 
-// ← USAR LA CONSTANTE IMPORTADA
 const MASSAGE_TYPES = SPA_SERVICES.massages;
 
 // Componente del formulario inline
@@ -61,25 +58,61 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
   const [time, setTime] = useState('');
   const [persons, setPersons] = useState(1);
   const [specialNeeds, setSpecialNeeds] = useState('');
+  const [errors, setErrors] = useState({}); // Nuevo: estado para errores
+  const [isSubmitting, setIsSubmitting] = useState(false); // Nuevo: estado de carga
 
   const totalPrice = selectedDuration.price * persons;
   const isFormValid = date && time;
 
-  const handleSubmit = () => {
-    if (!isFormValid) return;
+  // Nuevo: validación del formulario
+  const validateForm = useCallback(() => {
+    const newErrors = {};
+    if (!date) newErrors.date = 'Date required';
+    if (!time) newErrors.time = 'Time required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [date, time]);
 
-    onConfirm({
-      serviceId: selectedMassage.id, // ← serviceId como pediste
-      serviceName: selectedMassage.name,
-      duration: selectedDuration.duration,
-      price: totalPrice,
-      date,
-      time,
-      persons,
-      specialNeeds,
-      emoji: selectedMassage.emoji,
-    });
-  };
+  // Corregido: manejar envío del formulario
+  const handleSubmit = useCallback(async () => {
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+
+    try {
+      // Crear los datos de reserva en el formato correcto
+      const reservationData = {
+        service: selectedMassage,
+        formData: {
+          serviceId: selectedMassage.id,
+          serviceName: selectedMassage.name,
+          duration: selectedDuration.duration,
+          date,
+          time,
+          persons,
+          specialNeeds,
+          calculatedPrice: totalPrice,
+        },
+        totalPrice,
+        bookingDate: new Date(),
+      };
+
+      onConfirm(reservationData);
+    } catch (error) {
+      console.error('Booking error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [
+    validateForm,
+    selectedMassage,
+    selectedDuration,
+    date,
+    time,
+    persons,
+    specialNeeds,
+    totalPrice,
+    onConfirm,
+  ]);
 
   return (
     <motion.div
@@ -163,10 +196,20 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
             <input
               type='date'
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={(e) => {
+                setDate(e.target.value);
+                if (errors.date) setErrors((prev) => ({ ...prev, date: '' }));
+              }}
               min={new Date().toISOString().split('T')[0]}
-              className='w-full p-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg'
+              className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
+                errors.date
+                  ? 'border-red-300 bg-red-50 focus:border-red-400'
+                  : 'border-stone-300'
+              }`}
             />
+            {errors.date && (
+              <p className='text-red-500 text-sm mt-2'>{errors.date}</p>
+            )}
           </div>
 
           <div>
@@ -176,8 +219,15 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
             </label>
             <select
               value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className='w-full p-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg'
+              onChange={(e) => {
+                setTime(e.target.value);
+                if (errors.time) setErrors((prev) => ({ ...prev, time: '' }));
+              }}
+              className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
+                errors.time
+                  ? 'border-red-300 bg-red-50 focus:border-red-400'
+                  : 'border-stone-300'
+              }`}
             >
               <option value=''>Select time</option>
               {TIME_SLOTS.map((slot) => (
@@ -186,6 +236,9 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
                 </option>
               ))}
             </select>
+            {errors.time && (
+              <p className='text-red-500 text-sm mt-2'>{errors.time}</p>
+            )}
           </div>
         </div>
 
@@ -283,16 +336,25 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
             className={`flex-1 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-              isFormValid
+              isFormValid && !isSubmitting
                 ? 'bg-stone-800 text-white hover:bg-stone-700'
                 : 'bg-stone-300 text-stone-500 cursor-not-allowed'
             }`}
           >
-            <Heart className='w-5 h-5' />
-            Confirm Booking
-            <ArrowRight className='w-5 h-5' />
+            {isSubmitting ? (
+              <>
+                <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
+                Processing...
+              </>
+            ) : (
+              <>
+                <CreditCard className='w-5 h-5' />
+                Confirm Booking
+                <ArrowRight className='w-5 h-5' />
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -300,16 +362,16 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
   );
 };
 
-const MassageServiceView: React.FC<MassageServiceViewProps> = ({
+const MassageServiceView = ({
   service,
   serviceData,
   primaryColor = 'stone',
   viewContext = 'standard-view',
 }) => {
   const { t } = useTranslation();
-  const { bookService } = useBooking();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
-  // ← ESTADO SIMPLE: solo masaje seleccionado (SIN MODAL)
   const [selectedMassage, setSelectedMassage] = useState(null);
 
   // Animaciones
@@ -331,10 +393,9 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
     },
   };
 
-  // ← HANDLERS SIMPLES
+  // Handlers
   const handleMassageSelect = useCallback((massage) => {
     setSelectedMassage(massage);
-    // Scroll al formulario después de un momento
     setTimeout(() => {
       const formElement = document.getElementById('booking-form');
       if (formElement) {
@@ -344,30 +405,30 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
   }, []);
 
   const handleCancelBooking = useCallback(() => {
+    console.log('Cancel booking called'); // Para debug
+
+    // Limpiar el estado inmediatamente
     setSelectedMassage(null);
+
+    // Opcional: scroll hacia arriba para mejor UX
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   }, []);
 
+  // Corregido: manejar confirmación de reserva
   const handleConfirmBooking = useCallback(
-    (bookingData) => {
-      console.log('Booking confirmed with serviceId:', bookingData.serviceId);
-      console.log('Full booking data:', bookingData);
-
-      // ← LLAMAR AL CONTEXTO DE BOOKING DIRECTAMENTE (SIN MODAL)
-      // En lugar de abrir modal, procesamos la reserva directamente
+    async (reservationData) => {
       try {
-        // Convertir a formato esperado por el contexto
-        const bookingDate: BookingDate = {
-          date: bookingData.date,
-          time: bookingData.time,
-        };
+        console.log('Setting reservation data:', reservationData);
 
-        // Llamar al contexto de booking
-        bookService(service, bookingDate, bookingData.persons);
+        // Establecer los datos de reserva en el contexto
+        setReservationData(reservationData);
 
-        // Mostrar confirmación y limpiar
-        alert(
-          `¡Reserva confirmada!\n${bookingData.serviceName}\nFecha: ${bookingData.date} a las ${bookingData.time}\nPersonas: ${bookingData.persons}\nPrecio: ${bookingData.price}`
-        );
+        // Navegar a la página de confirmación de reserva (proceso de pago)
+        router.push('/reservation-confirmation');
+
+        // Cerrar el formulario
         setSelectedMassage(null);
       } catch (error) {
         console.error('Error processing booking:', error);
@@ -376,7 +437,7 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
         );
       }
     },
-    [bookService, service]
+    [setReservationData, router]
   );
 
   return (
@@ -397,22 +458,22 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
               className='object-cover'
               priority
             />
-            <div className='absolute inset-0 bg-gradient-to-b from-stone-900/60 via-stone-900/30 to-stone-900/60' />
+            <div className='absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/50 to-stone-900/70' />
           </div>
 
-          <div className='relative z-10 text-center max-w-4xl'>
+          <div className='relative z-20 text-center max-w-4xl'>
             <motion.div
-              className='inline-flex items-center bg-white/20 backdrop-blur-md px-8 py-4 rounded-full border border-white/30 mb-12'
+              className='inline-flex items-center bg-white/20 backdrop-blur-md px-4 md:px-8 py-3 md:py-4 rounded-full border border-white/30 mb-8 md:mb-12'
               variants={fadeUp}
             >
-              <Leaf className='w-6 h-6 text-white mr-4' />
-              <span className='text-white font-medium text-lg'>
+              <Leaf className='w-5 h-5 md:w-6 md:h-6 text-white mr-3 md:mr-4' />
+              <span className='text-white font-medium text-sm md:text-lg'>
                 BF Paradise Premium Wellness
               </span>
             </motion.div>
 
             <motion.h1
-              className='text-6xl md:text-8xl font-light text-white mb-8 leading-tight'
+              className='text-4xl md:text-6xl lg:text-8xl font-light text-white mb-6 md:mb-8 leading-tight'
               variants={fadeUp}
             >
               Massage
@@ -421,7 +482,7 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
             </motion.h1>
 
             <motion.p
-              className='text-2xl md:text-3xl text-white/90 mb-16 leading-relaxed font-light max-w-3xl mx-auto'
+              className='text-lg md:text-2xl lg:text-3xl text-white/90 mb-12 md:mb-16 leading-relaxed font-light max-w-3xl mx-auto px-4'
               variants={fadeUp}
             >
               Rediscover harmony between body and mind in a sensory journey
@@ -432,14 +493,14 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
               className='flex flex-col items-center'
               variants={fadeUp}
             >
-              <div className='text-white/70 text-lg'>
+              <div className='text-white/70 text-base md:text-lg'>
                 ↓ Choose your perfect treatment below
               </div>
             </motion.div>
           </div>
         </motion.section>
 
-        {/* ← SECCIÓN DE MASAJES USANDO SPA_SERVICES */}
+        {/* Sección de Masajes */}
         <motion.section
           id='massage-selection'
           className='py-32 px-6 bg-white/50 backdrop-blur-sm'
@@ -458,7 +519,6 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
 
           <div className='space-y-16'>
             {MASSAGE_TYPES.map((massage, index) => {
-              // ← CALCULAR PRECIOS USANDO DATOS REALES
               const prices = massage.durations.map((d) => d.price);
               const minPrice = Math.min(...prices);
               const maxPrice = Math.max(...prices);
@@ -476,57 +536,59 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
                       : 'hover:shadow-3xl'
                   }`}
                   variants={fadeUp}
-                  onClick={() => handleMassageSelect(massage)} // ← CLICK PARA SELECCIONAR
+                  onClick={() => handleMassageSelect(massage)}
                   whileHover={{ scale: 1.01 }}
                 >
                   <div
-                    className={`grid grid-cols-1 lg:grid-cols-2 min-h-[600px] ${
+                    className={`grid grid-cols-1 lg:grid-cols-2 min-h-[400px] md:min-h-[600px] ${
                       index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''
                     }`}
                   >
                     {/* Imagen */}
                     <div
-                      className={`relative overflow-hidden ${
+                      className={`relative overflow-hidden order-1 lg:order-none ${
                         index % 2 === 1 ? 'lg:col-start-2' : ''
                       }`}
                     >
-                      <Image
-                        src={massage.imageUrl}
-                        alt={massage.name}
-                        fill
-                        className='object-cover group-hover:scale-110 transition-transform duration-1000'
-                      />
+                      <div className='relative h-64 md:h-full w-full'>
+                        <Image
+                          src={massage.imageUrl}
+                          alt={massage.name}
+                          fill
+                          className='object-cover group-hover:scale-110 transition-transform duration-1000'
+                        />
 
-                      {massage.isPremium && (
-                        <div className='absolute top-8 right-8 bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-full font-medium border border-white/30'>
-                          <Star className='w-5 h-5 inline mr-2' />
-                          Premium Experience
-                        </div>
-                      )}
-
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
-
-                      <div className='absolute bottom-8 left-8 text-white'>
-                        <div className='text-4xl font-light mb-2'>
-                          {priceDisplay}
-                        </div>
-                        <div className='text-white/90'>
-                          {massage.durations
-                            .map((d) => `${d.duration}min`)
-                            .join(' • ')}
-                        </div>
-                      </div>
-
-                      {/* Hover overlay */}
-                      <div className='absolute inset-0 bg-stone-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
-                        <div className='text-white text-center'>
-                          <div className='text-5xl mb-4'>{massage.emoji}</div>
-                          <div className='text-2xl font-light mb-4'>
-                            Book Now
+                        {massage.isPremium && (
+                          <div className='absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white px-3 md:px-6 py-2 md:py-3 rounded-full font-medium border border-white/30 text-sm md:text-base'>
+                            <Star className='w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2' />
+                            Premium Experience
                           </div>
-                          <div className='flex items-center justify-center gap-2'>
-                            <Heart className='w-6 h-6' />
-                            <span className='text-lg'>Click to continue</span>
+                        )}
+
+                        <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
+
+                        <div className='absolute bottom-4 md:bottom-8 left-4 md:left-8 text-white'>
+                          <div className='text-2xl md:text-4xl font-light mb-1 md:mb-2'>
+                            {priceDisplay}
+                          </div>
+                          <div className='text-white/90 text-sm md:text-base'>
+                            {massage.durations
+                              .map((d) => `${d.duration}min`)
+                              .join(' • ')}
+                          </div>
+                        </div>
+
+                        {/* Hover overlay - solo en desktop */}
+                        <div className='hidden lg:flex absolute inset-0 bg-stone-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center'>
+                          <div className='text-white text-center'>
+                            <div className='text-5xl mb-4'>{massage.emoji}</div>
+                            <div className='text-2xl font-light mb-4'>
+                              Book Now
+                            </div>
+                            <div className='flex items-center justify-center gap-2'>
+                              <Heart className='w-6 h-6' />
+                              <span className='text-lg'>Click to continue</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -534,18 +596,20 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
 
                     {/* Contenido */}
                     <div
-                      className={`bg-gradient-to-br from-stone-100 to-amber-50 p-12 lg:p-16 flex flex-col justify-center ${
+                      className={`bg-gradient-to-br from-stone-100 to-amber-50 p-6 md:p-12 lg:p-16 flex flex-col justify-center order-2 lg:order-none ${
                         index % 2 === 1 ? 'lg:col-start-1' : ''
                       }`}
                     >
-                      <div className='mb-8'>
-                        <div className='flex items-center mb-6'>
-                          <span className='text-5xl mr-4'>{massage.emoji}</span>
+                      <div className='mb-6 md:mb-8'>
+                        <div className='flex flex-col sm:flex-row sm:items-center mb-4 md:mb-6'>
+                          <span className='text-3xl md:text-5xl mr-0 sm:mr-4 mb-2 sm:mb-0'>
+                            {massage.emoji}
+                          </span>
                           <div>
-                            <h3 className='text-3xl font-light text-stone-800 mb-2'>
+                            <h3 className='text-2xl md:text-3xl font-light text-stone-800 mb-1 md:mb-2'>
                               {massage.name}
                             </h3>
-                            <div className='flex items-center gap-2 text-sm text-stone-600 mb-2'>
+                            <div className='flex flex-wrap items-center gap-2 text-xs md:text-sm text-stone-600 mb-2'>
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-medium ${
                                   massage.intensity === 'gentle'
@@ -563,18 +627,18 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
                           </div>
                         </div>
 
-                        <p className='text-xl text-stone-700 leading-relaxed mb-8'>
+                        <p className='text-lg md:text-xl text-stone-700 leading-relaxed mb-6 md:mb-8'>
                           {massage.description}
                         </p>
 
-                        <div className='space-y-3 mb-8'>
+                        <div className='space-y-2 md:space-y-3 mb-6 md:mb-8'>
                           {massage.benefits.slice(0, 3).map((benefit, idx) => (
                             <div
                               key={idx}
                               className='flex items-start text-stone-600'
                             >
-                              <div className='w-2 h-2 bg-stone-400 rounded-full mr-4 mt-3 flex-shrink-0' />
-                              <span className='text-lg leading-relaxed'>
+                              <div className='w-2 h-2 bg-stone-400 rounded-full mr-3 md:mr-4 mt-2 md:mt-3 flex-shrink-0' />
+                              <span className='text-base md:text-lg leading-relaxed'>
                                 {benefit}
                               </span>
                             </div>
@@ -583,32 +647,39 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
                       </div>
 
                       <button
-                        className={`self-start px-8 py-4 rounded-2xl font-medium transition-all duration-300 ${
+                        className={`self-start px-6 md:px-8 py-3 md:py-4 rounded-2xl font-medium transition-all duration-300 w-full sm:w-auto ${
                           selectedMassage?.id === massage.id
                             ? 'bg-stone-700 text-white shadow-lg'
                             : 'bg-white/80 text-stone-700 hover:bg-white hover:shadow-lg'
                         }`}
                       >
                         {selectedMassage?.id === massage.id ? (
-                          <span className='flex items-center'>
-                            <CheckCircle className='w-5 h-5 mr-2' />
-                            Selected - Complete booking below
+                          <span className='flex items-center justify-center'>
+                            <CheckCircle className='w-4 h-4 md:w-5 md:h-5 mr-2' />
+                            <span className='text-sm md:text-base'>
+                              Selected - Complete booking below
+                            </span>
                           </span>
                         ) : (
-                          <span className='flex items-center'>
-                            <Heart className='w-5 h-5 mr-2' />
-                            Book {massage.name}
-                            <ArrowRight className='w-5 h-5 ml-2' />
+                          <span className='flex items-center justify-center'>
+                            <Heart className='w-4 h-4 md:w-5 md:h-5 mr-2' />
+                            <span className='text-sm md:text-base'>
+                              Book {massage.name}
+                            </span>
+                            <ArrowRight className='w-4 h-4 md:w-5 md:h-5 ml-2' />
                           </span>
                         )}
                       </button>
                     </div>
                   </div>
 
-                  {/* ← FORMULARIO INLINE APARECE AQUÍ */}
-                  <AnimatePresence>
+                  {/* Formulario inline aparece aquí */}
+                  <AnimatePresence mode='wait'>
+                    {' '}
+                    {/* Agregar mode="wait" */}
                     {selectedMassage?.id === massage.id && (
                       <InlineBookingForm
+                        key={`form-${massage.id}`} // Agregar key único
                         selectedMassage={selectedMassage}
                         onCancel={handleCancelBooking}
                         onConfirm={handleConfirmBooking}
@@ -621,25 +692,60 @@ const MassageServiceView: React.FC<MassageServiceViewProps> = ({
           </div>
         </motion.section>
 
-        {/* Resto de secciones existentes... */}
+        {/* Call to Action Final */}
         <motion.section
-          className='py-32 px-6 bg-gradient-to-b from-amber-50 to-stone-50'
+          className='py-32 px-6 bg-gradient-to-b from-stone-800 to-stone-900'
           initial='hidden'
           animate='visible'
           variants={fadeUp}
         >
-          <div className='max-w-5xl mx-auto text-center'>
-            <div className='mb-16'>
-              <Sparkles className='w-16 h-16 text-stone-400 mx-auto mb-8' />
-              <h3 className='text-4xl md:text-5xl font-light text-stone-800 mb-8 leading-tight'>
-                More than a massage,
-                <br />a personal transformation
-              </h3>
-              <p className='text-2xl text-stone-600 leading-relaxed max-w-3xl mx-auto'>
-                Allow yourself this moment of deep connection with yourself.
-                Your well-being is not a luxury, it's a necessity.
-              </p>
-            </div>
+          <div className='max-w-4xl mx-auto text-center text-white'>
+            <motion.h3
+              className='text-4xl md:text-5xl font-light mb-8'
+              variants={fadeUp}
+            >
+              Ready to Begin Your Journey?
+            </motion.h3>
+            <motion.p
+              className='text-xl text-stone-300 mb-12 leading-relaxed'
+              variants={fadeUp}
+            >
+              Book your personalized massage experience today and discover the
+              transformative power of therapeutic touch in the comfort of your
+              own space.
+            </motion.p>
+
+            <motion.div className='space-y-6' variants={fadeUp}>
+              <button
+                onClick={() => {
+                  const massageSection =
+                    document.getElementById('massage-selection');
+                  if (massageSection) {
+                    massageSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className='bg-white text-stone-800 px-12 py-6 rounded-2xl font-medium text-xl hover:bg-stone-50 transition-colors flex items-center justify-center gap-4 mx-auto group'
+              >
+                <Heart className='w-6 h-6 group-hover:scale-110 transition-transform' />
+                Choose Your Perfect Treatment
+                <ArrowRight className='w-6 h-6 group-hover:translate-x-2 transition-transform' />
+              </button>
+
+              <div className='flex justify-center gap-12 text-stone-400 text-sm'>
+                <div className='flex items-center gap-3'>
+                  <Phone className='w-5 h-5' />
+                  <span>Expert consultation included</span>
+                </div>
+                <div className='flex items-center gap-3'>
+                  <CheckCircle className='w-5 h-5' />
+                  <span>Cancel up to 4h before</span>
+                </div>
+                <div className='flex items-center gap-3'>
+                  <Shield className='w-5 h-5' />
+                  <span>100% secure booking</span>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </motion.section>
       </div>

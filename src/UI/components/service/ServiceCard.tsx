@@ -19,6 +19,7 @@ import Image from 'next/image';
 import BookingModal from '../modal/BookingModal';
 interface ServiceCardProps {
   service: Service;
+  servicePath: string;
   isSelected: boolean;
   packageType: 'standard' | 'premium';
   onToggle: (service: Service) => void;
@@ -27,6 +28,7 @@ interface ServiceCardProps {
 }
 const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
+  servicePath,
   isSelected,
   packageType,
   onBookService,
@@ -220,7 +222,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   {/* Action buttons */}
                   <div className='grid grid-cols-2 gap-4'>
                     <Link
-                      href={`/service/${service.id}`}
+                      href={`/${servicePath}/${service.id}`}
                       className='py-3 px-5 flex items-center justify-center bg-black/40 hover:bg-black/70 backdrop-blur-md font-medium text-white rounded-lg transition-all duration-300 border border-amber-500/30 group overflow-hidden relative'
                     >
                       <span className='relative z-10 flex items-center'>
@@ -416,7 +418,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 {/* Action buttons */}
                 <div className='grid grid-cols-2 gap-4'>
                   <Link
-                    href={`/service/${service.id}`}
+                    href={`/${servicePath}/${service.id}`}
                     className='py-3 px-5 flex items-center justify-center bg-gray-100 hover:bg-gray-200 font-medium text-gray-800 rounded-lg transition-all duration-300 border border-gray-200 group'
                   >
                     <span className='flex items-center'>

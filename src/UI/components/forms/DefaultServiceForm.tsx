@@ -2,7 +2,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import { Calendar, Clock, Users, AlertTriangle, Check, X } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  Users,
+  AlertTriangle,
+  Check,
+  X,
+  MapPin,
+} from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
 
@@ -14,6 +22,7 @@ interface DefaultServiceFormProps {
 interface FormData {
   date: string;
   time: string;
+  location: string;
   guests: number;
   specialRequests: string;
 }
@@ -29,6 +38,7 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
   const [formData, setFormData] = useState<FormData>({
     date: '',
     time: '',
+    location: '',
     guests: 1,
     specialRequests: '',
   });
@@ -77,6 +87,12 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
     if (!formData.time) {
       newErrors.time = t('form.errors.timeRequired', {
         fallback: 'Time is required',
+      });
+    }
+
+    if (!formData.location) {
+      newErrors.time = t('form.errors.location', {
+        fallback: 'Location is required',
       });
     }
 
@@ -226,6 +242,27 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
               </p>
             )}
           </div>
+        </div>
+
+        {/* Location */}
+        <div>
+          <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+            <MapPin className='w-4 h-4 mr-2 ' />
+            Location *
+          </label>
+          <textarea
+            name='location'
+            value={formData.location}
+            onChange={handleInputChange}
+            rows={3}
+            className={`w-full p-3 border ${
+              errors.location ? 'border-red-500' : 'border-gray-300'
+            } `}
+            placeholder='Please provide the complete address where the personal training will take place'
+          />
+          {errors.location && (
+            <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+          )}
         </div>
 
         {/* Number of Guests */}

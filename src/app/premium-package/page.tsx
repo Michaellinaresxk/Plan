@@ -295,6 +295,7 @@ const PremiumPackage = () => {
                 </div>
                 <ServiceList
                   services={premiumServices}
+                  servicePath='premium-package'
                   variant='dark'
                   textColor='white'
                   viewContext='premium-view'

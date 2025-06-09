@@ -22,6 +22,7 @@ import ServiceManager from '@/constants/services/ServiceManager';
 
 interface EnhancedServiceListProps {
   services: Service[];
+  servicePath: string;
   variant?: 'light' | 'dark';
   textColor?: string;
   viewContext?: 'standard-view' | 'premium-view';
@@ -75,6 +76,7 @@ const serviceCategories = [
 
 const ServiceList: React.FC<EnhancedServiceListProps> = ({
   services,
+  servicePath,
   variant = 'light',
   textColor,
   viewContext,
@@ -305,6 +307,7 @@ const ServiceList: React.FC<EnhancedServiceListProps> = ({
             <ServiceCard
               key={service.id}
               service={service}
+              servicePath={servicePath}
               isSelected={isServiceSelected(service.id)}
               packageType={packageType}
               onToggle={handleServiceToggle}
