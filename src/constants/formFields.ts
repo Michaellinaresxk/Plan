@@ -5,7 +5,7 @@ import ChefForm from '@/UI/components/forms/chef/ChefForm';
 import CustomDecorationForm from '@/UI/components/forms/CustomDecorationForm';
 import GroceryForm from '@/UI/components/forms/GroceryForm';
 import LiveMusicForm from '@/UI/components/forms/LiveMusicForm';
-import MassageForm from '@/UI/components/forms/MassageForm';
+import MassageForm from '@/UI/components/forms/massage/MassageForm';
 import YogaServiceForm from '@/UI/components/forms/YogaServiceForm';
 import SaonaIslandForm from '@/UI/components/forms/SaonaIslandForm';
 import KaraokeFrom from '@/UI/components/forms/KaraokeFrom';

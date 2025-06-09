@@ -147,7 +147,7 @@ registerForm({
 // Massage Form
 registerForm({
   name: 'MassageForm',
-  component: () => import('@/UI/components/forms/MassageForm'),
+  component: () => import('@/UI/components/forms/massage/MassageForm'),
   servicePatterns: [
     'massage',
     'standard-massage',
