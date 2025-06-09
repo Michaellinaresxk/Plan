@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { occasionTypes } from '@/constants/chefFormConsts';
-import { useDateSelection } from '@/hooks/useDateSelection';
 import { useTranslation } from '@/lib/i18n/client';
-import CalendarPicker from '@/UI/components/calendar/CalendarPicker';
-import SelectedDatesSummary from '@/UI/components/calendar/SelectedDatesSummary';
 import MultipleDaysModal, { DayServiceConfig } from './MultipleDaysModal';
 import {
   Calendar,
@@ -17,6 +14,12 @@ import {
   Users,
   Utensils,
   MessageCircle,
+  Sparkles,
+  Star,
+  Crown,
+  Coffee,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 interface BasicDetailsStepProps {
@@ -40,6 +43,49 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  // Get chef theme
+  const getChefTheme = () => {
+    if (formData.chefType === 'professional') {
+      return {
+        name: 'Chef Experimentado',
+        primaryColor: 'purple',
+        secondaryColor: 'indigo',
+        accentColor: 'blue',
+        gradient: 'from-purple-500 via-indigo-600 to-blue-500',
+        lightGradient: 'from-purple-50 via-white to-indigo-50',
+        textColor: 'purple-800',
+        borderColor: 'purple-200',
+        shadow: 'shadow-purple-500/25',
+        selectedBg: 'bg-purple-50',
+        selectedBorder: 'border-purple-500',
+        iconColor: 'text-purple-600',
+        buttonGradient: 'from-purple-500 to-indigo-600',
+        experience: 'Premium',
+        description: 'Experiencia gastronómica de nivel mundial',
+      };
+    } else {
+      return {
+        name: 'Chef Regular',
+        primaryColor: 'orange',
+        secondaryColor: 'amber',
+        accentColor: 'yellow',
+        gradient: 'from-orange-500 via-amber-500 to-yellow-400',
+        lightGradient: 'from-orange-50 via-white to-amber-50',
+        textColor: 'orange-800',
+        borderColor: 'orange-200',
+        shadow: 'shadow-orange-500/25',
+        selectedBg: 'bg-orange-50',
+        selectedBorder: 'border-orange-500',
+        iconColor: 'text-orange-600',
+        buttonGradient: 'from-orange-500 to-amber-500',
+        experience: 'Auténtica',
+        description: 'Cocina casera llena de sabor y personalidad',
+      };
+    }
+  };
+
+  const theme = getChefTheme();
+
   // State for multiple days configuration
   const [dayConfigurations, setDayConfigurations] = useState<
     Record<string, DayServiceConfig>
@@ -47,36 +93,36 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDateForModal, setSelectedDateForModal] = useState<string>('');
 
-  // Use the custom hook for date selection
-  const { selectedDates, toggleDate, removeDate, clearAllDates } =
-    useDateSelection(formData.dates || [], (dates) => {
-      onDateSelect(dates);
-      // Remove configurations for dates that are no longer selected
-      const newConfigurations = { ...dayConfigurations };
-      Object.keys(newConfigurations).forEach((date) => {
-        if (!dates.includes(date)) {
-          delete newConfigurations[date];
-        }
-      });
-      setDayConfigurations(newConfigurations);
-    });
+  // Convert formData.dates to Set for easier manipulation
+  const selectedDates = new Set(formData.dates || []);
 
-  // Handle date click for multiple days service
-  const handleDateClick = (date: string) => {
+  // Handle date toggle for multiple days service
+  const handleDateToggle = (date: string) => {
     if (formData.serviceType === 'multiple') {
-      // Check if date is already selected
-      const isSelected = selectedDates.has(date);
+      console.log('📅 Date clicked:', date);
+      console.log('📅 Currently selected dates:', Array.from(selectedDates));
 
-      // Toggle the date selection first
-      toggleDate(date);
+      const newDates = new Set(selectedDates);
+      const isSelected = newDates.has(date);
 
-      // If the date is being selected (not deselected), open modal
-      if (!isSelected) {
+      if (isSelected) {
+        newDates.delete(date);
+        // Remove configuration for this date
+        const newConfigurations = { ...dayConfigurations };
+        delete newConfigurations[date];
+        setDayConfigurations(newConfigurations);
+      } else {
+        newDates.add(date);
+        // Open modal for configuration
         setTimeout(() => {
           setSelectedDateForModal(date);
           setModalOpen(true);
         }, 100);
       }
+
+      const newDatesArray = Array.from(newDates);
+      console.log('📅 New dates array:', newDatesArray);
+      onDateSelect(newDatesArray);
     }
   };
 
@@ -96,21 +142,53 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
 
   // Handle removing a date
   const handleRemoveDate = (date: string) => {
-    removeDate(date);
+    const newDates = new Set(selectedDates);
+    newDates.delete(date);
+    const newDatesArray = Array.from(newDates);
+
+    onDateSelect(newDatesArray);
+
     // Remove configuration for this date
     const newConfigurations = { ...dayConfigurations };
     delete newConfigurations[date];
     setDayConfigurations(newConfigurations);
   };
 
-  // Get meal type display names
-  const getMealTypeDisplay = (mealType: string) => {
-    const mealTypes: Record<string, string> = {
-      breakfast: 'Desayuno',
-      lunch: 'Comida',
-      dinner: 'Cena',
+  // Clear all dates
+  const clearAllDates = () => {
+    onDateSelect([]);
+    setDayConfigurations({});
+  };
+
+  // Get meal type display info
+  const getMealTypeInfo = (mealType: string) => {
+    const mealTypes: Record<
+      string,
+      { name: string; icon: JSX.Element; color: string }
+    > = {
+      breakfast: {
+        name: 'Desayuno',
+        icon: <Coffee className='w-4 h-4' />,
+        color: 'bg-amber-100 text-amber-800 border-amber-200',
+      },
+      lunch: {
+        name: 'Comida',
+        icon: <Sun className='w-4 h-4' />,
+        color: 'bg-orange-100 text-orange-800 border-orange-200',
+      },
+      dinner: {
+        name: 'Cena',
+        icon: <Moon className='w-4 h-4' />,
+        color: 'bg-purple-100 text-purple-800 border-purple-200',
+      },
     };
-    return mealTypes[mealType] || mealType;
+    return (
+      mealTypes[mealType] || {
+        name: mealType,
+        icon: <Utensils className='w-4 h-4' />,
+        color: 'bg-gray-100 text-gray-800 border-gray-200',
+      }
+    );
   };
 
   // Get menu type display names
@@ -131,345 +209,710 @@ const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
   const isAllConfigured =
     configuredDays === selectedDaysCount && selectedDaysCount > 0;
 
-  return (
-    <div className='space-y-6'>
-      <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-        <Calendar className='w-5 h-5 mr-2 text-amber-600' />
-        {t('chef.form.step1.title', { fallback: 'When & Where' })}
-      </h3>
+  // Time options with luxury styling
+  const timeOptions = [
+    {
+      value: 'Breakfast',
+      label: 'Desayuno Gourmet',
+      icon: <Coffee className='w-5 h-5' />,
+      time: '8:00 - 11:00 AM',
+      gradient: 'from-amber-400 to-orange-500',
+    },
+    {
+      value: 'Lunch',
+      label: 'Almuerzo de Lujo',
+      icon: <Sun className='w-5 h-5' />,
+      time: '12:00 - 3:00 PM',
+      gradient: 'from-orange-400 to-red-500',
+    },
+    {
+      value: 'Dinner',
+      label: 'Cena Memorable',
+      icon: <Moon className='w-5 h-5' />,
+      time: '6:00 - 10:00 PM',
+      gradient: 'from-purple-500 to-indigo-600',
+    },
+  ];
 
-      {/* Date Selection */}
-      {formData.serviceType === 'single' ? (
-        /* Single Day Service */
-        <div>
-          <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-            <Calendar className='w-4 h-4 mr-2 text-amber-700' />
-            {t('chef.form.date', { fallback: 'Date' })} *
-          </label>
-          <input
-            type='date'
-            name='date'
-            value={formData.date}
-            onChange={onChange}
-            min={getMinDate()}
-            className={`w-full p-3 border ${
-              errors.date ? 'border-red-500' : 'border-gray-300'
-            } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
-          />
-          {errors.date && (
-            <p className='text-red-500 text-xs mt-1'>{errors.date}</p>
-          )}
+  // Simple Calendar Component (replacing CalendarPicker)
+  const SimpleCalendar = () => {
+    const today = new Date();
+    const minDate = new Date(getMinDate());
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    // Generate days for current and next month
+    const generateCalendarDays = () => {
+      const days = [];
+      const startDate = new Date(currentYear, currentMonth, 1);
+      const endDate = new Date(currentYear, currentMonth + 2, 0); // Two months
+
+      for (
+        let d = new Date(startDate);
+        d <= endDate;
+        d.setDate(d.getDate() + 1)
+      ) {
+        const dateStr = d.toISOString().split('T')[0];
+        const isSelectable = d >= minDate;
+        const isSelected = selectedDates.has(dateStr);
+
+        if (isSelectable) {
+          days.push({
+            date: dateStr,
+            day: d.getDate(),
+            month: d.getMonth(),
+            isSelected,
+            isToday: d.toDateString() === today.toDateString(),
+          });
+        }
+      }
+      return days;
+    };
+
+    const calendarDays = generateCalendarDays();
+    const monthNames = [
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic',
+    ];
+
+    return (
+      <div className='bg-white rounded-2xl p-6 border-2 border-gray-200 shadow-lg'>
+        <div className='grid grid-cols-7 gap-2'>
+          {/* Day headers */}
+          {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
+            <div
+              key={day}
+              className='text-center text-sm font-semibold text-gray-600 p-2'
+            >
+              {day}
+            </div>
+          ))}
+
+          {/* Calendar days */}
+          {calendarDays.map((dayObj) => (
+            <button
+              key={dayObj.date}
+              type='button'
+              onClick={() => handleDateToggle(dayObj.date)}
+              className={`
+                p-3 text-sm rounded-xl transition-all duration-300 hover:scale-110 font-medium
+                ${
+                  dayObj.isSelected
+                    ? `bg-gradient-to-r ${theme.gradient} text-white shadow-lg ${theme.shadow}`
+                    : `bg-gray-50 hover:bg-gray-100 text-gray-800 hover:border-${theme.borderColor} border border-transparent`
+                }
+                ${
+                  dayObj.isToday && !dayObj.isSelected
+                    ? 'ring-2 ring-blue-400'
+                    : ''
+                }
+              `}
+            >
+              <div className='text-center'>
+                <div>{dayObj.day}</div>
+                <div className='text-xs opacity-75'>
+                  {monthNames[dayObj.month]}
+                </div>
+              </div>
+            </button>
+          ))}
         </div>
-      ) : (
-        /* Multiple Days Service */
-        <div>
-          <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-            <Calendar className='w-4 h-4 mr-2 text-amber-700' />
-            {t('chef.form.selectDates', { fallback: 'Select Dates' })} *
-          </label>
+      </div>
+    );
+  };
 
-          {/* Instructions for multiple days */}
-          <div className='mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-            <p className='text-sm text-blue-700'>
-              💡 <strong>Instrucciones:</strong> Haz clic en las fechas para
-              seleccionarlas. Para cada fecha seleccionada, se abrirá un modal
-              para configurar el horario, menú y detalles específicos del
-              servicio.
-            </p>
+  // Debug effect
+  React.useEffect(() => {
+    console.log('📅 BasicDetailsStep - formData.dates:', formData.dates);
+    console.log(
+      '📅 BasicDetailsStep - selectedDates:',
+      Array.from(selectedDates)
+    );
+  }, [formData.dates]);
+
+  return (
+    <div className='space-y-12'>
+      {/* Themed Header */}
+      <div className='relative text-center space-y-6 py-8'>
+        <div
+          className={`absolute inset-0 bg-gradient-to-r ${theme.lightGradient} rounded-3xl -mx-4`}
+        ></div>
+        <div className='relative z-10'>
+          <div
+            className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r ${theme.gradient} rounded-full mb-6 shadow-2xl ${theme.shadow}`}
+          >
+            <Calendar className='w-10 h-10 text-white drop-shadow-lg' />
           </div>
+          <h3 className='text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-4'>
+            Cuándo & Dónde
+          </h3>
+          <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light'>
+            Configura los detalles de tu experiencia culinaria{' '}
+            <span className={`font-semibold text-${theme.textColor}`}>
+              {formData.chefType === 'professional' ? 'Premium' : 'Auténtica'}
+            </span>
+            . Cada detalle es importante para crear el momento perfecto.
+          </p>
+        </div>
+      </div>
 
-          {errors.dates && (
-            <p className='text-red-500 text-xs mb-3'>{errors.dates}</p>
-          )}
+      {/* Date Selection Section */}
+      <div className='space-y-8'>
+        {formData.serviceType === 'single' ? (
+          /* Single Day Service */
+          <div className='space-y-6'>
+            <div className='text-center space-y-4'>
+              <div
+                className={`inline-flex items-center space-x-3 px-6 py-3 bg-gradient-to-r ${theme.selectedBg} to-${theme.primaryColor}-100 rounded-2xl border border-${theme.borderColor}`}
+              >
+                <Calendar className={`w-6 h-6 ${theme.iconColor}`} />
+                <span
+                  className={`font-semibold text-${theme.textColor} text-lg`}
+                >
+                  Experiencia{' '}
+                  {formData.chefType === 'professional'
+                    ? 'Premium'
+                    : 'Auténtica'}{' '}
+                  Seleccionada
+                </span>
+                <Sparkles className={`w-5 h-5 ${theme.iconColor}`} />
+              </div>
+            </div>
 
-          <CalendarPicker
-            selectedDates={selectedDates}
-            onDateToggle={handleDateClick}
-            minDate={getMinDate()}
-          />
-
-          {/* Selected Dates with Configurations */}
-          {selectedDates.size > 0 && (
-            <div className='mt-6'>
-              <div className='flex items-center justify-between mb-4'>
-                <h4 className='font-medium text-gray-800 flex items-center'>
-                  <Settings className='w-4 h-4 mr-2' />
-                  Configuración de Servicios ({selectedDaysCount} días)
-                </h4>
-                <div className='flex items-center space-x-2'>
-                  {isAllConfigured ? (
-                    <span className='text-sm text-green-600 flex items-center'>
-                      <CheckCircle2 className='w-4 h-4 mr-1' />
-                      Todo configurado
-                    </span>
-                  ) : (
-                    <span className='text-sm text-amber-600 flex items-center'>
-                      <AlertTriangle className='w-4 h-4 mr-1' />
-                      {configuredDays}/{selectedDaysCount} configurados
-                    </span>
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+              {/* Date Selection */}
+              <div className='space-y-4'>
+                <label className='flex items-center text-lg font-semibold text-gray-800 mb-4'>
+                  <div className='w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4'>
+                    <Calendar className='w-6 h-6 text-white' />
+                  </div>
+                  Fecha de tu Experiencia *
+                </label>
+                <div className='relative'>
+                  <input
+                    type='date'
+                    name='date'
+                    value={formData.date}
+                    onChange={onChange}
+                    min={getMinDate()}
+                    className={`w-full p-6 text-lg border-2 ${
+                      errors.date
+                        ? 'border-red-400 bg-red-50'
+                        : 'border-gray-200 hover:border-blue-300 focus:border-blue-500'
+                    } rounded-2xl focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white shadow-lg`}
+                  />
+                  {formData.date && (
+                    <div className='absolute top-6 right-6'>
+                      <CheckCircle2 className='w-6 h-6 text-green-500' />
+                    </div>
                   )}
+                </div>
+                {errors.date && (
+                  <div className='flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-xl border border-red-200'>
+                    <AlertTriangle className='w-5 h-5' />
+                    <p className='text-sm font-medium'>{errors.date}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Time Selection */}
+              <div className='space-y-4'>
+                <label className='flex items-center text-lg font-semibold text-gray-800 mb-4'>
+                  <div className='w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4'>
+                    <Clock className='w-6 h-6 text-white' />
+                  </div>
+                  Momento del Día *
+                </label>
+                <div className='space-y-3'>
+                  {timeOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      onClick={() =>
+                        onChange({
+                          target: { name: 'time', value: option.value },
+                        } as any)
+                      }
+                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 hover:scale-105 ${
+                        formData.time === option.value
+                          ? 'border-purple-400 bg-gradient-to-r from-purple-50 to-pink-50 shadow-lg shadow-purple-200'
+                          : 'border-gray-200 hover:border-purple-300 bg-white shadow-md hover:shadow-lg'
+                      }`}
+                    >
+                      <div className='flex items-center justify-between'>
+                        <div className='flex items-center space-x-4'>
+                          <div
+                            className={`p-3 rounded-xl bg-gradient-to-r ${option.gradient} text-white shadow-lg`}
+                          >
+                            {option.icon}
+                          </div>
+                          <div>
+                            <h4 className='font-semibold text-gray-900'>
+                              {option.label}
+                            </h4>
+                            <p className='text-gray-600 text-sm'>
+                              {option.time}
+                            </p>
+                          </div>
+                        </div>
+                        {formData.time === option.value && (
+                          <CheckCircle2 className='w-6 h-6 text-purple-500' />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {errors.time && (
+                  <div className='flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-xl border border-red-200'>
+                    <AlertTriangle className='w-5 h-5' />
+                    <p className='text-sm font-medium'>{errors.time}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Multiple Days Service */
+          <div className='space-y-8'>
+            <div className='text-center space-y-4'>
+              <div
+                className={`inline-flex items-center space-x-3 px-6 py-3 bg-gradient-to-r ${theme.selectedBg} to-${theme.primaryColor}-100 rounded-2xl border border-${theme.borderColor}`}
+              >
+                <Calendar className={`w-6 h-6 ${theme.iconColor}`} />
+                <span
+                  className={`font-semibold text-${theme.textColor} text-lg`}
+                >
+                  Experiencia{' '}
+                  {formData.chefType === 'professional'
+                    ? 'Premium'
+                    : 'Auténtica'}{' '}
+                  Extendida
+                </span>
+                <Crown className={`w-5 h-5 ${theme.iconColor}`} />
+              </div>
+            </div>
+
+            <div
+              className={`bg-gradient-to-r ${theme.lightGradient} rounded-3xl p-8 border border-${theme.borderColor}`}
+            >
+              <div className='text-center mb-6'>
+                <h4 className='text-2xl font-bold text-gray-900 mb-2'>
+                  Selecciona tus Fechas
+                </h4>
+                <p className='text-gray-600'>
+                  Haz clic en las fechas para crear tu experiencia gastronómica
+                  personalizada
+                </p>
+              </div>
+
+              {/* Instructions */}
+              <div className='mb-6 p-6 bg-white/80 backdrop-blur-sm border border-blue-300 rounded-2xl shadow-lg'>
+                <div className='flex items-center space-x-4'>
+                  <div className='w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0'>
+                    <Sparkles className='w-6 h-6 text-white' />
+                  </div>
+                  <div>
+                    <h5 className='font-bold text-blue-900 mb-1'>
+                      Configuración Personalizada
+                    </h5>
+                    <p className='text-blue-700'>
+                      Cada fecha seleccionada abrirá un modal para configurar
+                      horario, menú y detalles específicos del servicio.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className='space-y-3'>
-                {Array.from(selectedDates)
-                  .sort()
-                  .map((date) => {
-                    const config = dayConfigurations[date];
-                    const isConfigured =
-                      config &&
-                      config.mealType &&
-                      config.menuType &&
-                      config.specificTime;
+              {errors.dates && (
+                <div className='flex items-center space-x-2 text-red-600 bg-red-50 p-4 rounded-xl border border-red-200 mb-6'>
+                  <AlertTriangle className='w-5 h-5' />
+                  <p className='font-medium'>{errors.dates}</p>
+                </div>
+              )}
 
-                    return (
-                      <div
-                        key={date}
-                        className={`border rounded-lg p-4 transition-all ${
-                          isConfigured
-                            ? 'border-green-200 bg-green-50'
-                            : 'border-amber-200 bg-amber-50'
-                        }`}
-                      >
-                        <div className='flex items-center justify-between'>
-                          <div className='flex items-center space-x-3'>
-                            <div
-                              className={`w-3 h-3 rounded-full ${
-                                isConfigured ? 'bg-green-500' : 'bg-amber-500'
-                              }`}
-                            ></div>
-                            <div className='flex-1'>
-                              <h5 className='font-medium text-gray-800 capitalize'>
-                                {new Date(date).toLocaleDateString('es-ES', {
-                                  weekday: 'long',
-                                  month: 'long',
-                                  day: 'numeric',
-                                })}
-                              </h5>
-                              {isConfigured ? (
-                                <div className='text-sm text-gray-600 mt-1'>
-                                  <div className='flex flex-wrap items-center gap-2'>
-                                    <span className='inline-flex items-center px-2 py-1 bg-white rounded-md border border-gray-200'>
-                                      <Clock className='w-3 h-3 mr-1' />
-                                      <strong>
-                                        {getMealTypeDisplay(config.mealType)}
-                                      </strong>{' '}
-                                      - {config.specificTime}
-                                    </span>
-                                    <span className='inline-flex items-center px-2 py-1 bg-white rounded-md border border-gray-200'>
-                                      <Utensils className='w-3 h-3 mr-1' />
-                                      {getMenuTypeDisplay(config.menuType)}
-                                    </span>
-                                    <span className='inline-flex items-center px-2 py-1 bg-white rounded-md border border-gray-200'>
-                                      <Users className='w-3 h-3 mr-1' />
-                                      {config.guestCount} personas
-                                    </span>
+              {/* Simple Calendar */}
+              <SimpleCalendar />
+
+              {/* Selected Dates Configuration */}
+              {selectedDates.size > 0 && (
+                <div className='mt-8 space-y-6'>
+                  <div className='flex items-center justify-between p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200'>
+                    <h4 className='font-bold text-gray-900 text-xl flex items-center'>
+                      <Settings className='w-6 h-6 mr-3 text-indigo-600' />
+                      Configuración de Servicios ({selectedDaysCount} días)
+                    </h4>
+                    <div className='flex items-center space-x-3'>
+                      {isAllConfigured ? (
+                        <div className='flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-800 rounded-xl border border-green-200'>
+                          <CheckCircle2 className='w-5 h-5' />
+                          <span className='font-medium'>Todo Configurado</span>
+                        </div>
+                      ) : (
+                        <div className='flex items-center space-x-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-xl border border-amber-200'>
+                          <AlertTriangle className='w-5 h-5' />
+                          <span className='font-medium'>
+                            {configuredDays}/{selectedDaysCount} configurados
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className='space-y-4'>
+                    {Array.from(selectedDates)
+                      .sort()
+                      .map((date) => {
+                        const config = dayConfigurations[date];
+                        const isConfigured =
+                          config &&
+                          config.mealType &&
+                          config.menuType &&
+                          config.specificTime;
+                        const mealInfo = config?.mealType
+                          ? getMealTypeInfo(config.mealType)
+                          : null;
+
+                        return (
+                          <div
+                            key={date}
+                            className={`relative overflow-hidden rounded-2xl border-2 transition-all duration-300 ${
+                              isConfigured
+                                ? 'border-green-300 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg'
+                                : 'border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 shadow-md'
+                            }`}
+                          >
+                            <div className='p-6'>
+                              <div className='flex items-center justify-between mb-4'>
+                                <div className='flex items-center space-x-4'>
+                                  <div
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg ${
+                                      isConfigured
+                                        ? 'bg-green-500'
+                                        : 'bg-amber-500'
+                                    }`}
+                                  >
+                                    {isConfigured ? (
+                                      <CheckCircle2 className='w-6 h-6 text-white' />
+                                    ) : (
+                                      <Settings className='w-6 h-6 text-white' />
+                                    )}
                                   </div>
+                                  <div>
+                                    <h5 className='font-bold text-gray-900 text-lg capitalize'>
+                                      {new Date(date).toLocaleDateString(
+                                        'es-ES',
+                                        {
+                                          weekday: 'long',
+                                          month: 'long',
+                                          day: 'numeric',
+                                        }
+                                      )}
+                                    </h5>
+                                    <p className='text-gray-600'>
+                                      {new Date(date).getFullYear()}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className='flex items-center space-x-3'>
+                                  <button
+                                    type='button'
+                                    onClick={() => handleEditDayConfig(date)}
+                                    className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center shadow-lg hover:scale-105 ${
+                                      isConfigured
+                                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                                        : 'bg-amber-600 hover:bg-amber-700 text-white'
+                                    }`}
+                                  >
+                                    <Edit3 className='w-5 h-5 mr-2' />
+                                    {isConfigured ? 'Editar' : 'Configurar'}
+                                  </button>
+                                  <button
+                                    type='button'
+                                    onClick={() => handleRemoveDate(date)}
+                                    className='text-red-600 hover:text-red-800 p-3 hover:bg-red-50 rounded-xl transition-colors border border-red-200 hover:border-red-300'
+                                    title='Remover fecha'
+                                  >
+                                    <AlertTriangle className='w-5 h-5' />
+                                  </button>
+                                </div>
+                              </div>
+
+                              {isConfigured ? (
+                                <div className='space-y-4'>
+                                  <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                                    <div
+                                      className={`flex items-center space-x-3 px-4 py-3 rounded-xl border ${mealInfo?.color} shadow-sm`}
+                                    >
+                                      {mealInfo?.icon}
+                                      <div>
+                                        <span className='font-semibold text-sm'>
+                                          {mealInfo?.name}
+                                        </span>
+                                        <p className='text-xs opacity-80'>
+                                          {config.specificTime}
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className='flex items-center space-x-3 px-4 py-3 bg-blue-100 text-blue-800 border border-blue-200 rounded-xl shadow-sm'>
+                                      <Utensils className='w-4 h-4' />
+                                      <div>
+                                        <span className='font-semibold text-sm'>
+                                          {getMenuTypeDisplay(config.menuType)}
+                                        </span>
+                                        <p className='text-xs opacity-80'>
+                                          Menú
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className='flex items-center space-x-3 px-4 py-3 bg-purple-100 text-purple-800 border border-purple-200 rounded-xl shadow-sm'>
+                                      <Users className='w-4 h-4' />
+                                      <div>
+                                        <span className='font-semibold text-sm'>
+                                          {config.guestCount} personas
+                                        </span>
+                                        <p className='text-xs opacity-80'>
+                                          Comensales
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+
                                   {config.specialRequest && (
-                                    <div className='mt-2'>
-                                      <p className='text-xs text-gray-500 bg-white p-2 rounded border border-gray-200'>
-                                        <MessageCircle className='w-3 h-3 inline mr-1' />
-                                        <strong>Solicitud:</strong>{' '}
-                                        {config.specialRequest}
-                                      </p>
+                                    <div className='p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200'>
+                                      <div className='flex items-start space-x-3'>
+                                        <MessageCircle className='w-5 h-5 text-gray-600 mt-0.5' />
+                                        <div>
+                                          <h6 className='font-semibold text-gray-900 mb-1'>
+                                            Solicitud Especial:
+                                          </h6>
+                                          <p className='text-gray-700 text-sm'>
+                                            {config.specialRequest}
+                                          </p>
+                                        </div>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
                               ) : (
-                                <div className='mt-1'>
-                                  <p className='text-sm text-amber-700 flex items-center'>
-                                    <AlertTriangle className='w-4 h-4 mr-1' />
-                                    Configuración pendiente - Haz clic en
-                                    "Configurar"
+                                <div className='text-center py-6'>
+                                  <div className='flex items-center justify-center space-x-2 text-amber-700 mb-2'>
+                                    <AlertTriangle className='w-5 h-5' />
+                                    <span className='font-semibold'>
+                                      Configuración Pendiente
+                                    </span>
+                                  </div>
+                                  <p className='text-amber-600 text-sm'>
+                                    Haz clic en "Configurar" para personalizar
+                                    esta fecha
                                   </p>
                                 </div>
                               )}
                             </div>
                           </div>
-
-                          <div className='flex items-center space-x-2 ml-4'>
-                            {isConfigured && (
-                              <CheckCircle2 className='w-5 h-5 text-green-600 flex-shrink-0' />
-                            )}
-                            <button
-                              type='button'
-                              onClick={() => handleEditDayConfig(date)}
-                              className={`px-3 py-1 rounded-md text-sm font-medium transition-colors flex items-center ${
-                                isConfigured
-                                  ? 'text-green-700 hover:bg-green-100 border border-green-200'
-                                  : 'text-amber-700 hover:bg-amber-100 border border-amber-200 bg-white'
-                              }`}
-                            >
-                              <Edit3 className='w-4 h-4 mr-1' />
-                              {isConfigured ? 'Editar' : 'Configurar'}
-                            </button>
-                            <button
-                              type='button'
-                              onClick={() => handleRemoveDate(date)}
-                              className='text-red-600 hover:text-red-800 text-sm px-2 py-1 hover:bg-red-50 rounded transition-colors'
-                            >
-                              Quitar
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-
-              {/* Actions for multiple selection */}
-              <div className='mt-4 flex items-center justify-between pt-3 border-t border-gray-200'>
-                <button
-                  type='button'
-                  onClick={() => {
-                    clearAllDates();
-                    setDayConfigurations({});
-                  }}
-                  className='text-sm text-gray-600 hover:text-gray-800 underline'
-                >
-                  Limpiar todas las fechas
-                </button>
-
-                {!isAllConfigured && selectedDaysCount > 0 && (
-                  <div className='text-sm text-amber-600 flex items-center'>
-                    <AlertTriangle className='w-4 h-4 mr-1' />
-                    Configura todos los días para continuar
+                        );
+                      })}
                   </div>
-                )}
-              </div>
+
+                  {/* Actions for multiple selection */}
+                  <div className='flex items-center justify-between p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200'>
+                    <button
+                      type='button'
+                      onClick={clearAllDates}
+                      className='text-gray-600 hover:text-gray-800 underline underline-offset-2 font-medium transition-colors'
+                    >
+                      Limpiar todas las fechas
+                    </button>
+
+                    {!isAllConfigured && selectedDaysCount > 0 && (
+                      <div className='flex items-center space-x-2 text-amber-700 bg-amber-100 px-4 py-2 rounded-xl border border-amber-200'>
+                        <AlertTriangle className='w-5 h-5' />
+                        <span className='font-medium'>
+                          Configura todos los días para continuar
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
-      {/* Time Field - Only for Single Day Service */}
-      {formData.serviceType === 'single' && (
-        <div>
-          <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-            <Clock className='w-4 h-4 mr-2 text-amber-700' />
-            {t('chef.form.time', { fallback: 'Time' })} *
-          </label>
-          <select
-            name='time'
-            value={formData.time}
-            onChange={onChange}
-            className={`w-full p-3 border ${
-              errors.time ? 'border-red-500' : 'border-gray-300'
-            } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
-          >
-            <option value=''>Select a time</option>
-            <option value='Breakfast'>Breakfast</option>
-            <option value='Lunch'>Lunch</option>
-            <option value='Dinner'>Dinner</option>
-          </select>
-          {errors.time && (
-            <p className='text-red-500 text-xs mt-1'>{errors.time}</p>
-          )}
-        </div>
-      )}
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        {/* Location Field */}
-        <div>
-          <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-            <MapPin className='w-4 h-4 mr-2 text-amber-700' />
-            {t('chef.form.location', { fallback: 'Location Address' })} *
-          </label>
-          <input
-            type='text'
-            name='locationAddress'
-            value={formData.locationAddress}
-            onChange={onChange}
-            placeholder='Enter the full address where the event will be held'
-            className={`w-full p-3 border ${
-              errors.locationAddress ? 'border-red-500' : 'border-gray-300'
-            } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
-          />
-          {errors.locationAddress && (
-            <p className='text-red-500 text-xs mt-1'>
-              {errors.locationAddress}
-            </p>
-          )}
-          <p className='text-xs text-gray-500 mt-1'>
-            Please provide the complete address including any relevant details
-            for the chef
+      {/* Location and Occasion Section */}
+      <div className='space-y-8'>
+        <div className='text-center'>
+          <h4 className='text-2xl font-bold text-gray-900 mb-2'>
+            Detalles del Evento
+          </h4>
+          <p className='text-gray-600'>
+            Información esencial para personalizar tu experiencia
           </p>
         </div>
 
-        {/* Occasion Field */}
-        <div>
-          <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-            <Gift className='w-4 h-4 mr-2 text-amber-700' />
-            {t('chef.form.occasion', { fallback: 'Occasion' })} *
-          </label>
-          <select
-            name='occasion'
-            value={formData.occasion}
-            onChange={onChange}
-            className={`w-full p-3 border ${
-              errors.occasion ? 'border-red-500' : 'border-gray-300'
-            } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
-          >
-            <option value=''>Select occasion</option>
-            {occasionTypes.map((occasion) => (
-              <option key={occasion.id} value={occasion.id}>
-                {occasion.name}
-              </option>
-            ))}
-          </select>
-          {errors.occasion && (
-            <p className='text-red-500 text-xs mt-1'>{errors.occasion}</p>
-          )}
-
-          {/* Show custom occasion input if "Other" is selected */}
-          {formData.occasion === 'other' && (
-            <div className='mt-3'>
-              <label className='text-sm font-medium text-gray-700 mb-2 block'>
-                Please specify the occasion *
-              </label>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          {/* Location Field */}
+          <div className='space-y-4'>
+            <label className='flex items-center text-lg font-semibold text-gray-800 mb-4'>
+              <div className='w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4'>
+                <MapPin className='w-6 h-6 text-white' />
+              </div>
+              Dirección del Evento *
+            </label>
+            <div className='relative'>
               <input
                 type='text'
-                name='otherOccasion'
-                value={formData.otherOccasion}
+                name='locationAddress'
+                value={formData.locationAddress}
                 onChange={onChange}
-                placeholder='Enter the occasion'
-                className={`w-full p-3 border ${
-                  errors.otherOccasion ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
+                placeholder='Ingresa la dirección completa donde se realizará el evento'
+                className={`w-full p-6 text-lg border-2 ${
+                  errors.locationAddress
+                    ? 'border-red-400 bg-red-50'
+                    : 'border-gray-200 hover:border-green-300 focus:border-green-500'
+                } rounded-2xl focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white shadow-lg`}
               />
-              {errors.otherOccasion && (
-                <p className='text-red-500 text-xs mt-1'>
-                  {errors.otherOccasion}
-                </p>
+              {formData.locationAddress && (
+                <div className='absolute top-6 right-6'>
+                  <CheckCircle2 className='w-6 h-6 text-green-500' />
+                </div>
               )}
             </div>
-          )}
+            {errors.locationAddress && (
+              <div className='flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-xl border border-red-200'>
+                <AlertTriangle className='w-5 h-5' />
+                <p className='text-sm font-medium'>{errors.locationAddress}</p>
+              </div>
+            )}
+            <div className='bg-green-50 p-4 rounded-xl border border-green-200'>
+              <p className='text-green-800 text-sm font-medium'>
+                💡 Incluye cualquier detalle relevante como número de
+                apartamento, instrucciones de acceso, etc.
+              </p>
+            </div>
+          </div>
+
+          {/* Occasion Field */}
+          <div className='space-y-4'>
+            <label className='flex items-center text-lg font-semibold text-gray-800 mb-4'>
+              <div className='w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl flex items-center justify-center mr-4'>
+                <Gift className='w-6 h-6 text-white' />
+              </div>
+              Tipo de Ocasión *
+            </label>
+            <select
+              name='occasion'
+              value={formData.occasion}
+              onChange={onChange}
+              className={`w-full p-6 text-lg border-2 ${
+                errors.occasion
+                  ? 'border-red-400 bg-red-50'
+                  : 'border-gray-200 hover:border-pink-300 focus:border-pink-500'
+              } rounded-2xl focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white shadow-lg`}
+            >
+              <option value=''>Selecciona la ocasión</option>
+              {occasionTypes.map((occasion) => (
+                <option key={occasion.id} value={occasion.id}>
+                  {occasion.name}
+                </option>
+              ))}
+            </select>
+            {errors.occasion && (
+              <div className='flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-xl border border-red-200'>
+                <AlertTriangle className='w-5 h-5' />
+                <p className='text-sm font-medium'>{errors.occasion}</p>
+              </div>
+            )}
+
+            {/* Custom occasion input */}
+            {formData.occasion === 'other' && (
+              <div className='space-y-3'>
+                <label className='text-lg font-semibold text-gray-800 block'>
+                  Especifica la ocasión *
+                </label>
+                <input
+                  type='text'
+                  name='otherOccasion'
+                  value={formData.otherOccasion}
+                  onChange={onChange}
+                  placeholder='Describe tu ocasión especial'
+                  className={`w-full p-6 text-lg border-2 ${
+                    errors.otherOccasion
+                      ? 'border-red-400 bg-red-50'
+                      : 'border-gray-200 hover:border-pink-300 focus:border-pink-500'
+                  } rounded-2xl focus:ring-4 focus:ring-pink-500/20 transition-all duration-300 bg-white shadow-lg`}
+                />
+                {errors.otherOccasion && (
+                  <div className='flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-xl border border-red-200'>
+                    <AlertTriangle className='w-5 h-5' />
+                    <p className='text-sm font-medium'>
+                      {errors.otherOccasion}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Summary Footer */}
       {formData.serviceType === 'multiple' && selectedDates.size > 0 && (
-        <div className='pt-4 border-t border-gray-100'>
-          <div className='flex items-center justify-between text-sm'>
-            <span className='text-gray-600 flex items-center'>
-              <Calendar className='w-4 h-4 mr-1' />
-              {selectedDaysCount} date{selectedDaysCount !== 1 ? 's' : ''}{' '}
-              selected
-              {configuredDays > 0 && (
-                <span className='ml-2 text-green-600'>
-                  • {configuredDays} configurados
-                </span>
-              )}
-            </span>
-            <span
-              className={`font-medium ${
-                isAllConfigured ? 'text-green-600' : 'text-amber-600'
+        <div
+          className={`p-8 bg-gradient-to-r ${theme.lightGradient} rounded-3xl border border-${theme.borderColor} shadow-lg`}
+        >
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center space-x-4'>
+              <div
+                className={`w-12 h-12 bg-gradient-to-r ${theme.gradient} rounded-xl flex items-center justify-center`}
+              >
+                <Calendar className='w-6 h-6 text-white' />
+              </div>
+              <div>
+                <h5 className='font-bold text-gray-900 text-lg'>
+                  {selectedDaysCount} fecha{selectedDaysCount !== 1 ? 's' : ''}{' '}
+                  seleccionada{selectedDaysCount !== 1 ? 's' : ''}
+                </h5>
+                {configuredDays > 0 && (
+                  <p className='text-green-600 font-medium'>
+                    {configuredDays} configuración
+                    {configuredDays !== 1 ? 'es' : ''} completada
+                    {configuredDays !== 1 ? 's' : ''}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div
+              className={`px-6 py-3 rounded-xl font-semibold ${
+                isAllConfigured
+                  ? 'bg-green-100 text-green-800 border border-green-200'
+                  : 'bg-amber-100 text-amber-800 border border-amber-200'
               }`}
             >
-              {isAllConfigured
-                ? 'Ready to continue'
-                : 'Configure remaining days'}
-            </span>
+              {isAllConfigured ? (
+                <div className='flex items-center space-x-2'>
+                  <CheckCircle2 className='w-5 h-5' />
+                  <span>Listo para continuar</span>
+                </div>
+              ) : (
+                <div className='flex items-center space-x-2'>
+                  <Settings className='w-5 h-5' />
+                  <span>Configura los días restantes</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

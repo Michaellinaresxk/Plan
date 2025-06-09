@@ -124,27 +124,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
             {getServiceDescription()}
           </p>
 
-          <div className='flex items-center justify-between'>
-            <span
-              className={`text-sm font-medium ${
-                isPremium ? 'text-amber-700' : 'text-blue-700'
-              }`}
-            >
-              {service.id === 'grocery-shopping' ||
-              service.id === 'luxe-grocery'
-                ? t('bookingModal.baseCost', { fallback: 'Service fee' })
-                : t('bookingModal.startingFrom', { fallback: 'Starting from' })}
-              :
-            </span>
-            <span
-              className={`text-lg font-bold ${
-                isPremium ? 'text-amber-900' : 'text-blue-900'
-              }`}
-            >
-              ${service.price.toFixed(2)}
-            </span>
-          </div>
-
           {/* Additional info for grocery shopping */}
           {(service.id === 'grocery-shopping' ||
             service.id === 'luxe-grocery') &&

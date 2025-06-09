@@ -1,5 +1,5 @@
-// ChefForm.tsx - UPDATED VERSION
-import React, { useState, useEffect } from 'react';
+// ChefForm.tsx - FIXED VERSION
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import {
@@ -9,7 +9,7 @@ import {
   occasionTypes,
 } from '@/constants/chefFormConsts';
 import FormHeader from './ChefHeader';
-import ChefTypeStep from './steps/ChefTypeStep'; // 👈 NUEVO COMPONENTE
+import ChefTypeStep from './steps/ChefTypeStep';
 import ServiceTypeStep from './steps/ServiceTypeStep';
 import BasicDetailsStep from './steps/BasicDetailsStep';
 import GuestCountStep from './steps/GuestCountStep';
@@ -29,13 +29,13 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
 
   // State for multi-step form
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 7; // 👈 INCREMENTADO A 7 PASOS
+  const totalSteps = 7;
 
-  // Form data state with new chef type field
+  // Form data state with proper initialization
   const [formData, setFormData] = useState({
-    chefType: '', // 👈 NUEVO CAMPO
+    chefType: '',
     serviceType: 'single',
-    dates: [],
+    dates: [] as string[], // Explicitly typed as string array
     date: '',
     time: '',
     occasion: '',
@@ -58,12 +58,59 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
   // Current price calculation
   const [currentPrice, setCurrentPrice] = useState(service.price);
 
+  // Callback para actualizar fechas múltiples
+  const handleDateSelect = useCallback(
+    (dates: string[]) => {
+      console.log('📅 handleDateSelect called with:', dates);
+      console.log('📅 Previous formData.dates:', formData.dates);
+
+      setFormData((prev) => {
+        const newFormData = {
+          ...prev,
+          dates: [...dates], // Create new array to ensure state update
+        };
+        console.log('📅 New formData will be:', newFormData);
+        return newFormData;
+      });
+
+      // Clear date error if any
+      if (errors.dates) {
+        setErrors((prev) => ({ ...prev, dates: '' }));
+      }
+    },
+    [formData.dates, errors.dates]
+  );
+
+  // Callback para actualizar campos del formulario
+  const updateFormField = useCallback(
+    (field: string, value: any) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+
+      // Clear error for this field
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: '' }));
+      }
+    },
+    [errors]
+  );
+
   // Form validation for each step
   const validateStep = (step: number) => {
     const newErrors: Record<string, string> = {};
 
+    console.log('🔍 Validating step:', step);
+    console.log('📋 Current formData:', {
+      serviceType: formData.serviceType,
+      date: formData.date,
+      dates: formData.dates,
+      datesLength: formData.dates?.length,
+    });
+
     switch (step) {
-      case 1: // Chef Type Selection 👈 NUEVO PASO
+      case 1: // Chef Type Selection
         if (!formData.chefType) {
           newErrors.chefType = t('form.errors.required', {
             fallback: 'Chef type is required',
@@ -75,25 +122,32 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
         // No validation needed for service type selection
         break;
 
-      case 3: // Basic Details 👈 PASO RENUMERADO
+      case 3: // Basic Details
         if (formData.serviceType === 'single') {
           if (!formData.date) {
             newErrors.date = t('form.errors.required', {
               fallback: 'Date is required',
             });
           }
+          if (!formData.time) {
+            newErrors.time = t('form.errors.required', {
+              fallback: 'Time is required',
+            });
+          }
         } else {
-          if (!formData.dates.length) {
+          // Multiple days validation
+          if (
+            !formData.dates ||
+            !Array.isArray(formData.dates) ||
+            formData.dates.length === 0
+          ) {
             newErrors.dates = t('form.errors.required', {
               fallback: 'Please select at least one date',
             });
+            console.log('❌ Dates validation failed:', formData.dates);
+          } else {
+            console.log('✅ Dates validation passed:', formData.dates);
           }
-        }
-
-        if (!formData.time) {
-          newErrors.time = t('form.errors.required', {
-            fallback: 'Time is required',
-          });
         }
 
         if (!formData.locationAddress) {
@@ -115,7 +169,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
         }
         break;
 
-      case 4: // Guest count 👈 RESTO DE CASOS RENUMERADOS
+      case 4: // Guest count
         if (formData.guestCount < 1) {
           newErrors.guestCount = t('form.errors.minGuests', {
             fallback: 'At least 1 guest is required',
@@ -194,10 +248,17 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const hasErrors = Object.keys(newErrors).length > 0;
+
+    console.log('🔍 Validation result:', hasErrors ? 'FAILED' : 'PASSED');
+    if (hasErrors) {
+      console.log('❌ Errors:', newErrors);
+    }
+
+    return !hasErrors;
   };
 
-  // Navigation functions remain the same...
+  // Navigation functions
   const goToNextStep = () => {
     if (validateStep(currentStep)) {
       setCurrentStep(currentStep + 1);
@@ -243,7 +304,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     }
   };
 
-  // Handle form submission - same logic...
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -273,7 +334,6 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
 
   // Calculate price based on selections
   useEffect(() => {
-    // 👈 ACTUALIZAR CÁLCULO DE PRECIO BASADO EN CHEF TYPE
     let basePrice = service.price;
 
     // Override base price based on chef type
@@ -335,7 +395,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     setCurrentPrice(totalPrice);
   }, [
     service.price,
-    formData.chefType, // 👈 NUEVO DEPENDENCY
+    formData.chefType,
     formData.serviceType,
     formData.dates.length,
     formData.guestCount,
@@ -349,15 +409,21 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     if (formData.serviceType === 'single') {
       setFormData((prev) => ({
         ...prev,
-        dates: [],
+        dates: [], // Clear multiple dates
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        date: '',
+        date: '', // Clear single date
+        time: '', // Clear time as it's configured per date in multiple
       }));
     }
   }, [formData.serviceType]);
+
+  // Debug effect to monitor formData.dates changes
+  useEffect(() => {
+    console.log('📅 ChefForm - formData.dates changed:', formData.dates);
+  }, [formData.dates]);
 
   // Progress bar calculation
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -379,45 +445,30 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
 
         {/* Form Body */}
         <div className='p-8 space-y-8'>
-          {/* Step 1: Chef Type Selection 👈 NUEVO PASO */}
+          {/* Step 1: Chef Type Selection */}
           {currentStep === 1 && (
             <ChefTypeStep
               formData={formData}
-              onChange={(field, value) => {
-                setFormData({ ...formData, [field]: value });
-                if (errors[field]) {
-                  setErrors({ ...errors, [field]: '' });
-                }
-              }}
+              onChange={updateFormField}
               errors={errors}
             />
           )}
 
-          {/* Step 2: Service Type 👈 PASO RENUMERADO */}
+          {/* Step 2: Service Type */}
           {currentStep === 2 && (
             <ServiceTypeStep
               formData={formData}
-              onChange={(field, value) => {
-                setFormData({ ...formData, [field]: value });
-                if (errors[field]) {
-                  setErrors({ ...errors, [field]: '' });
-                }
-              }}
+              onChange={updateFormField}
               errors={errors}
             />
           )}
 
-          {/* Step 3: Basic Details 👈 PASO RENUMERADO */}
+          {/* Step 3: Basic Details */}
           {currentStep === 3 && (
             <BasicDetailsStep
               formData={formData}
               onChange={handleChange}
-              onDateSelect={(dates) => {
-                setFormData({ ...formData, dates });
-                if (errors.dates) {
-                  setErrors({ ...errors, dates: '' });
-                }
-              }}
+              onDateSelect={handleDateSelect}
               errors={errors}
               getMinDate={() => {
                 const tomorrow = new Date();
@@ -427,7 +478,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             />
           )}
 
-          {/* Step 4: Guest Count 👈 RESTO DE PASOS RENUMERADOS */}
+          {/* Step 4: Guest Count */}
           {currentStep === 4 && (
             <GuestCountStep
               formData={formData}
@@ -462,12 +513,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
           {currentStep === 5 && (
             <CuisineAndBudgetStep
               formData={formData}
-              onChange={(field, value) => {
-                setFormData({ ...formData, [field]: value });
-                if (errors[field]) {
-                  setErrors({ ...errors, [field]: '' });
-                }
-              }}
+              onChange={updateFormField}
               errors={errors}
             />
           )}
