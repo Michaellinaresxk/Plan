@@ -709,13 +709,6 @@ const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
           </p>
 
           <div className='flex flex-col md:flex-row gap-8 justify-center items-center'>
-            <div className='text-center'>
-              <div className='text-5xl font-bold text-white'>
-                ${service.price}
-              </div>
-              <div className='text-white/70 text-lg'>per person</div>
-            </div>
-
             <button
               onClick={() => setIsModalOpen(true)}
               className='bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 hover:scale-105 transition-all duration-300 shadow-2xl'

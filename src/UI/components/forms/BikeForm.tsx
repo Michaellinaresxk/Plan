@@ -2,17 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import {
-  Bike,
   Calendar,
   MapPin,
   Users,
   Baby,
-  CheckCircle,
   CreditCard,
   Info,
-  Clock,
   AlertTriangle,
-  Star,
   Shield,
 } from 'lucide-react';
 
@@ -41,6 +37,7 @@ interface FormData {
   // Rental details
   startDate: string;
   endDate: string;
+  endTime: string;
   startTime: string;
   location: string;
 
@@ -157,6 +154,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState<FormData>({
     startDate: '',
     endDate: '',
+    endTime: '',
     startTime: '09:00',
     location: '',
     adultCount: 2,
@@ -304,6 +302,9 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
 
     if (!formData.endDate) {
       newErrors.endDate = 'End date is required';
+    }
+    if (!formData.endTime) {
+      newErrors.endDate = 'End time is required';
     }
 
     if (!formData.location) {
@@ -674,27 +675,24 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                 )}
               </div>
 
-              {/* Start Time */}
+              {/* End Time */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock className='w-4 h-4 mr-2 text-green-700' />
-                  Preferred Start Time
+                  <Calendar className='w-4 h-4 mr-2 text-green-700' />
+                  End Time *
                 </label>
-                <select
-                  name='startTime'
-                  value={formData.startTime}
+                <input
+                  type='time'
+                  name='endTime'
+                  value={formData.endTime}
                   onChange={handleInputChange}
-                  className='w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 bg-gray-50'
-                >
-                  <option value='08:00'>8:00 AM</option>
-                  <option value='09:00'>9:00 AM</option>
-                  <option value='10:00'>10:00 AM</option>
-                  <option value='11:00'>11:00 AM</option>
-                  <option value='12:00'>12:00 PM</option>
-                  <option value='13:00'>1:00 PM</option>
-                  <option value='14:00'>2:00 PM</option>
-                  <option value='15:00'>3:00 PM</option>
-                </select>
+                  className={`w-full p-3 border ${
+                    errors.startTime ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-gray-50`}
+                />
+                {errors.endTimeTime && (
+                  <p className='text-red-500 text-xs mt-1'>{errors.endTime}</p>
+                )}
               </div>
             </div>
 

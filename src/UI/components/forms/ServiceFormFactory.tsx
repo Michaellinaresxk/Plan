@@ -197,32 +197,7 @@ PARA AGREGAR UN NUEVO FORMULARIO:
 
 1. Crea tu componente de formulario normalmente
 2. Agrega una línea en formRegistry.ts:
-
-registerForm({
-  name: 'MiNuevoForm',
-  component: () => import('@/components/forms/MiNuevoForm'),
-  servicePatterns: ['mi-servicio', 'otro-servicio-id'],
-  requiresItems: false, // true si necesita selectedItems
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit: additionalData?.onSubmit || ((data) => console.log('Submitted:', data)),
-    onCancel,
-    // ... otros props específicos
-  }),
-});
-
 3. ¡YA ESTÁ! El sistema detectará automáticamente cuándo usar tu formulario.
-
-VENTAJAS DE ESTA ARQUITECTURA:
-
-✅ ESCALABLE: Agregar nuevos formularios es solo 1 paso
-✅ MANTENIBLE: Cada formulario maneja sus propios props
-✅ PERFORMANTE: Lazy loading automático
-✅ FLEXIBLE: Auto-detección inteligente por patrones
-✅ CLEAN: ServiceFormFactory es ultra-simple (50 líneas)
-✅ DEBUGGEABLE: Logs automáticos en desarrollo
-✅ TYPE-SAFE: TypeScript completo
-✅ TESTEABLE: Cada parte se puede testear independientemente
 
 PATRÓN DE NOMENCLATURA RECOMENDADO:
 

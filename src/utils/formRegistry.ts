@@ -213,7 +213,7 @@ registerForm({
 // Chef Form
 registerForm({
   name: 'ChefForm',
-  component: () => import('@/UI/components/forms/chef/ChefFrom'),
+  component: () => import('@/UI/components/forms/chef/ChefForm'),
   servicePatterns: [
     'personal-chef',
     'luxe-chef',
@@ -236,6 +236,34 @@ registerForm({
   servicePatterns: ['*'], // Catch-all
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,
+    onCancel,
+  }),
+});
+
+// Saona Island Form
+registerForm({
+  name: 'SaonaIslandForm',
+  component: () => import('@/UI/components/forms/SaonaIslandForm'),
+  servicePatterns: ['saona-island-tour'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit ||
+      ((data: any) => console.log('Saona Island Tour:', data)),
+    onCancel,
+  }),
+});
+
+// Karaoke Form
+registerForm({
+  name: 'KaraokeFrom',
+  component: () => import('@/UI/components/forms/KaraokeFrom'),
+  servicePatterns: ['karaoke'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit ||
+      ((data: any) => console.log('Karaoke:', data)),
     onCancel,
   }),
 });
