@@ -211,6 +211,7 @@ const StandardPackage = () => {
               {/* Pass the services from the new data source */}
               <ServiceList
                 services={standardServices}
+                servicePath='standard-package'
                 viewContext='standard-view'
               />
             </motion.section>

@@ -4,12 +4,11 @@ import React from 'react';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { ServiceData } from '@/types/services';
 import { Service } from '@/types/type';
 import { ArrowLeft } from 'lucide-react';
 import ServiceViewFactory from './factory/ServiceViewFactory';
-
+import { useRouter } from 'next/navigation';
 interface ServiceDetailsProps {
   service: Service;
   serviceData?: ServiceData;
@@ -20,7 +19,7 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
   serviceData,
 }) => {
   const { t } = useTranslation();
-
+  const router = useRouter();
   // Determinar si es premium
   const isPremium = service.packageType.includes('premium');
   const primaryColor = isPremium ? 'amber' : 'blue';
@@ -49,13 +48,13 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
 
         {/* Hero content - Keep container for hero only */}
         <div className='container mx-auto px-6 relative h-full flex flex-col justify-end pb-10'>
-          <Link
-            href='/services'
+          <button
+            onClick={() => router.back()}
             className='text-white mb-6 inline-flex items-center hover:underline'
           >
             <ArrowLeft className='h-4 w-4 mr-2' />
             {t('services.actions.backToServices')}
-          </Link>
+          </button>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

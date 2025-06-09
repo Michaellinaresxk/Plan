@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
-
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation'; // ← AGREGAR: Router para navegación
+import { useReservation } from '@/context/BookingContext'; // ← AGREGAR: Contexto de reserva
 import { Star, X } from 'lucide-react';
 import { SPA_SERVICES } from '@/constants/spaServices';
 import PreSelectedBookingForm from './PreSelectedBookingForm';
@@ -86,6 +87,10 @@ const PreSelectedServiceCard = ({ service, onRemove }) => {
 
 // Main Component
 const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
+  // ← AGREGAR: Hooks necesarios para navegación
+  const router = useRouter();
+  const { setReservationData } = useReservation();
+
   const [selectedService, setSelectedService] = useState(null);
 
   // Convertir datos pre-seleccionados si existen
@@ -105,16 +110,62 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
     );
   }, []);
 
-  const addBooking = (bookingData) => {
-    const newBooking = {
-      ...bookingData,
-      id: Date.now().toString(),
-    };
+  // ← MODIFICAR: Función que maneja el booking y navega
+  const handleBookingConfirm = useCallback(
+    async (bookingData) => {
+      try {
+        console.log('Processing booking data:', bookingData);
 
-    onSubmit({
-      bookings: [newBooking],
-      totalPrice: newBooking.price,
-    });
+        // Crear los datos de reserva en el formato correcto
+        const reservationData = {
+          service: selectedService,
+          formData: {
+            serviceId: bookingData.serviceId || selectedService.id,
+            serviceName: bookingData.serviceName || selectedService.name,
+            duration: bookingData.duration,
+            date: bookingData.date,
+            time: bookingData.time,
+            persons: bookingData.persons,
+            specialNeeds: bookingData.specialNeeds,
+            calculatedPrice: bookingData.price,
+          },
+          totalPrice: bookingData.price,
+          bookingDate: new Date(),
+        };
+
+        console.log('Setting reservation data:', reservationData);
+
+        // Establecer los datos en el contexto
+        setReservationData(reservationData);
+
+        // Navegar al proceso de pago
+        router.push('/reservation-confirmation');
+
+        // También llamar onSubmit si es necesario para compatibilidad
+        if (onSubmit) {
+          onSubmit({
+            bookings: [
+              {
+                ...bookingData,
+                id: Date.now().toString(),
+              },
+            ],
+            totalPrice: bookingData.price,
+          });
+        }
+      } catch (error) {
+        console.error('Error processing booking:', error);
+        alert(
+          'Hubo un error procesando la reserva. Por favor intenta de nuevo.'
+        );
+      }
+    },
+    [selectedService, setReservationData, router, onSubmit]
+  );
+
+  // ← MODIFICAR: Función simplificada para agregar booking (fallback)
+  const addBooking = (bookingData) => {
+    handleBookingConfirm(bookingData);
   };
 
   const handleServiceRemove = () => {
@@ -136,7 +187,7 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
             {/* Booking Form */}
             <PreSelectedBookingForm
               service={selectedService}
-              onConfirm={addBooking}
+              onConfirm={handleBookingConfirm} // ← CAMBIAR: Usar nueva función
               onCancel={handleServiceRemove}
             />
           </>

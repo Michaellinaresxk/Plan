@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
+import { useRouter } from 'next/navigation';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useBooking } from '@/context/BookingContext';
+import { useReservation } from '@/context/BookingContext'; // Cambio: usar useReservation en lugar de useBooking
 import { BookingDate } from '@/types/type';
 import { SPA_SERVICES } from '@/constants/spaServices';
 import {
@@ -16,18 +17,15 @@ import {
   Heart,
   CheckCircle,
   Users,
-  Home,
   Timer,
   Phone,
-  MapPin,
-  Sparkles,
-  Quote,
   Calendar,
   Plus,
   Minus,
   X,
   Accessibility,
   Info,
+  CreditCard,
 } from 'lucide-react';
 
 interface MassageServiceViewProps {
@@ -49,7 +47,6 @@ const TIME_SLOTS = [
   '18:00',
 ];
 
-// Usar los datos importados
 const MASSAGE_TYPES = SPA_SERVICES.massages;
 
 // Componente del formulario inline
@@ -61,25 +58,61 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
   const [time, setTime] = useState('');
   const [persons, setPersons] = useState(1);
   const [specialNeeds, setSpecialNeeds] = useState('');
+  const [errors, setErrors] = useState({}); // Nuevo: estado para errores
+  const [isSubmitting, setIsSubmitting] = useState(false); // Nuevo: estado de carga
 
   const totalPrice = selectedDuration.price * persons;
   const isFormValid = date && time;
 
-  const handleSubmit = () => {
-    if (!isFormValid) return;
+  // Nuevo: validación del formulario
+  const validateForm = useCallback(() => {
+    const newErrors = {};
+    if (!date) newErrors.date = 'Date required';
+    if (!time) newErrors.time = 'Time required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [date, time]);
 
-    onConfirm({
-      serviceId: selectedMassage.id,
-      serviceName: selectedMassage.name,
-      duration: selectedDuration.duration,
-      price: totalPrice,
-      date,
-      time,
-      persons,
-      specialNeeds,
-      emoji: selectedMassage.emoji,
-    });
-  };
+  // Corregido: manejar envío del formulario
+  const handleSubmit = useCallback(async () => {
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+
+    try {
+      // Crear los datos de reserva en el formato correcto
+      const reservationData = {
+        service: selectedMassage,
+        formData: {
+          serviceId: selectedMassage.id,
+          serviceName: selectedMassage.name,
+          duration: selectedDuration.duration,
+          date,
+          time,
+          persons,
+          specialNeeds,
+          calculatedPrice: totalPrice,
+        },
+        totalPrice,
+        bookingDate: new Date(),
+      };
+
+      onConfirm(reservationData);
+    } catch (error) {
+      console.error('Booking error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [
+    validateForm,
+    selectedMassage,
+    selectedDuration,
+    date,
+    time,
+    persons,
+    specialNeeds,
+    totalPrice,
+    onConfirm,
+  ]);
 
   return (
     <motion.div
@@ -163,10 +196,20 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
             <input
               type='date'
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={(e) => {
+                setDate(e.target.value);
+                if (errors.date) setErrors((prev) => ({ ...prev, date: '' }));
+              }}
               min={new Date().toISOString().split('T')[0]}
-              className='w-full p-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg'
+              className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
+                errors.date
+                  ? 'border-red-300 bg-red-50 focus:border-red-400'
+                  : 'border-stone-300'
+              }`}
             />
+            {errors.date && (
+              <p className='text-red-500 text-sm mt-2'>{errors.date}</p>
+            )}
           </div>
 
           <div>
@@ -176,8 +219,15 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
             </label>
             <select
               value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className='w-full p-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg'
+              onChange={(e) => {
+                setTime(e.target.value);
+                if (errors.time) setErrors((prev) => ({ ...prev, time: '' }));
+              }}
+              className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
+                errors.time
+                  ? 'border-red-300 bg-red-50 focus:border-red-400'
+                  : 'border-stone-300'
+              }`}
             >
               <option value=''>Select time</option>
               {TIME_SLOTS.map((slot) => (
@@ -186,6 +236,9 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
                 </option>
               ))}
             </select>
+            {errors.time && (
+              <p className='text-red-500 text-sm mt-2'>{errors.time}</p>
+            )}
           </div>
         </div>
 
@@ -283,16 +336,25 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
             className={`flex-1 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-              isFormValid
+              isFormValid && !isSubmitting
                 ? 'bg-stone-800 text-white hover:bg-stone-700'
                 : 'bg-stone-300 text-stone-500 cursor-not-allowed'
             }`}
           >
-            <Heart className='w-5 h-5' />
-            Confirm Booking
-            <ArrowRight className='w-5 h-5' />
+            {isSubmitting ? (
+              <>
+                <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
+                Processing...
+              </>
+            ) : (
+              <>
+                <CreditCard className='w-5 h-5' />
+                Confirm Booking
+                <ArrowRight className='w-5 h-5' />
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -307,9 +369,9 @@ const MassageServiceView = ({
   viewContext = 'standard-view',
 }) => {
   const { t } = useTranslation();
-  const { bookService } = useBooking();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
-  // Estado simple: solo masaje seleccionado
   const [selectedMassage, setSelectedMassage] = useState(null);
 
   // Animaciones
@@ -331,10 +393,9 @@ const MassageServiceView = ({
     },
   };
 
-  // Handlers simples
+  // Handlers
   const handleMassageSelect = useCallback((massage) => {
     setSelectedMassage(massage);
-    // Scroll al formulario después de un momento
     setTimeout(() => {
       const formElement = document.getElementById('booking-form');
       if (formElement) {
@@ -344,26 +405,30 @@ const MassageServiceView = ({
   }, []);
 
   const handleCancelBooking = useCallback(() => {
+    console.log('Cancel booking called'); // Para debug
+
+    // Limpiar el estado inmediatamente
     setSelectedMassage(null);
+
+    // Opcional: scroll hacia arriba para mejor UX
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   }, []);
 
+  // Corregido: manejar confirmación de reserva
   const handleConfirmBooking = useCallback(
-    (bookingData) => {
-      console.log('Booking confirmed with serviceId:', bookingData.serviceId);
-      console.log('Full booking data:', bookingData);
-
-      // Llamar al contexto de booking directamente (sin modal)
+    async (reservationData) => {
       try {
-        const bookingDate = {
-          date: bookingData.date,
-          time: bookingData.time,
-        };
+        console.log('Setting reservation data:', reservationData);
 
-        bookService(service, bookingDate, bookingData.persons);
+        // Establecer los datos de reserva en el contexto
+        setReservationData(reservationData);
 
-        alert(
-          `¡Reserva confirmada!\n${bookingData.serviceName}\nFecha: ${bookingData.date} a las ${bookingData.time}\nPersonas: ${bookingData.persons}\nPrecio: $${bookingData.price}`
-        );
+        // Navegar a la página de confirmación de reserva (proceso de pago)
+        router.push('/reservation-confirmation');
+
+        // Cerrar el formulario
         setSelectedMassage(null);
       } catch (error) {
         console.error('Error processing booking:', error);
@@ -372,7 +437,7 @@ const MassageServiceView = ({
         );
       }
     },
-    [bookService, service]
+    [setReservationData, router]
   );
 
   return (
@@ -435,7 +500,7 @@ const MassageServiceView = ({
           </div>
         </motion.section>
 
-        {/* Sección de Masajes usando SPA_SERVICES */}
+        {/* Sección de Masajes */}
         <motion.section
           id='massage-selection'
           className='py-32 px-6 bg-white/50 backdrop-blur-sm'
@@ -609,9 +674,12 @@ const MassageServiceView = ({
                   </div>
 
                   {/* Formulario inline aparece aquí */}
-                  <AnimatePresence>
+                  <AnimatePresence mode='wait'>
+                    {' '}
+                    {/* Agregar mode="wait" */}
                     {selectedMassage?.id === massage.id && (
                       <InlineBookingForm
+                        key={`form-${massage.id}`} // Agregar key único
                         selectedMassage={selectedMassage}
                         onCancel={handleCancelBooking}
                         onConfirm={handleConfirmBooking}
@@ -621,438 +689,6 @@ const MassageServiceView = ({
                 </motion.div>
               );
             })}
-          </div>
-        </motion.section>
-
-        {/* Galería de Ambiente */}
-        <motion.section
-          className='py-32 px-6'
-          initial='hidden'
-          animate='visible'
-          variants={stagger}
-        >
-          <motion.div className='text-center mb-20' variants={fadeUp}>
-            <h2 className='text-5xl md:text-6xl font-light text-stone-800 mb-8'>
-              Your Personal Oasis
-            </h2>
-            <p className='text-xl text-stone-600 max-w-3xl mx-auto font-light leading-relaxed'>
-              Every detail is carefully designed to create an atmosphere of
-              absolute tranquility in the privacy of your space
-            </p>
-          </motion.div>
-
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16 md:mb-20'>
-            {[
-              {
-                image:
-                  'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=800&auto=format&fit=crop',
-                title: 'Serene Environment',
-                description: 'We create the perfect space for your relaxation',
-              },
-              {
-                image:
-                  'https://images.unsplash.com/photo-1583416750470-965b2707b355?q=80&w=800&auto=format&fit=crop',
-                title: 'Premium Products',
-                description: 'Oils and essences of the highest quality',
-              },
-              {
-                image:
-                  'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=800&auto=format&fit=crop',
-                title: 'Professional Techniques',
-                description: 'Precise and therapeutic movements',
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                className='group relative overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl'
-                variants={fadeUp}
-                whileHover={{ scale: 1.02 }}
-              >
-                <div className='aspect-[4/5] relative'>
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className='object-cover group-hover:scale-110 transition-transform duration-700'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-stone-900/80 via-transparent to-transparent' />
-                </div>
-
-                <div className='absolute bottom-0 left-0 right-0 p-4 md:p-8 text-white'>
-                  <h3 className='text-lg md:text-2xl font-light mb-2 md:mb-3'>
-                    {item.title}
-                  </h3>
-                  <p className='text-sm md:text-base text-white/90 leading-relaxed'>
-                    {item.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Quote inspiracional */}
-          <motion.div
-            className='text-center max-w-4xl mx-auto'
-            variants={fadeUp}
-          >
-            <div className='relative'>
-              <Quote className='w-16 h-16 text-stone-300 mx-auto mb-8' />
-              <blockquote className='text-3xl md:text-4xl font-light text-stone-700 leading-relaxed italic mb-8'>
-                "The body is your temple. Keep it pure and clean for the soul to
-                reside in."
-              </blockquote>
-              <cite className='text-xl text-stone-500 font-medium'>
-                — B.K.S. Iyengar
-              </cite>
-            </div>
-          </motion.div>
-        </motion.section>
-
-        {/* Proceso y Experiencia */}
-        <motion.section
-          className='py-32 px-6 bg-gradient-to-b from-stone-100 to-amber-50'
-          initial='hidden'
-          animate='visible'
-          variants={stagger}
-        >
-          <motion.div className='text-center mb-20' variants={fadeUp}>
-            <h3 className='text-4xl md:text-5xl font-light text-stone-800 mb-8'>
-              A Wellness Ritual
-            </h3>
-            <p className='text-xl text-stone-600 max-w-3xl mx-auto leading-relaxed'>
-              Each session is carefully orchestrated to create a transformative
-              experience from the first moment
-            </p>
-          </motion.div>
-
-          <div className='max-w-6xl mx-auto'>
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20'>
-              <motion.div variants={fadeUp}>
-                <h4 className='text-3xl font-light text-stone-800 mb-8'>
-                  Sanctuary Preparation
-                </h4>
-
-                <div className='space-y-8'>
-                  {[
-                    {
-                      step: '01',
-                      title: 'Arrival and Setup',
-                      description:
-                        'Our therapist arrives 15 minutes early to prepare your personal space with professional table, relaxing music and subtle aromatherapy.',
-                    },
-                    {
-                      step: '02',
-                      title: 'Personalized Consultation',
-                      description:
-                        'Initial conversation about your needs, pressure preferences, tension areas and session goals.',
-                    },
-                    {
-                      step: '03',
-                      title: 'Perfect Environment',
-                      description:
-                        'Temperature adjustment, soft lighting and selection of essential oils according to your emotional state of the day.',
-                    },
-                  ].map((item, index) => (
-                    <div key={index} className='flex items-start'>
-                      <div className='w-16 h-16 bg-stone-600 text-white rounded-full flex items-center justify-center mr-6 flex-shrink-0 font-light text-lg'>
-                        {item.step}
-                      </div>
-                      <div>
-                        <h5 className='text-xl font-medium text-stone-800 mb-3'>
-                          {item.title}
-                        </h5>
-                        <p className='text-stone-600 leading-relaxed'>
-                          {item.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              <motion.div className='relative' variants={fadeUp}>
-                <div className='relative h-[600px] rounded-3xl overflow-hidden shadow-2xl'>
-                  <Image
-                    src='https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=800&auto=format&fit=crop'
-                    alt='Spa environment preparation'
-                    fill
-                    className='object-cover'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent' />
-
-                  <div className='absolute bottom-8 left-8 right-8 text-white'>
-                    <h5 className='text-2xl font-light mb-3'>
-                      Your Space, Transformed
-                    </h5>
-                    <p className='text-white/90 leading-relaxed'>
-                      We transform any room into an oasis of tranquility with
-                      professional equipment and attention to every detail.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Galería de productos y técnicas */}
-            <motion.div
-              className='grid grid-cols-1 md:grid-cols-4 gap-6'
-              variants={stagger}
-            >
-              {[
-                {
-                  image:
-                    'https://images.unsplash.com/photo-1583416750470-965b2707b355?q=80&w=600&auto=format&fit=crop',
-                  title: 'Premium Oils',
-                  description: '100% natural and organic',
-                },
-                {
-                  image:
-                    'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=600&auto=format&fit=crop',
-                  title: 'Expert Techniques',
-                  description: 'Precise and therapeutic movements',
-                },
-                {
-                  image:
-                    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=600&auto=format&fit=crop',
-                  title: 'Volcanic Stones',
-                  description: 'Natural therapeutic heat',
-                },
-                {
-                  image:
-                    'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600&auto=format&fit=crop',
-                  title: 'Pure Aromas',
-                  description: 'Carefully selected essences',
-                },
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  className='group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500'
-                  variants={fadeUp}
-                  whileHover={{ y: -8 }}
-                >
-                  <div className='aspect-square relative'>
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className='object-cover group-hover:scale-110 transition-transform duration-700'
-                    />
-                    <div className='absolute inset-0 bg-gradient-to-t from-stone-900/80 to-transparent' />
-                  </div>
-
-                  <div className='absolute bottom-0 left-0 right-0 p-6 text-white'>
-                    <h6 className='font-medium mb-2'>{item.title}</h6>
-                    <p className='text-sm text-white/90'>{item.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </motion.section>
-
-        {/* Lo Que Incluye */}
-        <motion.section
-          className='py-32 px-6'
-          initial='hidden'
-          animate='visible'
-          variants={stagger}
-        >
-          <motion.div className='text-center mb-20' variants={fadeUp}>
-            <h3 className='text-4xl md:text-5xl font-light text-stone-800 mb-8'>
-              A Complete Experience
-            </h3>
-            <p className='text-xl text-stone-600 max-w-3xl mx-auto leading-relaxed'>
-              Every detail is included so you only focus on relaxing and
-              enjoying
-            </p>
-          </motion.div>
-
-          <div className='max-w-6xl mx-auto'>
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20'>
-              {/* Lo que está incluido */}
-              <motion.div
-                className='bg-white rounded-3xl shadow-xl p-12'
-                variants={fadeUp}
-              >
-                <h4 className='text-2xl font-light text-stone-800 mb-10 flex items-center'>
-                  <Heart className='w-8 h-8 text-stone-600 mr-4' />
-                  Everything Included
-                </h4>
-
-                <div className='space-y-8'>
-                  {[
-                    {
-                      icon: Shield,
-                      title: 'Certified Therapist',
-                      desc: 'Professionals with more than 500 hours of training and international certifications in specialized techniques.',
-                    },
-                    {
-                      icon: Leaf,
-                      title: 'Premium Organic Products',
-                      desc: '100% pure essential oils, nutritive creams and natural products selected for their therapeutic properties.',
-                    },
-                    {
-                      icon: Home,
-                      title: 'Professional Installation',
-                      desc: 'Professional massage table, Egyptian cotton sheets, relaxing music and environmental aromatherapy.',
-                    },
-                    {
-                      icon: Timer,
-                      title: 'Personalized Consultation',
-                      desc: 'Prior evaluation of needs, preferences and creation of a unique treatment plan for you.',
-                    },
-                    {
-                      icon: Heart,
-                      title: 'Post-Session Follow-up',
-                      desc: 'Personalized recommendations and tips to prolong the benefits of your experience.',
-                    },
-                  ].map((item, index) => (
-                    <div key={index} className='flex items-start group'>
-                      <div className='w-14 h-14 bg-stone-100 rounded-2xl flex items-center justify-center mr-6 flex-shrink-0 group-hover:bg-stone-200 transition-colors'>
-                        <item.icon className='w-6 h-6 text-stone-600' />
-                      </div>
-                      <div>
-                        <h5 className='text-lg font-medium text-stone-800 mb-3'>
-                          {item.title}
-                        </h5>
-                        <p className='text-stone-600 leading-relaxed'>
-                          {item.desc}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Nuestros terapeutas */}
-              <motion.div className='space-y-8' variants={fadeUp}>
-                <div className='bg-gradient-to-br from-stone-700 to-stone-800 rounded-3xl p-12 text-white'>
-                  <h4 className='text-2xl font-light mb-8'>Our Therapists</h4>
-
-                  <div className='space-y-6'>
-                    {[
-                      {
-                        name: 'Elena Martínez',
-                        specialty: 'Deep Tissue Specialist',
-                        experience: '8 years of experience',
-                        certification:
-                          'Certified in Swedish and Thai Techniques',
-                      },
-                      {
-                        name: 'Carlos Mendoza',
-                        specialty: 'Thai Massage Master',
-                        experience: '12 years of experience',
-                        certification: 'Traditional training in Thailand',
-                      },
-                      {
-                        name: 'Ana Silva',
-                        specialty: 'Certified Prenatal Therapist',
-                        experience: '10 years of experience',
-                        certification: 'Aromatherapy Specialization',
-                      },
-                    ].map((therapist, index) => (
-                      <div
-                        key={index}
-                        className='border-b border-white/20 pb-6 last:border-b-0'
-                      >
-                        <h5 className='text-lg font-medium mb-2'>
-                          {therapist.name}
-                        </h5>
-                        <p className='text-stone-200 mb-1'>
-                          {therapist.specialty}
-                        </p>
-                        <p className='text-stone-300 text-sm'>
-                          {therapist.experience}
-                        </p>
-                        <p className='text-stone-300 text-sm'>
-                          {therapist.certification}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className='bg-white rounded-3xl shadow-xl p-8'>
-                  <div className='text-center'>
-                    <div className='flex justify-center mb-6'>
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className='w-6 h-6 text-amber-400 fill-current'
-                        />
-                      ))}
-                    </div>
-                    <blockquote className='text-xl text-stone-700 italic leading-relaxed mb-6'>
-                      "Each session is a transformative experience. The level of
-                      professionalism and personal care is exceptional."
-                    </blockquote>
-                    <cite className='text-stone-600 font-medium'>
-                      — Sofía Restrepo, frequent guest
-                    </cite>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Sección Final Inspiracional */}
-        <motion.section
-          className='py-32 px-6 bg-gradient-to-b from-amber-50 to-stone-50'
-          initial='hidden'
-          animate='visible'
-          variants={fadeUp}
-        >
-          <div className='max-w-5xl mx-auto text-center'>
-            <div className='mb-16'>
-              <Sparkles className='w-16 h-16 text-stone-400 mx-auto mb-8' />
-              <h3 className='text-4xl md:text-5xl font-light text-stone-800 mb-8 leading-tight'>
-                More than a massage,
-                <br />a personal transformation
-              </h3>
-              <p className='text-2xl text-stone-600 leading-relaxed max-w-3xl mx-auto'>
-                Allow yourself this moment of deep connection with yourself.
-                Your well-being is not a luxury, it's a necessity.
-              </p>
-            </div>
-
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-              {[
-                {
-                  icon: '🌱',
-                  title: 'Renewal',
-                  description:
-                    'Each session is a new beginning for your body and mind',
-                },
-                {
-                  icon: '💫',
-                  title: 'Balance',
-                  description:
-                    'Find the perfect harmony between relaxation and revitalization',
-                },
-                {
-                  icon: '🕊️',
-                  title: 'Inner Peace',
-                  description:
-                    'Experience a deep calm that transcends the physical',
-                },
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  className='text-center p-8'
-                  variants={fadeUp}
-                  whileHover={{ y: -8 }}
-                >
-                  <div className='text-5xl mb-6'>{item.icon}</div>
-                  <h4 className='text-2xl font-light text-stone-800 mb-4'>
-                    {item.title}
-                  </h4>
-                  <p className='text-stone-600 leading-relaxed'>
-                    {item.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </motion.section>
 

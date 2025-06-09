@@ -207,8 +207,8 @@ const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900'>
-      <div className='space-y-16 max-w-7xl mx-auto px-6 py-12'>
+    <div className='min-h-screen bg-gradient-to-br'>
+      <div className='space-y-16 max-w-8xl mx-auto px-6 py-12'>
         {/* Hero Section with Modern Image Slider */}
         <motion.div
           className='relative overflow-hidden rounded-3xl h-[80vh] shadow-2xl'

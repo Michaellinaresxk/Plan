@@ -268,4 +268,18 @@ registerForm({
   }),
 });
 
+// Karaoke Form
+registerForm({
+  name: 'private-catamaran',
+  component: () => import('@/UI/components/forms/SaonaIslandForm'),
+  servicePatterns: ['private-catamaran'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit ||
+      ((data: any) => console.log('private-catamaran:', data)),
+    onCancel,
+  }),
+});
+
 console.log('✅ All forms auto-registered successfully');
