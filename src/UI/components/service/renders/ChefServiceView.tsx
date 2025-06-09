@@ -18,6 +18,18 @@ import {
   Heart,
   GlassWater,
   ShoppingBag,
+  Sparkles,
+  Crown,
+  Flame,
+  Trophy,
+  Coffee,
+  Wine,
+  Quote,
+  Play,
+  MapPin,
+  Award,
+  Shield,
+  Zap,
 } from 'lucide-react';
 import BookingModal from '@/UI/components/modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
@@ -29,89 +41,216 @@ interface ChefServiceViewProps {
   primaryColor: string;
 }
 
-/**
- * A modern, professional component for displaying chef services
- * Showcases cuisine types, meal options, and the chef experience
- */
+// Enhanced data structures
+const CHEF_SPECIALTIES = [
+  {
+    id: 'fine-dining',
+    name: 'Fine Dining',
+    description: 'Michelin-starred techniques with exquisite presentation',
+    icon: <Crown className='w-6 h-6' />,
+    image:
+      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800',
+    features: [
+      'Molecular Gastronomy',
+      'Premium Ingredients',
+      'Artistic Plating',
+    ],
+  },
+  {
+    id: 'comfort-gourmet',
+    name: 'Comfort Gourmet',
+    description: 'Elevated comfort food with sophisticated twists',
+    icon: <Heart className='w-6 h-6' />,
+    image:
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?auto=format&fit=crop&q=80&w=800',
+    features: ['Local Flavors', 'Modern Techniques', 'Nostalgic Appeal'],
+  },
+  {
+    id: 'international-fusion',
+    name: 'International Fusion',
+    description: 'Global cuisines with creative contemporary interpretations',
+    icon: <Sparkles className='w-6 h-6' />,
+    image:
+      'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=800',
+    features: ['Cultural Blend', 'Innovation', 'Authentic Spices'],
+  },
+  {
+    id: 'healthy-luxury',
+    name: 'Healthy Luxury',
+    description:
+      'Nutritious cuisine without compromising on flavor or elegance',
+    icon: <Trophy className='w-6 h-6' />,
+    image:
+      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
+    features: [
+      'Organic Ingredients',
+      'Nutritionist Approved',
+      'Beautiful Presentation',
+    ],
+  },
+];
+
+const CUISINE_TYPES = [
+  {
+    id: 'italian',
+    name: 'Italian Mastery',
+    description:
+      "Authentic techniques from nonna's kitchen to modern interpretations",
+    image:
+      'https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=800',
+    signature: 'Handmade pasta, risotto perfection',
+    color: 'from-green-500 to-red-500',
+  },
+  {
+    id: 'french',
+    name: 'French Cuisine',
+    description:
+      'Classic techniques and refined flavors from the heart of France',
+    image:
+      'https://images.unsplash.com/photo-1608855238293-a8853e7f7c98?auto=format&fit=crop&q=80&w=800',
+    signature: 'Sauces, soufflés, and sophistication',
+    color: 'from-blue-500 to-red-500',
+  },
+  {
+    id: 'asian',
+    name: 'Asian Fusion',
+    description: 'Balance of flavors from across Asia with modern presentation',
+    image:
+      'https://images.unsplash.com/photo-1580442151529-343f2f6e0e27?auto=format&fit=crop&q=80&w=800',
+    signature: 'Umami depth, fresh ingredients',
+    color: 'from-orange-500 to-red-600',
+  },
+  {
+    id: 'mediterranean',
+    name: 'Mediterranean',
+    description:
+      'Sun-kissed flavors celebrating the bounty of the Mediterranean',
+    image:
+      'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?auto=format&fit=crop&q=80&w=800',
+    signature: 'Olive oil, herbs, fresh seafood',
+    color: 'from-blue-400 to-green-500',
+  },
+  {
+    id: 'latin',
+    name: 'Latin American',
+    description: 'Vibrant spices and bold flavors from across Latin America',
+    image:
+      'https://images.unsplash.com/photo-1613514785940-daed07799d9b?auto=format&fit=crop&q=80&w=800',
+    signature: 'Bold spices, fresh citrus',
+    color: 'from-yellow-500 to-orange-600',
+  },
+  {
+    id: 'plant-based',
+    name: 'Plant-Based Excellence',
+    description: 'Innovative plant-based cuisine that satisfies every palate',
+    image:
+      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
+    signature: 'Creative vegetables, protein alternatives',
+    color: 'from-green-400 to-emerald-600',
+  },
+];
+
+const DINING_EXPERIENCES = [
+  {
+    id: 'intimate-dinner',
+    name: 'Intimate Dinner',
+    description: 'Perfect for romantic occasions or special celebrations',
+    guests: '2-4 guests',
+    duration: '3-4 hours',
+    icon: <Heart className='w-5 h-5' />,
+    features: ['Personalized menu', 'Romantic ambiance', 'Wine pairing'],
+  },
+  {
+    id: 'family-feast',
+    name: 'Family Feast',
+    description: 'Bring the family together with a memorable dining experience',
+    guests: '5-8 guests',
+    duration: '2-3 hours',
+    icon: <Users className='w-5 h-5' />,
+    features: [
+      'Family-style service',
+      'Interactive cooking',
+      'Kid-friendly options',
+    ],
+  },
+  {
+    id: 'dinner-party',
+    name: 'Dinner Party',
+    description: 'Impress your guests with a sophisticated evening',
+    guests: '6-12 guests',
+    duration: '4-5 hours',
+    icon: <Sparkles className='w-5 h-5' />,
+    features: ['Multi-course menu', 'Professional service', 'Custom cocktails'],
+  },
+  {
+    id: 'celebration',
+    name: 'Special Celebration',
+    description: 'Make your milestone moments unforgettable',
+    guests: '8-20 guests',
+    duration: '4-6 hours',
+    icon: <Trophy className='w-5 h-5' />,
+    features: ['Themed menus', 'Special decorations', 'Photography moments'],
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    text: 'Chef Maria transformed our anniversary into an absolutely magical evening. Every dish was a masterpiece, and the attention to detail was extraordinary.',
+    author: 'Elena & Carlos Rodriguez',
+    event: 'Anniversary Dinner',
+    image:
+      'https://images.unsplash.com/photo-1494790108755-2616b612b593?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
+    cuisine: 'Italian • Romantic Setting',
+  },
+  {
+    text: 'Having Chef Antoine prepare our dinner party was the best decision. Our guests are still talking about the incredible flavors and presentation.',
+    author: 'Michael Thompson',
+    event: 'Corporate Dinner',
+    image:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
+    cuisine: 'French • 12 Guests',
+  },
+  {
+    text: 'The plant-based menu exceeded all expectations. Even our most skeptical guests were amazed by the creativity and incredible flavors.',
+    author: 'Sarah Chen',
+    event: 'Family Celebration',
+    image:
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150',
+    rating: 5,
+    cuisine: 'Plant-Based • 8 Guests',
+  },
+];
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+};
+
+const slideIn = {
+  hidden: { opacity: 0, x: -30 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
+};
+
+const stagger = {
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
 const ChefServiceView: React.FC<ChefServiceViewProps> = ({
   service,
   serviceData,
   primaryColor,
 }) => {
   const { t } = useTranslation();
-  const { bookService, selectedServices } = useBooking();
+  const { bookService } = useBooking();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'cuisines' | 'process'
-  >('overview');
+  const [selectedCuisine, setSelectedCuisine] = useState('');
+  const [selectedExperience, setSelectedExperience] = useState('');
 
-  // Determine if this is a premium service
   const isPremium = service.packageType.includes('premium');
-
-  // Determine if the service is already selected
-  const isSelected = selectedServices.some((s) => s.id === service.id);
-
-  // Extract cuisine options if they exist
-  const cuisineOptions = serviceData?.options?.cuisineType?.subOptions || {};
-
-  // Extract meal options if they exist
-  const mealOptions = serviceData?.options?.mealCount?.subOptions || {};
-
-  // Get maximum number of people
-  const maxPeople = serviceData?.metaData?.maxPeople || 10;
-
-  // Gallery images for chef experience
-  const galleryImages = [
-    {
-      src: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?q=80&w=2070&auto=format&fit=crop',
-      alt: 'Chef preparing gourmet meal',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1577106263724-2c8e03bfe9cf?q=80&w=2070&auto=format&fit=crop',
-      alt: 'Elegantly plated dish',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?q=80&w=2074&auto=format&fit=crop',
-      alt: 'Chef in kitchen',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070&auto=format&fit=crop',
-      alt: 'Private dining experience',
-    },
-  ];
-
-  // Chef experience steps
-  const chefExperienceSteps = [
-    {
-      title: 'Initial Consultation',
-      description:
-        'We discuss your preferences, dietary restrictions, and event details to create a personalized culinary experience.',
-      icon: <Calendar className='h-6 w-6' />,
-    },
-    {
-      title: 'Menu Design',
-      description:
-        'Our chef creates a custom menu tailored to your taste, using the freshest seasonal ingredients available.',
-      icon: <Menu className='h-6 w-6' />,
-    },
-    {
-      title: 'Shopping & Preparation',
-      description:
-        'On the day of your event, our chef shops for premium ingredients and arrives at your location to prepare everything from scratch.',
-      icon: <ShoppingBag className='h-6 w-6' />,
-    },
-    {
-      title: 'Culinary Experience',
-      description:
-        'Sit back and enjoy a restaurant-quality dining experience in the comfort of your home, with professional service and presentation.',
-      icon: <Utensils className='h-6 w-6' />,
-    },
-  ];
-
-  // Handle booking modal
-  const handleOpenBookingModal = () => {
-    setIsModalOpen(true);
-  };
+  const maxPeople = serviceData?.metaData?.maxPeople || 12;
 
   const handleBookingConfirm = (
     service: Service,
@@ -123,791 +262,782 @@ const ChefServiceView: React.FC<ChefServiceViewProps> = ({
   };
 
   return (
-    <div className='space-y-10'>
-      {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className='relative h-[60vh] rounded-2xl overflow-hidden'
-      >
-        <Image
-          src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop'
-          alt='Chef preparation'
-          fill
-          className='object-cover'
-        />
-        <div className='absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/80'></div>
-
-        <div className='absolute bottom-0 left-0 right-0 p-10 md:p-16 text-white'>
-          {isPremium && (
-            <span className='inline-block px-3 py-1 bg-amber-500 text-amber-900 text-xs font-bold uppercase rounded-full mb-4'>
-              Premium Experience
-            </span>
-          )}
-          <h1 className='text-3xl md:text-5xl font-bold mb-4'>
-            {serviceData?.titleKey
-              ? t(serviceData.titleKey)
-              : 'Private Chef Experience'}
-          </h1>
-          <p className='text-lg md:text-xl text-white/90 mb-8 max-w-2xl'>
-            Exquisite dining in the comfort of your home, crafted by
-            professional chefs using the finest ingredients.
-          </p>
-
-          <button
-            onClick={handleOpenBookingModal}
-            className={`px-8 py-4 ${
-              isPremium
-                ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            } rounded-lg font-bold flex items-center gap-2 transition transform hover:scale-105`}
-          >
-            <span>Book Your Chef</span>
-            <ArrowRight className='h-5 w-5' />
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Key Features */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+    <div className='min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50'>
+      <div className='max-w-8xl mx-auto space-y-16 pb-16'>
+        {/* Hero Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className='p-8 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition'
+          className='relative overflow-hidden rounded-3xl mx-4 mt-8'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
         >
-          <div
-            className={`p-3 rounded-full inline-flex bg-${primaryColor}-100 text-${primaryColor}-600 mb-4`}
-          >
-            <ChefHat className='h-6 w-6' />
-          </div>
-          <h3 className='text-xl font-bold text-gray-900 mb-2'>
-            Professional Chef
-          </h3>
-          <p className='text-gray-600'>
-            {isPremium
-              ? 'Michelin-trained culinary experts bringing five-star dining experiences to your home'
-              : 'Experienced chefs creating personalized dining experiences tailored to your preferences'}
-          </p>
-        </motion.div>
+          <div className='relative h-[85vh] bg-gradient-to-r from-amber-900/90 via-orange-800/80 to-red-900/90'>
+            <Image
+              src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1200'
+              alt='Professional chef preparing gourmet cuisine'
+              fill
+              className='object-cover mix-blend-overlay opacity-70'
+              priority
+            />
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className='p-8 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition'
-        >
-          <div
-            className={`p-3 rounded-full inline-flex bg-${primaryColor}-100 text-${primaryColor}-600 mb-4`}
-          >
-            <Users className='h-6 w-6' />
-          </div>
-          <h3 className='text-xl font-bold text-gray-900 mb-2'>
-            Customizable Experience
-          </h3>
-          <p className='text-gray-600'>
-            From intimate dinners to celebrations, we serve groups of up to{' '}
-            {maxPeople} people with custom menus
-          </p>
-        </motion.div>
+            {/* Floating Culinary Elements */}
+            <motion.div
+              className='absolute top-20 right-20 w-20 h-20 bg-amber-500/20 rounded-full backdrop-blur-sm border border-amber-500/30 flex items-center justify-center'
+              animate={{ y: [-10, 10, -10], rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 6, repeat: Infinity }}
+            >
+              <ChefHat className='w-8 h-8 text-white' />
+            </motion.div>
+            <motion.div
+              className='absolute bottom-32 left-16 w-16 h-16 bg-orange-500/20 rounded-full backdrop-blur-sm border border-orange-500/30 flex items-center justify-center'
+              animate={{ y: [10, -10, 10], rotate: [0, -5, 5, 0] }}
+              transition={{ duration: 8, repeat: Infinity }}
+            >
+              <Utensils className='w-6 h-6 text-white' />
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-          className='p-8 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition'
-        >
-          <div
-            className={`p-3 rounded-full inline-flex bg-${primaryColor}-100 text-${primaryColor}-600 mb-4`}
-          >
-            <Utensils className='h-6 w-6' />
-          </div>
-          <h3 className='text-xl font-bold text-gray-900 mb-2'>
-            Gourmet Cuisine
-          </h3>
-          <p className='text-gray-600'>
-            {isPremium
-              ? 'Premium ingredients and extraordinary presentation for an unforgettable culinary journey'
-              : 'Fresh, locally-sourced ingredients prepared with care for a delightful dining experience'}
-          </p>
-        </motion.div>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className='flex border-b border-gray-200 overflow-x-auto pb-px'>
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`py-4 px-6 text-sm font-medium border-b-2 ${
-            activeTab === 'overview'
-              ? `border-${primaryColor}-500 text-${primaryColor}-600`
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          } transition-colors`}
-        >
-          Overview
-        </button>
-        <button
-          onClick={() => setActiveTab('cuisines')}
-          className={`py-4 px-6 text-sm font-medium border-b-2 ${
-            activeTab === 'cuisines'
-              ? `border-${primaryColor}-500 text-${primaryColor}-600`
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          } transition-colors`}
-        >
-          Cuisines & Options
-        </button>
-        <button
-          onClick={() => setActiveTab('process')}
-          className={`py-4 px-6 text-sm font-medium border-b-2 ${
-            activeTab === 'process'
-              ? `border-${primaryColor}-500 text-${primaryColor}-600`
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          } transition-colors`}
-        >
-          How It Works
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      <div className='mt-6'>
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className='space-y-10'
-          >
-            {/* Description */}
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-10 items-center'>
-              <div>
-                <h2
-                  className={`text-2xl md:text-3xl font-bold mb-6 text-${primaryColor}-800`}
+            <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
+              <div className='max-w-6xl'>
+                <motion.div
+                  className='inline-flex items-center bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-8'
+                  variants={slideIn}
                 >
-                  A Culinary Journey at Home
-                </h2>
-                <div className='prose max-w-none text-gray-700'>
-                  <p className='mb-4 text-lg'>
-                    {serviceData?.fullDescriptionKey
-                      ? t(serviceData.fullDescriptionKey)
-                      : 'Experience the luxury of restaurant-quality dining in the comfort of your own space. Our private chef service brings the entire fine dining experience to you - from menu planning to preparation, service, and cleanup.'}
-                  </p>
-                  <p>
-                    Whether you're celebrating a special occasion, hosting an
-                    intimate dinner party, or simply treating yourself to an
-                    exceptional meal, our chefs create memorable culinary
-                    experiences tailored to your tastes and preferences.
-                  </p>
-                </div>
-              </div>
+                  {isPremium && (
+                    <Crown className='w-5 h-5 text-amber-300 mr-3' />
+                  )}
+                  <ChefHat className='w-5 h-5 text-white mr-3' />
+                  <span className='text-white font-medium text-lg'>
+                    {isPremium
+                      ? 'Michelin-Level Excellence'
+                      : 'Culinary Artistry at Home'}
+                  </span>
+                </motion.div>
 
-              <div className='relative h-80 rounded-xl overflow-hidden shadow-xl'>
-                <Image
-                  src='https://images.unsplash.com/photo-1581299894007-aaa50297cf16?q=80&w=2070&auto=format&fit=crop'
-                  alt='Chef preparing food'
-                  fill
-                  className='object-cover'
-                />
+                <motion.h1
+                  className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
+                  variants={fadeInUp}
+                >
+                  Private Chef
+                  <br />
+                  <span className='bg-gradient-to-r from-amber-300 via-orange-300 to-red-300 bg-clip-text text-transparent'>
+                    Experience
+                  </span>
+                </motion.h1>
+
+                <motion.p
+                  className='text-2xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed'
+                  variants={fadeInUp}
+                >
+                  Transform your dining into an extraordinary culinary journey
+                  with world-class chefs in the comfort of your space
+                </motion.p>
+
+                <motion.div
+                  className='flex flex-wrap justify-center gap-8 mb-12'
+                  variants={slideIn}
+                >
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
+                    <Users className='w-6 h-6 text-white mr-3' />
+                    <div className='text-left'>
+                      <div className='text-white font-semibold'>
+                        Up to {maxPeople} Guests
+                      </div>
+                      <div className='text-white/70 text-sm'>
+                        Intimate to Celebration
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
+                    <Clock className='w-6 h-6 text-white mr-3' />
+                    <div className='text-left'>
+                      <div className='text-white font-semibold'>3-6 Hours</div>
+                      <div className='text-white/70 text-sm'>
+                        Full Experience
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
+                    <Award className='w-6 h-6 text-white mr-3' />
+                    <div className='text-left'>
+                      <div className='text-white font-semibold'>
+                        Certified Chefs
+                      </div>
+                      <div className='text-white/70 text-sm'>
+                        Professional Service
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.button
+                  onClick={() => setIsModalOpen(true)}
+                  className='group bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
+                  variants={slideIn}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Play className='w-7 h-7' fill='currentColor' />
+                  Book Your Chef
+                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
+                </motion.button>
               </div>
             </div>
+          </div>
+        </motion.div>
 
-            {/* Gallery Section */}
-            <div>
-              <h2
-                className={`text-2xl font-bold mb-6 text-${primaryColor}-800`}
+        {/* Chef Specialties */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={stagger}
+        >
+          <div className='text-center mb-16'>
+            <motion.h2
+              className='text-5xl font-bold text-gray-800 mb-6'
+              variants={fadeInUp}
+            >
+              Culinary Excellence
+            </motion.h2>
+            <motion.p
+              className='text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed'
+              variants={fadeInUp}
+            >
+              Our chefs master diverse culinary arts to create unforgettable
+              dining experiences
+            </motion.p>
+          </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            {CHEF_SPECIALTIES.map((specialty, index) => (
+              <motion.div
+                key={specialty.id}
+                className='group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4'
+                variants={fadeInUp}
               >
-                The Chef Experience
+                <div className='relative h-48'>
+                  <Image
+                    src={specialty.image}
+                    alt={specialty.name}
+                    fill
+                    className='object-cover transition-transform duration-700 group-hover:scale-110'
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
+
+                  <div className='absolute top-4 left-4'>
+                    <div className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 text-white'>
+                      {specialty.icon}
+                    </div>
+                  </div>
+                </div>
+
+                <div className='p-6'>
+                  <h3 className='text-xl font-bold text-gray-800 mb-3'>
+                    {specialty.name}
+                  </h3>
+                  <p className='text-gray-600 mb-4 leading-relaxed'>
+                    {specialty.description}
+                  </p>
+
+                  <div className='space-y-2'>
+                    {specialty.features.map((feature, idx) => (
+                      <div
+                        key={idx}
+                        className='flex items-center text-sm text-gray-500'
+                      >
+                        <Check className='w-4 h-4 text-orange-500 mr-2' />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className='absolute inset-0 border-2 border-transparent group-hover:border-orange-500/50 rounded-3xl transition-all duration-300' />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Cuisine Selection */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='text-center mb-16'>
+            <h2 className='text-5xl font-bold text-gray-800 mb-6'>
+              Global Cuisine Mastery
+            </h2>
+            <p className='text-2xl text-gray-600 max-w-3xl mx-auto'>
+              Explore authentic flavors from around the world, expertly crafted
+              by our culinary artists
+            </p>
+          </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+            {CUISINE_TYPES.map((cuisine, index) => (
+              <motion.div
+                key={cuisine.id}
+                className={`relative overflow-hidden rounded-3xl cursor-pointer group ${
+                  selectedCuisine === cuisine.id
+                    ? 'ring-4 ring-orange-500 scale-105'
+                    : ''
+                }`}
+                onClick={() =>
+                  setSelectedCuisine(
+                    selectedCuisine === cuisine.id ? '' : cuisine.id
+                  )
+                }
+                variants={fadeInUp}
+                whileHover={{ y: -8 }}
+              >
+                <div className='relative h-80'>
+                  <Image
+                    src={cuisine.image}
+                    alt={cuisine.name}
+                    fill
+                    className='object-cover transition-transform duration-700 group-hover:scale-110'
+                  />
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent group-hover:bg-gradient-to-t group-hover:from-black/90 group-hover:via-black/50 group-hover:to-black/20 transition-all duration-500`}
+                  />
+
+                  <div className='absolute top-6 left-6'>
+                    <div
+                      className={`px-4 py-2 rounded-full bg-gradient-to-r ${cuisine.color} text-white text-sm font-semibold backdrop-blur-sm`}
+                    >
+                      Signature Cuisine
+                    </div>
+                  </div>
+
+                  <div className='absolute bottom-6 left-6 right-6 text-white'>
+                    <h3 className='text-2xl font-bold mb-2'>{cuisine.name}</h3>
+                    <p className='text-white/90 mb-3 leading-relaxed'>
+                      {cuisine.description}
+                    </p>
+                    <div className='text-sm font-medium text-orange-300'>
+                      {cuisine.signature}
+                    </div>
+                  </div>
+
+                  {selectedCuisine === cuisine.id && (
+                    <motion.div
+                      className='absolute inset-0 border-4 border-orange-500 rounded-3xl'
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Dining Experiences */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-12'>
+            <div className='text-center mb-16'>
+              <h2 className='text-5xl font-bold text-gray-800 mb-6'>
+                Tailored Experiences
+              </h2>
+              <p className='text-2xl text-gray-600 max-w-3xl mx-auto'>
+                Choose the perfect dining experience for your occasion and group
+                size
+              </p>
+            </div>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+              {DINING_EXPERIENCES.map((experience, index) => (
+                <motion.div
+                  key={experience.id}
+                  className={`relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group ${
+                    selectedExperience === experience.id
+                      ? 'ring-4 ring-orange-500'
+                      : ''
+                  }`}
+                  onClick={() =>
+                    setSelectedExperience(
+                      selectedExperience === experience.id ? '' : experience.id
+                    )
+                  }
+                  variants={fadeInUp}
+                  whileHover={{ y: -4 }}
+                >
+                  <div className='flex items-center mb-6'>
+                    <div className='w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white mr-4 group-hover:scale-110 transition-transform'>
+                      {experience.icon}
+                    </div>
+                    <div>
+                      <h3 className='text-2xl font-bold text-gray-800'>
+                        {experience.name}
+                      </h3>
+                      <div className='flex items-center space-x-4 text-sm text-gray-500 mt-1'>
+                        <span className='flex items-center'>
+                          <Users className='w-4 h-4 mr-1' />
+                          {experience.guests}
+                        </span>
+                        <span className='flex items-center'>
+                          <Clock className='w-4 h-4 mr-1' />
+                          {experience.duration}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className='text-gray-600 mb-6 leading-relaxed'>
+                    {experience.description}
+                  </p>
+
+                  <div className='space-y-3'>
+                    {experience.features.map((feature, idx) => (
+                      <div key={idx} className='flex items-center'>
+                        <Check className='w-5 h-5 text-orange-500 mr-3' />
+                        <span className='text-gray-700'>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {selectedExperience === experience.id && (
+                    <motion.div
+                      className='absolute inset-0 bg-orange-500/5 border-4 border-orange-500 rounded-3xl'
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* The Chef Experience Process */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-white rounded-3xl shadow-2xl overflow-hidden'>
+            <div className='bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 p-12 text-white text-center'>
+              <h2 className='text-4xl font-bold mb-4'>
+                The Chef Experience Journey
+              </h2>
+              <p className='text-xl opacity-90 max-w-2xl mx-auto'>
+                From consultation to cleanup, every detail is crafted for your
+                ultimate satisfaction
+              </p>
+            </div>
+
+            <div className='p-12'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
+                <div className='space-y-8'>
+                  {[
+                    {
+                      icon: Calendar,
+                      title: 'Personal Consultation',
+                      desc: 'Discuss your vision, preferences, and dietary requirements',
+                      step: '1',
+                    },
+                    {
+                      icon: Menu,
+                      title: 'Custom Menu Design',
+                      desc: 'Receive a personalized menu tailored to your taste and occasion',
+                      step: '2',
+                    },
+                    {
+                      icon: ShoppingBag,
+                      title: 'Premium Ingredient Sourcing',
+                      desc: 'Fresh, high-quality ingredients selected and prepared',
+                      step: '3',
+                    },
+                    {
+                      icon: ChefHat,
+                      title: 'Culinary Excellence',
+                      desc: 'Professional preparation, cooking, and elegant presentation',
+                      step: '4',
+                    },
+                    {
+                      icon: Utensils,
+                      title: 'Exceptional Service',
+                      desc: 'Enjoy restaurant-quality service in your own space',
+                      step: '5',
+                    },
+                    {
+                      icon: Sparkles,
+                      title: 'Complete Cleanup',
+                      desc: 'Relax while we handle all cleanup and kitchen restoration',
+                      step: '6',
+                    },
+                  ].map((item, index) => (
+                    <div key={index} className='flex items-start space-x-4'>
+                      <div className='relative'>
+                        <div className='w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white font-bold text-lg'>
+                          {item.step}
+                        </div>
+                        {index < 5 && (
+                          <div className='absolute top-14 left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-orange-500 to-orange-300' />
+                        )}
+                      </div>
+                      <div className='flex-1'>
+                        <div className='flex items-center mb-2'>
+                          <item.icon className='w-5 h-5 text-orange-500 mr-2' />
+                          <h4 className='text-lg font-bold text-gray-800'>
+                            {item.title}
+                          </h4>
+                        </div>
+                        <p className='text-gray-600'>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className='space-y-6'>
+                  <div className='relative h-64 rounded-3xl overflow-hidden'>
+                    <Image
+                      src='https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800'
+                      alt='Elegant dining presentation'
+                      fill
+                      className='object-cover'
+                    />
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end'>
+                      <div className='p-6 text-white'>
+                        <h4 className='text-xl font-bold mb-2'>
+                          Exquisite Presentation
+                        </h4>
+                        <p className='text-white/90'>
+                          Restaurant-quality plating and service
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-orange-200'>
+                    <div className='flex items-center mb-3'>
+                      <Trophy className='w-6 h-6 text-orange-600 mr-2' />
+                      <h4 className='font-bold text-orange-800'>
+                        Premium Service Guarantee
+                      </h4>
+                    </div>
+                    <p className='text-orange-700 text-sm'>
+                      Our chefs are certified professionals with extensive
+                      experience in fine dining establishments. Every ingredient
+                      is carefully sourced, and each dish is prepared to
+                      perfection.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* What's Included */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
+            <div className='bg-white rounded-3xl shadow-lg p-8'>
+              <h2 className='text-3xl font-bold text-gray-800 mb-8 flex items-center'>
+                <Shield className='w-8 h-8 text-green-600 mr-3' />
+                What's Included
               </h2>
 
-              <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-                {galleryImages.map((image, index) => (
-                  <div
-                    key={index}
-                    className='aspect-square relative rounded-xl overflow-hidden group'
-                  >
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className='object-cover transition-transform duration-500 group-hover:scale-110'
-                    />
-                    <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'>
-                      <p className='p-4 text-white text-sm'>{image.alt}</p>
+              <div className='space-y-6'>
+                {[
+                  {
+                    icon: ChefHat,
+                    text: 'Professional Chef & Assistant',
+                    desc: 'Certified culinary professionals',
+                  },
+                  {
+                    icon: Menu,
+                    text: 'Custom Menu Planning',
+                    desc: 'Personalized to your preferences',
+                  },
+                  {
+                    icon: ShoppingBag,
+                    text: 'Premium Ingredient Sourcing',
+                    desc: 'Freshest, highest quality ingredients',
+                  },
+                  {
+                    icon: Utensils,
+                    text: 'Complete Table Service',
+                    desc: 'Professional plating and presentation',
+                  },
+                  {
+                    icon: Wine,
+                    text: 'Wine Pairing Consultation',
+                    desc: 'Expert beverage recommendations',
+                  },
+                  {
+                    icon: Sparkles,
+                    text: 'Full Kitchen Cleanup',
+                    desc: 'Leave the mess to us',
+                  },
+                ].map((item, index) => (
+                  <div key={index} className='flex items-start space-x-4'>
+                    <div className='w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
+                      <item.icon className='w-6 h-6 text-green-600' />
+                    </div>
+                    <div>
+                      <h4 className='text-lg font-bold text-gray-800 mb-1'>
+                        {item.text}
+                      </h4>
+                      <p className='text-gray-600 text-sm'>{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Testimonials */}
-            <div className='bg-gray-50 rounded-xl p-8'>
-              <h2
-                className={`text-2xl font-bold mb-6 text-${primaryColor}-800`}
-              >
-                What Our Clients Say
-              </h2>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-                <div className='bg-white p-6 rounded-xl shadow-sm'>
-                  <div className='flex mb-4'>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-4 w-4 text-${primaryColor}-400 fill-${primaryColor}-400 mr-1`}
-                      />
-                    ))}
-                  </div>
-                  <p className='italic text-gray-700 mb-4'>
-                    "Our private chef experience exceeded all expectations. The
-                    food was exceptional, the service impeccable, and our guests
-                    were thoroughly impressed. It was like having a 5-star
-                    restaurant in our dining room."
-                  </p>
-                  <p className='text-sm font-medium text-gray-900'>
-                    — Michael & Sarah, Anniversary Dinner
-                  </p>
-                </div>
-
-                <div className='bg-white p-6 rounded-xl shadow-sm'>
-                  <div className='flex mb-4'>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-4 w-4 text-${primaryColor}-400 fill-${primaryColor}-400 mr-1`}
-                      />
-                    ))}
-                  </div>
-                  <p className='italic text-gray-700 mb-4'>
-                    "Having a professional chef prepare our dinner party was the
-                    best decision. The menu was perfectly tailored to our
-                    preferences, and we could actually enjoy our own party
-                    without the stress of cooking!"
-                  </p>
-                  <p className='text-sm font-medium text-gray-900'>
-                    — Jennifer L., Dinner Party for 8
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Cuisines & Options Tab */}
-        {activeTab === 'cuisines' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className='space-y-10'
-          >
-            {/* Cuisine Types */}
-            <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-              <div className='p-8'>
-                <h2
-                  className={`text-2xl font-bold mb-6 text-${primaryColor}-800 flex items-center`}
-                >
-                  <GlassWater className='mr-2' />
-                  Cuisine Specialties
-                </h2>
-
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-                  {Object.entries(cuisineOptions).length > 0
-                    ? Object.entries(cuisineOptions).map(([key, cuisine]) => (
-                        <div
-                          key={key}
-                          className={`relative rounded-xl overflow-hidden group h-60 flex items-center justify-center`}
-                        >
-                          <div className='absolute inset-0 z-0'>
-                            <Image
-                              src={getCuisineImage(key)}
-                              alt={
-                                typeof cuisine === 'object' &&
-                                'nameKey' in cuisine
-                                  ? t(cuisine.nameKey, { fallback: key })
-                                  : key
-                              }
-                              fill
-                              className='object-cover transition-transform duration-700 group-hover:scale-110'
-                            />
-                            <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30'></div>
-                          </div>
-
-                          <div className='relative z-10 text-center p-6'>
-                            <h3 className='text-xl font-bold text-white mb-2'>
-                              {typeof cuisine === 'object' &&
-                              'nameKey' in cuisine
-                                ? t(cuisine.nameKey, {
-                                    fallback: formatCuisineName(key),
-                                  })
-                                : formatCuisineName(key)}
-                            </h3>
-
-                            {isPremium && (
-                              <p className='text-white/90 text-sm'>
-                                Premium ingredients and authentic techniques
-                              </p>
-                            )}
-
-                            <div
-                              className={`mt-3 inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs`}
-                            >
-                              Chef Specialty
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    : /* Default cuisines if none defined */
-                      [
-                        'italian',
-                        'french',
-                        'asian',
-                        'mediterranean',
-                        'latin',
-                        'plant-based',
-                      ].map((cuisine) => (
-                        <div
-                          key={cuisine}
-                          className={`relative rounded-xl overflow-hidden group h-60 flex items-center justify-center`}
-                        >
-                          <div className='absolute inset-0 z-0'>
-                            <Image
-                              src={getCuisineImage(cuisine)}
-                              alt={formatCuisineName(cuisine)}
-                              fill
-                              className='object-cover transition-transform duration-700 group-hover:scale-110'
-                            />
-                            <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30'></div>
-                          </div>
-
-                          <div className='relative z-10 text-center p-6'>
-                            <h3 className='text-xl font-bold text-white mb-2'>
-                              {formatCuisineName(cuisine)}
-                            </h3>
-
-                            {isPremium && (
-                              <p className='text-white/90 text-sm'>
-                                Premium ingredients and authentic techniques
-                              </p>
-                            )}
-
-                            <div
-                              className={`mt-3 inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs`}
-                            >
-                              Chef Specialty
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Meal Options */}
-            <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-              <div className='p-8'>
-                <h2
-                  className={`text-2xl font-bold mb-6 text-${primaryColor}-800 flex items-center`}
-                >
-                  <Clock className='mr-2' />
-                  Meal Options
-                </h2>
-
-                <div className='space-y-4'>
-                  {Object.entries(mealOptions).length > 0
-                    ? Object.entries(mealOptions).map(([key, meal]) => (
-                        <div
-                          key={key}
-                          className='p-6 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors'
-                        >
-                          <div className='flex items-start justify-between'>
-                            <div className='flex items-center'>
-                              <div
-                                className={`p-3 rounded-full bg-${primaryColor}-100 text-${primaryColor}-600 mr-4`}
-                              >
-                                {key === 'breakfast' ? (
-                                  <Clock className='h-5 w-5' />
-                                ) : key === 'lunch' ? (
-                                  <Utensils className='h-5 w-5' />
-                                ) : key === 'dinner' ? (
-                                  <Utensils className='h-5 w-5' />
-                                ) : key === 'fullDay' ? (
-                                  <Calendar className='h-5 w-5' />
-                                ) : key === 'appetizers' ? (
-                                  <Utensils className='h-5 w-5' />
-                                ) : (
-                                  <Utensils className='h-5 w-5' />
-                                )}
-                              </div>
-                              <div>
-                                <h3 className='text-xl font-bold text-gray-900'>
-                                  {typeof meal === 'object' && 'nameKey' in meal
-                                    ? t(meal.nameKey, {
-                                        fallback: formatMealName(key),
-                                      })
-                                    : formatMealName(key)}
-                                </h3>
-
-                                {key === 'fullDay' && (
-                                  <p className='text-gray-600 mt-1'>
-                                    Complete culinary experience with breakfast,
-                                    lunch, and dinner
-                                  </p>
-                                )}
-
-                                {typeof meal === 'object' &&
-                                  'descriptionKey' in meal && (
-                                    <p className='text-gray-600 mt-1'>
-                                      {t(meal.descriptionKey, { fallback: '' })}
-                                    </p>
-                                  )}
-                              </div>
-                            </div>
-
-                            {typeof meal === 'object' && 'price' in meal && (
-                              <div className='text-right'>
-                                {meal.price > 0 ? (
-                                  <span
-                                    className={`text-${primaryColor}-600 font-bold text-xl`}
-                                  >
-                                    +${meal.price}
-                                  </span>
-                                ) : null}
-
-                                <button
-                                  onClick={handleOpenBookingModal}
-                                  className={`block mt-2 px-4 py-2 bg-${primaryColor}-100 text-${primaryColor}-700 hover:bg-${primaryColor}-200 rounded-lg text-sm font-medium transition-colors`}
-                                >
-                                  Select
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    : /* Default meal options if none defined */
-                      [
-                        'breakfast',
-                        'lunch',
-                        'dinner',
-                        'fullDay',
-                        'appetizers',
-                      ].map((mealType) => (
-                        <div
-                          key={mealType}
-                          className='p-6 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors'
-                        >
-                          <div className='flex items-start justify-between'>
-                            <div className='flex items-center'>
-                              <div
-                                className={`p-3 rounded-full bg-${primaryColor}-100 text-${primaryColor}-600 mr-4`}
-                              >
-                                {mealType === 'breakfast' ? (
-                                  <Clock className='h-5 w-5' />
-                                ) : mealType === 'lunch' ? (
-                                  <Utensils className='h-5 w-5' />
-                                ) : mealType === 'dinner' ? (
-                                  <Utensils className='h-5 w-5' />
-                                ) : mealType === 'fullDay' ? (
-                                  <Calendar className='h-5 w-5' />
-                                ) : mealType === 'appetizers' ? (
-                                  <Utensils className='h-5 w-5' />
-                                ) : (
-                                  <Utensils className='h-5 w-5' />
-                                )}
-                              </div>
-                              <div>
-                                <h3 className='text-xl font-bold text-gray-900'>
-                                  {formatMealName(mealType)}
-                                </h3>
-
-                                {mealType === 'fullDay' && (
-                                  <p className='text-gray-600 mt-1'>
-                                    Complete culinary experience with breakfast,
-                                    lunch, and dinner
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className='text-right'>
-                              {mealType === 'lunch' || mealType === 'dinner' ? (
-                                <span
-                                  className={`text-${primaryColor}-600 font-bold text-xl`}
-                                >
-                                  +$0
-                                </span>
-                              ) : mealType === 'fullDay' ? (
-                                <span
-                                  className={`text-${primaryColor}-600 font-bold text-xl`}
-                                >
-                                  +$150
-                                </span>
-                              ) : null}
-
-                              <button
-                                onClick={handleOpenBookingModal}
-                                className={`block mt-2 px-4 py-2 bg-${primaryColor}-100 text-${primaryColor}-700 hover:bg-${primaryColor}-200 rounded-lg text-sm font-medium transition-colors`}
-                              >
-                                Select
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Dietary Accommodations */}
-            <div className='bg-white rounded-xl shadow-lg overflow-hidden p-8'>
-              <h2
-                className={`text-2xl font-bold mb-6 text-${primaryColor}-800 flex items-center`}
-              >
-                <Heart className='mr-2' />
+            <div className='bg-white rounded-3xl shadow-lg p-8'>
+              <h2 className='text-3xl font-bold text-gray-800 mb-8 flex items-center'>
+                <Heart className='w-8 h-8 text-red-600 mr-3' />
                 Dietary Accommodations
               </h2>
 
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+              <div className='grid grid-cols-2 gap-4 mb-6'>
                 {[
                   'Vegetarian',
                   'Vegan',
                   'Gluten-Free',
                   'Dairy-Free',
-                  'Keto',
-                  'Low-Sodium',
+                  'Keto Friendly',
+                  'Paleo',
+                  'Low Sodium',
+                  'Nut-Free',
                 ].map((diet) => (
                   <div
                     key={diet}
-                    className='flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200'
+                    className='flex items-center p-3 bg-red-50 rounded-lg border border-red-100'
                   >
-                    <Check
-                      className={`h-5 w-5 text-${primaryColor}-500 mr-3`}
-                    />
-                    <span className='text-gray-800'>{diet}</span>
+                    <Check className='w-5 h-5 text-red-500 mr-2' />
+                    <span className='text-gray-800 text-sm font-medium'>
+                      {diet}
+                    </span>
                   </div>
                 ))}
               </div>
 
-              <div className='mt-6 p-4 bg-amber-50 rounded-lg border border-amber-100 flex items-start'>
-                <AlertCircle className='h-5 w-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0' />
-                <div>
-                  <p className='text-amber-800 font-medium'>
-                    Special Dietary Requirements
-                  </p>
-                  <p className='text-amber-700 text-sm mt-1'>
-                    Please inform us of any allergies or special dietary
-                    requirements when booking. Our chefs will accommodate your
-                    needs and ensure a safe dining experience.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Process Tab */}
-        {activeTab === 'process' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className='space-y-10'
-          >
-            {/* How It Works */}
-            <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-              <div className='p-8'>
-                <h2
-                  className={`text-2xl font-bold mb-10 text-${primaryColor}-800`}
-                >
-                  The Chef Experience Process
-                </h2>
-
-                <div className='relative'>
-                  {/* Process Timeline */}
-                  <div className='absolute left-[26px] top-[24px] bottom-16 w-0.5 bg-gray-200 z-0 hidden md:block'></div>
-
-                  <div className='space-y-12'>
-                    {chefExperienceSteps.map((step, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                        className='flex flex-col md:flex-row gap-6'
-                      >
-                        <div className='z-10'>
-                          <div
-                            className={`relative h-12 w-12 rounded-full bg-${primaryColor}-100 text-${primaryColor}-600 flex items-center justify-center flex-shrink-0 border-4 border-white`}
-                          >
-                            {step.icon}
-                          </div>
-                        </div>
-
-                        <div
-                          className={`flex-1 p-6 rounded-xl bg-${primaryColor}-50/40 border border-${primaryColor}-100`}
-                        >
-                          <h3 className='text-xl font-bold text-gray-900 mb-2'>
-                            {step.title}
-                          </h3>
-                          <p className='text-gray-700'>{step.description}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className='mt-10 text-center pt-10 border-t border-gray-100'>
-                  <button
-                    onClick={handleOpenBookingModal}
-                    className={`px-8 py-4 bg-${primaryColor}-500 hover:bg-${primaryColor}-600 text-white rounded-lg font-bold inline-flex items-center gap-2`}
-                  >
-                    <span>Start Your Chef Experience</span>
-                    <ArrowRight className='h-5 w-5' />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* FAQ Section */}
-            <div className='bg-white rounded-xl shadow-lg overflow-hidden'>
-              <div className='p-8'>
-                <h2
-                  className={`text-2xl font-bold mb-6 text-${primaryColor}-800`}
-                >
-                  Frequently Asked Questions
-                </h2>
-
-                <div className='space-y-4'>
-                  <div className='border border-gray-200 rounded-lg p-6'>
-                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                      Do I need to provide any cooking equipment?
-                    </h3>
-                    <p className='text-gray-700'>
-                      Our chefs bring their own professional knives and
-                      specialized tools, but they will utilize your kitchen
-                      equipment such as pots, pans, and serving dishes. If you
-                      have any concerns about your kitchen setup, please let us
-                      know in advance.
-                    </p>
-                  </div>
-
-                  <div className='border border-gray-200 rounded-lg p-6'>
-                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                      How far in advance should I book?
-                    </h3>
-                    <p className='text-gray-700'>
-                      We recommend booking at least 7-14 days in advance to
-                      ensure availability and allow time for menu planning. For
-                      special occasions or peak periods, earlier booking is
-                      advisable.
-                    </p>
-                  </div>
-
-                  <div className='border border-gray-200 rounded-lg p-6'>
-                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                      Do you handle cleanup afterward?
-                    </h3>
-                    <p className='text-gray-700'>
-                      Yes, our service includes complete kitchen cleanup. Your
-                      chef will leave the kitchen as clean as they found it,
-                      washing all cooking equipment and surfaces used during
-                      preparation and service.
-                    </p>
-                  </div>
-
-                  <div className='border border-gray-200 rounded-lg p-6'>
-                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                      Can I purchase groceries myself?
-                    </h3>
-                    <p className='text-gray-700'>
-                      While our chefs typically handle grocery shopping to
-                      ensure the freshest, highest-quality ingredients, you can
-                      arrange to purchase groceries yourself if preferred.
-                      Please discuss this during the menu planning stage.
+              <div className='bg-amber-50 border border-amber-200 rounded-2xl p-4'>
+                <div className='flex items-start'>
+                  <AlertCircle className='w-5 h-5 text-amber-600 mr-3 mt-0.5' />
+                  <div>
+                    <h4 className='font-bold text-amber-800 mb-1'>
+                      Allergy Notice
+                    </h4>
+                    <p className='text-amber-700 text-sm'>
+                      Please inform us of any food allergies or special dietary
+                      requirements during booking. Our chefs will ensure safe
+                      preparation and handling.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Important Notes */}
-            <div className='bg-gray-50 rounded-xl p-8'>
-              <h3 className='font-medium text-gray-800 mb-4 flex items-center'>
-                <AlertCircle className='w-5 h-5 mr-2' />
-                Important Information
-              </h3>
-
-              <ul className='space-y-3'>
-                <li className='flex items-start'>
-                  <Check
-                    className={`h-5 w-5 text-${primaryColor}-500 mr-2 mt-0.5`}
-                  />
-                  <span className='text-gray-700'>
-                    Minimum booking notice required is 48 hours, with 7 days
-                    recommended for optimal menu planning
-                  </span>
-                </li>
-                <li className='flex items-start'>
-                  <Check
-                    className={`h-5 w-5 text-${primaryColor}-500 mr-2 mt-0.5`}
-                  />
-                  <span className='text-gray-700'>
-                    Cancellations within 48 hours of the scheduled service are
-                    subject to a 50% charge
-                  </span>
-                </li>
-                <li className='flex items-start'>
-                  <Check
-                    className={`h-5 w-5 text-${primaryColor}-500 mr-2 mt-0.5`}
-                  />
-                  <span className='text-gray-700'>
-                    Grocery costs are additional and will be discussed during
-                    menu planning
-                  </span>
-                </li>
-                <li className='flex items-start'>
-                  <Check
-                    className={`h-5 w-5 text-${primaryColor}-500 mr-2 mt-0.5`}
-                  />
-                  <span className='text-gray-700'>
-                    Service charge includes chef's time, preparation, service,
-                    and cleanup
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Call to Action */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className={`bg-gradient-to-r from-${primaryColor}-600 to-${primaryColor}-500 rounded-xl shadow-xl overflow-hidden text-white`}
-      >
-        <div className='p-8 md:p-12'>
-          <div className='flex flex-col md:flex-row items-center justify-between gap-6'>
-            <div>
-              <h2 className='text-2xl md:text-3xl font-bold mb-2'>
-                Ready to Elevate Your Dining Experience?
-              </h2>
-              <p className='text-${primaryColor}-100'>
-                Book your private chef experience today and enjoy a culinary
-                journey in the comfort of your home.
-              </p>
-            </div>
-
-            <button
-              onClick={handleOpenBookingModal}
-              className='py-4 px-8 bg-white text-gray-900 hover:bg-gray-100 font-medium rounded-lg transition-colors shadow-md whitespace-nowrap'
-            >
-              Book Your Chef
-            </button>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+
+        {/* Testimonials */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='text-center mb-16'>
+            <h2 className='text-5xl font-bold text-gray-800 mb-6'>
+              Culinary Success Stories
+            </h2>
+            <p className='text-2xl text-gray-600 max-w-3xl mx-auto'>
+              Hear from guests who experienced extraordinary dining moments
+            </p>
+          </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+            {TESTIMONIALS.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                className='bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 group relative overflow-hidden'
+                variants={fadeInUp}
+                whileHover={{ y: -4 }}
+              >
+                <div className='absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-bl-full' />
+
+                <div className='flex items-center mb-6'>
+                  <div className='relative w-16 h-16 rounded-full overflow-hidden mr-4'>
+                    <Image
+                      src={testimonial.image}
+                      alt={testimonial.author}
+                      fill
+                      className='object-cover'
+                    />
+                  </div>
+                  <div>
+                    <h4 className='font-bold text-gray-800'>
+                      {testimonial.author}
+                    </h4>
+                    <p className='text-gray-500 text-sm'>{testimonial.event}</p>
+                    <div className='flex mt-1'>
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className='w-4 h-4 text-yellow-400 fill-current'
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <Quote className='w-8 h-8 text-orange-500 mb-4' />
+                <p className='text-gray-700 mb-4 leading-relaxed italic'>
+                  "{testimonial.text}"
+                </p>
+
+                <div className='text-sm text-orange-600 font-medium bg-orange-50 px-3 py-1 rounded-full inline-block'>
+                  {testimonial.cuisine}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Pricing & CTA */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='relative overflow-hidden rounded-3xl'>
+            <div className='absolute inset-0'>
+              <Image
+                src='https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&q=80&w=1200'
+                alt='Elegant dining setup'
+                fill
+                className='object-cover'
+              />
+              <div className='absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/80' />
+            </div>
+
+            <div className='relative z-10 p-16 text-center text-white'>
+              <motion.h2
+                className='text-5xl md:text-6xl font-bold mb-6'
+                variants={fadeInUp}
+              >
+                Ready to Indulge?
+              </motion.h2>
+              <motion.p
+                className='text-2xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
+                variants={fadeInUp}
+              >
+                Transform your next gathering into an unforgettable culinary
+                experience. Book your private chef today and taste the
+                extraordinary.
+              </motion.p>
+
+              <motion.div
+                className='flex flex-col sm:flex-row gap-8 justify-center items-center'
+                variants={fadeInUp}
+              >
+                <div className='text-center'>
+                  <div className='text-5xl font-bold mb-2'>
+                    ${service.price}
+                  </div>
+                  <div className='text-white/70 text-lg'>
+                    Starting price per experience
+                  </div>
+                  <div className='text-white/60 text-sm mt-1'>
+                    + ingredients & customizations
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className='group bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
+                >
+                  <ChefHat className='w-6 h-6' />
+                  Book Your Chef Experience
+                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
+                </button>
+              </motion.div>
+
+              <motion.div
+                className='mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center'
+                variants={stagger}
+              >
+                <motion.div
+                  variants={fadeInUp}
+                  className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'
+                >
+                  <Zap className='w-8 h-8 text-yellow-400 mx-auto mb-3' />
+                  <h4 className='font-bold mb-2'>Instant Booking</h4>
+                  <p className='text-white/80 text-sm'>
+                    Quick confirmation & scheduling
+                  </p>
+                </motion.div>
+                <motion.div
+                  variants={fadeInUp}
+                  className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'
+                >
+                  <Shield className='w-8 h-8 text-green-400 mx-auto mb-3' />
+                  <h4 className='font-bold mb-2'>Satisfaction Guaranteed</h4>
+                  <p className='text-white/80 text-sm'>
+                    100% satisfaction or money back
+                  </p>
+                </motion.div>
+                <motion.div
+                  variants={fadeInUp}
+                  className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'
+                >
+                  <Award className='w-8 h-8 text-purple-400 mx-auto mb-3' />
+                  <h4 className='font-bold mb-2'>Premium Service</h4>
+                  <p className='text-white/80 text-sm'>
+                    Michelin-level culinary expertise
+                  </p>
+                </motion.div>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Inspirational Quote */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-gradient-to-r from-amber-100 via-orange-50 to-red-100 rounded-3xl p-12 text-center relative overflow-hidden'>
+            <motion.div
+              className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500'
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 2, delay: 0.5 }}
+            />
+
+            <Quote className='w-12 h-12 text-orange-500 mx-auto mb-6' />
+            <blockquote className='text-3xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
+              "Cooking is not about convenience. It's about love, culture, and
+              the beauty of transformation."
+            </blockquote>
+            <cite className='text-xl text-orange-600 font-medium'>
+              - Chef Auguste Escoffier
+            </cite>
+          </div>
+        </motion.div>
+      </div>
 
       {/* Booking Modal */}
       <AnimatePresence>
@@ -921,57 +1051,6 @@ const ChefServiceView: React.FC<ChefServiceViewProps> = ({
         )}
       </AnimatePresence>
     </div>
-  );
-};
-
-// Helper function to format cuisine names
-const formatCuisineName = (name: string): string => {
-  return name
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase())
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-};
-
-// Helper function to format meal option names
-const formatMealName = (key: string): string => {
-  const mealMap: Record<string, string> = {
-    breakfast: 'Breakfast Experience',
-    lunch: 'Lunch Service',
-    dinner: 'Dinner Experience',
-    fullDay: 'Full Day Culinary Experience',
-    appetizers: 'Appetizers & Canapés',
-    brunch: 'Weekend Brunch',
-  };
-
-  return (
-    mealMap[key] ||
-    key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
-  );
-};
-
-// Helper function to get cuisine images
-const getCuisineImage = (cuisine: string): string => {
-  const cuisineImages: Record<string, string> = {
-    italian:
-      'https://images.unsplash.com/photo-1595295333158-4742f28fbd85?q=80&w=2080&auto=format&fit=crop',
-    french:
-      'https://images.unsplash.com/photo-1608855238293-a8853e7f7c98?q=80&w=2070&auto=format&fit=crop',
-    asian:
-      'https://images.unsplash.com/photo-1580442151529-343f2f6e0e27?q=80&w=2070&auto=format&fit=crop',
-    mediterranean:
-      'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?q=80&w=1974&auto=format&fit=crop',
-    latin:
-      'https://images.unsplash.com/photo-1613514785940-daed07799d9b?q=80&w=2080&auto=format&fit=crop',
-    'plant-based':
-      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop',
-    seafood:
-      'https://images.unsplash.com/photo-1579631542720-3a87824fff86?q=80&w=1974&auto=format&fit=crop',
-  };
-
-  return (
-    cuisineImages[cuisine.toLowerCase()] ||
-    'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=2080&auto=format&fit=crop'
   );
 };
 

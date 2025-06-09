@@ -26,6 +26,7 @@ import {
   Plus,
   Minus,
   ArrowUp,
+  Gift,
 } from 'lucide-react';
 
 interface BikeRentalServiceViewProps {
@@ -141,17 +142,21 @@ const BIKE_TYPES: BikeType[] = [
 ];
 
 const INCLUDED_ITEMS = [
-  { icon: Shield, text: 'Safety helmet included' },
-  { icon: CheckCircle, text: 'Secure bike lock' },
+  { icon: Shield, text: 'Helmet' },
+  { icon: CheckCircle, text: 'Lock' },
   { icon: Truck, text: 'Free delivery & pickup' },
-  { icon: Clock, text: '24/7 customer support' },
+  { icon: Clock, text: '24/7 Support' },
+];
+
+const NOT_INCLUDED_ITEMS = [
+  { icon: Gift, text: 'Gratuity (optional, appreciated)' },
 ];
 
 const PROCESS_STEPS = [
-  { step: '1', text: 'Choose your bike type', icon: Bike },
-  { step: '2', text: 'We deliver to your location', icon: Truck },
-  { step: '3', text: 'Quick safety briefing', icon: Shield },
-  { step: '4', text: 'Explore at your own pace', icon: Route },
+  { step: '1', text: 'We deliver your bike at your location', icon: Truck },
+  { step: '2', text: 'Quick setup and safety overview', icon: Shield },
+  { step: '3', text: 'Enjoy the freedom to explore', icon: Route },
+  { step: '4', text: 'We pick up the bike at the scheduled time', icon: Clock },
 ];
 
 const FEATURES = [
@@ -537,7 +542,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
           >
             <Bike className='w-5 h-5 text-white mr-2' />
             <span className='text-white font-medium'>
-              Your Adventure Awaits
+              Your Ride. Your Freedom.
             </span>
           </motion.div>
 
@@ -547,15 +552,17 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
           >
             Bike Rental
             <br />
-            <span className='text-gray-300'>Made Simple</span>
+            <span className='text-gray-300'>Explore At Your Own Pace</span>
           </motion.h1>
 
           <motion.p
             className='text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl leading-relaxed'
             variants={fadeInUp}
           >
-            Discover Punta Cana at your own pace with our premium bike rentals.
-            High-quality bikes delivered straight to your accommodation.
+            Discover Punta Cana like a local with our high-quality bikes,
+            delivered straight to your accommodation. Whether you're cruising
+            along the coast or exploring hidden paths, our bikes are maintained
+            to the highest standard for a smooth and safe ride.
           </motion.p>
         </div>
       </motion.div>
@@ -613,7 +620,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
           </h2>
           <p className='text-xl text-gray-600'>
             {!showBookingForm
-              ? 'Select a bike to start your booking'
+              ? 'Beach Cruisers | City Bikes | Mountain Bikes | E-Bikes | Kids Bikes - Select a bike to start your booking'
               : 'Click on additional bikes to add them to your selection'}
           </p>
         </div>
@@ -1263,7 +1270,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         )}
       </AnimatePresence>
 
-      {/* How It Works */}
+      {/* What to Expect */}
       <motion.div
         className='bg-gray-50 rounded-3xl p-8 md:p-12'
         initial='hidden'
@@ -1273,9 +1280,17 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
       >
         <div className='text-center mb-12'>
           <h2 className='text-3xl font-bold text-gray-900 mb-4'>
-            How It Works
+            What to Expect
           </h2>
-          <p className='text-xl text-gray-600'>Simple, fast, and convenient</p>
+          <p className='text-xl text-gray-600 mb-4'>
+            Our bike rentals are not just convenient—they're an invitation to
+            adventure. With flexible rental times, personalized tips, and
+            reliable service, you'll have everything you need for a memorable
+            ride. We make it easy, fun, and fully adapted to your schedule.
+          </p>
+          <p className='text-lg text-gray-700 font-medium italic'>
+            Let the journey begin—on two wheels.
+          </p>
         </div>
 
         <div className='grid md:grid-cols-4 gap-8'>
@@ -1323,16 +1338,71 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
             ))}
           </div>
 
+          {/* Not Included Section */}
+          <div className='mt-8'>
+            <h3 className='text-xl font-bold text-gray-900 mb-4 flex items-center'>
+              <X className='w-5 h-5 text-red-500 mr-2' />
+              Not Included
+            </h3>
+            <div className='space-y-4'>
+              {NOT_INCLUDED_ITEMS.map((item, index) => (
+                <div key={index} className='flex items-center'>
+                  <div className='w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mr-4'>
+                    <item.icon className='w-6 h-6 text-red-600' />
+                  </div>
+                  <span className='text-lg text-gray-700 font-medium'>
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Good to Know Section */}
+          <div className='mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-200'>
+            <h3 className='font-semibold text-blue-800 mb-4 flex items-center'>
+              <Info className='w-5 h-5 mr-2' />
+              Good to Know
+            </h3>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-700'>
+              <div>
+                <div className='flex items-center mb-2'>
+                  <Calendar className='w-4 h-4 mr-2' />
+                  <strong>Start & End Time:</strong>
+                </div>
+                <p className='text-sm ml-6'>
+                  According to your booking schedule
+                </p>
+              </div>
+              <div>
+                <div className='flex items-center mb-2'>
+                  <Baby className='w-4 h-4 mr-2' />
+                  <strong>Age Policy:</strong>
+                </div>
+                <p className='text-sm ml-6'>Children's bikes available</p>
+              </div>
+              <div className='md:col-span-2'>
+                <div className='flex items-center mb-2'>
+                  <MapPin className='w-4 h-4 mr-2' />
+                  <strong>Delivery Zone:</strong>
+                </div>
+                <p className='text-sm ml-6'>
+                  Available throughout Punta Cana area
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className='mt-8 p-6 bg-amber-50 rounded-2xl border border-amber-200'>
             <h3 className='font-semibold text-amber-800 mb-3 flex items-center'>
               <AlertTriangle className='w-5 h-5 mr-2' />
-              Important Information
+              Safety Disclaimer
             </h3>
-            <ul className='text-amber-700 space-y-1'>
-              <li>• Valid ID required for rental</li>
-              <li>• Helmet use is strongly recommended</li>
-              <li>• Follow local traffic regulations</li>
-            </ul>
+            <p className='text-amber-700'>
+              For your safety, we recommend wearing a helmet and following all
+              local traffic regulations.
+              <strong> Your Safety, Your Responsibility.</strong>
+            </p>
           </div>
         </motion.div>
 
