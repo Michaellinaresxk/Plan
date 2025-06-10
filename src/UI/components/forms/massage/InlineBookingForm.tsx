@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import {
   Leaf,
   Clock,
@@ -16,7 +17,9 @@ import {
   Accessibility,
   Info,
   CreditCard,
+  MapPin,
 } from 'lucide-react'; // Componente del formulario inline
+import { useCallback, useState } from 'react';
 
 interface MassageServiceViewProps {
   service: Service;
@@ -43,6 +46,7 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
   );
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [location, setLocation] = useState('');
   const [persons, setPersons] = useState(1);
   const [specialNeeds, setSpecialNeeds] = useState('');
   const [errors, setErrors] = useState({}); // Nuevo: estado para errores
@@ -75,6 +79,7 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
           duration: selectedDuration.duration,
           date,
           time,
+          location,
           persons,
           specialNeeds,
           calculatedPrice: totalPrice,
@@ -95,6 +100,7 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
     selectedDuration,
     date,
     time,
+    location,
     persons,
     specialNeeds,
     totalPrice,

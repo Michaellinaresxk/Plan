@@ -485,32 +485,24 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
               Pickup Location
             </h3>
 
+            {/* Location */}
             <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                <MapPin className='w-4 h-4 mr-2 text-blue-700' />
-                Pickup Location *
+              <label className='flex items-center text-sm font-medium  text-grey-800 mb-2'>
+                <MapPin className='w-4 h-4 mr-2 text-blue-800' />
+                Location *
               </label>
-              {/* <select
+              <input
                 name='location'
                 value={formData.location}
                 onChange={handleInputChange}
                 className={`w-full p-3 border ${
                   errors.location ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-              >
-                <option value=''>Select pickup location</option>
-                {LOCATIONS.map((location) => (
-                  <option key={location} value={location}>
-                    {location}
-                  </option>
-                ))}
-              </select> */}
+                } `}
+                placeholder='Please provide the complete address where the personal will pick you up.'
+              />
               {errors.location && (
                 <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
               )}
-              <p className='text-xs text-gray-500 mt-1'>
-                Exact pickup time will be confirmed 24 hours before tour
-              </p>
             </div>
           </div>
 

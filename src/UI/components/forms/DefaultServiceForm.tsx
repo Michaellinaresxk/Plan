@@ -250,11 +250,10 @@ const DefaultServiceForm: React.FC<DefaultServiceFormProps> = ({
             <MapPin className='w-4 h-4 mr-2 ' />
             Location *
           </label>
-          <textarea
+          <input
             name='location'
             value={formData.location}
             onChange={handleInputChange}
-            rows={3}
             className={`w-full p-3 border ${
               errors.location ? 'border-red-500' : 'border-gray-300'
             } `}

@@ -32,7 +32,7 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
   const [formData, setFormData] = useState({
     date: '',
     startTime: '',
-    venue: '',
+    location: '',
     performerType: '',
     musicGenre: '',
     specialRequests: '',
@@ -179,7 +179,8 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
 
     if (!formData.date) newErrors.date = 'Please select a date';
     if (!formData.startTime) newErrors.startTime = 'Please select a time';
-    if (!formData.venue) newErrors.venue = 'Please provide the venue address';
+    if (!formData.location)
+      newErrors.location = 'Please provide the location address';
     if (!formData.performerType)
       newErrors.performerType = 'Please select performer type';
     if (!formData.musicGenre)
@@ -282,21 +283,20 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
                 <MapPin className='w-4 h-4 inline mr-1' />
-                Venue Address *
+                Event Location *
               </label>
-              <textarea
-                value={formData.venue}
-                onChange={(e) => handleChange('venue', e.target.value)}
+              <input
+                value={formData.location}
+                onChange={(e) => handleChange('location', e.target.value)}
                 placeholder='Please provide the complete address where the performance will take place'
-                rows={3}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent resize-none ${
-                  errors.venue ? 'border-red-300' : 'border-gray-300'
+                  errors.location ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
-              {errors.venue && (
+              {errors.location && (
                 <p className='text-red-500 text-sm mt-1 flex items-center'>
                   <AlertCircle className='w-4 h-4 mr-1' />
-                  {errors.venue}
+                  {errors.location}
                 </p>
               )}
             </div>

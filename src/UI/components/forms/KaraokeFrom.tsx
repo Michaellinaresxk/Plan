@@ -343,11 +343,10 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({
                 <MapPin className='w-4 h-4 mr-2 text-purple-700' />
                 Event Location *
               </label>
-              <textarea
+              <input
                 name='location'
                 value={formData.location}
                 onChange={handleInputChange}
-                rows={3}
                 className={`w-full p-3 border ${
                   errors.location ? 'border-red-500' : 'border-gray-300'
                 } rounded-lg focus:ring-purple-500 focus:border-purple-500`}

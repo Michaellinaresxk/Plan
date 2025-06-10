@@ -5,6 +5,7 @@ import {
   CheckCircle,
   Heart,
   Info,
+  MapPin,
   Minus,
   Plus,
   Timer,

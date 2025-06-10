@@ -730,53 +730,24 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
             )}
           </div>
 
-          {/* Location Section */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Location & Delivery
-            </h3>
-
-            <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                <MapPin className='w-4 h-4 mr-2 text-green-700' />
-                Pickup/Delivery Location *
-              </label>
-              <select
-                name='location'
-                value={formData.location}
-                onChange={handleInputChange}
-                className={`w-full p-3 border ${
-                  errors.location ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-green-500 focus:border-green-500 bg-gray-50`}
-              >
-                <option value=''>Select location</option>
-                {LOCATIONS.map((location) => (
-                  <option key={location} value={location}>
-                    {location}
-                  </option>
-                ))}
-              </select>
-              {errors.location && (
-                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
-              )}
-            </div>
-
-            <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-              <input
-                type='checkbox'
-                id='deliveryToHotel'
-                name='deliveryToHotel'
-                checked={formData.deliveryToHotel}
-                onChange={handleInputChange}
-                className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
-              />
-              <label
-                htmlFor='deliveryToHotel'
-                className='ml-2 text-sm text-gray-700'
-              >
-                Hotel delivery and pickup service (+$10)
-              </label>
-            </div>
+          {/* Location */}
+          <div>
+            <label className='flex items-center text-sm font-medium   text-gray-700 mb-2'>
+              <MapPin className='w-4 h-4 mr-2 text-green-700' />
+              Location *
+            </label>
+            <input
+              name='location'
+              value={formData.location}
+              onChange={handleInputChange}
+              className={`w-full p-3 border ${
+                errors.location ? 'border-red-500' : 'border-gray-300'
+              } `}
+              placeholder='Please provide the complete address where the personal will bring your bike.'
+            />
+            {errors.location && (
+              <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+            )}
           </div>
 
           {/* Participants Section */}

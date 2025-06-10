@@ -14,6 +14,7 @@ import {
   Info,
   Shield,
   DollarSign,
+  MapPin,
 } from 'lucide-react';
 import ServiceManager from '@/constants/services/ServiceManager';
 
@@ -33,6 +34,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     date: '',
     startTime: '',
     endTime: '',
+    location: '',
     childrenCount: 1,
     childrenAges: [''],
     hasSpecialNeeds: false,
@@ -87,6 +89,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
   }, [
     formData.startTime,
     formData.endTime,
+    formData.location,
     formData.childrenCount,
     formData.hasSpecialNeeds,
     service.price,
@@ -110,6 +113,11 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
     if (!formData.endTime) {
       newErrors.endTime = t('form.errors.required');
+    }
+
+    // validade location required
+    if (!formData.location) {
+      newErrors.location = t('form.errors.required');
     }
 
     // Validate children ages are filled
@@ -243,10 +251,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
           <div className='space-y-6'>
             <h3 className='text-xl font-bold text-purple-900 flex items-center'>
               <Calendar className='w-6 h-6 mr-2 text-purple-600' />
-              {t(
-                'services.babysitter.form.scheduling',
-                'When Do You Need Care?'
-              )}
+              {t('services.babysitter.form.scheduling')}
               <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
             </h3>
 
@@ -254,11 +259,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
               <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                 <Calendar className='w-5 h-5 mr-2 text-purple-600' />
-                {t(
-                  'services.babysitter.form.date',
-                  'What date do you need childcare?'
-                )}{' '}
-                *
+                {t('services.babysitter.form.date')} *
               </label>
               <input
                 type='date'
@@ -284,7 +285,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
                 <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                   <Clock className='w-5 h-5 mr-2 text-purple-600' />
-                  {t('services.babysitter.form.startTime', 'Starting time')} *
+                  {t('services.babysitter.form.startTime')} *
                 </label>
                 <input
                   type='time'
@@ -307,7 +308,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
                 <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                   <Clock className='w-5 h-5 mr-2 text-purple-600' />
-                  {t('services.babysitter.form.endTime', 'Ending time')} *
+                  {t('services.babysitter.form.endTime')} *
                 </label>
                 <input
                   type='time'
@@ -337,6 +338,26 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 )}
               </p>
             </div>
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className='flex items-center text-sm font-medium  text-purple-800 mb-2'>
+              <MapPin className='w-4 h-4 mr-2 ' />
+              Location *
+            </label>
+            <input
+              name='location'
+              value={formData.location}
+              onChange={handleChange}
+              className={`w-full p-3 border ${
+                errors.location ? 'border-red-500' : 'border-gray-300'
+              } `}
+              placeholder='Please provide the complete address where the personal training will take place'
+            />
+            {errors.location && (
+              <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+            )}
           </div>
 
           {/* Children Information */}

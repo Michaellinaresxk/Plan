@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   Truck,
   Bus,
+  MapPin,
 } from 'lucide-react';
 interface VehicleOption {
   name: string;
@@ -50,8 +51,8 @@ interface FormData {
 
   // Vehicle
   vehicleType: string;
-
   pickupName?: string;
+  location: string;
 }
 
 interface FormErrors {
@@ -134,6 +135,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     needsCarSeat: false,
     carSeatCount: 0,
     vehicleType: 'suv',
+    location: '',
     pickupName: '',
   });
 
@@ -217,6 +219,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       { field: 'airline', message: 'Airline is required' },
       { field: 'flightNumber', message: 'Flight number is required' },
       { field: 'arrivalTime', message: 'Arrival time is required' },
+      { field: 'location', message: 'Location is required' },
     ];
 
     // Round trip validations
@@ -957,6 +960,26 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
               Vehicle Selection
             </h3>
             <VehicleSelector />
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className='flex items-center text-sm font-medium  text-grey-800 mb-2'>
+              <MapPin className='w-4 h-4 mr-2 text-blue-800' />
+              Location *
+            </label>
+            <input
+              name='location'
+              value={formData.location}
+              onChange={handleInputChange}
+              className={`w-full p-3 border ${
+                errors.location ? 'border-red-500' : 'border-gray-300'
+              } `}
+              placeholder='Please provide the complete address where the transportation will drop you up.'
+            />
+            {errors.location && (
+              <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+            )}
           </div>
 
           {/* Pickup name / alias */}

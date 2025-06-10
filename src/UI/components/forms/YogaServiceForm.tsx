@@ -10,6 +10,7 @@ import {
   Moon,
   MessageSquare,
   Info,
+  MapPin,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/client';
@@ -30,6 +31,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
   const [formData, setFormData] = useState({
     date: '',
     timeSlot: '', // 'morning' or 'evening'
+    location: '',
     participantCount: 1,
     hasSpecialNeeds: false,
     specialNeedsDetails: '',
@@ -115,6 +117,12 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
     if (!formData.date) {
       newErrors.date = t('form.errors.required', {
         fallback: 'Date is required',
+      });
+    }
+
+    if (!formData.location) {
+      newErrors.location = t('form.errors.confirmation', {
+        fallback: 'Please confirm location',
       });
     }
 
@@ -373,6 +381,26 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                   <p className='text-red-500 text-xs mt-1'>{errors.timeSlot}</p>
                 )}
               </div>
+            </div>
+
+            {/* Location */}
+            <div>
+              <label className='flex items-center text-sm font-medium  text-grey-800 mb-2'>
+                <MapPin className='w-4 h-4 mr-2 text-teal-500' />
+                Location *
+              </label>
+              <input
+                name='location'
+                value={formData.location}
+                onChange={handleChange}
+                className={`w-full p-3 border ${
+                  errors.location ? 'border-red-500' : 'border-gray-300'
+                } `}
+                placeholder='Please provide the complete address where the yoga personal  will take place'
+              />
+              {errors.location && (
+                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+              )}
             </div>
 
             {/* Participants Section */}
