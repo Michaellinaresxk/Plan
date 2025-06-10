@@ -2,21 +2,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-import {
-  budgetOptions,
-  chefsSpecialMenus,
-  cuisineTypes,
-  occasionTypes,
-} from '@/constants/chefFormConsts';
+
 import FormHeader from './ChefHeader';
 import ChefTypeStep from './steps/ChefTypeStep';
-import ServiceTypeStep from './steps/ServiceTypeStep';
 import BasicDetailsStep from './steps/BasicDetailsStep';
 import GuestCountStep from './steps/GuestCountStep';
 import CuisineAndBudgetStep from './CuisineAndBudgetStep';
 import DietaryRestrictionsStep from './steps/DietaryRestrictionsStep';
 import EventDescriptionStep from './steps/EventDescriptionStep';
 import ChefFormFooter from './ChefFormFooter';
+import {
+  budgetOptions,
+  chefsSpecialMenus,
+  cuisineTypes,
+  occasionTypes,
+} from '@/constants/chef/chefForm';
+import ChefServiceTypeStep from './steps/ServiceTypeStep';
 
 interface ChefFormProps {
   service: Service;
@@ -456,7 +457,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
 
           {/* Step 2: Service Type */}
           {currentStep === 2 && (
-            <ServiceTypeStep
+            <ChefServiceTypeStep
               formData={formData}
               onChange={updateFormField}
               errors={errors}
