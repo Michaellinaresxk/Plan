@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
+
 import {
   Plane,
   Calendar,
@@ -13,7 +14,6 @@ import {
   Info,
   Car,
   Clock,
-  Building2,
   AlertTriangle,
   Truck,
   Bus,
@@ -22,37 +22,13 @@ import {
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
 
-interface FormData {
-  // Flight details
-  date: string;
-  airline: string;
-  flightNumber: string;
-  arrivalTime: string;
-
-  // Round trip
-  isRoundTrip: boolean;
-  returnDate: string;
-  returnAirline: string;
-  returnFlightNumber: string;
-  departureTime: string;
-
-  // Passengers
-  passengerCount: number;
-  kidsCount: number;
-
-  // Car seats
-  needsCarSeat: boolean;
-  carSeatCount: number;
-
-  // Vehicle
-  vehicleType: string;
-  pickupName?: string;
-  location: string;
-}
-
-interface FormErrors {
-  [key: string]: string;
-}
+// Import the enhanced airline selector and utilities
+import AirlineSelector from '@/UI/components/service/AirlineSelector';
+import {
+  AIRLINE_TERMINAL_MAP,
+  getAirlineInfo,
+  validateAirlineWithTerminal,
+} from '@/constants/airlines';
 
 interface AirportTransferFormProps {
   service: Service;
@@ -78,8 +54,8 @@ const VEHICLE_OPTIONS = {
   },
   two_suvs: {
     name: 'Two SUVs',
-    capacity: 12, // 2 SUVs × 6 passengers each
-    additionalCost: 75, // Costo de dos SUVs (25 + 50 por el segundo)
+    capacity: 12,
+    additionalCost: 75,
     description:
       'Two separate SUVs for flexibility and comfort in large groups',
     icon: (
@@ -92,21 +68,6 @@ const VEHICLE_OPTIONS = {
   },
 };
 
-// Common airlines for Punta Cana
-const AIRLINES = [
-  'American Airlines',
-  'Delta Air Lines',
-  'JetBlue Airways',
-  'United Airlines',
-  'Southwest Airlines',
-  'Spirit Airlines',
-  'Avianca',
-  'Copa Airlines',
-  'Air Canada',
-  'WestJet',
-  'Other',
-];
-
 const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   service,
   onSubmit,
@@ -117,17 +78,19 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   const router = useRouter();
   const { setReservationData } = useReservation();
 
-  // Form state
+  // Form state with enhanced terminal tracking
   const [formData, setFormData] = useState<FormData>({
     date: '',
     airline: '',
     flightNumber: '',
     arrivalTime: '',
+    arrivalTerminal: '',
     isRoundTrip: false,
     returnDate: '',
     returnAirline: '',
     returnFlightNumber: '',
     departureTime: '',
+    departureTerminal: '',
     passengerCount: 2,
     kidsCount: 0,
     needsCarSeat: false,
@@ -207,7 +170,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     return hours >= 24;
   };
 
-  // Form validation
+  // Enhanced form validation with terminal validation
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -239,6 +202,21 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
         newErrors[field] = message;
       }
     });
+
+    // Enhanced airline validation with terminal checking
+    const airlineValidation = validateAirlineWithTerminal(formData.airline);
+    if (airlineValidation) {
+      newErrors.airline = airlineValidation;
+    }
+
+    if (formData.isRoundTrip) {
+      const returnAirlineValidation = validateAirlineWithTerminal(
+        formData.returnAirline
+      );
+      if (returnAirlineValidation) {
+        newErrors.returnAirline = returnAirlineValidation;
+      }
+    }
 
     // Date validations
     if (
@@ -275,42 +253,91 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     return newErrors;
   };
 
-  // Handle form submission
+  // Generate pickup instructions based on terminal information
+  const generatePickupInstructions = (data: FormData): string => {
+    const arrivalTerminal = getAirlineInfo(data.airline)?.terminal;
+    const departureTerminal = data.isRoundTrip
+      ? getAirlineInfo(data.returnAirline)?.terminal
+      : null;
+
+    let instructions = [];
+
+    if (arrivalTerminal) {
+      instructions.push(`Pickup: Terminal ${arrivalTerminal} arrivals area`);
+    } else {
+      instructions.push(
+        'Pickup: Terminal will be confirmed based on flight details'
+      );
+    }
+
+    if (data.isRoundTrip && departureTerminal) {
+      instructions.push(
+        `Return: Terminal ${departureTerminal} departures area`
+      );
+    } else if (data.isRoundTrip) {
+      instructions.push(
+        'Return: Terminal will be confirmed based on flight details'
+      );
+    }
+
+    return instructions.join(' | ');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Create reservation data with properly structured items
+      // ✅ CALCULAR EL PRECIO TOTAL ANTES DE CREAR LA RESERVA
+      const totalPrice = calculatePrice; // Ya está calculado con useMemo
+
+      // Enhanced reservation data with terminal information AND totalPrice
       const reservationData = {
         service,
+        totalPrice, // ✅ AGREGAR ESTA LÍNEA - CRÍTICA PARA QUE NO FALLE
         formData: {
           ...formData,
           serviceType: 'airport-transfers',
+          // Add terminal information
+          terminalInfo: {
+            arrival: {
+              airline: formData.airline,
+              terminal: getAirlineInfo(formData.airline)?.terminal || 'TBD',
+              code: getAirlineInfo(formData.airline)?.code || '',
+            },
+            departure: formData.isRoundTrip
+              ? {
+                  airline: formData.returnAirline,
+                  terminal:
+                    getAirlineInfo(formData.returnAirline)?.terminal || 'TBD',
+                  code: getAirlineInfo(formData.returnAirline)?.code || '',
+                }
+              : null,
+          },
+          // Enhanced pickup instructions
+          specialInstructions: generatePickupInstructions(formData),
         },
-        // totalPrice: calculateEstimatedTotal(),
-        bookingDate: new Date(`${formData.date}T${formData.hour}`),
+        bookingDate: new Date(`${formData.date}T${formData.arrivalTime}`),
         clientInfo: undefined,
       };
 
       console.log(
-        '🛒 Airoprt transfer - Reservation data created:',
+        '🛩️ Enhanced Airport transfer - Reservation data:',
         reservationData
       );
+      console.log('💰 Total Price included:', totalPrice); // Debug log
 
-      // Store in context
       setReservationData(reservationData);
-
-      // Navigate to confirmation page
       router.push('/reservation-confirmation');
     } catch (error) {
-      console.error('❌  Airoprt transfer - Error submitting form:', error);
+      console.error('❌ Airport transfer - Error submitting form:', error);
       setErrors({
         submit: t('form.errors.submitError', {
           fallback: 'Failed to submit reservation. Please try again.',
@@ -321,17 +348,32 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     }
   };
 
-  // Generic input handler
+  // Enhanced input handler with terminal auto-update
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
     const checked = 'checked' in e.target ? e.target.checked : false;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    setFormData((prev) => {
+      const newData = {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      };
+
+      // AUTO-UPDATE TERMINAL INFO WHEN AIRLINE CHANGES
+      if (name === 'airline') {
+        const terminalInfo = getAirlineInfo(value);
+        newData.arrivalTerminal = terminalInfo?.terminal || '';
+      }
+
+      if (name === 'returnAirline') {
+        const terminalInfo = getAirlineInfo(value);
+        newData.departureTerminal = terminalInfo?.terminal || '';
+      }
+
+      return newData;
+    });
 
     // Clear car seat count if checkbox is unchecked
     if (name === 'needsCarSeat' && !checked) {
@@ -370,13 +412,12 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
 
   // Vehicle selection with recommendations
   const VehicleSelector = () => {
-    // Función helper para determinar las opciones recomendadas
     const getRecommendationMessage = () => {
       if (totalPassengers > 10) {
         return {
           type: 'warning',
           message: `For ${totalPassengers} passengers, we strongly recommend a Van or consider booking two SUVs.`,
-          showFor: ['suv', 'sedan'], // Mostrar advertencia si tienen seleccionado SUV o sedan
+          showFor: ['suv', 'sedan'],
         };
       }
 
@@ -391,11 +432,9 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       return null;
     };
 
-    // Función para determinar si un vehículo puede acomodar a los pasajeros
-    const canVehicleAccommodate = (vehicleKey, vehicle) => {
+    const canVehicleAccommodate = (vehicleKey: string, vehicle: any) => {
       if (totalPassengers <= vehicle.capacity) return true;
 
-      // Para más de 6 pasajeros, permitir VAN o dos SUVs
       if (totalPassengers > 6) {
         return vehicleKey === 'van' || vehicleKey === 'two_suvs';
       }
@@ -403,11 +442,10 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       return false;
     };
 
-    // Función para determinar el vehículo recomendado
     const getRecommendedVehicle = () => {
-      if (totalPassengers > 10) return 'van'; // Priorizar van para grupos muy grandes
-      if (totalPassengers > 6) return 'van'; // Recomendar van para grupos medianos
-      return recommendedVehicle; // Tu lógica existente
+      if (totalPassengers > 10) return 'van';
+      if (totalPassengers > 6) return 'van';
+      return recommendedVehicle;
     };
 
     const recommendation = getRecommendationMessage();
@@ -420,7 +458,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
           Vehicle Type *
         </label>
 
-        {/* Vehicle recommendation alert */}
         {recommendation &&
           recommendation.showFor.includes(formData.vehicleType) && (
             <div
@@ -454,7 +491,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
             </div>
           )}
 
-        {/* Información adicional para más de 10 pasajeros */}
         {totalPassengers > 10 && (
           <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
             <div className='text-sm text-blue-800'>
@@ -563,6 +599,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       </div>
     );
   };
+
   // Counter component
   const Counter = ({
     label,
@@ -604,6 +641,48 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       </div>
     </div>
   );
+
+  // Terminal Summary Component
+  const TerminalSummary = () => {
+    const arrivalInfo = getAirlineInfo(formData.airline);
+    const departureInfo = formData.isRoundTrip
+      ? getAirlineInfo(formData.returnAirline)
+      : null;
+
+    if (!arrivalInfo && !departureInfo) return null;
+
+    return (
+      <div className='mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg'>
+        <h4 className='font-medium text-blue-900 mb-3 flex items-center'>
+          <Info className='w-4 h-4 mr-2' />
+          Terminal Information Summary
+        </h4>
+
+        {arrivalInfo && (
+          <div className='mb-2'>
+            <span className='text-sm text-blue-800'>
+              <strong>Arrival:</strong> {formData.airline} → Terminal{' '}
+              {arrivalInfo.terminal}
+            </span>
+          </div>
+        )}
+
+        {departureInfo && (
+          <div>
+            <span className='text-sm text-blue-800'>
+              <strong>Departure:</strong> {formData.returnAirline} → Terminal{' '}
+              {departureInfo.terminal}
+            </span>
+          </div>
+        )}
+
+        <p className='text-xs text-blue-700 mt-2'>
+          Your driver will receive this terminal information to ensure smooth
+          pickup and drop-off.
+        </p>
+      </div>
+    );
+  };
 
   return (
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
@@ -649,31 +728,15 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                 )}
               </div>
 
-              {/* Airline */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Building2 className='w-4 h-4 mr-2 text-blue-700' />
-                  Airline *
-                </label>
-                <select
-                  name='airline'
-                  value={formData.airline}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.airline ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-                >
-                  <option value=''>Select Airline</option>
-                  {AIRLINES.map((airline) => (
-                    <option key={airline} value={airline}>
-                      {airline}
-                    </option>
-                  ))}
-                </select>
-                {errors.airline && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.airline}</p>
-                )}
-              </div>
+              {/* Enhanced Airline Selector */}
+              <AirlineSelector
+                name='airline'
+                value={formData.airline}
+                onChange={handleInputChange}
+                error={errors.airline}
+                label='Arrival Airline *'
+                placeholder='Search for your airline...'
+              />
 
               {/* Flight Number */}
               <div>
@@ -812,35 +875,15 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                       )}
                     </div>
 
-                    {/* Return Airline */}
-                    <div>
-                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                        <Building2 className='w-4 h-4 mr-2 text-blue-700' />
-                        Departure Airline *
-                      </label>
-                      <select
-                        name='returnAirline'
-                        value={formData.returnAirline}
-                        onChange={handleInputChange}
-                        className={`w-full p-3 border ${
-                          errors.returnAirline
-                            ? 'border-red-500'
-                            : 'border-gray-300'
-                        } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-                      >
-                        <option value=''>Select Airline</option>
-                        {AIRLINES.map((airline) => (
-                          <option key={airline} value={airline}>
-                            {airline}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.returnAirline && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.returnAirline}
-                        </p>
-                      )}
-                    </div>
+                    {/* Enhanced Return Airline Selector */}
+                    <AirlineSelector
+                      name='returnAirline'
+                      value={formData.returnAirline}
+                      onChange={handleInputChange}
+                      error={errors.returnAirline}
+                      label='Departure Airline *'
+                      placeholder='Search for your return airline...'
+                    />
 
                     {/* Return Flight Number */}
                     <div>
@@ -895,6 +938,12 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
               )}
             </div>
           </div>
+
+          {/* Terminal Summary */}
+          {(formData.airline ||
+            (formData.isRoundTrip && formData.returnAirline)) && (
+            <TerminalSummary />
+          )}
 
           {/* Passenger Information */}
           <div className='space-y-6'>
@@ -982,18 +1031,19 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
 
           {/* Location */}
           <div>
-            <label className='flex items-center text-sm font-medium  text-grey-800 mb-2'>
-              <MapPin className='w-4 h-4 mr-2 text-blue-800' />
+            <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+              <MapPin className='w-4 h-4 mr-2 text-blue-700' />
               Location *
             </label>
             <input
+              type='text'
               name='location'
               value={formData.location}
               onChange={handleInputChange}
               className={`w-full p-3 border ${
                 errors.location ? 'border-red-500' : 'border-gray-300'
-              } `}
-              placeholder='Please provide the complete address where the transportation will drop you up.'
+              } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
+              placeholder='Please provide the complete address where the transportation will drop you off.'
             />
             {errors.location && (
               <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
@@ -1004,12 +1054,12 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
           <div>
             <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
               <Plane className='w-4 h-4 mr-2 text-blue-700' />
-              Pickup Name / Alias (opcional)
+              Pickup Name / Alias (optional)
             </label>
             <input
               type='text'
               name='pickupName'
-              value={formData.pickupName}
+              value={formData.pickupName || ''}
               onChange={handleInputChange}
               placeholder='Pickup Name'
               className={`w-full p-3 border ${
@@ -1059,20 +1109,34 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
             <button
               type='button'
               onClick={onCancel}
-              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition'
+              disabled={isSubmitting}
+              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
             >
               Cancel
             </button>
 
             <button
               type='submit'
-              className='px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition flex items-center'
+              disabled={isSubmitting}
+              className='px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
             >
               <CreditCard className='h-4 w-4 mr-2' />
-              Book Transfer
+              {isSubmitting ? 'Processing...' : 'Book Transfer'}
             </button>
           </div>
         </div>
+
+        {/* Submit Error */}
+        {errors.submit && (
+          <div className='p-4 bg-red-50 border border-red-200 rounded-lg mt-4'>
+            <div className='flex items-start'>
+              <AlertTriangle className='w-4 h-4 text-red-600 mr-2 mt-0.5' />
+              <div className='text-sm text-red-800'>
+                <strong>Error:</strong> {errors.submit}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </form>
   );
