@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
 import { Service } from '@/types/type';
 import {
   Calendar,
@@ -10,145 +12,39 @@ import {
   Info,
   AlertTriangle,
   Shield,
+  Plus,
+  Minus,
+  Clock,
+  CheckCircle,
 } from 'lucide-react';
+import { BIKE_TYPES, BikeFormProps, FormErrors } from '@/constants/bike/bike';
+import Image from 'next/image';
 
-// Types for better type safety
-interface BikeType {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  price: number;
-  description: string;
-  ageRange: string;
-  minAge: number;
-  maxAge: number;
-  features: string[];
-  isPremium?: boolean;
-}
-
-interface ChildInfo {
-  id: string;
-  age: number;
-  recommendedBike: string;
-}
-
+// Define the FormData interface
 interface FormData {
-  // Rental details
   startDate: string;
   endDate: string;
   endTime: string;
   startTime: string;
   location: string;
-
-  // Participants
   adultCount: number;
   childCount: number;
-  children: ChildInfo[];
-
-  // Bike selection
-  selectedBikes: Record<string, number>; // bikeType -> quantity
-
-  // Additional options
+  children: Array<{
+    id: string;
+    age: number;
+    recommendedBike: string;
+  }>;
+  selectedBikes: Record<string, number>;
   needsHelmet: boolean;
   needsLock: boolean;
   deliveryToHotel: boolean;
   specialRequests: string;
 }
 
-interface FormErrors {
-  [key: string]: string;
-}
-
-interface BikeFormProps {
-  service: Service;
-  onSubmit: (
-    formData: FormData & { totalPrice: number; rentalDays: number }
-  ) => void;
-  onCancel: () => void;
-}
-
-// Bike types configuration based on your BikeRentalServiceView
-const BIKE_TYPES: BikeType[] = [
-  {
-    id: 'kids-bike',
-    name: 'Kids Bikes',
-    icon: '🚲',
-    color: 'from-pink-500 to-purple-500',
-    price: 15,
-    description: 'Safe and fun bikes designed specifically for children',
-    ageRange: '4-12 years',
-    minAge: 4,
-    maxAge: 12,
-    features: ['Training wheels available', 'Safety features', 'Bright colors'],
-  },
-  {
-    id: 'beachCruiser',
-    name: 'Beach Cruisers',
-    icon: '🏖️',
-    color: 'from-blue-500 to-cyan-500',
-    price: 25,
-    description: 'Perfect for coastal rides and beach exploration',
-    ageRange: '13+ years',
-    minAge: 13,
-    maxAge: 99,
-    features: ['Comfortable seating', 'Easy pedaling', 'Beach-friendly'],
-  },
-  {
-    id: 'cityBike',
-    name: 'City Bikes',
-    icon: '🏙️',
-    color: 'from-green-500 to-emerald-500',
-    price: 30,
-    description: 'Ideal for urban exploration and local attractions',
-    ageRange: '13+ years',
-    minAge: 13,
-    maxAge: 99,
-    features: ['Versatile design', 'Comfortable ride', 'City-friendly'],
-  },
-  {
-    id: 'mountainBike',
-    name: 'Mountain Bikes',
-    icon: '⛰️',
-    color: 'from-orange-500 to-red-500',
-    price: 35,
-    description: 'Built for adventure and off-road trails',
-    ageRange: '16+ years',
-    minAge: 16,
-    maxAge: 99,
-    features: ['Off-road capability', 'Durable frame', 'Adventure-ready'],
-  },
-  {
-    id: 'eBike',
-    name: 'E-Bikes',
-    icon: '⚡',
-    color: 'from-purple-500 to-pink-500',
-    price: 45,
-    description: 'Premium electric assistance for effortless rides',
-    ageRange: '18+ years',
-    minAge: 18,
-    maxAge: 99,
-    features: ['Electric assistance', 'Premium experience', 'Effortless rides'],
-    isPremium: true,
-  },
-];
-
-// Popular locations in Punta Cana
-const LOCATIONS = [
-  'Hotel pickup',
-  'Bavaro Beach',
-  'Cap Cana',
-  'Uvero Alto',
-  'Macao Beach',
-  'Downtown Punta Cana',
-  'Playa Blanca',
-  'Arena Gorda',
-  'El Cortecito',
-  'Other (specify in special requests)',
-];
-
 const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -168,6 +64,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Calculate rental days
   const rentalDays = useMemo(() => {
@@ -291,27 +188,24 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     return hours >= 24;
   };
 
-  // Form validation
+  // Form validation - FIXED: Simplified validation like in BikeRentalServiceView
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
     // Required fields
-    if (!formData.startDate) {
-      newErrors.startDate = 'Start date is required';
-    }
-
-    if (!formData.endDate) {
-      newErrors.endDate = 'End date is required';
-    }
-    if (!formData.endTime) {
-      newErrors.endDate = 'End time is required';
-    }
-
-    if (!formData.location) {
-      newErrors.location = 'Location is required';
-    }
+    if (!formData.startDate) newErrors.startDate = 'Start date is required';
+    if (!formData.endDate) newErrors.endDate = 'End date is required';
+    if (!formData.endTime) newErrors.endTime = 'End time is required';
+    if (!formData.location) newErrors.location = 'Location is required';
 
     // Date validations
+    if (formData.startDate && formData.endDate) {
+      if (new Date(formData.endDate) < new Date(formData.startDate)) {
+        newErrors.endDate = 'End date must be after start date';
+      }
+    }
+
+    // Advanced date validation
     if (
       formData.startDate &&
       !isSameDay(formData.startDate) &&
@@ -319,12 +213,6 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     ) {
       newErrors.startDate =
         'Bookings must be made at least 24 hours in advance';
-    }
-
-    if (formData.startDate && formData.endDate) {
-      if (new Date(formData.endDate) < new Date(formData.startDate)) {
-        newErrors.endDate = 'End date must be after start date';
-      }
     }
 
     // Participant validation
@@ -339,22 +227,30 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
       }
     });
 
-    // Bike selection validation
-    if (totalBikesSelected !== totalBikesNeeded) {
-      newErrors.selectedBikes = `Please select exactly ${totalBikesNeeded} bikes`;
+    // Bike selection validation - FIXED: Check if we have bikes selected
+    if (totalBikesSelected === 0) {
+      newErrors.selectedBikes = 'Please select at least one bike';
     }
 
     return newErrors;
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle form submission - FIXED: Following BikeRentalServiceView pattern exactly
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateForm();
-    setErrors(newErrors);
+    // Validate form
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
 
-    if (Object.keys(newErrors).length === 0) {
+    if (Object.keys(validationErrors).length > 0) {
+      console.log('❌ BikeForm - Validation errors:', validationErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
       // Same day booking confirmation
       if (isSameDay(formData.startDate)) {
         if (
@@ -362,19 +258,84 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
             'You are booking for today. This requires immediate confirmation from our team. Continue?'
           )
         ) {
+          setIsSubmitting(false);
           return;
         }
       }
 
-      onSubmit({
-        ...formData,
+      // Create booking dates properly
+      const bookingStartDate = new Date(
+        `${formData.startDate}T${formData.startTime}`
+      );
+      const bookingEndDate = new Date(
+        `${formData.endDate}T${formData.endTime}`
+      );
+
+      // Create service data with fallback
+      const serviceData = service || {
+        id: 'bike-rental',
+        name: 'Bike Rental Service',
+        category: 'Transportation',
+        type: 'bike-rental',
+      };
+
+      // FIXED: Create reservation data matching BikeRentalServiceView structure exactly
+      const reservationData = {
+        service: serviceData,
+        formData: {
+          ...formData,
+          serviceType: 'bike-rental',
+          totalPrice: calculatePrice,
+          rentalDays,
+          totalBikesNeeded,
+          totalBikesSelected,
+        },
         totalPrice: calculatePrice,
-        rentalDays,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: formData.adultCount,
+          children: formData.childCount,
+          total: totalBikesNeeded,
+        },
+        selectedItems: Object.entries(formData.selectedBikes)
+          .filter(([_, count]) => count > 0)
+          .map(([bikeId, count]) => {
+            const bike = BIKE_TYPES.find((b) => b.id === bikeId);
+            return {
+              id: bikeId,
+              name: bike?.name || 'Unknown Bike',
+              quantity: count,
+              price: bike?.price || 0,
+              totalPrice: (bike?.price || 0) * count * rentalDays,
+            };
+          }),
+        clientInfo: undefined, // Will be filled in the confirmation page
+      };
+
+      console.log('🚴 BikeForm - Reservation data created:', reservationData);
+
+      // Store in context (like BikeRentalServiceView)
+      setReservationData(reservationData);
+
+      // Call the onSubmit callback if provided (optional)
+      if (onSubmit) {
+        await onSubmit(reservationData);
+      }
+
+      // Navigate to confirmation page (like BikeRentalServiceView)
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ BikeForm - Error submitting form:', error);
+      setErrors({
+        submit: 'Failed to submit reservation. Please try again.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // Generic input handler
+  // Generic input handler - FIXED: Clear errors properly
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -472,7 +433,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
           disabled={value <= min}
           className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
         >
-          -
+          <Minus className='w-4 h-4' />
         </button>
         <div className='flex-1 py-2 text-center font-medium'>{value}</div>
         <button
@@ -480,13 +441,13 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
           onClick={onIncrement}
           className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
         >
-          +
+          <Plus className='w-4 h-4' />
         </button>
       </div>
     </div>
   );
 
-  // Bike selector component
+  // FIXED: Enhanced Bike selector component
   const BikeSelector = () => (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
@@ -512,14 +473,15 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
           const selectedCount = formData.selectedBikes[bike.id] || 0;
           const recommendedCount = recommendedBikes[bike.id] || 0;
           const isRecommended = recommendedCount > 0;
+          const isSelected = selectedCount > 0;
 
           return (
             <div
               key={bike.id}
               className={`relative p-4 border rounded-lg transition-all ${
-                selectedCount > 0
+                isSelected
                   ? 'border-green-500 bg-green-50'
-                  : 'border-gray-300'
+                  : 'border-gray-300 hover:border-gray-400'
               }`}
             >
               {isRecommended && (
@@ -531,6 +493,13 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
               {bike.isPremium && (
                 <div className='absolute -top-2 right-4 bg-purple-500 text-white text-xs px-2 py-1 rounded'>
                   Premium
+                </div>
+              )}
+
+              {isSelected && (
+                <div className='absolute -top-2 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1'>
+                  <CheckCircle className='w-3 h-3' />
+                  {selectedCount}
                 </div>
               )}
 
@@ -577,9 +546,9 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                       handleBikeSelection(bike.id, selectedCount - 1)
                     }
                     disabled={selectedCount === 0}
-                    className='w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50'
+                    className='w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 flex items-center justify-center transition'
                   >
-                    -
+                    <Minus className='w-4 h-4' />
                   </button>
                   <span className='w-8 text-center font-medium'>
                     {selectedCount}
@@ -589,19 +558,31 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                     onClick={() =>
                       handleBikeSelection(bike.id, selectedCount + 1)
                     }
-                    className='w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200'
+                    className='w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition'
                   >
-                    +
+                    <Plus className='w-4 h-4' />
                   </button>
                 </div>
               </div>
+
+              {selectedCount > 0 && (
+                <div className='mt-2 text-right'>
+                  <span className='text-sm text-gray-600'>
+                    Subtotal: $
+                    {(bike.price * selectedCount * rentalDays).toFixed(2)}
+                    {rentalDays > 1 && ` (${rentalDays} days)`}
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
       {errors.selectedBikes && (
-        <p className='text-red-500 text-xs'>{errors.selectedBikes}</p>
+        <p className='text-red-500 text-sm font-medium'>
+          {errors.selectedBikes}
+        </p>
       )}
     </div>
   );
@@ -678,7 +659,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
               {/* End Time */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Calendar className='w-4 h-4 mr-2 text-green-700' />
+                  <Clock className='w-4 h-4 mr-2 text-green-700' />
                   End Time *
                 </label>
                 <input
@@ -687,10 +668,10 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                   value={formData.endTime}
                   onChange={handleInputChange}
                   className={`w-full p-3 border ${
-                    errors.startTime ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-gray-50`}
+                    errors.endTime ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-green-500 focus:border-green-500 bg-gray-50`}
                 />
-                {errors.endTimeTime && (
+                {errors.endTime && (
                   <p className='text-red-500 text-xs mt-1'>{errors.endTime}</p>
                 )}
               </div>
@@ -732,17 +713,18 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
 
           {/* Location */}
           <div>
-            <label className='flex items-center text-sm font-medium   text-gray-700 mb-2'>
+            <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
               <MapPin className='w-4 h-4 mr-2 text-green-700' />
               Location *
             </label>
             <input
+              type='text'
               name='location'
               value={formData.location}
               onChange={handleInputChange}
               className={`w-full p-3 border ${
                 errors.location ? 'border-red-500' : 'border-gray-300'
-              } `}
+              } rounded-lg focus:ring-green-500 focus:border-green-500`}
               placeholder='Please provide the complete address where the personal will bring your bike.'
             />
             {errors.location && (
@@ -828,7 +810,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
             {/* Total participants display */}
             <div className='p-3 bg-green-50 border border-green-200 rounded-lg'>
               <p className='text-sm text-green-800'>
-                <strong>Total participants:</strong> {totalBikesNeeded}(
+                <strong>Total participants:</strong> {totalBikesNeeded} (
                 {formData.adultCount} adults + {formData.childCount} children)
               </p>
             </div>
@@ -883,6 +865,23 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                   Include bike locks (Free)
                 </label>
               </div>
+
+              <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
+                <input
+                  type='checkbox'
+                  id='deliveryToHotel'
+                  name='deliveryToHotel'
+                  checked={formData.deliveryToHotel}
+                  onChange={handleInputChange}
+                  className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
+                />
+                <label
+                  htmlFor='deliveryToHotel'
+                  className='ml-2 text-sm text-gray-700'
+                >
+                  This is a hotel/resort address
+                </label>
+              </div>
             </div>
 
             <div>
@@ -921,6 +920,13 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
               </div>
             </div>
           </div>
+
+          {/* Error Display */}
+          {errors.submit && (
+            <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+              <p className='text-red-800 text-sm'>{errors.submit}</p>
+            </div>
+          )}
         </div>
 
         {/* Footer with Price and Actions */}
@@ -959,6 +965,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                 formData.location !== 'Hotel pickup' && (
                   <div>Delivery service: +$10</div>
                 )}
+              <div className='text-green-400'>Helmets & locks: Free!</div>
             </div>
           </div>
 
@@ -966,17 +973,19 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
             <button
               type='button'
               onClick={onCancel}
-              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition'
+              disabled={isSubmitting}
+              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
             >
               Cancel
             </button>
 
             <button
               type='submit'
-              className='px-8 py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg transition flex items-center'
+              disabled={isSubmitting}
+              className='px-8 py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
             >
               <CreditCard className='h-4 w-4 mr-2' />
-              Book Bikes
+              {isSubmitting ? 'Booking...' : 'Book Bikes'}
             </button>
           </div>
         </div>

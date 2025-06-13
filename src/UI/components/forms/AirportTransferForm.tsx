@@ -19,13 +19,8 @@ import {
   Bus,
   MapPin,
 } from 'lucide-react';
-interface VehicleOption {
-  name: string;
-  capacity: number;
-  additionalCost: number;
-  description: string;
-  icon: React.ReactNode;
-}
+import { useReservation } from '@/context/BookingContext';
+import { useRouter } from 'next/navigation';
 
 interface FormData {
   // Flight details
@@ -118,6 +113,9 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -278,28 +276,48 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateForm();
-    setErrors(newErrors);
+    if (!validateForm()) {
+      return;
+    }
 
-    if (Object.keys(newErrors).length === 0) {
-      // Same day booking confirmation
-      if (isSameDay(formData.date)) {
-        if (
-          !window.confirm(
-            'You are booking for today. This requires immediate confirmation from our team. Continue?'
-          )
-        ) {
-          return;
-        }
-      }
+    setIsSubmitting(true);
 
-      onSubmit({
-        ...formData,
-        totalPrice: calculatePrice,
+    try {
+      // Create reservation data with properly structured items
+      const reservationData = {
+        service,
+        formData: {
+          ...formData,
+          serviceType: 'airport-transfers',
+        },
+        // totalPrice: calculateEstimatedTotal(),
+        bookingDate: new Date(`${formData.date}T${formData.hour}`),
+        clientInfo: undefined,
+      };
+
+      console.log(
+        '🛒 Airoprt transfer - Reservation data created:',
+        reservationData
+      );
+
+      // Store in context
+      setReservationData(reservationData);
+
+      // Navigate to confirmation page
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌  Airoprt transfer - Error submitting form:', error);
+      setErrors({
+        submit: t('form.errors.submitError', {
+          fallback: 'Failed to submit reservation. Please try again.',
+        }),
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

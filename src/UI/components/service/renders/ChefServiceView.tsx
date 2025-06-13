@@ -19,7 +19,6 @@ import { useBooking } from '@/context/BookingContext';
 import { BookingDate } from '@/types/type';
 import { ChefSpecialty } from '@/types/chef';
 import {
-  CHEF_SERVICE_TYPES,
   CUISINE_TYPES,
   DIETARY_ACCOMMODATIONS,
   INCLUDED_SERVICES,

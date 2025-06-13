@@ -1,15 +1,11 @@
+import { Service } from '@/constants/formFields';
+import { ServiceData } from '@/types/services';
 import { motion } from 'framer-motion';
 import {
-  Leaf,
   Clock,
-  Star,
   ArrowRight,
-  Shield,
-  Heart,
-  CheckCircle,
   Users,
   Timer,
-  Phone,
   Calendar,
   Plus,
   Minus,
@@ -28,7 +24,11 @@ interface MassageServiceViewProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
+const InlineBookingForm = ({
+  selectedMassage,
+  onCancel,
+  onConfirm,
+}: MassageServiceViewProps) => {
   const TIME_SLOTS = [
     '09:00',
     '10:00',
@@ -60,6 +60,8 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
     const newErrors = {};
     if (!date) newErrors.date = 'Date required';
     if (!time) newErrors.time = 'Time required';
+    if (!location) newErrors.location = 'Address id required';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [date, time]);
@@ -141,7 +143,7 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
         {/* Duration Selection */}
         <div>
           <h4 className='text-lg font-semibold text-stone-800 mb-4 flex items-center gap-2'>
-            <Timer className='w-5 h-5' />
+            <Timer className='w-5 h-5 text-green-800' />
             Treatment Duration
           </h4>
           <div
@@ -183,7 +185,7 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <div>
             <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
-              <Calendar className='w-5 h-5' />
+              <Calendar className='w-5 h-5 text-green-800' />
               Date
             </label>
             <input
@@ -206,8 +208,8 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
           </div>
 
           <div>
-            <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
-              <Clock className='w-5 h-5' />
+            <label className='block text-lg font-semibold  mb-3 flex items-center gap-2'>
+              <Clock className='w-5 h-5 text-green-800' />
               Time
             </label>
             <select
@@ -235,10 +237,30 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
           </div>
         </div>
 
+        {/* Location */}
+        <div>
+          <label className='flex items-center  text-lg font-semibold  text-grey-800 mb-2'>
+            <MapPin className='w-5 h-5 mr-2 text-green-800' />
+            Address *
+          </label>
+          <input
+            name='location'
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className={`w-full p-3 border border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent resize-none ${
+              errors.location ? 'border-red-500' : 'border-gray-300'
+            } `}
+            placeholder='Please provide the complete address where the personal will take place.'
+          />
+          {errors.location && (
+            <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+          )}
+        </div>
+
         {/* Number of People */}
         <div>
           <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
-            <Users className='w-5 h-5' />
+            <Users className='w-5 h-5 text-green-800' />
             Number of People
           </label>
           <div className='flex items-center justify-between bg-stone-50 rounded-xl p-4'>
@@ -272,7 +294,7 @@ const InlineBookingForm = ({ selectedMassage, onCancel, onConfirm }) => {
         {/* Special Needs & Disability */}
         <div>
           <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
-            <Accessibility className='w-5 h-5' />
+            <Accessibility className='w-5 h-5 text-green-800' />
             Special Needs & Disabilities
           </label>
           <textarea

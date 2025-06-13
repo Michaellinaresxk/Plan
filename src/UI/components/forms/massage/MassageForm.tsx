@@ -109,7 +109,6 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
     );
   }, []);
 
-  // ← MODIFICAR: Función que maneja el booking y navega
   const handleBookingConfirm = useCallback(
     async (bookingData) => {
       try {
@@ -124,6 +123,7 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
             duration: bookingData.duration,
             date: bookingData.date,
             time: bookingData.time,
+            location: bookingData.location,
             persons: bookingData.persons,
             specialNeeds: bookingData.specialNeeds,
             calculatedPrice: bookingData.price,

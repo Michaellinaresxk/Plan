@@ -14,26 +14,13 @@ import {
   Clock,
   Star,
   ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  CheckCircle,
   Play,
-  Heart,
-  Volume2,
-  Tv,
-  Headphones,
-  PartyPopper,
   Trophy,
   Sparkles,
   Quote,
   MicVocal,
-  Radio,
-  Guitar,
-  Drum,
   Zap,
-  Camera,
   Gift,
-  Crown,
   Disc3,
 } from 'lucide-react';
 
@@ -43,156 +30,6 @@ interface KaraokeServiceViewProps {
   primaryColor?: string;
   viewContext?: 'standard-view' | 'premium-view';
 }
-
-// Enhanced data structures
-const KARAOKE_EXPERIENCES = [
-  {
-    id: 'classic',
-    name: 'Classic Hits Night',
-    description:
-      'Timeless classics from the 60s to 2000s that everyone knows and loves',
-    duration: '2-4 hours',
-    capacity: '2-20 people',
-    icon: <Music className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=800',
-    color: 'from-blue-500 to-purple-600',
-    features: [
-      'Greatest hits collection',
-      'Duet classics',
-      'Sing-along favorites',
-    ],
-  },
-  {
-    id: 'family',
-    name: 'Family Fun Zone',
-    description:
-      'Kid-friendly songs and Disney classics perfect for all generations',
-    duration: '1-3 hours',
-    capacity: '4-15 people',
-    icon: <Users className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=800',
-    color: 'from-green-500 to-teal-600',
-    features: ['Disney collection', 'Kid-safe content', 'Family duets'],
-  },
-  {
-    id: 'party',
-    name: 'Party Anthem Mode',
-    description:
-      'High-energy dance hits and modern chart-toppers for ultimate celebrations',
-    duration: '3-5 hours',
-    capacity: '6-25 people',
-    icon: <PartyPopper className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800',
-    color: 'from-pink-500 to-red-600',
-    features: ['Latest chart hits', 'Dance anthems', 'Party games'],
-  },
-  {
-    id: 'international',
-    name: 'Global Hits',
-    description:
-      'International favorites in multiple languages for diverse celebrations',
-    duration: '2-4 hours',
-    capacity: '4-20 people',
-    icon: <Radio className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1571266028243-d220c9856446?auto=format&fit=crop&q=80&w=800',
-    color: 'from-orange-500 to-yellow-600',
-    features: ['Multi-language songs', 'Cultural favorites', 'World music'],
-  },
-];
-
-const PREMIUM_FEATURES = [
-  {
-    icon: <Volume2 className='w-6 h-6' />,
-    title: 'Professional Sound System',
-    description: 'Crystal-clear audio with professional speakers and mixing',
-    highlight: 'Studio Quality',
-  },
-  {
-    icon: <Tv className='w-6 h-6' />,
-    title: '4K Display & Lyrics',
-    description: 'Large screen with scrolling lyrics and music videos',
-    highlight: 'Ultra HD',
-  },
-  {
-    icon: <MicVocal className='w-6 h-6' />,
-    title: 'Wireless Microphones',
-    description: 'Multiple professional wireless mics with echo effects',
-    highlight: 'Echo Effects',
-  },
-  {
-    icon: <Disc3 className='w-6 h-6' />,
-    title: 'Massive Song Library',
-    description: '5000+ songs across all genres and decades',
-    highlight: '5000+ Songs',
-  },
-  {
-    icon: <Zap className='w-6 h-6' />,
-    title: 'Quick Setup',
-    description: 'Professional installation in just 15 minutes',
-    highlight: '15 Minutes',
-  },
-  {
-    icon: <Camera className='w-6 h-6' />,
-    title: 'Photo & Video Mode',
-    description: 'Capture your performances with built-in recording',
-    highlight: 'Record Memories',
-  },
-];
-
-const SONG_CATEGORIES = [
-  {
-    id: 'pop',
-    name: 'Pop Hits',
-    icon: <Crown className='w-5 h-5' />,
-    count: '1500+',
-    description: 'Current chart-toppers and pop classics',
-    color: 'bg-pink-500',
-  },
-  {
-    id: 'rock',
-    name: 'Rock Anthems',
-    icon: <Guitar className='w-5 h-5' />,
-    count: '800+',
-    description: 'Classic and modern rock favorites',
-    color: 'bg-red-500',
-  },
-  {
-    id: 'rnb',
-    name: 'R&B Soul',
-    icon: <Heart className='w-5 h-5' />,
-    count: '600+',
-    description: 'Smooth R&B and soulful ballads',
-    color: 'bg-purple-500',
-  },
-  {
-    id: 'country',
-    name: 'Country',
-    icon: <Music className='w-5 h-5' />,
-    count: '400+',
-    description: 'Country classics and modern hits',
-    color: 'bg-amber-500',
-  },
-  {
-    id: 'international',
-    name: 'International',
-    icon: <Radio className='w-5 h-5' />,
-    count: '700+',
-    description: 'Songs in 12+ languages',
-    color: 'bg-blue-500',
-  },
-  {
-    id: 'oldies',
-    name: 'Golden Oldies',
-    icon: <Disc3 className='w-5 h-5' />,
-    count: '500+',
-    description: 'Timeless classics everyone knows',
-    color: 'bg-green-500',
-  },
-];
 
 const TESTIMONIALS = [
   {
