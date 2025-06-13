@@ -10,6 +10,8 @@ import CuisineAndBudgetStep from './CuisineAndBudgetStep';
 import DietaryRestrictionsStep from './steps/DietaryRestrictionsStep';
 import EventDescriptionStep from './steps/EventDescriptionStep';
 import ChefFormFooter from './ChefFormFooter';
+import { useReservation } from '@/context/BookingContext';
+import { useRouter } from 'next/navigation';
 import {
   budgetOptions,
   chefsSpecialMenus,
@@ -26,14 +28,9 @@ interface ChefFormProps {
 
 const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
   const { t } = useTranslation();
-<<<<<<< Updated upstream
-
-  // State for multi-step form
-=======
   const router = useRouter();
   const { setReservationData } = useReservation();
 
->>>>>>> Stashed changes
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 7;
 
@@ -232,7 +229,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     }
   };
 
-  // Handle form submission
+  // Handle form submission - Complete fix with service information
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -241,62 +238,36 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     }
 
     if (currentStep === totalSteps) {
+      // Final step - submit the form data with all required fields
       const numberOfDays =
         formData.serviceType === 'multiple' ? formData.dates.length : 1;
-
-<<<<<<< Updated upstream
-      onSubmit({
-        ...formData,
-        totalPrice: currentPrice,
-        numberOfDays,
-=======
+      // Prepare submission data with complete service information
       const submissionData = {
         ...formData,
+        // Service information (REQUIRED for reservation-confirmation page)
         service: {
           id: service.id,
           name: service.name,
           description: service.description,
           price: service.price,
           category: service.category,
+          // Add any other service properties that might be needed
         },
+
+        // Required fields for reservation system
         serviceId: service.id,
         serviceName: service.name || 'Personal Chef Service',
         totalPrice: currentPrice,
         numberOfDays,
-        location: formData.locationAddress,
->>>>>>> Stashed changes
         formattedOccasion:
           formData.occasion === 'other'
             ? formData.otherOccasion
             : occasionTypes.find((o) => o.id === formData.occasion)?.name ||
               formData.occasion,
-<<<<<<< Updated upstream
         formattedLocation: formData.locationAddress,
-      });
-=======
-        bookingDate:
-          formData.serviceType === 'single'
-            ? formData.date
-            : formData.dates[0] || '',
-        startTime: formData.time || '',
-        endTime: '',
-        chefType: formData.chefType,
-        cuisineType: formData.cuisineType,
-        budgetOption: formData.budgetOption,
-        selectedSpecialMenu: formData.selectedSpecialMenu,
-        adultsCount: formData.guestCount,
-        childrenCount: formData.childrenCount,
-        totalGuests: formData.guestCount + formData.childrenCount,
-        specialRequests: formData.eventDescription,
-        dietaryRestrictions: formData.dietaryRestrictions,
-        hasAllergies: formData.hasAllergies,
       };
-
-      setReservationData(submissionData);
-      onSubmit(submissionData);
-      router.push('/reservation-confirmation');
->>>>>>> Stashed changes
     } else {
+      // Not the final step - go to next step
       goToNextStep();
     }
   };
@@ -373,26 +344,17 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     if (formData.serviceType === 'single') {
       setFormData((prev) => ({
         ...prev,
-        dates: [], // Clear multiple dates
+        dates: [],
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        date: '', // Clear single date
-        time: '', // Clear time as it's configured per date in multiple
+        date: '',
+        time: '',
       }));
     }
   }, [formData.serviceType]);
 
-<<<<<<< Updated upstream
-  // Debug effect to monitor formData.dates changes
-  useEffect(() => {
-    console.log('📅 ChefForm - formData.dates changed:', formData.dates);
-  }, [formData.dates]);
-
-  // Progress bar calculation
-=======
->>>>>>> Stashed changes
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
@@ -401,7 +363,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
       <div className='bg-white rounded-xl shadow-lg border border-gray-100 max-w-4xl mx-auto'>
         {/* Form Header with Mobile Optimization */}
         <FormHeader
-          title={t('chef.form.title', { fallback: 'Personal Chef Booking' })}
+          title='Personal Chef Booking'
           subtitle={t('chef.form.subtitle', {
             fallback:
               'Create a unique culinary experience in the comfort of your accommodation',
