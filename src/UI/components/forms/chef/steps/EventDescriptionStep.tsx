@@ -19,7 +19,7 @@ import {
   chefsSpecialMenus,
   cuisineTypes,
   occasionTypes,
-} from '@/constants/chefFormConsts';
+} from '@/constants/chef/chefForm';
 
 interface EventDescriptionStepProps {
   formData: any;

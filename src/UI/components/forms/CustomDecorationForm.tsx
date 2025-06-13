@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
 import { Service, BookingDate } from '@/types/type';
 import {
   Upload,
@@ -17,18 +19,19 @@ import {
   Gift,
   Cake,
   Star,
+  CreditCard,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ColorPicker from '../shared/ColorPicker';
 
 interface CustomDecorationFormProps {
   service: Service;
-  onBookService: (
+  onBookService?: (
     service: Service,
     dates: BookingDate,
     guests: number,
     formData: Record<string, any>
-  ) => void;
+  ) => void; // Made optional for compatibility
   onClose: () => void;
 }
 
@@ -38,6 +41,8 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
   // Form state
   const [date, setDate] = useState<Date | null>(getMinimumDate());
@@ -171,7 +176,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     setColors(updatedColors);
   };
 
-  // Form validation
+  // Form validation - FIXED: Improved validation
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -208,11 +213,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
 
     if (!exactAddress.trim()) {
       newErrors.exactAddress = t('forms.errors.addressRequired', {
-        fallback: 'Exact address in Punta Cana is required',
-      });
-    } else if (!exactAddress.toLowerCase().includes('punta cana')) {
-      newErrors.exactAddress = t('forms.errors.puntaCanaOnly', {
-        fallback: 'This service is only available in Punta Cana area',
+        fallback: 'Exact address is required',
       });
     }
 
@@ -220,41 +221,133 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  // Calculate base price for decoration service
+  const calculatePrice = () => {
+    // Base price for decoration service (could be from service.price or default)
+    const basePrice = service.price || 200;
+
+    // Additional pricing based on occasion complexity
+    const occasionMultipliers: Record<string, number> = {
+      birthday: 1.0,
+      anniversary: 1.2,
+      proposal: 1.5,
+      romantic: 1.3,
+      'baby-shower': 1.1,
+      other: 1.0,
+    };
+
+    const multiplier = occasionMultipliers[occasion] || 1.0;
+    const totalPrice = basePrice * multiplier;
+
+    return Math.round(totalPrice);
+  };
+
+  // FIXED: Handle form submission following BikeForm pattern
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
+      console.log('❌ CustomDecorationForm - Validation errors:', errors);
       return;
     }
 
     setIsSubmitting(true);
 
-    const dateObj = date ? new Date(date) : new Date();
-    const bookingDate: BookingDate = {
-      startDate: dateObj,
-      endDate: dateObj,
-    };
+    try {
+      const dateObj = date ? new Date(date) : new Date();
 
-    const finalOccasion = occasion === 'other' ? customOccasion : occasion;
+      // Create booking date with specific time
+      const bookingStartDate = new Date(dateObj);
+      const [hours, minutes] = time.split(':');
+      bookingStartDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-    const formData = {
-      date: dateObj,
-      time,
-      occasion: finalOccasion,
-      locationType: location,
-      exactAddress,
-      colors,
-      notes,
-      referenceImage,
-    };
+      // Decoration service typically takes 2-4 hours for setup
+      const bookingEndDate = new Date(bookingStartDate);
+      bookingEndDate.setHours(bookingStartDate.getHours() + 3);
 
-    onBookService(service, bookingDate, 1, formData);
-    setIsSubmitting(false);
-    onClose();
+      const finalOccasion = occasion === 'other' ? customOccasion : occasion;
+      const totalPrice = calculatePrice();
+
+      const bookingDate: BookingDate = {
+        startDate: bookingStartDate,
+        endDate: bookingEndDate,
+      };
+
+      const formData = {
+        date: dateObj,
+        time,
+        occasion: finalOccasion,
+        locationType: location,
+        exactAddress,
+        colors,
+        notes,
+        referenceImage,
+        serviceType: 'custom-decoration',
+        totalPrice,
+      };
+
+      // FIXED: Create reservation data matching BikeForm structure
+      const reservationData = {
+        service: service,
+        formData: formData,
+        totalPrice: totalPrice,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: 1,
+          children: 0,
+          total: 1,
+        },
+        selectedItems: [
+          {
+            id: 'custom-decoration',
+            name: `${finalOccasion} Decoration Service`,
+            quantity: 1,
+            price: totalPrice,
+            totalPrice: totalPrice,
+            occasion: finalOccasion,
+            colors: colors,
+          },
+        ],
+        clientInfo: undefined, // Will be filled in the confirmation page
+        // Additional decoration-specific data
+        decorationSpecifics: {
+          occasion: finalOccasion,
+          colors: colors,
+          exactAddress: exactAddress,
+          notes: notes,
+          referenceImage: referenceImage ? referenceImage.name : null,
+          setupTime: time,
+          estimatedDuration: '3 hours',
+        },
+      };
+
+      console.log(
+        '🎨 CustomDecorationForm - Reservation data created:',
+        reservationData
+      );
+
+      // Store in context (like BikeForm)
+      setReservationData(reservationData);
+
+      // Call the onBookService callback if provided (optional)
+      if (onBookService) {
+        await onBookService(service, bookingDate, 1, formData);
+      }
+
+      // Navigate to confirmation page (like BikeForm)
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ CustomDecorationForm - Error submitting form:', error);
+      setErrors({
+        submit: 'Failed to submit reservation. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const isPremium = service.packageType.includes('premium');
+  const isPremium = service.packageType?.includes('premium');
 
   // Animation variants
   const fadeInUp = {
@@ -303,9 +396,9 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
             <div className='ml-4'>
               <h3 className='font-semibold text-blue-900 mb-2'>Service Area</h3>
               <p className='text-blue-700'>
-                Our decoration services are available exclusively in the Punta
-                Cana area. Please ensure your event location is within this
-                region for our team to provide the best service.
+                Our decoration services are available throughout the Punta Cana
+                area. Please provide your exact address for our team to deliver
+                the best service.
               </p>
             </div>
           </div>
@@ -484,8 +577,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
 
                 <div>
                   <label className='block text-gray-700 font-medium mb-3'>
-                    Exact Address in Punta Cana{' '}
-                    <span className='text-red-500'>*</span>
+                    Exact Address <span className='text-red-500'>*</span>
                   </label>
                   <div className='relative'>
                     <MapPin className='absolute left-4 top-4 text-gray-400 w-5 h-5' />
@@ -493,7 +585,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                       value={exactAddress}
                       onChange={(e) => setExactAddress(e.target.value)}
                       rows={4}
-                      placeholder='Full address in Punta Cana area (hotel name, villa number, street, etc.)'
+                      placeholder='Full address (hotel name, villa number, street, etc.)'
                       className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 resize-none ${
                         errors.exactAddress
                           ? 'border-red-300 focus:border-red-400'
@@ -650,8 +742,60 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                   />
                 </div>
               </motion.div>
+
+              {/* Price Display */}
+              <motion.div
+                className='bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl p-8 text-white'
+                variants={fadeInUp}
+              >
+                <h2 className='text-2xl font-bold mb-4 flex items-center'>
+                  <CreditCard className='w-6 h-6 mr-3' />
+                  Service Pricing
+                </h2>
+
+                <div className='space-y-3'>
+                  <div className='flex justify-between items-center'>
+                    <span className='text-lg'>Estimated Total:</span>
+                    <span className='text-3xl font-bold'>
+                      ${calculatePrice()}
+                    </span>
+                  </div>
+
+                  {occasion && (
+                    <div className='text-sm opacity-90'>
+                      <div>Base decoration service</div>
+                      {occasion === 'proposal' && (
+                        <div>+ Premium proposal setup</div>
+                      )}
+                      {occasion === 'anniversary' && (
+                        <div>+ Romantic enhancement</div>
+                      )}
+                      {occasion === 'romantic' && (
+                        <div>+ Intimate atmosphere</div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className='text-sm opacity-75 pt-2 border-t border-white/20'>
+                    Final price confirmed after consultation
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
+
+          {/* Error Display */}
+          {errors.submit && (
+            <motion.div
+              className='mt-8 p-4 bg-red-50 border border-red-200 rounded-2xl'
+              variants={fadeInUp}
+            >
+              <p className='text-red-800 text-sm flex items-center'>
+                <AlertCircle className='w-4 h-4 mr-2' />
+                {errors.submit}
+              </p>
+            </motion.div>
+          )}
 
           {/* Action Buttons */}
           <motion.div
@@ -661,7 +805,8 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
             <button
               type='button'
               onClick={onClose}
-              className='px-8 py-4 border-2 border-gray-300 bg-white/80 backdrop-blur-sm rounded-2xl text-gray-700 font-semibold hover:bg-white hover:border-gray-400 transition-all duration-300'
+              disabled={isSubmitting}
+              className='px-8 py-4 border-2 border-gray-300 bg-white/80 backdrop-blur-sm rounded-2xl text-gray-700 font-semibold hover:bg-white hover:border-gray-400 transition-all duration-300 disabled:opacity-50'
             >
               Cancel
             </button>

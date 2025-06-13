@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
 import { Service } from '@/types/type';
 import {
   Music,
@@ -18,7 +20,7 @@ import {
 
 interface LiveMusicFormProps {
   service: Service;
-  onSubmit: (formData: any) => void;
+  onSubmit?: (formData: any) => void; // Made optional for compatibility
   onCancel: () => void;
 }
 
@@ -28,11 +30,13 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
   const [formData, setFormData] = useState({
     date: '',
     startTime: '',
-    venue: '',
+    location: '',
     performerType: '',
     musicGenre: '',
     specialRequests: '',
@@ -40,6 +44,7 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Performer types with specific images
   const performerTypes = [
@@ -179,7 +184,8 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
 
     if (!formData.date) newErrors.date = 'Please select a date';
     if (!formData.startTime) newErrors.startTime = 'Please select a time';
-    if (!formData.venue) newErrors.venue = 'Please provide the venue address';
+    if (!formData.location)
+      newErrors.location = 'Please provide the location address';
     if (!formData.performerType)
       newErrors.performerType = 'Please select performer type';
     if (!formData.musicGenre)
@@ -189,23 +195,114 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // FIXED: Handle form submission following BikeForm pattern
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
+
+    if (!validateForm()) {
+      console.log('❌ LiveMusicForm - Validation errors:', errors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
       const selectedPerformer = performerTypes.find(
         (p) => p.id === formData.performerType
       );
+
+      const selectedGenre = musicGenres.find(
+        (g) => g.id === formData.musicGenre
+      );
+
+      // Create booking date properly
+      const selectedDate = new Date(formData.date);
+      const [hours, minutes] = formData.startTime.split(':');
+
+      const bookingStartDate = new Date(selectedDate);
+      bookingStartDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+      // Live music performance typically lasts 2-3 hours
+      const bookingEndDate = new Date(bookingStartDate);
+      bookingEndDate.setHours(bookingStartDate.getHours() + 2);
+
+      const totalPrice = selectedPerformer?.price || service.price || 150;
+
       const submissionData = {
         ...formData,
         // Filter out empty music references
         musicReferences: formData.musicReferences.filter(
           (ref) => ref.trim() !== ''
         ),
-        calculatedPrice: selectedPerformer?.price || service.price,
+        calculatedPrice: totalPrice,
         serviceId: service.id,
         serviceName: service.name,
+        serviceType: 'live-music',
+        totalPrice: totalPrice,
       };
-      onSubmit(submissionData);
+
+      // FIXED: Create reservation data matching BikeForm structure
+      const reservationData = {
+        service: service,
+        formData: submissionData,
+        totalPrice: totalPrice,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: 1,
+          children: 0,
+          total: 1,
+        },
+        selectedItems: [
+          {
+            id: formData.performerType,
+            name: selectedPerformer?.name || 'Live Music Performance',
+            quantity: 1,
+            price: totalPrice,
+            totalPrice: totalPrice,
+            performerType: selectedPerformer?.name,
+            musicGenre: selectedGenre?.name,
+          },
+        ],
+        clientInfo: undefined, // Will be filled in the confirmation page
+        // Additional live music-specific data
+        liveMusicSpecifics: {
+          performerType: formData.performerType,
+          performerName: selectedPerformer?.name,
+          musicGenre: formData.musicGenre,
+          musicGenreName: selectedGenre?.name,
+          startTime: formData.startTime,
+          location: formData.location,
+          specialRequests: formData.specialRequests,
+          musicReferences: formData.musicReferences.filter(
+            (ref) => ref.trim() !== ''
+          ),
+          estimatedDuration: '2-3 hours',
+        },
+      };
+
+      console.log(
+        '🎵 LiveMusicForm - Reservation data created:',
+        reservationData
+      );
+
+      // Store in context (like BikeForm)
+      setReservationData(reservationData);
+
+      // Call the onSubmit callback if provided (optional)
+      if (onSubmit) {
+        await onSubmit(submissionData);
+      }
+
+      // Navigate to confirmation page (like BikeForm)
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ LiveMusicForm - Error submitting form:', error);
+      setErrors({
+        submit: 'Failed to submit reservation. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -282,21 +379,21 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
                 <MapPin className='w-4 h-4 inline mr-1' />
-                Venue Address *
+                Event Location *
               </label>
-              <textarea
-                value={formData.venue}
-                onChange={(e) => handleChange('venue', e.target.value)}
+              <input
+                type='text'
+                value={formData.location}
+                onChange={(e) => handleChange('location', e.target.value)}
                 placeholder='Please provide the complete address where the performance will take place'
-                rows={3}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent resize-none ${
-                  errors.venue ? 'border-red-300' : 'border-gray-300'
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
+                  errors.location ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
-              {errors.venue && (
+              {errors.location && (
                 <p className='text-red-500 text-sm mt-1 flex items-center'>
                   <AlertCircle className='w-4 h-4 mr-1' />
-                  {errors.venue}
+                  {errors.location}
                 </p>
               )}
             </div>
@@ -505,6 +602,10 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
                     </span>
                   </div>
                 )}
+                <div className='flex justify-between'>
+                  <span className='text-gray-600'>Duration:</span>
+                  <span className='font-medium'>2-3 hours</span>
+                </div>
                 <div className='border-t border-gray-200 pt-2 mt-4'>
                   <div className='flex justify-between items-center'>
                     <span className='font-medium text-gray-900'>
@@ -518,6 +619,16 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
               </div>
             </div>
           )}
+
+          {/* Error Display */}
+          {errors.submit && (
+            <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+              <p className='text-red-800 text-sm flex items-center'>
+                <AlertCircle className='w-4 h-4 mr-2' />
+                {errors.submit}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -525,17 +636,19 @@ const LiveMusicForm: React.FC<LiveMusicFormProps> = ({
           <button
             type='button'
             onClick={onCancel}
-            className='px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors'
+            disabled={isSubmitting}
+            className='px-6 py-2 text-gray-700 hover:text-gray-900 transition-colors disabled:opacity-50'
           >
             Cancel
           </button>
 
           <button
             type='submit'
-            className='px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors flex items-center font-medium'
+            disabled={isSubmitting}
+            className='px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors flex items-center font-medium disabled:opacity-50'
           >
             <CreditCard className='w-4 h-4 mr-2' />
-            Book Musicians
+            {isSubmitting ? 'Booking...' : 'Book Musicians'}
           </button>
         </div>
       </div>

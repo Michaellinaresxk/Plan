@@ -5,6 +5,7 @@ import {
   CheckCircle,
   Heart,
   Info,
+  MapPin,
   Minus,
   Plus,
   Timer,
@@ -28,30 +29,57 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
   const [duration, setDuration] = useState(service.durations[0].duration);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [location, setLocation] = useState(''); // ✅ AGREGAR location
   const [persons, setPersons] = useState(1);
   const [specialNeeds, setSpecialNeeds] = useState('');
+  const [errors, setErrors] = useState({}); // ✅ AGREGAR validación
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentPrice =
     service.durations.find((d) => d.duration === duration)?.price || 0;
   const totalPrice = currentPrice * persons;
 
-  const handleSubmit = () => {
-    if (!date || !time) return;
+  // ✅ AGREGAR validación
+  const validateForm = () => {
+    const newErrors = {};
+    if (!date) newErrors.date = 'Date is required';
+    if (!time) newErrors.time = 'Time is required';
+    if (!location) newErrors.location = 'Address is required';
 
-    onConfirm({
-      serviceId: service.id,
-      serviceName: service.name,
-      duration,
-      price: totalPrice,
-      date,
-      time,
-      persons,
-      specialNeeds,
-      emoji: service.emoji,
-    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const isFormValid = date && time;
+  // ✅ handleSubmit CORREGIDO
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    try {
+      // ✅ ESTRUCTURA EXACTA que espera MassageForm
+      const formData = {
+        serviceId: service.id,
+        serviceName: service.name,
+        duration,
+        date,
+        time,
+        location, // ✅ INCLUIR location
+        persons,
+        specialNeeds,
+        calculatedPrice: totalPrice, // ✅ calculatedPrice, no price
+      };
+
+      console.log('PreSelectedBookingForm sending:', formData);
+      await onConfirm(formData);
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert('Error processing booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isFormValid = date && time && location; // ✅ INCLUIR location en validación
 
   return (
     <div className='max-w-4xl mx-auto space-y-8'>
@@ -144,6 +172,24 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Location */}
+        <div className='mt-10  '>
+          <label className='flex items-center text-lg font-medium  text-grey-800 mb-3'>
+            <MapPin className='mr-2 w-6 h-6 ' />
+            Address *
+          </label>
+          <input
+            name='location'
+            value={location}
+            onChange={(e) => setDate(e.target.value)}
+            className={`w-full p-3 border  border-2 border-stone-300 rounded-xl`}
+            placeholder='Please provide the complete address where the personal training will take place'
+          />
+          {/* {errors.location && (
+          <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+        )} */}
         </div>
       </div>
 

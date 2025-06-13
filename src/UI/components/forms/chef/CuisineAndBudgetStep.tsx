@@ -9,12 +9,13 @@ import {
   Crown,
   Globe,
   Award,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   budgetOptions,
   chefsSpecialMenus,
   cuisineTypes,
-} from '@/constants/chefFormConsts';
+} from '@/constants/chef/chefForm';
 
 interface CuisineAndBudgetStepProps {
   formData: any;

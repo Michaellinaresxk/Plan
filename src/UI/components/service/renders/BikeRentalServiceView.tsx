@@ -1,22 +1,17 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useBooking } from '@/context/BookingContext';
 import {
   Bike,
   MapPin,
   Clock,
   Star,
-  ArrowRight,
   Shield,
   Truck,
   CheckCircle,
   AlertTriangle,
   Battery,
-  Route,
   Users,
   Calendar,
   Baby,
@@ -26,138 +21,18 @@ import {
   Plus,
   Minus,
   ArrowUp,
-  Gift,
 } from 'lucide-react';
-
-interface BikeRentalServiceViewProps {
-  service: Service;
-  serviceData?: ServiceData;
-  primaryColor?: string;
-  viewContext?: 'standard-view' | 'premium-view';
-}
-
-// Types for booking form
-interface BikeType {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-  ageRange: string;
-  minAge: number;
-  maxAge: number;
-  features: string[];
-  isPremium?: boolean;
-}
-
-interface ChildInfo {
-  id: string;
-  age: number;
-  recommendedBike: string;
-}
-
-interface BookingFormData {
-  startDate: string;
-  endDate: string;
-  endTime: string;
-  startTime: string;
-  location: string;
-  adultCount: number;
-  childCount: number;
-  children: ChildInfo[];
-  selectedBikes: Record<string, number>;
-  needsHelmet: boolean;
-  needsLock: boolean;
-  deliveryToHotel: boolean;
-  specialRequests: string;
-}
-
-interface FormErrors {
-  [key: string]: string;
-}
-
-// Enhanced bike types with all necessary properties
-const BIKE_TYPES: BikeType[] = [
-  {
-    id: 'kids-bike',
-    name: 'Kids Bikes',
-    price: 15,
-    image:
-      'https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&q=80&w=600',
-    description: 'Safe and fun bikes designed specifically for children',
-    ageRange: '4-12 years',
-    minAge: 4,
-    maxAge: 12,
-    features: ['Training wheels available', 'Safety features', 'Bright colors'],
-  },
-  {
-    id: 'beachCruiser',
-    name: 'Beach Cruiser',
-    price: 25,
-    image:
-      'https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&q=80&w=600',
-    description: 'Perfect for coastal rides and beach exploration',
-    ageRange: '13+ years',
-    minAge: 13,
-    maxAge: 99,
-    features: ['Comfortable seat', 'Beach-ready tires', 'Basket included'],
-  },
-  {
-    id: 'cityBike',
-    name: 'City Bike',
-    price: 30,
-    image:
-      'https://images.unsplash.com/photo-1502744688674-c619d1586c9e?auto=format&fit=crop&q=80&w=600',
-    description: 'Ideal for urban exploration and local attractions',
-    ageRange: '13+ years',
-    minAge: 13,
-    maxAge: 99,
-    features: ['Multi-gear system', 'City-optimized', 'Lights included'],
-  },
-  {
-    id: 'mountainBike',
-    name: 'Mountain Bike',
-    price: 35,
-    image:
-      'https://images.unsplash.com/photo-1544191696-15693169e831?auto=format&fit=crop&q=80&w=600',
-    description: 'Built for adventure and off-road trails',
-    ageRange: '16+ years',
-    minAge: 16,
-    maxAge: 99,
-    features: ['All-terrain tires', 'Suspension', 'Trail-ready'],
-  },
-  {
-    id: 'eBike',
-    name: 'E-Bike',
-    price: 45,
-    image:
-      'https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&q=80&w=600',
-    description: 'Electric assistance for effortless rides',
-    ageRange: '18+ years',
-    minAge: 18,
-    maxAge: 99,
-    features: ['Electric motor', 'Long battery life', 'Premium comfort'],
-    isPremium: true,
-  },
-];
-
-const INCLUDED_ITEMS = [
-  { icon: Shield, text: 'Helmet' },
-  { icon: CheckCircle, text: 'Lock' },
-  { icon: Truck, text: 'Free delivery & pickup' },
-  { icon: Clock, text: '24/7 Support' },
-];
-
-const NOT_INCLUDED_ITEMS = [
-  { icon: Gift, text: 'Gratuity (optional, appreciated)' },
-];
-
-const PROCESS_STEPS = [
-  { step: '1', text: 'We deliver your bike at your location', icon: Truck },
-  { step: '2', text: 'Quick setup and safety overview', icon: Shield },
-  { step: '3', text: 'Enjoy the freedom to explore', icon: Route },
-  { step: '4', text: 'We pick up the bike at the scheduled time', icon: Clock },
-];
+import { useReservation } from '@/context/BookingContext';
+import { useRouter } from 'next/navigation';
+import {
+  BIKE_TYPES,
+  BikeRentalServiceViewProps,
+  BookingFormData,
+  FormErrors,
+  INCLUDED_ITEMS,
+  NOT_INCLUDED_ITEMS,
+  PROCESS_STEPS,
+} from '@/types/bike';
 
 const FEATURES = [
   {
@@ -192,12 +67,11 @@ const stagger = {
 
 const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
   service,
-  serviceData,
-  primaryColor = 'green',
-  viewContext,
 }) => {
   const { t } = useTranslation();
-  const { bookService } = useBooking();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
   // State for bike selection and booking form
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -244,28 +118,6 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
       0
     );
   }, [formData.selectedBikes]);
-
-  // Auto-recommend bikes based on children ages
-  const recommendedBikes = useMemo(() => {
-    const recommendations: Record<string, number> = {};
-
-    if (formData.adultCount > 0) {
-      recommendations['cityBike'] =
-        (recommendations['cityBike'] || 0) + formData.adultCount;
-    }
-
-    formData.children.forEach((child) => {
-      const suitableBike = BIKE_TYPES.find(
-        (bike) => child.age >= bike.minAge && child.age <= bike.maxAge
-      );
-      if (suitableBike) {
-        recommendations[suitableBike.id] =
-          (recommendations[suitableBike.id] || 0) + 1;
-      }
-    });
-
-    return recommendations;
-  }, [formData.adultCount, formData.children]);
 
   // Update children array when child count changes
   useEffect(() => {
@@ -444,33 +296,93 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
       }
     });
 
-    // Simplified bike validation - just check if we have the selected bike
-    const selectedBikeCount = formData.selectedBikes[selectedBikeType] || 0;
-    if (selectedBikeCount === 0) {
+    // Bike validation - check if we have enough bikes selected
+    if (totalBikesSelected === 0) {
       newErrors.selectedBikes = 'Please select at least one bike';
     }
 
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateForm();
-    setErrors(newErrors);
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      // Process booking
-      console.log('Booking submitted:', {
-        ...formData,
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Create booking date properly
+      const bookingStartDate = new Date(
+        `${formData.startDate}T${formData.startTime}`
+      );
+      const bookingEndDate = new Date(
+        `${formData.endDate}T${formData.endTime}`
+      );
+
+      // Create reservation data with properly structured items
+      const reservationData = {
+        service: service || {
+          id: 'bike-rental',
+          name: 'Bike Rental',
+          category: 'Transportation',
+          type: 'bike-rental',
+        },
+        formData: {
+          ...formData,
+          serviceType: 'bike-rental',
+          totalPrice: calculatePrice,
+          rentalDays,
+          totalBikesNeeded,
+          totalBikesSelected,
+        },
         totalPrice: calculatePrice,
-        rentalDays,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: formData.adultCount,
+          children: formData.childCount,
+          total: totalBikesNeeded,
+        },
+        selectedItems: Object.entries(formData.selectedBikes)
+          .filter(([_, count]) => count > 0)
+          .map(([bikeId, count]) => {
+            const bike = BIKE_TYPES.find((b) => b.id === bikeId);
+            return {
+              id: bikeId,
+              name: bike?.name || 'Unknown Bike',
+              quantity: count,
+              price: bike?.price || 0,
+              totalPrice: (bike?.price || 0) * count * rentalDays,
+            };
+          }),
+        clientInfo: undefined, // Will be filled in the confirmation page
+      };
+
+      console.log(
+        '🚴 BikeRentalServiceView - Reservation data created:',
+        reservationData
+      );
+
+      // Store in context
+      setReservationData(reservationData);
+
+      // Navigate to confirmation page
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ BikeRentalServiceView - Error submitting form:', error);
+      setErrors({
+        submit: t('form.errors.submitError', {
+          fallback: 'Failed to submit reservation. Please try again.',
+        }),
       });
-
-      // Here you would typically call your booking service
-      // bookService(service, bookingData);
-
-      alert('Booking submitted successfully!');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -847,31 +759,6 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                         {errors.location}
                       </p>
                     )}
-                    <p className='text-xs text-gray-500 mt-1'>
-                      We deliver anywhere in Punta Cana area. Include hotel
-                      name, room number, or specific landmarks to help us find
-                      you.
-                    </p>
-                  </div>
-
-                  <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-                    <div className='flex items-start'>
-                      <Truck className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
-                      <div>
-                        <h5 className='font-medium text-blue-800 mb-2'>
-                          Free Delivery & Pickup Service
-                        </h5>
-                        <ul className='text-sm text-blue-700 space-y-1'>
-                          <li>• We deliver bikes directly to your location</li>
-                          <li>• Free pickup when your rental period ends</li>
-                          <li>
-                            • Available throughout Punta Cana and surrounding
-                            areas
-                          </li>
-                          <li>• Safety briefing included with delivery</li>
-                        </ul>
-                      </div>
-                    </div>
                   </div>
 
                   <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
@@ -887,8 +774,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                       htmlFor='deliveryToHotel'
                       className='ml-2 text-sm text-gray-700'
                     >
-                      This is a hotel/resort address (helps us coordinate with
-                      reception)
+                      This is a hotel/resort address
                     </label>
                   </div>
                 </div>
@@ -1205,6 +1091,13 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                   </div>
                 </div>
 
+                {/* Error Display */}
+                {errors.submit && (
+                  <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+                    <p className='text-red-800 text-sm'>{errors.submit}</p>
+                  </div>
+                )}
+
                 {/* Footer with Price and Actions */}
                 <div className='bg-gray-900 text-white p-6 rounded-lg flex flex-col md:flex-row items-center justify-between'>
                   <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
@@ -1251,16 +1144,18 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                       type='button'
                       onClick={() => setShowBookingForm(false)}
                       className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition'
+                      disabled={isSubmitting}
                     >
                       Cancel
                     </button>
 
                     <button
                       type='submit'
-                      className='px-8 py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg transition flex items-center'
+                      disabled={isSubmitting}
+                      className='px-8 py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
                     >
                       <CreditCard className='h-4 w-4 mr-2' />
-                      Book Bikes
+                      {isSubmitting ? 'Booking...' : 'Book Bikes'}
                     </button>
                   </div>
                 </div>

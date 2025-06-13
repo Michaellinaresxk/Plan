@@ -87,7 +87,6 @@ const PreSelectedServiceCard = ({ service, onRemove }) => {
 
 // Main Component
 const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
-  // ← AGREGAR: Hooks necesarios para navegación
   const router = useRouter();
   const { setReservationData } = useReservation();
 
@@ -110,7 +109,6 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
     );
   }, []);
 
-  // ← MODIFICAR: Función que maneja el booking y navega
   const handleBookingConfirm = useCallback(
     async (bookingData) => {
       try {
@@ -125,6 +123,7 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
             duration: bookingData.duration,
             date: bookingData.date,
             time: bookingData.time,
+            location: bookingData.location,
             persons: bookingData.persons,
             specialNeeds: bookingData.specialNeeds,
             calculatedPrice: bookingData.price,
@@ -163,11 +162,6 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
     [selectedService, setReservationData, router, onSubmit]
   );
 
-  // ← MODIFICAR: Función simplificada para agregar booking (fallback)
-  const addBooking = (bookingData) => {
-    handleBookingConfirm(bookingData);
-  };
-
   const handleServiceRemove = () => {
     setSelectedService(null);
   };
@@ -187,7 +181,7 @@ const MassageForm = ({ onSubmit, onCancel, selectedMassageData }) => {
             {/* Booking Form */}
             <PreSelectedBookingForm
               service={selectedService}
-              onConfirm={handleBookingConfirm} // ← CAMBIAR: Usar nueva función
+              onConfirm={handleBookingConfirm}
               onCancel={handleServiceRemove}
             />
           </>

@@ -57,3 +57,11 @@ export const formatDateRange = (dates) => {
     sortedDates[sortedDates.length - 1]
   )}`;
 };
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+export const cn = (...classes: (string | undefined | false)[]): string => {
+  return classes.filter(Boolean).join(' ');
+};

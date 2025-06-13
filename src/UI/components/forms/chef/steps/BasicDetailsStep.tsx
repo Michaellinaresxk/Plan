@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { occasionTypes } from '@/constants/chefFormConsts';
 import { useTranslation } from '@/lib/i18n/client';
 import MultipleDaysModal, { DayServiceConfig } from './MultipleDaysModal';
 import {
@@ -21,6 +20,7 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
+import { occasionTypes } from '@/constants/chef/chefForm';
 
 interface BasicDetailsStepProps {
   formData: any;

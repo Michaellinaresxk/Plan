@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
 import { Service } from '@/types/type';
 import {
   Calendar,
@@ -44,9 +46,9 @@ interface FormErrors {
 
 interface SaonaIslandFormProps {
   service: Service;
-  onSubmit: (
+  onSubmit?: (
     formData: FormData & { totalPrice: number; pickupTime: string }
-  ) => void;
+  ) => void; // Made optional for compatibility
   onCancel: () => void;
 }
 
@@ -87,6 +89,8 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -99,6 +103,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Calculate total participants
   const totalParticipants = useMemo(() => {
@@ -211,14 +216,21 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     return newErrors;
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  // FIXED: Handle form submission following BikeForm pattern
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateForm();
-    setErrors(newErrors);
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
 
-    if (Object.keys(newErrors).length === 0) {
+    if (Object.keys(validationErrors).length > 0) {
+      console.log('❌ SaonaForm - Validation errors:', validationErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
       // Same day booking confirmation
       if (isSameDay(formData.tourDate)) {
         if (
@@ -226,15 +238,87 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             'You are booking for today. This requires immediate confirmation from our team. Continue?'
           )
         ) {
+          setIsSubmitting(false);
           return;
         }
       }
 
-      onSubmit({
-        ...formData,
+      // Create booking date properly
+      const selectedDate = new Date(formData.tourDate);
+
+      // Set pickup time (7:30 AM)
+      const bookingStartDate = new Date(selectedDate);
+      bookingStartDate.setHours(7, 30, 0, 0);
+
+      // Set return time (approximately 6:30 PM - 9 hours tour)
+      const bookingEndDate = new Date(selectedDate);
+      bookingEndDate.setHours(18, 30, 0, 0);
+
+      // FIXED: Create reservation data matching BikeForm structure
+      const reservationData = {
+        service: service,
+        formData: {
+          ...formData,
+          serviceType: 'saona-island',
+          totalPrice: calculatePrice,
+          pickupTime: TOUR_INFO.PICKUP_TIME,
+        },
         totalPrice: calculatePrice,
-        pickupTime: TOUR_INFO.PICKUP_TIME,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: formData.adultCount,
+          children: formData.childCount,
+          total: totalParticipants,
+        },
+        selectedItems: [
+          {
+            id: 'saona-island-tour',
+            name: 'Saona Island Tour',
+            quantity: 1,
+            price: calculatePrice,
+            totalPrice: calculatePrice,
+            pickupTime: TOUR_INFO.PICKUP_TIME,
+            duration: TOUR_INFO.DURATION,
+          },
+        ],
+        clientInfo: undefined, // Will be filled in the confirmation page
+        // Additional Saona-specific data
+        saonaSpecifics: {
+          pickupTime: TOUR_INFO.PICKUP_TIME,
+          duration: TOUR_INFO.DURATION,
+          adultCount: formData.adultCount,
+          childCount: formData.childCount,
+          children: formData.children,
+          specialRequests: formData.specialRequests,
+          includes: TOUR_INFO.INCLUDES,
+          restrictions: TOUR_INFO.RESTRICTIONS,
+        },
+      };
+
+      console.log('🏝️ SaonaForm - Reservation data created:', reservationData);
+
+      // Store in context (like BikeForm)
+      setReservationData(reservationData);
+
+      // Call the onSubmit callback if provided (optional)
+      if (onSubmit) {
+        await onSubmit({
+          ...formData,
+          totalPrice: calculatePrice,
+          pickupTime: TOUR_INFO.PICKUP_TIME,
+        });
+      }
+
+      // Navigate to confirmation page (like BikeForm)
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ SaonaForm - Error submitting form:', error);
+      setErrors({
+        submit: 'Failed to submit reservation. Please try again.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -485,32 +569,25 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
               Pickup Location
             </h3>
 
+            {/* Location */}
             <div>
               <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                 <MapPin className='w-4 h-4 mr-2 text-blue-700' />
-                Pickup Location *
+                Location *
               </label>
-              {/* <select
+              <input
+                type='text'
                 name='location'
                 value={formData.location}
                 onChange={handleInputChange}
                 className={`w-full p-3 border ${
                   errors.location ? 'border-red-500' : 'border-gray-300'
                 } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-              >
-                <option value=''>Select pickup location</option>
-                {LOCATIONS.map((location) => (
-                  <option key={location} value={location}>
-                    {location}
-                  </option>
-                ))}
-              </select> */}
+                placeholder='Please provide the complete address where the transport will pick you up.'
+              />
               {errors.location && (
                 <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
               )}
-              <p className='text-xs text-gray-500 mt-1'>
-                Exact pickup time will be confirmed 24 hours before tour
-              </p>
             </div>
           </div>
 
@@ -654,7 +731,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                 value={formData.specialRequests}
                 onChange={handleInputChange}
                 rows={3}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500'
+                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50'
                 placeholder='Any special requests, dietary requirements, mobility assistance needs, or additional information...'
               />
             </div>
@@ -662,6 +739,13 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
 
           {/* Tour Restrictions */}
           <TourRestrictionsSection />
+
+          {/* Error Display */}
+          {errors.submit && (
+            <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+              <p className='text-red-800 text-sm'>{errors.submit}</p>
+            </div>
+          )}
         </div>
 
         {/* Footer with Price and Actions */}
@@ -694,6 +778,9 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                   </div>
                 );
               })}
+              <div className='text-blue-400'>
+                Includes: Transportation, catamaran, lunch, open bar & equipment
+              </div>
             </div>
           </div>
 
@@ -701,17 +788,19 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             <button
               type='button'
               onClick={onCancel}
-              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition'
+              disabled={isSubmitting}
+              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
             >
               Cancel
             </button>
 
             <button
               type='submit'
-              className='px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition flex items-center'
+              disabled={isSubmitting}
+              className='px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
             >
               <Waves className='h-4 w-4 mr-2' />
-              Book Tour
+              {isSubmitting ? 'Booking...' : 'Book Tour'}
             </button>
           </div>
         </div>

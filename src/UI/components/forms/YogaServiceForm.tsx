@@ -1,4 +1,6 @@
 import { Service } from '@/types/type';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
 import {
   Calendar,
   Users,
@@ -10,6 +12,7 @@ import {
   Moon,
   MessageSquare,
   Info,
+  MapPin,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/client';
@@ -17,7 +20,7 @@ import { useEffect, useState } from 'react';
 
 interface YogaServiceFormProps {
   service: Service;
-  onSubmit: (formData: any) => void;
+  onSubmit?: (formData: any) => void; // Made optional for compatibility
   onCancel: () => void;
 }
 
@@ -27,9 +30,13 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
+
   const [formData, setFormData] = useState({
     date: '',
     timeSlot: '', // 'morning' or 'evening'
+    location: '',
     participantCount: 1,
     hasSpecialNeeds: false,
     specialNeedsDetails: '',
@@ -38,6 +45,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentPrice, setCurrentPrice] = useState(service.price);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Calculate price based on participant count
   useEffect(() => {
@@ -118,6 +126,12 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
       });
     }
 
+    if (!formData.location) {
+      newErrors.location = t('form.errors.confirmation', {
+        fallback: 'Please confirm location',
+      });
+    }
+
     if (!formData.timeSlot) {
       newErrors.timeSlot = t('form.errors.required', {
         fallback: 'Please select a time slot',
@@ -143,23 +157,94 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  // FIXED: Handle form submission following BikeForm pattern
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
+      console.log('❌ YogaForm - Validation errors:', errors);
       return;
     }
 
-    // Add calculated price to form data before submission
-    const submissionData = {
-      ...formData,
-      calculatedPrice: currentPrice,
-      serviceId: service.id,
-      serviceName: service.name,
-    };
+    setIsSubmitting(true);
 
-    onSubmit(submissionData);
+    try {
+      // Create booking date properly
+      const selectedDate = new Date(formData.date);
+
+      // Set time based on selected slot
+      const bookingStartDate = new Date(selectedDate);
+      const bookingEndDate = new Date(selectedDate);
+
+      if (formData.timeSlot === 'morning') {
+        bookingStartDate.setHours(7, 0, 0, 0); // 7:00 AM
+        bookingEndDate.setHours(11, 0, 0, 0); // 11:00 AM
+      } else {
+        bookingStartDate.setHours(13, 0, 0, 0); // 1:00 PM
+        bookingEndDate.setHours(18, 0, 0, 0); // 6:00 PM
+      }
+
+      // FIXED: Create reservation data matching BikeForm structure
+      const reservationData = {
+        service: service,
+        formData: {
+          ...formData,
+          serviceType: 'yoga',
+          totalPrice: currentPrice,
+          calculatedPrice: currentPrice,
+        },
+        totalPrice: currentPrice,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: formData.participantCount,
+          children: 0,
+          total: formData.participantCount,
+        },
+        selectedItems: [
+          {
+            id: 'yoga-session',
+            name: `${
+              formData.timeSlot === 'morning' ? 'Morning' : 'Evening'
+            } Yoga Session`,
+            quantity: 1,
+            price: currentPrice,
+            totalPrice: currentPrice,
+            timeSlot: formData.timeSlot,
+            specialNeeds: formData.hasSpecialNeeds,
+          },
+        ],
+        clientInfo: undefined, // Will be filled in the confirmation page
+        // Additional yoga-specific data
+        yogaSpecifics: {
+          timeSlot: formData.timeSlot,
+          hasSpecialNeeds: formData.hasSpecialNeeds,
+          specialNeedsDetails: formData.specialNeedsDetails,
+          participantCount: formData.participantCount,
+          additionalNotes: formData.additionalNotes,
+        },
+      };
+
+      console.log('🧘 YogaForm - Reservation data created:', reservationData);
+
+      // Store in context (like BikeForm)
+      setReservationData(reservationData);
+
+      // Call the onSubmit callback if provided (optional)
+      if (onSubmit) {
+        await onSubmit(reservationData);
+      }
+
+      // Navigate to confirmation page (like BikeForm)
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ YogaForm - Error submitting form:', error);
+      setErrors({
+        submit: 'Failed to submit reservation. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Determine if service is premium based on package type
@@ -373,6 +458,35 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                   <p className='text-red-500 text-xs mt-1'>{errors.timeSlot}</p>
                 )}
               </div>
+            </div>
+
+            {/* Location */}
+            <div>
+              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                <MapPin
+                  className={`w-4 h-4 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
+                  }`}
+                />
+                Location *
+              </label>
+              <input
+                type='text'
+                name='location'
+                value={formData.location}
+                onChange={handleChange}
+                className={`w-full p-3 border ${
+                  errors.location ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg focus:ring-2 ${
+                  isPremium
+                    ? 'focus:ring-amber-500 focus:border-amber-500'
+                    : 'focus:ring-teal-500 focus:border-teal-500'
+                } bg-gray-50`}
+                placeholder='Please provide the complete address where the yoga session will take place'
+              />
+              {errors.location && (
+                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+              )}
             </div>
 
             {/* Participants Section */}
@@ -612,6 +726,13 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                 />
               </div>
             </div>
+
+            {/* Error Display */}
+            {errors.submit && (
+              <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+                <p className='text-red-800 text-sm'>{errors.submit}</p>
+              </div>
+            )}
           </div>
 
           {/* Form Footer with Price and Actions */}
@@ -631,34 +752,47 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                   </span>
                 )}
               </div>
-              {formData.hasSpecialNeeds && (
-                <span className='text-xs text-gray-400 mt-1'>
-                  {t('services.yoga.includesSpecialAccommodation', {
-                    fallback: 'Includes special accommodation fee',
-                  })}
-                </span>
-              )}
+
+              {/* Price breakdown */}
+              <div className='text-xs text-gray-400 mt-2 space-y-1'>
+                <div>
+                  {formData.timeSlot === 'morning' ? 'Morning' : 'Evening'} Yoga
+                  Session
+                </div>
+                {formData.participantCount > 1 && (
+                  <div className='text-blue-400'>
+                    Group discount applied (20% off per additional person)
+                  </div>
+                )}
+                {formData.hasSpecialNeeds && (
+                  <div>Special accommodation fee: +$15</div>
+                )}
+              </div>
             </div>
 
             <div className='flex space-x-4'>
               <button
                 type='button'
                 onClick={onCancel}
-                className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition'
+                disabled={isSubmitting}
+                className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
               >
                 {t('common.cancel', { fallback: 'Cancel' })}
               </button>
 
               <button
                 type='submit'
+                disabled={isSubmitting}
                 className={`px-8 py-3 ${
                   isPremium
                     ? 'bg-amber-600 hover:bg-amber-500'
                     : 'bg-teal-600 hover:bg-teal-500'
-                } text-white rounded-lg transition flex items-center`}
+                } text-white rounded-lg transition flex items-center disabled:opacity-50`}
               >
                 <CreditCard className='h-4 w-4 mr-2' />
-                {t('services.yoga.book', { fallback: 'Book Session' })}
+                {isSubmitting
+                  ? t('services.yoga.booking', { fallback: 'Booking...' })
+                  : t('services.yoga.book', { fallback: 'Book Session' })}
               </button>
             </div>
           </div>

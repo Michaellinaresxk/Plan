@@ -1,15 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
-import { Service } from '@/types/type';
 import {
   Mic,
   Calendar,
   Clock,
   MapPin,
   Monitor,
-  Home,
-  TreePine,
-  Music,
   Youtube,
   MessageSquare,
   CreditCard,
@@ -19,70 +15,21 @@ import {
   Plus,
   Info,
 } from 'lucide-react';
+import { useReservation } from '@/context/BookingContext';
+import { useRouter } from 'next/navigation';
+import {
+  FormErrors,
+  KaraokeFormProps,
+  PRICING,
+  SETUP_TYPES,
+  FormData,
+} from '@/constants/karaoke';
 
-// Types for better type safety
-interface FormData {
-  // Event details
-  date: string;
-  startTime: string;
-  location: string;
-
-  // Setup requirements
-  hasProjectionSpace: boolean;
-  needsScreen: boolean;
-  setupType: 'indoor' | 'outdoor' | '';
-
-  // Music preferences
-  musicReferences: string[];
-  specialRequests: string;
-}
-
-interface FormErrors {
-  [key: string]: string;
-}
-
-interface KaraokeFormProps {
-  service: Service;
-  onSubmit: (formData: FormData & { totalPrice: number }) => void;
-  onCancel: () => void;
-}
-
-// Pricing configuration
-const PRICING = {
-  BASE_PRICE: 200, // Base karaoke setup price
-  SCREEN_RENTAL: 75, // Additional screen rental fee
-  OUTDOOR_SETUP: 50, // Additional outdoor setup fee
-};
-
-// Setup type options
-const SETUP_TYPES = [
-  {
-    id: 'indoor',
-    name: 'Indoor Setup',
-    description: 'Perfect for living rooms, party rooms, or indoor venues',
-    icon: Home,
-    benefits: [
-      'Controlled environment',
-      'Better acoustics',
-      'Weather protection',
-    ],
-  },
-  {
-    id: 'outdoor',
-    name: 'Outdoor Setup',
-    description: 'Great for patios, gardens, or outdoor celebrations',
-    icon: TreePine,
-    benefits: ['More space', 'Natural ambiance', 'Fresh air experience'],
-    additionalFee: PRICING.OUTDOOR_SETUP,
-  },
-];
-
-const KaraokeForm: React.FC<KaraokeFormProps> = ({
-  service,
-  onSubmit,
-  onCancel,
-}) => {
+const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
   const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -166,32 +113,48 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors = validateForm();
-    setErrors(newErrors);
+    if (!validateForm()) {
+      return;
+    }
 
-    if (Object.keys(newErrors).length === 0) {
-      // Same day booking confirmation
-      if (isSameDay(formData.date)) {
-        if (
-          !window.confirm(
-            'You are booking for today. This requires immediate confirmation from our team. Continue?'
-          )
-        ) {
-          return;
-        }
-      }
+    setIsSubmitting(true);
 
-      onSubmit({
-        ...formData,
-        // Filter out empty music references
-        musicReferences: formData.musicReferences.filter(
-          (ref) => ref.trim() !== ''
-        ),
-        totalPrice: calculatePrice,
+    try {
+      // Create reservation data with properly structured items
+      const reservationData = {
+        service,
+        formData: {
+          ...formData,
+          // Ensure items are properly structured
+          serviceType: 'karaoke',
+        },
+        // totalPrice: calculateEstimatedTotal(),
+        bookingDate: new Date(`${formData.date}T${formData.hour}`),
+        clientInfo: undefined, // Will be filled in the confirmation page
+      };
+
+      console.log(
+        '🛒 GroceryForm - Reservation data created:',
+        reservationData
+      );
+
+      // Store in context
+      setReservationData(reservationData);
+
+      // Navigate to confirmation page
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ DefaultServiceForm - Error submitting form:', error);
+      setErrors({
+        submit: t('form.errors.submitError', {
+          fallback: 'Failed to submit reservation. Please try again.',
+        }),
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -343,11 +306,10 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({
                 <MapPin className='w-4 h-4 mr-2 text-purple-700' />
                 Event Location *
               </label>
-              <textarea
+              <input
                 name='location'
                 value={formData.location}
                 onChange={handleInputChange}
-                rows={3}
                 className={`w-full p-3 border ${
                   errors.location ? 'border-red-500' : 'border-gray-300'
                 } rounded-lg focus:ring-purple-500 focus:border-purple-500`}
