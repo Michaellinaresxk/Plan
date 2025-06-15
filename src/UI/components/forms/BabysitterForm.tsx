@@ -569,22 +569,6 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 className='w-full p-4 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 bg-white shadow-sm h-32'
               ></textarea>
             </div>
-
-            {/* Safety Information */}
-            <div className='flex items-center bg-gradient-to-r from-teal-50 to-blue-50 p-5 rounded-xl border border-teal-100 shadow-sm'>
-              <div className='bg-teal-100 p-3 rounded-full mr-4 flex-shrink-0'>
-                <Shield className='h-6 w-6 text-teal-600' />
-              </div>
-              <div>
-                <h4 className='font-medium text-teal-800 mb-1'>Safety First</h4>
-                <p className='text-sm text-teal-700'>
-                  {t(
-                    'services.babysitter.form.safetyInfo',
-                    'All our babysitters are certified in first aid and CPR, have undergone extensive background checks, and have years of professional childcare experience.'
-                  )}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
 

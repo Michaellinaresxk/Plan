@@ -429,34 +429,6 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
           )}
         </div>
 
-        {/* Exact Address */}
-        <div>
-          <label
-            htmlFor='exactAddress'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
-            {t('grocery.form.exactAddress', {
-              fallback: 'Exact Address/Instructions',
-            })}
-          </label>
-          <textarea
-            id='exactAddress'
-            name='exactAddress'
-            value={formData.exactAddress}
-            onChange={handleInputChange}
-            rows={2}
-            placeholder={t('grocery.form.exactAddressPlaceholder', {
-              fallback:
-                'Room number, building details, or special delivery instructions',
-            })}
-            className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
-              isPremium
-                ? 'border-amber-300 focus:ring-amber-500'
-                : 'border-blue-300 focus:ring-blue-500'
-            }`}
-          />
-        </div>
-
         {/* Allergies */}
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-3'>
