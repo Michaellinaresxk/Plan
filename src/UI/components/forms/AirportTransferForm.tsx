@@ -998,7 +998,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                     htmlFor='needsCarSeat'
                     className='ml-2 text-sm text-gray-700'
                   >
-                    I need child safety seats (+$25 per seat)
+                    I need child safety seats
                   </label>
                 </div>
               </div>
