@@ -6,6 +6,13 @@
   /* --foreground: #171717; */
   --foreground: #050E18;
   --primary: #FFCD61;
+
+
+  --font-inter: 'Inter', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+  --font-satoshi: 'Satoshi', sans-serif;
 }
 
 @theme inline {
@@ -29,10 +36,14 @@ body {
 }
 
 .hero-img {
-  background-image: url("https://images.pexels.com/photos/6572963/pexels-photo-6572963.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+  background-image: url("/img/hero.png");
   background-size: cover;
   background-position: center;
-  height: 100vh;
+}
+
+.container .main-text { 
+opacity: 0.9;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .standard-bg {

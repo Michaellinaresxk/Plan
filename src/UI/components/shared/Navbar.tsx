@@ -62,7 +62,7 @@ const Navbar = () => {
                 isScrolled ? 'text-amber-500' : 'text-white'
               }`}
             >
-              PCP
+              LPC
             </Link>
           </motion.div>
 
@@ -129,7 +129,7 @@ const Navbar = () => {
                     transition={{ delay: 0.3 }}
                   >
                     <Link href='/' className='text-gray-900 font-bold text-xl'>
-                      PCP
+                      LPC
                     </Link>
                   </motion.div>
                   <motion.button

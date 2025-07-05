@@ -12,7 +12,6 @@ export interface CuisineType {
   name: string;
   description: string;
   image: string;
-  signature: string;
 }
 
 export interface DiningExperience {

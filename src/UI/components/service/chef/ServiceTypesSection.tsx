@@ -24,7 +24,7 @@ const ChefServiceTypesSection: React.FC<{
         className='text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed'
         variants={animations.fadeInUp}
       >
-        Select between our regular chef service and professional chef service
+        Select between our standard and expert chef service
         based on your needs and budget
       </motion.p>
     </div>
@@ -75,7 +75,6 @@ const ChefServiceTypesSection: React.FC<{
                 {serviceType.title}
               </h3>
               <div className='flex items-center text-orange-600 font-bold text-lg'>
-                <DollarSign className='w-5 h-5 mr-1' />
                 {serviceType.price}
               </div>
             </div>
