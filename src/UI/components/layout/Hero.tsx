@@ -1,10 +1,80 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDownCircle, ChevronRight, Crown, Diamond, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n/client';
+
+// Custom Hook para window dimensions (componente reutilizable)
+const useWindowDimensions = () => {
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: 0,
+    height: 0
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleResize = () => {
+        setWindowDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      };
+
+      // Set initial dimensions
+      handleResize();
+      
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
+
+  return windowDimensions;
+};
+
+// Componente separado para las partículas (mejor arquitectura)
+const AnimatedParticles = () => {
+  const { width, height } = useWindowDimensions();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // No renderizar hasta que esté en el cliente
+  if (!isClient || width === 0 || height === 0) {
+    return null;
+  }
+
+  return (
+    <div className='absolute inset-0 z-15 pointer-events-none overflow-hidden'>
+      {[...Array(12)].map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ 
+            opacity: 0, 
+            scale: 0, 
+            x: Math.random() * width, 
+            y: Math.random() * height 
+          }}
+          animate={{ 
+            opacity: [0, 0.6, 0], 
+            scale: [0, 1, 0],
+            y: [Math.random() * height, -100]
+          }}
+          transition={{
+            duration: Math.random() * 3 + 4,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+            ease: "easeInOut"
+          }}
+          className='absolute w-1 h-1 bg-amber-400 rounded-full'
+        />
+      ))}
+    </div>
+  );
+};
 
 const Hero = () => {
   const { t } = useTranslation();
@@ -19,27 +89,8 @@ const Hero = () => {
         <div className='absolute inset-0 bg-black/10 z-10'></div>
       </div>
 
-      {/* Animated particles */}
-      <div className='absolute inset-0 z-15 pointer-events-none overflow-hidden'>
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0, x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight }}
-            animate={{ 
-              opacity: [0, 0.6, 0], 
-              scale: [0, 1, 0],
-              y: [Math.random() * window.innerHeight, -100]
-            }}
-            transition={{
-              duration: Math.random() * 3 + 4,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-              ease: "easeInOut"
-            }}
-            className='absolute w-1 h-1 bg-amber-400 rounded-full'
-          />
-        ))}
-      </div>
+      {/* Componente separado para partículas */}
+      <AnimatedParticles />
 
       {/* Main Content */}
       <div className='relative z-20 min-h-screen flex flex-col'>
@@ -48,8 +99,6 @@ const Hero = () => {
         <div className='flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8'>
           <div className='max-w-6xl mx-auto text-center space-y-8'>
             
-   
-
             {/* Revolutionary Title Design */}
             <motion.div
               initial={{ opacity: 0 }}
