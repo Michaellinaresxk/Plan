@@ -55,7 +55,8 @@
   "home": {
     "hero": {
       "title": "Punta Cana Plan",
-      "subtitle": "Elevate Your Stay with Premium Experiences",
+      "subtitle": "Elevate your experience with Premium services",
+      "subtitle2": "Unique moments • Eternal memories", 
       "exploreButton": "Explore Packages",
       "learnMoreButton": "Learn More"
     },
@@ -395,7 +396,7 @@
     "price": "Price"
   },
   "customPackagePage": {
-    "title": "Create Your Custom Package",
+    "title": "Create Your Own Package",
     "subtitle": "Select from our collection of premium services to create a bespoke Punta Cana experience tailored exclusively for you.",
     "title2": "Start creating your package",
     "description": "Choose how you want to create your perfect Punta Cana experience",
@@ -624,7 +625,7 @@
   "standardPage": {
     "chip": "STANDARD EXPERIENCE",
     "tilte": "Punta Cana Plan",
-    "subTitle": "Our standard package offers a complete vacation experience with essential services to make your stay in Punta Cana memorable and hassle-free, with the perfect blend of adventure and relaxation.",
+    "subTitle": "We guarantee the perfect vacation experience with essential services that transform your stay in Punta Cana into unforgettable memories, where adventure and relaxation are lived intensely.",
     "rating": "rating",
     "rastingText": "Standard Experience",
     "btn1": "Explore Premium Services",

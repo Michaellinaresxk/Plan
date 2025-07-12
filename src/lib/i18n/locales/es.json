@@ -47,7 +47,7 @@
     "package-standard": {
       "title": "Elige tu experiencia",
       "subtitle": "Seleccione el paquete que se adapte a sus necesidades vacacionales. Cada opción ofrece servicios únicos para mejorar su estancia.",
-      "standard": "Nuestro paquete estándar ofrece una experiencia vacacional completa con todos los servicios esenciales.",
+      "standard": "Este paquete estándar ofrece una experiencia vacacional completa con todos los servicios esenciales.",
       "transfers": "Traslados al aeropuerto",
       "golfCart": "Alquiler de carritos de golf",
       "trips": "Viajes en catamarán",
@@ -64,7 +64,8 @@
   "home": {
     "hero": {
       "title": "Punta Cana Plan",
-      "subtitle": "Eleve su estancia con experiencias Premium",
+      "subtitle": "Eleva tu experiencia con servicios Premium",
+      "subtitle2": "Momentos únicos • Recuerdos eternos",   
       "exploreButton": "Explorar Paquetes",
       "learnMoreButton": "Conocer Más"
     },
@@ -620,7 +621,7 @@
   "standardPage": {
     "chip": "EXPERIENCIA ESTÁNDAR",
     "tilte": "Punta Cana Plan",
-    "subTitle": "Nuestro paquete estándar ofrece una experiencia vacacional completa con servicios esenciales para que su estancia en Punta Cana sea memorable y sin complicaciones, con la mezcla perfecta de aventura y relajación.",
+    "subTitle": "Te garantizamos la experiencia vacacional perfecta: servicios esenciales que transforman tu estancia en Punta Cana en recuerdos inolvidables, donde la aventura y la relajación se viven intensamente.",
     "rating": "Valoración",
     "rastingText": "Experiencia estándar",
     "btn1": "Explorar los servicios Premium",

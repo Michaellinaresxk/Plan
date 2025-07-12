@@ -26,7 +26,6 @@ import {
 } from '@/constants/chef/chefInfo';
 import { cn } from '@/utils/chefFormUtils';
 import ChefCTASection from '../chef/ChefCTASection';
-import ChefExperiencesSection from '../chef/ChefExperienceSection';
 import ChefHeroSection from '../chef/ChefHeroSection';
 import ChefServiceTypesSection from '../chef/ServiceTypesSection';
 
@@ -92,75 +91,6 @@ const animations = {
   },
 };
 
-const SpecialtiesSection: React.FC = () => (
-  <motion.div
-    className='px-4'
-    initial='hidden'
-    animate='visible'
-    variants={animations.stagger}
-  >
-    <div className='text-center mb-16'>
-      <motion.h2
-        className='text-5xl font-bold text-gray-800 mb-6'
-        variants={animations.fadeInUp}
-      >
-        Culinary Excellence
-      </motion.h2>
-      <motion.p
-        className='text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed'
-        variants={animations.fadeInUp}
-      >
-        Our chefs master diverse culinary arts to create unforgettable dining
-        experiences
-      </motion.p>
-    </div>
-
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-      {CHEF_SPECIALTIES.map((specialty) => (
-        <motion.div
-          key={specialty.id}
-          className='group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4'
-          variants={animations.fadeInUp}
-        >
-          <div className='relative h-48'>
-            <Image
-              src={specialty.image}
-              alt={specialty.name}
-              fill
-              className='object-cover transition-transform duration-700 group-hover:scale-110'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent' />
-            <div className='absolute top-4 left-4'>
-              <div className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 text-white'>
-                {specialty.icon}
-              </div>
-            </div>
-          </div>
-
-          <div className='p-6'>
-            <h3 className='text-xl font-bold text-gray-800 mb-3'>
-              {specialty.name}
-            </h3>
-            <p className='text-gray-600 mb-4 leading-relaxed'>
-              {specialty.description}
-            </p>
-            <div className='space-y-2'>
-              {specialty.features.map((feature, idx) => (
-                <div
-                  key={idx}
-                  className='flex items-center text-sm text-gray-500'
-                >
-                  <Check className='w-4 h-4 text-orange-500 mr-2' />
-                  {feature}
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  </motion.div>
-);
 
 const CuisineSection: React.FC<{
   selectedCuisine: string;
@@ -417,8 +347,6 @@ const ChefServiceView: React.FC<ChefServiceViewProps> = ({
           onServiceTypeSelect={handleServiceTypeSelect}
         />
 
-        {/* Chef Specialties */}
-        <SpecialtiesSection />
 
         {/* Cuisine Selection */}
         <CuisineSection
@@ -426,11 +354,6 @@ const ChefServiceView: React.FC<ChefServiceViewProps> = ({
           onCuisineSelect={handleCuisineSelect}
         />
 
-        {/* Dining Experiences */}
-        <ChefExperiencesSection
-          selectedExperience={selectedExperience}
-          onExperienceSelect={handleExperienceSelect}
-        />
 
         {/* What's Included & Dietary Accommodations */}
         <IncludedServicesSection />

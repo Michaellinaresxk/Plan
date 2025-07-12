@@ -16,14 +16,13 @@ import {
 export const CHEF_SERVICE_TYPES: ChefServiceType[] = [
   {
     id: 'regular-chef',
-    title: 'Regular Chef Service',
+    title: 'Standard',
     price: 'From US$120 per day',
     description:
-      "Skilled cooks who offer their services at an affordable price. They cook well and we've had good experiences with them, though they don't work exclusively as chefs.",
+      "Este servicio esta diseñado para quienes desean disfrutar de la cocina casera, sin complicaciones, pero con mucho sabor. Ofrecemos preparación de comidas prácticas, nutritivas y deliciosas, perfectas para el día a día.",
     features: [
       'Up to 10 people (prices vary for larger groups)',
       'No set menu - works with your guidance',
-      'Good cooking skills and experience',
       'Affordable pricing option',
       'Flexible meal preparation',
     ],
@@ -31,10 +30,10 @@ export const CHEF_SERVICE_TYPES: ChefServiceType[] = [
   },
   {
     id: 'professional-chef',
-    title: 'Professional Chef Service',
+    title: 'Expert ',
     price: 'US$175 per day',
     description:
-      'Formal culinary training and full-time culinary professionals. They offer curated menus, maintain high presentation standards, and excel in handling special dietary needs.',
+      'Experiencia gastronómica pensada para paladares exigentes y ocasiones especiales. Este servicio transforma cada comida en una experiencia memorable. Ideal para cenas privadas, eventos exclusivos, celebraciones o quienes desean un menú gourmet.',
     features: [
       'Up to 10 people (prices vary for larger groups)',
       'Curated menu options available',
@@ -50,22 +49,20 @@ export const CHEF_SERVICE_TYPES: ChefServiceType[] = [
 
 export const CUISINE_TYPES: CuisineType[] = [
   {
-    id: 'italian',
-    name: 'Italian Mastery',
+    id: 'traditional',
+    name: 'Traditional Food',
     description:
       "Authentic techniques from nonna's kitchen to modern interpretations",
     image:
-      'https://images.unsplash.com/photo-1595295333158-4742f28fbd85?auto=format&fit=crop&q=80&w=800',
-    signature: 'Handmade pasta, risotto perfection',
+      '/img/sancocho.jpg',
   },
   {
-    id: 'french',
-    name: 'French Cuisine',
+    id: 'european',
+    name: 'European Cuisine',
     description:
-      'Classic techniques and refined flavors from the heart of France',
+      'Classic techniques and refined flavors from the heart of Europe',
     image:
       'https://images.unsplash.com/photo-1608855238293-a8853e7f7c98?auto=format&fit=crop&q=80&w=800',
-    signature: 'Sauces, soufflés, and sophistication',
   },
   {
     id: 'asian',
@@ -73,7 +70,6 @@ export const CUISINE_TYPES: CuisineType[] = [
     description: 'Balance of flavors from across Asia with modern presentation',
     image:
       'https://images.unsplash.com/photo-1580442151529-343f2f6e0e27?auto=format&fit=crop&q=80&w=800',
-    signature: 'Umami depth, fresh ingredients',
   },
   {
     id: 'mediterranean',
@@ -82,7 +78,14 @@ export const CUISINE_TYPES: CuisineType[] = [
       'Sun-kissed flavors celebrating the bounty of the Mediterranean',
     image:
       'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?auto=format&fit=crop&q=80&w=800',
-    signature: 'Olive oil, herbs, fresh seafood',
+  },
+  {
+    id: 'mexican',
+    name: 'Mexican',
+    description:
+      ' Mexican dishes prepared with fresh ingredients and classic techniqueTailored Experiences',
+    image:
+      'https://images.pexels.com/photos/2092507/pexels-photo-2092507.jpeg?_gl=1*18suwi1*_ga*MTQ4NDM2ODA3Mi4xNzUxNjg1NzA5*_ga_8JE65Q40S6*czE3NTE2OTQ3OTckbzIkZzEkdDE3NTE2OTQ4MTUkajQyJGwwJGgw',
   },
   {
     id: 'plant-based',
@@ -90,7 +93,6 @@ export const CUISINE_TYPES: CuisineType[] = [
     description: 'Innovative plant-based cuisine that satisfies every palate',
     image:
       'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
-    signature: 'Creative vegetables, protein alternatives',
   },
 ];
 
@@ -130,16 +132,16 @@ export const DIETARY_ACCOMMODATIONS = [
   'Gluten-Free',
   'Dairy-Free',
   'Keto Friendly',
-  'Paleo',
-  'Low Sodium',
+  'Shellfish-Free',
+  'Pescatarian',
   'Nut-Free',
 ];
 
 export const INCLUDED_SERVICES = [
   {
     icon: ChefHat,
-    text: 'Professional Chef & Assistant',
-    desc: 'Certified culinary professionals',
+    text: 'Expert Chef',
+    desc: 'Professionals Culinary ',
   },
   {
     icon: Menu,
@@ -156,11 +158,7 @@ export const INCLUDED_SERVICES = [
     text: 'Complete Table Service',
     desc: 'Professional plating and presentation',
   },
-  {
-    icon: Wine,
-    text: 'Wine Pairing Consultation',
-    desc: 'Expert beverage recommendations',
-  },
+
   {
     icon: Sparkles,
     text: 'Full Kitchen Cleanup',

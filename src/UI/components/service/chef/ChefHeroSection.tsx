@@ -78,8 +78,7 @@ const ChefHeroSection: React.FC<{
             className='text-2xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed'
             variants={animations.fadeInUp}
           >
-            Transform your dining into an extraordinary culinary journey with
-            skilled chefs in your space
+           Enhance your dining experience into an extraordinary culinary journey with skilled chefs in your own space.
           </motion.p>
 
           <motion.div
@@ -90,18 +89,18 @@ const ChefHeroSection: React.FC<{
               <Users className='w-6 h-6 text-white mr-3' />
               <div className='text-left'>
                 <div className='text-white font-semibold'>
-                  Up to {maxPeople} Guests
+                  {maxPeople} Guests +
                 </div>
                 <div className='text-white/70 text-sm'>
-                  Intimate to Celebration
+                  Perfect for Groups
                 </div>
               </div>
             </div>
             <div className='flex items-center bg-white/15 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
               <Clock className='w-6 h-6 text-white mr-3' />
               <div className='text-left'>
-                <div className='text-white font-semibold'>3-6 Hours</div>
-                <div className='text-white/70 text-sm'>Full Experience</div>
+                <div className='text-white font-semibold'>Select</div>
+                <div className='text-white/70 text-sm'>Standard Chef</div>
               </div>
             </div>
             <div className='flex items-center bg-white/15 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
