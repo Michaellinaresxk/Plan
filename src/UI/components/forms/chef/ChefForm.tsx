@@ -1,3 +1,4 @@
+// ChefForm.tsx - COMPLETE CORRECTED VERSION without budget conflicts
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -9,7 +10,7 @@ import GuestCountStep from './steps/GuestCountStep';
 import CuisineAndBudgetStep from './CuisineAndBudgetStep'; // ✅ Corrected version
 import DietaryRestrictionsStep from './steps/DietaryRestrictionsStep';
 import EventDescriptionStep from './steps/EventDescriptionStep';
-import { ChefFormFooter } from './ChefFormFooter';
+import ChefFormFooter from './ChefFormFooter';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
 import {
