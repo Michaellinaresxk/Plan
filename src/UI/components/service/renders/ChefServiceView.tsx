@@ -24,7 +24,7 @@ import {
   INCLUDED_SERVICES,
   TESTIMONIALS,
 } from '@/constants/chef/chefInfo';
-import { cn } from '@/utils/chefFormUtils';
+import { cn } from '@/utils/cheff/chefFormUtils';
 import ChefCTASection from '../chef/ChefCTASection';
 import ChefHeroSection from '../chef/ChefHeroSection';
 import ChefServiceTypesSection from '../chef/ServiceTypesSection';

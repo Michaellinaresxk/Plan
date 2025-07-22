@@ -195,7 +195,6 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     // Required fields
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
     if (!formData.endDate) newErrors.endDate = 'End date is required';
-    if (!formData.endTime) newErrors.endTime = 'End time is required';
     if (!formData.location) newErrors.location = 'Location is required';
 
     // Date validations
@@ -653,26 +652,6 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                 />
                 {errors.endDate && (
                   <p className='text-red-500 text-xs mt-1'>{errors.endDate}</p>
-                )}
-              </div>
-
-              {/* End Time */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock className='w-4 h-4 mr-2 text-green-700' />
-                  End Time *
-                </label>
-                <input
-                  type='time'
-                  name='endTime'
-                  value={formData.endTime}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.endTime ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-green-500 focus:border-green-500 bg-gray-50`}
-                />
-                {errors.endTime && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.endTime}</p>
                 )}
               </div>
             </div>

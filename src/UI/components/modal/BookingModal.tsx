@@ -123,41 +123,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
           >
             {getServiceDescription()}
           </p>
-
-          {/* Additional info for grocery shopping */}
-          {(service.id === 'grocery-shopping' ||
-            service.id === 'luxe-grocery') &&
-            selectedItems && (
-              <div className='mt-3 pt-3 border-t border-current/20'>
-                <div className='flex items-center justify-between text-xs'>
-                  <span
-                    className={isPremium ? 'text-amber-700' : 'text-blue-700'}
-                  >
-                    {t('bookingModal.selectedItems', {
-                      fallback: 'Selected items',
-                    })}
-                    :
-                  </span>
-                  <span
-                    className={`font-medium ${
-                      isPremium ? 'text-amber-800' : 'text-blue-800'
-                    }`}
-                  >
-                    {selectedItems.length}
-                  </span>
-                </div>
-                <p
-                  className={`text-xs mt-1 ${
-                    isPremium ? 'text-amber-600' : 'text-blue-600'
-                  }`}
-                >
-                  {t('bookingModal.finalPriceNote', {
-                    fallback:
-                      'Final price will include groceries + delivery fee',
-                  })}
-                </p>
-              </div>
-            )}
         </motion.div>
 
         {/* The Service Form - This handles navigation automatically */}

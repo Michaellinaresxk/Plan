@@ -14,13 +14,24 @@ import {
   Minus,
   Sparkles,
   Star,
+  Crown,
 } from 'lucide-react';
 
 export interface DayServiceConfig {
   date: string;
-  mealType: 'breakfast' | 'lunch' | 'dinner' | '';
-  menuType: 'standard' | 'mediterranean' | 'italian' | 'asian' | 'mexican' | '';
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'full-day' | ''; // ✅ Agregamos full-day
+  mealTypes?: ('breakfast' | 'lunch' | 'dinner')[]; // ✅ Para múltiples comidas
+  menuType:
+    | 'standard'
+    | 'mediterranean'
+    | 'italian'
+    | 'asian'
+    | 'mexican'
+    | 'custom'
+    | '';
+  customMenuType?: string; // ✅ Para menú personalizado
   specificTime: string;
+  specificTimes?: string[]; // ✅ Para múltiples horarios
   guestCount: number;
   specialRequest: string;
 }
@@ -45,8 +56,11 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
   const [config, setConfig] = useState<DayServiceConfig>({
     date: selectedDate,
     mealType: '',
+    mealTypes: [],
     menuType: '',
+    customMenuType: '',
     specificTime: '',
+    specificTimes: [],
     guestCount: 2,
     specialRequest: '',
   });
@@ -74,26 +88,7 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
 
   const theme = getChefTheme();
 
-  // Update config when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      if (existingConfig) {
-        setConfig(existingConfig);
-      } else {
-        setConfig({
-          date: selectedDate,
-          mealType: '',
-          menuType: '',
-          specificTime: '',
-          guestCount: 2,
-          specialRequest: '',
-        });
-      }
-      setErrors({});
-    }
-  }, [isOpen, selectedDate, existingConfig]);
-
-  // Enhanced meal types with visuals
+  // ✅ Enhanced meal types with Full Day option
   const mealTypes = [
     {
       id: 'breakfast',
@@ -125,67 +120,177 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
         'https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
       description: 'Noche memorable',
     },
+    {
+      id: 'full-day',
+      name: 'Día Completo',
+      time: 'Todo el día',
+      icon: Crown,
+      gradient: 'from-emerald-500 to-teal-600',
+      bgImage:
+        'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
+      description: 'Desayuno, comida y cena',
+      premium: true,
+    },
   ];
 
-  // Enhanced menu options with images
+  // ✅ Enhanced menu options for both chef types
   const getMenuOptions = () => {
+    const baseOptions = [
+      {
+        id: 'mediterranean',
+        name: 'Mediterráneo',
+        emoji: '🫒',
+        description: 'Sabores del mar',
+        bgImage:
+          'https://images.unsplash.com/photo-1539136788836-5699e78bfc75?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
+      },
+      {
+        id: 'italian',
+        name: 'Italiano',
+        emoji: '🍝',
+        description: 'Pastas artesanales',
+        bgImage:
+          'https://images.unsplash.com/photo-1551183053-bf91a1d81141?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
+      },
+      {
+        id: 'asian',
+        name: 'Asiático',
+        emoji: '🍜',
+        description: 'Equilibrio perfecto',
+        bgImage:
+          'https://images.unsplash.com/photo-1617093727343-374698b1b08d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
+      },
+      {
+        id: 'mexican',
+        name: 'Mexicano',
+        emoji: '🌮',
+        description: 'Especias vibrantes',
+        bgImage:
+          'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
+      },
+      {
+        id: 'custom',
+        name: 'Personalizado',
+        emoji: '👨‍🍳',
+        description: 'Tu estilo favorito',
+        bgImage:
+          'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
+        isCustom: true,
+      },
+    ];
+
     if (chefType === 'standard') {
-      return [
-        {
-          id: 'standard',
-          name: 'Personalizado',
-          emoji: '👨‍🍳',
-          description: 'Menú adaptado a tus gustos',
-          bgImage:
-            'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-        },
-      ];
-    } else {
-      return [
-        {
-          id: 'mediterranean',
-          name: 'Mediterráneo',
-          emoji: '🫒',
-          description: 'Sabores del mar',
-          bgImage:
-            'https://images.unsplash.com/photo-1539136788836-5699e78bfc75?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-        },
-        {
-          id: 'italian',
-          name: 'Italiano',
-          emoji: '🍝',
-          description: 'Pastas artesanales',
-          bgImage:
-            'https://images.unsplash.com/photo-1551183053-bf91a1d81141?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-        },
-        {
-          id: 'asian',
-          name: 'Asiático',
-          emoji: '🍜',
-          description: 'Equilibrio perfecto',
-          bgImage:
-            'https://images.unsplash.com/photo-1617093727343-374698b1b08d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-        },
-        {
-          id: 'mexican',
-          name: 'Mexicano',
-          emoji: '🌮',
-          description: 'Especias vibrantes',
-          bgImage:
-            'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-        },
-      ];
+      // Solo mostrar opción personalizada para chef regular
+      return baseOptions.filter((option) => option.id === 'custom');
     }
+
+    return baseOptions;
   };
 
   const menuOptions = getMenuOptions();
 
+  // Update config when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      if (existingConfig) {
+        setConfig(existingConfig);
+      } else {
+        setConfig({
+          date: selectedDate,
+          mealType: '',
+          mealTypes: [],
+          menuType: '',
+          customMenuType: '',
+          specificTime: '',
+          specificTimes: [],
+          guestCount: 2,
+          specialRequest: '',
+        });
+      }
+      setErrors({});
+    }
+  }, [isOpen, selectedDate, existingConfig]);
+
+  // ✅ Handle meal type selection (multiple or single)
+  const handleMealTypeSelection = (mealId: string) => {
+    if (mealId === 'full-day') {
+      // Full day includes all meals
+      setConfig((prev) => ({
+        ...prev,
+        mealType: 'full-day',
+        mealTypes: ['breakfast', 'lunch', 'dinner'],
+        specificTimes: ['8:00 AM', '1:00 PM', '7:00 PM'],
+      }));
+    } else {
+      // Individual meal or toggle
+      const currentMealTypes = config.mealTypes || [];
+      let newMealTypes: ('breakfast' | 'lunch' | 'dinner')[];
+
+      if (currentMealTypes.includes(mealId as any)) {
+        // Remove if already selected
+        newMealTypes = currentMealTypes.filter((meal) => meal !== mealId);
+      } else {
+        // Add if not selected
+        newMealTypes = [...currentMealTypes, mealId] as (
+          | 'breakfast'
+          | 'lunch'
+          | 'dinner'
+        )[];
+      }
+
+      // Update times based on selected meals
+      const specificTimes = newMealTypes.map((meal) => {
+        const mealInfo = mealTypes.find((m) => m.id === meal);
+        return mealInfo?.time || '';
+      });
+
+      setConfig((prev) => ({
+        ...prev,
+        mealType: newMealTypes.length === 1 ? newMealTypes[0] : '',
+        mealTypes: newMealTypes,
+        specificTimes,
+      }));
+    }
+
+    if (errors.mealType) {
+      setErrors((prev) => ({ ...prev, mealType: '' }));
+    }
+  };
+
+  // ✅ Handle menu type selection
+  const handleMenuTypeSelection = (menuId: string) => {
+    setConfig((prev) => ({
+      ...prev,
+      menuType: menuId,
+      customMenuType: menuId === 'custom' ? prev.customMenuType : '',
+    }));
+
+    if (errors.menuType) {
+      setErrors((prev) => ({ ...prev, menuType: '' }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!config.mealType) newErrors.mealType = 'Requerido';
-    if (!config.menuType) newErrors.menuType = 'Requerido';
-    if (config.guestCount < 1) newErrors.guestCount = 'Mínimo 1 persona';
+    if (
+      !config.mealType &&
+      (!config.mealTypes || config.mealTypes.length === 0)
+    ) {
+      newErrors.mealType = 'Selecciona al menos un momento del día';
+    }
+
+    if (!config.menuType) {
+      newErrors.menuType = 'Selecciona un estilo de cocina';
+    }
+
+    if (config.menuType === 'custom' && !config.customMenuType?.trim()) {
+      newErrors.customMenuType = 'Especifica tu estilo de cocina personalizado';
+    }
+
+    if (config.guestCount < 1) {
+      newErrors.guestCount = 'Mínimo 1 persona';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -193,12 +298,7 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
 
   const handleSave = () => {
     if (validateForm()) {
-      const selectedMeal = mealTypes.find((m) => m.id === config.mealType);
-      const configWithTime = {
-        ...config,
-        specificTime: selectedMeal?.time || config.specificTime,
-      };
-      onSave(configWithTime);
+      onSave(config);
       onClose();
     }
   };
@@ -230,15 +330,9 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
   return (
     <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-4'>
       <div className='bg-white rounded-t-3xl md:rounded-3xl w-full md:max-w-2xl md:mx-4 max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300'>
-        {/* Enhanced Header with Image Background */}
+        {/* Enhanced Header */}
         <div className='relative overflow-hidden rounded-t-3xl md:rounded-t-3xl'>
           <div className='absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900'></div>
-          <div
-            className='absolute inset-0 opacity-20'
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
           <div className='relative z-10 p-6 text-white'>
             <div className='flex justify-between items-start mb-4'>
               <div className='flex items-center space-x-4'>
@@ -269,7 +363,7 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
         </div>
 
         <div className='p-6 space-y-8'>
-          {/* Enhanced Meal Type Selection */}
+          {/* ✅ Enhanced Meal Type Selection with Multiple Options */}
           <div>
             <div className='flex items-center space-x-3 mb-4'>
               <div
@@ -283,55 +377,107 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
               <span className='text-red-500'>*</span>
             </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              {mealTypes.map((meal) => (
-                <div
-                  key={meal.id}
-                  onClick={() => {
-                    setConfig((prev) => ({ ...prev, mealType: meal.id }));
-                    if (errors.mealType)
-                      setErrors((prev) => ({ ...prev, mealType: '' }));
-                  }}
-                  className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 hover:scale-105 ${
-                    config.mealType === meal.id
-                      ? 'ring-4 ring-amber-400 ring-opacity-50 scale-105 shadow-xl'
-                      : 'hover:shadow-lg'
-                  }`}
-                >
-                  <div className='relative h-24'>
-                    <img
-                      src={meal.bgImage}
-                      alt={meal.name}
-                      className='w-full h-full object-cover'
-                    />
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-r ${meal.gradient} opacity-80`}
-                    />
+            <div className='mb-4 p-4 bg-blue-50 rounded-xl border border-blue-200'>
+              <p className='text-blue-800 text-sm font-medium'>
+                💡 Puedes seleccionar uno o varios momentos del día, o elegir
+                "Día Completo" para una experiencia gastronómica completa.
+              </p>
+            </div>
 
-                    {/* Selection indicator */}
-                    {config.mealType === meal.id && (
-                      <div className='absolute top-2 right-2'>
-                        <div className='w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg'>
-                          <Check className='w-4 h-4 text-green-600' />
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+              {mealTypes.map((meal) => {
+                const isSelected =
+                  config.mealType === meal.id ||
+                  (config.mealTypes &&
+                    config.mealTypes.includes(meal.id as any)) ||
+                  (config.mealType === 'full-day' && meal.id !== 'full-day');
+
+                return (
+                  <div
+                    key={meal.id}
+                    onClick={() => handleMealTypeSelection(meal.id)}
+                    className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 hover:scale-105 ${
+                      isSelected
+                        ? 'ring-4 ring-amber-400 ring-opacity-50 scale-105 shadow-xl'
+                        : 'hover:shadow-lg'
+                    }`}
+                  >
+                    <div className='relative h-24'>
+                      <img
+                        src={meal.bgImage}
+                        alt={meal.name}
+                        className='w-full h-full object-cover'
+                      />
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-r ${meal.gradient} opacity-80`}
+                      />
+
+                      {/* Premium badge for full day */}
+                      {meal.premium && (
+                        <div className='absolute top-2 left-2'>
+                          <div className='bg-amber-500 text-white px-2 py-1 rounded-full flex items-center space-x-1 text-xs'>
+                            <Crown className='w-3 h-3' />
+                            <span>Premium</span>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Content overlay */}
-                    <div className='absolute inset-0 flex items-center justify-center text-white p-3'>
-                      <div className='text-center'>
-                        <meal.icon className='w-8 h-8 mx-auto mb-2' />
-                        <h4 className='font-bold text-sm'>{meal.name}</h4>
-                        <p className='text-xs opacity-90'>{meal.time}</p>
-                        <p className='text-xs opacity-75 mt-1'>
-                          {meal.description}
-                        </p>
+                      {/* Selection indicator */}
+                      {isSelected && (
+                        <div className='absolute top-2 right-2'>
+                          <div className='w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg'>
+                            <Check className='w-4 h-4 text-green-600' />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Content overlay */}
+                      <div className='absolute inset-0 flex items-center justify-center text-white p-3'>
+                        <div className='text-center'>
+                          <meal.icon className='w-6 h-6 mx-auto mb-1' />
+                          <h4 className='font-bold text-xs'>{meal.name}</h4>
+                          <p className='text-xs opacity-90'>{meal.time}</p>
+                          <p className='text-xs opacity-75 mt-1'>
+                            {meal.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* Selected meals summary */}
+            {(config.mealTypes && config.mealTypes.length > 0) ||
+              (config.mealType === 'full-day' && (
+                <div className='mt-4 p-4 bg-green-50 rounded-xl border border-green-200'>
+                  <h5 className='font-bold text-green-800 mb-2'>
+                    Momentos seleccionados:
+                  </h5>
+                  <div className='flex flex-wrap gap-2'>
+                    {config.mealType === 'full-day' ? (
+                      <span className='px-3 py-1 bg-emerald-500 text-white rounded-full text-sm font-medium flex items-center space-x-1'>
+                        <Crown className='w-4 h-4' />
+                        <span>Día Completo</span>
+                      </span>
+                    ) : (
+                      config.mealTypes?.map((mealTypeId) => {
+                        const meal = mealTypes.find((m) => m.id === mealTypeId);
+                        return meal ? (
+                          <span
+                            key={mealTypeId}
+                            className='px-3 py-1 bg-blue-500 text-white rounded-full text-sm font-medium'
+                          >
+                            {meal.name}
+                          </span>
+                        ) : null;
+                      })
+                    )}
+                  </div>
                 </div>
               ))}
-            </div>
+
             {errors.mealType && (
               <p className='text-red-500 text-sm mt-2 flex items-center'>
                 <X className='w-4 h-4 mr-1' />
@@ -340,7 +486,7 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
             )}
           </div>
 
-          {/* Enhanced Menu Type Selection */}
+          {/* ✅ Enhanced Menu Type Selection */}
           <div>
             <div className='flex items-center space-x-3 mb-4'>
               <div
@@ -357,18 +503,14 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
             <div
               className={`grid gap-3 ${
                 menuOptions.length > 2
-                  ? 'grid-cols-2 md:grid-cols-4'
+                  ? 'grid-cols-2 md:grid-cols-3'
                   : 'grid-cols-1'
               }`}
             >
               {menuOptions.map((menu) => (
                 <div
                   key={menu.id}
-                  onClick={() => {
-                    setConfig((prev) => ({ ...prev, menuType: menu.id }));
-                    if (errors.menuType)
-                      setErrors((prev) => ({ ...prev, menuType: '' }));
-                  }}
+                  onClick={() => handleMenuTypeSelection(menu.id)}
                   className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 hover:scale-105 ${
                     config.menuType === menu.id
                       ? 'ring-4 ring-blue-400 ring-opacity-50 scale-105 shadow-xl'
@@ -404,6 +546,41 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
                 </div>
               ))}
             </div>
+
+            {/* ✅ Custom menu input */}
+            {config.menuType === 'custom' && (
+              <div className='mt-4 space-y-3'>
+                <label className='block text-sm font-bold text-gray-900'>
+                  Especifica tu estilo de cocina preferido *
+                </label>
+                <input
+                  type='text'
+                  value={config.customMenuType || ''}
+                  onChange={(e) => {
+                    setConfig((prev) => ({
+                      ...prev,
+                      customMenuType: e.target.value,
+                    }));
+                    if (errors.customMenuType) {
+                      setErrors((prev) => ({ ...prev, customMenuType: '' }));
+                    }
+                  }}
+                  placeholder='Ej: Cocina local dominicana, Fusión asiática-caribeña, Vegana gourmet...'
+                  className={`w-full p-4 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${
+                    errors.customMenuType
+                      ? 'border-red-400 bg-red-50'
+                      : 'border-gray-200'
+                  }`}
+                />
+                {errors.customMenuType && (
+                  <p className='text-red-500 text-sm flex items-center'>
+                    <X className='w-4 h-4 mr-1' />
+                    {errors.customMenuType}
+                  </p>
+                )}
+              </div>
+            )}
+
             {errors.menuType && (
               <p className='text-red-500 text-sm mt-2 flex items-center'>
                 <X className='w-4 h-4 mr-1' />
@@ -412,7 +589,7 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
             )}
           </div>
 
-          {/* Enhanced Guest Count */}
+          {/* Guest Count - mismo código anterior */}
           <div>
             <div className='flex items-center space-x-3 mb-4'>
               <div
@@ -450,22 +627,6 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
                   <div className='text-sm text-gray-600 font-medium'>
                     {config.guestCount === 1 ? 'persona' : 'personas'}
                   </div>
-                  <div className='flex justify-center mt-2'>
-                    {Array.from(
-                      { length: Math.min(config.guestCount, 5) },
-                      (_, i) => (
-                        <div
-                          key={i}
-                          className='w-2 h-2 bg-amber-400 rounded-full mx-0.5'
-                        ></div>
-                      )
-                    )}
-                    {config.guestCount > 5 && (
-                      <span className='text-amber-600 text-xs ml-1'>
-                        +{config.guestCount - 5}
-                      </span>
-                    )}
-                  </div>
                 </div>
 
                 <button
@@ -481,16 +642,10 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
                   <Plus className='w-5 h-5' />
                 </button>
               </div>
-              {errors.guestCount && (
-                <p className='text-red-500 text-sm mt-3 text-center flex items-center justify-center'>
-                  <X className='w-4 h-4 mr-1' />
-                  {errors.guestCount}
-                </p>
-              )}
             </div>
           </div>
 
-          {/* Enhanced Special Request */}
+          {/* Special Request */}
           <div>
             <div className='flex items-center space-x-3 mb-3'>
               <div
@@ -524,46 +679,56 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
           </div>
 
           {/* Enhanced Summary */}
-          {config.mealType && config.menuType && (
-            <div className='bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6'>
-              <div className='flex items-center space-x-3 mb-3'>
-                <div className='w-8 h-8 bg-green-500 rounded-full flex items-center justify-center'>
-                  <Check className='w-5 h-5 text-white' />
+          {((config.mealTypes && config.mealTypes.length > 0) ||
+            config.mealType) &&
+            config.menuType && (
+              <div className='bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6'>
+                <div className='flex items-center space-x-3 mb-3'>
+                  <div className='w-8 h-8 bg-green-500 rounded-full flex items-center justify-center'>
+                    <Check className='w-5 h-5 text-white' />
+                  </div>
+                  <h4 className='font-bold text-green-800'>
+                    Configuración Lista
+                  </h4>
+                  <Sparkles className='w-5 h-5 text-green-600' />
                 </div>
-                <h4 className='font-bold text-green-800'>
-                  Configuración Lista
-                </h4>
-                <Sparkles className='w-5 h-5 text-green-600' />
+                <div className='text-green-700 space-y-2'>
+                  <div className='flex items-center space-x-2'>
+                    <span>🍽️</span>
+                    <span>
+                      <strong>
+                        {config.mealType === 'full-day'
+                          ? 'Día Completo (Desayuno, Comida y Cena)'
+                          : config.mealTypes
+                              ?.map(
+                                (mealId) =>
+                                  mealTypes.find((m) => m.id === mealId)?.name
+                              )
+                              .join(', ')}
+                      </strong>
+                    </span>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <span>👨‍🍳</span>
+                    <span>
+                      <strong>
+                        {config.menuType === 'custom' && config.customMenuType
+                          ? config.customMenuType
+                          : menuOptions.find((m) => m.id === config.menuType)
+                              ?.name}
+                      </strong>
+                    </span>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <span>👥</span>
+                    <span>
+                      <strong>{config.guestCount}</strong>{' '}
+                      {config.guestCount === 1 ? 'persona' : 'personas'}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className='text-green-700 space-y-2'>
-                <div className='flex items-center space-x-2'>
-                  <span>🍽️</span>
-                  <span>
-                    <strong>
-                      {mealTypes.find((m) => m.id === config.mealType)?.name}
-                    </strong>{' '}
-                    a las{' '}
-                    {mealTypes.find((m) => m.id === config.mealType)?.time}
-                  </span>
-                </div>
-                <div className='flex items-center space-x-2'>
-                  <span>👨‍🍳</span>
-                  <span>
-                    <strong>
-                      {menuOptions.find((m) => m.id === config.menuType)?.name}
-                    </strong>
-                  </span>
-                </div>
-                <div className='flex items-center space-x-2'>
-                  <span>👥</span>
-                  <span>
-                    <strong>{config.guestCount}</strong>{' '}
-                    {config.guestCount === 1 ? 'persona' : 'personas'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
         </div>
 
         {/* Enhanced Footer */}
@@ -579,9 +744,17 @@ const MultipleDaysModal: React.FC<MultipleDaysModalProps> = ({
             <button
               type='button'
               onClick={handleSave}
-              disabled={!config.mealType || !config.menuType}
+              disabled={
+                !(
+                  (config.mealTypes && config.mealTypes.length > 0) ||
+                  config.mealType
+                ) || !config.menuType
+              }
               className={`flex-2 py-4 px-8 rounded-xl font-semibold transition-all transform hover:scale-105 flex items-center justify-center shadow-lg ${
-                !config.mealType || !config.menuType
+                !(
+                  (config.mealTypes && config.mealTypes.length > 0) ||
+                  config.mealType
+                ) || !config.menuType
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
                   : `bg-gradient-to-r ${theme.gradient} hover:shadow-xl text-white`
               }`}

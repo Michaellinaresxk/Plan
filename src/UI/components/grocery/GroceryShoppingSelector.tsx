@@ -270,36 +270,6 @@ const GroceryShoppingSelector: React.FC<GroceryShoppingSelectorProps> = ({
             )}
           </div>
         </div>
-
-        {/* Debug panel for development (remove in production) */}
-        {process.env.NODE_ENV === 'development' && selectedItems.length > 0 && (
-          <div className='mt-8 p-4 bg-gray-100 rounded-lg'>
-            <h4 className='text-sm font-medium text-gray-700 mb-2'>
-              Debug Info (Development Only):
-            </h4>
-            <div className='text-xs text-gray-600'>
-              <p>
-                <strong>Selected IDs:</strong> {selectedItems.join(', ')}
-              </p>
-              <p>
-                <strong>Categories found:</strong>{' '}
-                {Object.keys(categorizeSelectedItems(selectedItems)).join(', ')}
-              </p>
-              <details className='mt-2'>
-                <summary className='cursor-pointer text-blue-600'>
-                  View Structured Data
-                </summary>
-                <pre className='mt-2 text-xs bg-white p-2 rounded overflow-auto max-h-32'>
-                  {JSON.stringify(
-                    categorizeSelectedItems(selectedItems),
-                    null,
-                    2
-                  )}
-                </pre>
-              </details>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

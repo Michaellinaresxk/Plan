@@ -263,69 +263,6 @@ const DietaryRestrictionsStep: React.FC<DietaryRestrictionsStepProps> = ({
         </div>
       </div>
 
-      {/* Custom Restrictions */}
-      <div className='bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden'>
-        <div className='bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200'>
-          <div className='flex items-center space-x-3'>
-            <div className='w-10 h-10 bg-gray-600 rounded-xl flex items-center justify-center'>
-              <AlertCircle className='w-5 h-5 text-white' />
-            </div>
-            <div>
-              <h4 className='text-lg font-semibold text-gray-900'>
-                Detalles Adicionales
-              </h4>
-              <p className='text-sm text-gray-600'>
-                Describe cualquier restricción específica o alergia importante
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className='p-8 space-y-6'>
-          <div className='relative'>
-            <textarea
-              name='customDietaryRestrictions'
-              value={formData.customDietaryRestrictions || ''}
-              onChange={handleCustomChange}
-              placeholder='Ejemplo: Alergia severa al cacahuate (anafilaxis), intolerancia a la lactosa, evitar cilantro, preferencia por comida orgánica...'
-              className={`w-full p-6 text-base border-2 rounded-2xl transition-all duration-300 min-h-[140px] resize-none ${
-                errors.dietaryRestrictions
-                  ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-500/20'
-                  : `border-gray-200 hover:border-${theme.hoverBorder} focus:border-${theme.selectedBorder} focus:ring-${theme.selectedBorder}/20`
-              } focus:ring-4 shadow-sm`}
-            />
-
-            {(formData.customDietaryRestrictions ||
-              selectedRestrictions.length > 0) && (
-              <div className='absolute top-4 right-4'>
-                <CheckCircle2 className='w-6 h-6 text-green-500' />
-              </div>
-            )}
-          </div>
-
-          {errors.dietaryRestrictions && (
-            <div className='flex items-center space-x-3 p-4 bg-red-50 rounded-xl border border-red-200'>
-              <AlertCircle className='w-5 h-5 text-red-600 flex-shrink-0' />
-              <p className='text-red-700 font-medium'>
-                {errors.dietaryRestrictions}
-              </p>
-            </div>
-          )}
-
-          <div className='flex justify-between items-center text-sm'>
-            <p className='text-gray-500'>
-              {formData.customDietaryRestrictions?.length || 0}/500 caracteres
-            </p>
-            {formData.customDietaryRestrictions?.length > 400 && (
-              <p className={`text-${theme.textColor} font-medium`}>
-                {500 - formData.customDietaryRestrictions.length} caracteres
-                restantes
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Severe Allergies Alert */}
       <div className='bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden'>
         <div className='bg-gradient-to-r from-red-50 to-orange-50 px-8 py-6 border-b border-red-100'>
@@ -359,9 +296,13 @@ const DietaryRestrictionsStep: React.FC<DietaryRestrictionsStepProps> = ({
                 ⚠️ Tengo o mis invitados tienen alergias severas
               </div>
               <p className='text-gray-700 leading-relaxed'>
-                Marca esta casilla si alguna de las restricciones puede causar
-                reacciones severas como anafilaxis. Esto activará protocolos
-                especiales de prevención de contaminación cruzada.
+                To help us better prepare for your stay, we kindly ask that you
+                inform us in advance of any food or environmental allergies
+                affecting anyone in your group. This information allows us to
+                communicate relevant details to service providers such as chefs
+                or housekeeping, and to help ensure your comfort throughout your
+                visit. Sharing this in advance is the best way to support a
+                smooth and enjoyable experience for everyone.
               </p>
 
               {formData.chefType === 'professional' && (
@@ -383,33 +324,6 @@ const DietaryRestrictionsStep: React.FC<DietaryRestrictionsStepProps> = ({
           </label>
         </div>
       </div>
-
-      {/* Children's Dietary Notes */}
-      {formData.childrenCount > 0 && (
-        <div
-          className={`bg-gradient-to-br ${theme.lightGradient} rounded-3xl p-8 border border-${theme.borderColor} shadow-lg`}
-        >
-          <div className='flex items-start space-x-4'>
-            <div
-              className={`w-12 h-12 bg-gradient-to-br ${theme.gradient} rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg`}
-            >
-              <Heart className='w-6 h-6 text-white' />
-            </div>
-            <div>
-              <h4 className={`font-bold text-${theme.textColor} text-lg mb-2`}>
-                Consideraciones Especiales para Niños
-              </h4>
-              <p className='text-gray-700 leading-relaxed'>
-                Si tus niños tienen preferencias específicas, aversiones o
-                restricciones dietéticas, inclúyelas en el campo anterior.
-                Nuestro chef puede adaptar opciones kid-friendly que cumplan con
-                cualquier restricción mientras mantienen sabores que los niños
-                disfruten.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Summary Section */}
       {(formData.dietaryRestrictions || selectedRestrictions.length > 0) && (

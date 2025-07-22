@@ -6,14 +6,13 @@ import FormHeader from './ChefHeader';
 import ChefTypeStep from './steps/ChefTypeStep';
 import BasicDetailsStep from './steps/BasicDetailsStep';
 import GuestCountStep from './steps/GuestCountStep';
-import CuisineAndBudgetStep from './CuisineAndBudgetStep';
+import CuisineAndBudgetStep from './CuisineAndBudgetStep'; // ✅ Corrected version
 import DietaryRestrictionsStep from './steps/DietaryRestrictionsStep';
 import EventDescriptionStep from './steps/EventDescriptionStep';
-import ChefFormFooter from './ChefFormFooter';
+import { ChefFormFooter } from './ChefFormFooter';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
 import {
-  budgetOptions,
   chefsSpecialMenus,
   cuisineTypes,
   occasionTypes,
@@ -26,21 +25,36 @@ interface ChefFormProps {
   onCancel: () => void;
 }
 
+// ✅ Custom hook for auto scroll to top
+const useAutoScrollToTop = (currentStep: number) => {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }, [currentStep]);
+};
+
 const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
 
+  // State for multi-step form
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 7;
 
-  // Form data state with proper initialization
+  // ✅ Use auto scroll hook
+  useAutoScrollToTop(currentStep);
+
+  // ✅ Form data state - UPDATED with multiple time fields
   const [formData, setFormData] = useState({
     chefType: '',
     serviceType: 'single',
     dates: [] as string[],
     date: '',
-    time: '',
+    time: '', // Can be: 'breakfast', 'lunch', 'dinner', 'full-day', 'multiple', or ''
+    times: [] as string[], // Array for multiple time selections
     occasion: '',
     otherOccasion: '',
     locationAddress: '',
@@ -48,11 +62,12 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     childrenCount: 0,
     childrenAges: '',
     cuisineType: '',
-    budgetOption: 'standard',
+    customCuisineType: '', // ✅ For custom cuisine input
+    selectedSpecialMenu: '', // ✅ For chef's special menus
     dietaryRestrictions: '',
+    customDietaryRestrictions: '',
     hasAllergies: false,
     eventDescription: '',
-    selectedSpecialMenu: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -97,86 +112,127 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     [errors]
   );
 
-  // Form validation for each step
+  // ✅ Enhanced form validation for each step
   const validateStep = (step: number) => {
     const newErrors: Record<string, string> = {};
+
+    console.log('🔍 Validating step:', step);
 
     switch (step) {
       case 1: // Chef Type Selection
         if (!formData.chefType) {
-          newErrors.chefType = t('form.errors.required', {
-            fallback: 'Chef type is required',
-          });
+          newErrors.chefType = 'Por favor selecciona un tipo de chef';
         }
         break;
 
       case 2: // Service Type
-        // No validation needed for service type selection
+        if (!formData.serviceType) {
+          newErrors.serviceType = 'Por favor selecciona un tipo de servicio';
+        }
         break;
 
       case 3: // Basic Details
         if (formData.serviceType === 'single') {
           if (!formData.date) {
-            newErrors.date = t('form.errors.required', {
-              fallback: 'Date is required',
-            });
+            newErrors.date = 'La fecha es requerida';
           }
-          if (!formData.time) {
-            newErrors.time = t('form.errors.required', {
-              fallback: 'Time is required',
-            });
+          // ✅ Enhanced time validation for multiple selections
+          if (
+            !formData.time &&
+            (!formData.times || formData.times.length === 0)
+          ) {
+            newErrors.time = 'Por favor selecciona al menos un momento del día';
           }
         } else {
+          // Multiple days validation
           if (!formData.dates || formData.dates.length === 0) {
-            newErrors.dates = t('form.errors.required', {
-              fallback: 'Please select at least one date',
-            });
+            newErrors.dates = 'Por favor selecciona al menos una fecha';
           }
         }
 
         if (!formData.locationAddress) {
-          newErrors.locationAddress = t('form.errors.required', {
-            fallback: 'Location address is required',
-          });
+          newErrors.locationAddress = 'La dirección es requerida';
         }
 
         if (!formData.occasion) {
-          newErrors.occasion = t('form.errors.required', {
-            fallback: 'Occasion is required',
-          });
+          newErrors.occasion = 'Por favor selecciona una ocasión';
         }
 
         if (formData.occasion === 'other' && !formData.otherOccasion) {
-          newErrors.otherOccasion = t('form.errors.required', {
-            fallback: 'Please specify the occasion',
-          });
+          newErrors.otherOccasion = 'Por favor especifica la ocasión';
         }
         break;
 
       case 4: // Guest count
         if (formData.guestCount < 1) {
-          newErrors.guestCount = t('form.errors.minGuests', {
-            fallback: 'At least 1 guest is required',
-          });
+          newErrors.guestCount = 'Se requiere al menos 1 invitado';
+        }
+
+        if (formData.guestCount > 20) {
+          newErrors.guestCount = 'Máximo 20 invitados permitidos';
+        }
+
+        if (formData.childrenCount < 0) {
+          newErrors.childrenCount = 'Número de niños inválido';
+        }
+
+        if (
+          formData.childrenCount > 0 &&
+          (!formData.childrenAges ||
+            (Array.isArray(formData.childrenAges) &&
+              formData.childrenAges.length === 0) ||
+            (typeof formData.childrenAges === 'string' &&
+              !formData.childrenAges.trim()))
+        ) {
+          newErrors.childrenAges =
+            'Por favor especifica las edades de los niños';
         }
         break;
 
-      case 5: // Cuisine type and budget
+      case 5: // ✅ Enhanced Cuisine type validation (no budget option)
+        // Check if either regular cuisine or special menu is selected
         if (!formData.cuisineType && !formData.selectedSpecialMenu) {
-          newErrors.cuisineType = t('form.errors.required', {
-            fallback: 'Cuisine type is required',
-          });
+          newErrors.cuisineType =
+            'Por favor selecciona un estilo de cocina o menú especial';
+        }
+
+        // If custom cuisine is selected, validate the custom input
+        if (
+          formData.cuisineType === 'custom' &&
+          !formData.customCuisineType?.trim()
+        ) {
+          newErrors.customCuisineType =
+            'Por favor especifica tu estilo de cocina personalizado';
         }
         break;
 
-      case 6: // Dietary restrictions - optional
+      case 6: // ✅ Enhanced Dietary restrictions validation
+        if (
+          formData.dietaryRestrictions &&
+          formData.dietaryRestrictions.length > 500
+        ) {
+          newErrors.dietaryRestrictions = 'Máximo 500 caracteres permitidos';
+        }
+
+        if (
+          formData.customDietaryRestrictions &&
+          formData.customDietaryRestrictions.length > 500
+        ) {
+          newErrors.customDietaryRestrictions =
+            'Máximo 500 caracteres permitidos';
+        }
         break;
 
       case 7: // Event description
         if (!formData.eventDescription) {
-          newErrors.eventDescription = t('form.errors.required', {
-            fallback: 'Event description is required',
-          });
+          newErrors.eventDescription = 'La descripción del evento es requerida';
+        }
+
+        if (
+          formData.eventDescription &&
+          formData.eventDescription.length > 1000
+        ) {
+          newErrors.eventDescription = 'Máximo 1000 caracteres permitidos';
         }
         break;
     }
@@ -196,13 +252,19 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     setCurrentStep(currentStep - 1);
   };
 
-  // Handle form input changes
+  // ✅ Enhanced form input handler with special error handling
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const { name, value, type } = e.target;
+
+    // ✅ Special handling for clearing errors
+    if (name === '__clearErrors' && type === 'custom') {
+      setErrors(value);
+      return;
+    }
 
     if (type === 'checkbox') {
       setFormData({
@@ -229,50 +291,161 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     }
   };
 
-  // Handle form submission - Complete fix with service information
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // ✅ Enhanced form submission with all new fields
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    if (!validateStep(currentStep)) {
-      return;
-    }
+      if (!validateStep(currentStep)) {
+        return;
+      }
 
-    if (currentStep === totalSteps) {
-      // Final step - submit the form data with all required fields
-      const numberOfDays =
-        formData.serviceType === 'multiple' ? formData.dates.length : 1;
-      // Prepare submission data with complete service information
-      const submissionData = {
-        ...formData,
-        // Service information (REQUIRED for reservation-confirmation page)
-        service: {
-          id: service.id,
-          name: service.name,
-          description: service.description,
-          price: service.price,
-          category: service.category,
-          // Add any other service properties that might be needed
-        },
+      if (currentStep === totalSteps) {
+        try {
+          const numberOfDays =
+            formData.serviceType === 'multiple' ? formData.dates.length : 1;
 
-        // Required fields for reservation system
-        serviceId: service.id,
-        serviceName: service.name || 'Personal Chef Service',
-        totalPrice: currentPrice,
-        numberOfDays,
-        formattedOccasion:
-          formData.occasion === 'other'
-            ? formData.otherOccasion
-            : occasionTypes.find((o) => o.id === formData.occasion)?.name ||
-              formData.occasion,
-        formattedLocation: formData.locationAddress,
-      };
-    } else {
-      // Not the final step - go to next step
-      goToNextStep();
-    }
-  };
+          // ✅ Calculate multiplier for full day or multiple times
+          let serviceMultiplier = 1;
+          if (formData.serviceType === 'single') {
+            if (
+              formData.time === 'full-day' ||
+              (formData.times && formData.times.length === 3)
+            ) {
+              serviceMultiplier = 2.5; // Full day premium
+            } else if (formData.times && formData.times.length > 1) {
+              serviceMultiplier = 1 + (formData.times.length - 1) * 0.7; // Multiple meals
+            }
+          }
 
-  // Calculate price based on selections
+          // ✅ Complete reservation data structure
+          const reservationData = {
+            service,
+            totalPrice: currentPrice,
+            formData: {
+              serviceId: service.id,
+              serviceName: service.name,
+              serviceType: 'chef',
+
+              // Chef and service details
+              chefType: formData.chefType,
+              serviceTypeDetail: formData.serviceType,
+
+              // ✅ Enhanced dates and time information
+              date: formData.serviceType === 'single' ? formData.date : '',
+              dates: formData.serviceType === 'multiple' ? formData.dates : [],
+              time: formData.time,
+              times: formData.times, // ✅ Include multiple times
+              serviceMultiplier, // ✅ For pricing calculations
+              location: formData.locationAddress,
+              locationAddress: formData.locationAddress,
+
+              // Guest information
+              guestCount: formData.guestCount,
+              childrenCount: formData.childrenCount,
+              childrenAges: formData.childrenAges,
+              totalGuests: formData.guestCount + formData.childrenCount,
+
+              // Event details
+              occasion: formData.occasion,
+              otherOccasion: formData.otherOccasion,
+
+              // ✅ Enhanced cuisine and menu options
+              cuisineType: formData.cuisineType,
+              customCuisineType: formData.customCuisineType,
+              selectedSpecialMenu: formData.selectedSpecialMenu,
+
+              // ✅ Enhanced dietary restrictions
+              dietaryRestrictions: formData.dietaryRestrictions,
+              customDietaryRestrictions: formData.customDietaryRestrictions,
+              hasAllergies: formData.hasAllergies,
+
+              // Event description
+              eventDescription: formData.eventDescription,
+              specialRequests: formData.eventDescription,
+
+              // Calculated values
+              calculatedPrice: currentPrice,
+              numberOfDays,
+
+              // Display values
+              formattedOccasion:
+                formData.occasion === 'other'
+                  ? formData.otherOccasion
+                  : occasionTypes.find((o) => o.id === formData.occasion)
+                      ?.name || formData.occasion,
+
+              // ✅ Enhanced cuisine display
+              formattedCuisine: formData.selectedSpecialMenu
+                ? chefsSpecialMenus.find(
+                    (m) => m.id === formData.selectedSpecialMenu
+                  )?.title
+                : formData.cuisineType === 'custom' &&
+                  formData.customCuisineType
+                ? formData.customCuisineType
+                : cuisineTypes.find((c) => c.id === formData.cuisineType)?.name,
+
+              // ✅ Enhanced time display
+              formattedTimes:
+                formData.time === 'full-day'
+                  ? 'Día Completo (Desayuno, Comida y Cena)'
+                  : formData.times && formData.times.length > 1
+                  ? formData.times
+                      .map((t) => {
+                        switch (t) {
+                          case 'breakfast':
+                            return 'Desayuno';
+                          case 'lunch':
+                            return 'Comida';
+                          case 'dinner':
+                            return 'Cena';
+                          default:
+                            return t;
+                        }
+                      })
+                      .join(', ')
+                  : formData.time === 'breakfast'
+                  ? 'Desayuno'
+                  : formData.time === 'lunch'
+                  ? 'Comida'
+                  : formData.time === 'dinner'
+                  ? 'Cena'
+                  : formData.time,
+            },
+            bookingDate: new Date(),
+            clientInfo: undefined,
+          };
+
+          console.log(
+            '👨‍🍳 Enhanced ChefForm - Reservation data:',
+            reservationData
+          );
+          console.log('💰 Total Price at root level:', currentPrice);
+
+          setReservationData(reservationData);
+          router.push('/reservation-confirmation');
+        } catch (error) {
+          console.error('❌ Chef booking error:', error);
+          alert('Error processing booking. Please try again.');
+        }
+      } else {
+        goToNextStep();
+      }
+    },
+    [
+      validateStep,
+      currentStep,
+      totalSteps,
+      formData,
+      currentPrice,
+      service,
+      setReservationData,
+      router,
+      goToNextStep,
+    ]
+  );
+
+  // ✅ Enhanced price calculation with multiple time considerations
   useEffect(() => {
     let basePrice = service.price;
 
@@ -287,43 +460,55 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
 
     let totalPrice = basePrice * numberOfDays;
 
-    const extraGuests = Math.max(0, formData.guestCount - 2);
-    totalPrice += extraGuests * 50;
-
-    if (formData.cuisineType) {
-      const selectedCuisine = cuisineTypes.find(
-        (cuisine) => cuisine.id === formData.cuisineType
-      );
-      if (selectedCuisine) {
-        totalPrice += selectedCuisine.price;
-      }
-    }
-
-    if (formData.budgetOption) {
-      const selectedBudget = budgetOptions.find(
-        (budget) => budget.id === formData.budgetOption
-      );
-      if (selectedBudget) {
-        totalPrice += selectedBudget.price - 120;
-      }
-    }
-
+    // ✅ Special menu pricing (overrides regular cuisine pricing)
     if (formData.selectedSpecialMenu) {
       const selectedMenu = chefsSpecialMenus.find(
         (menu) => menu.id === formData.selectedSpecialMenu
       );
       if (selectedMenu) {
+        // Special menu pricing per person - using estimated price
+        const menuPrice =
+          selectedMenu.id === 'tasting-menu'
+            ? 85
+            : selectedMenu.id === 'fusion-experience'
+            ? 65
+            : selectedMenu.id === 'romantic-dinner'
+            ? 75
+            : 70;
         totalPrice =
-          basePrice * numberOfDays + selectedMenu.price * formData.guestCount;
+          (basePrice + menuPrice) * formData.guestCount * numberOfDays;
+      }
+    } else {
+      // Regular cuisine pricing
+      const extraGuests = Math.max(0, formData.guestCount - 2);
+      totalPrice += extraGuests * 50; // $50 per additional guest
 
-        if (formData.budgetOption !== 'standard') {
-          const selectedBudget = budgetOptions.find(
-            (budget) => budget.id === formData.budgetOption
-          );
-          if (selectedBudget) {
-            totalPrice += selectedBudget.price - 120;
-          }
+      // Add price based on cuisine type
+      if (formData.cuisineType) {
+        const selectedCuisine = cuisineTypes.find(
+          (cuisine) => cuisine.id === formData.cuisineType
+        );
+        if (selectedCuisine) {
+          totalPrice += selectedCuisine.price * numberOfDays;
+        } else if (formData.cuisineType === 'custom') {
+          // Custom cuisine has a base additional cost
+          totalPrice += 15 * numberOfDays;
         }
+      }
+    }
+
+    // ✅ Multiple time pricing for single day service
+    if (formData.serviceType === 'single') {
+      if (
+        formData.time === 'full-day' ||
+        (formData.times && formData.times.length === 3)
+      ) {
+        // Full day service - significant premium
+        totalPrice *= 2.5;
+      } else if (formData.times && formData.times.length > 1) {
+        // Multiple meals but not full day
+        const mealMultiplier = 1 + (formData.times.length - 1) * 0.7;
+        totalPrice *= mealMultiplier;
       }
     }
 
@@ -335,8 +520,10 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     formData.dates.length,
     formData.guestCount,
     formData.cuisineType,
-    formData.budgetOption,
+    formData.customCuisineType,
     formData.selectedSpecialMenu,
+    formData.time,
+    formData.times,
   ]);
 
   // Reset some fields when service type changes
@@ -351,6 +538,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
         ...prev,
         date: '',
         time: '',
+        times: [],
       }));
     }
   }, [formData.serviceType]);
@@ -393,7 +581,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             />
           )}
 
-          {/* Step 3: Basic Details */}
+          {/* Step 3: Enhanced Basic Details with Multiple Time Selection */}
           {currentStep === 3 && (
             <BasicDetailsStep
               formData={formData}
@@ -439,7 +627,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             />
           )}
 
-          {/* Step 5: Cuisine Type and Budget */}
+          {/* Step 5: Enhanced Cuisine Type (No Budget) */}
           {currentStep === 5 && (
             <CuisineAndBudgetStep
               formData={formData}
@@ -448,7 +636,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             />
           )}
 
-          {/* Step 6: Dietary Restrictions */}
+          {/* Step 6: Enhanced Dietary Restrictions */}
           {currentStep === 6 && (
             <DietaryRestrictionsStep
               formData={formData}

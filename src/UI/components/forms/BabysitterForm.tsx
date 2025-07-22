@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import {
@@ -17,6 +17,8 @@ import {
   MapPin,
 } from 'lucide-react';
 import ServiceManager from '@/constants/services/ServiceManager';
+import { useReservation } from '@/context/BookingContext'; // ✅ AGREGAR ESTE IMPORT
+import { useRouter } from 'next/navigation'; // ✅ AGREGAR ESTE IMPORT
 
 interface BabysitterFormProps {
   service: Service;
@@ -30,6 +32,12 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
+
+  // ✅ AGREGAR ESTAS LÍNEAS
+  const { setReservationData } = useReservation();
+  const router = useRouter();
+
+  // ✅ Estado unificado para evitar problemas de sincronización
   const [formData, setFormData] = useState({
     date: '',
     startTime: '',
@@ -41,8 +49,10 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     specialNeedsDetails: '',
     specialRequests: '',
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentPrice, setCurrentPrice] = useState(service.price);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Get service data
   const serviceData = ServiceManager.getData(service.id);
@@ -51,6 +61,26 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
   const minimumBooking = serviceData?.metaData?.minimumBooking
     ? parseInt(serviceData.metaData.minimumBooking.toString())
     : 3; // Default minimum is 3 hours
+
+  // ✅ Helper para actualizar campos del formulario
+  const updateFormField = useCallback(
+    (field: string, value: any) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+
+      // Limpiar error cuando el usuario corrige
+      if (errors[field]) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+    },
+    [errors]
+  );
 
   // Calculate price based on form data
   useEffect(() => {
@@ -96,106 +126,165 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     minimumBooking,
   ]);
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validate form
+  // ✅ Validación mejorada
+  const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.date) {
-      newErrors.date = t('form.errors.required');
+      newErrors.date = t('form.errors.required') || 'Date is required';
     }
 
     if (!formData.startTime) {
-      newErrors.startTime = t('form.errors.required');
+      newErrors.startTime =
+        t('form.errors.required') || 'Start time is required';
     }
 
     if (!formData.endTime) {
-      newErrors.endTime = t('form.errors.required');
+      newErrors.endTime = t('form.errors.required') || 'End time is required';
     }
 
-    // validade location required
-    if (!formData.location) {
-      newErrors.location = t('form.errors.required');
+    if (!formData.location.trim()) {
+      newErrors.location = t('form.errors.required') || 'Location is required';
     }
 
     // Validate children ages are filled
     const filledAges = formData.childrenAges.filter((age) => age.trim() !== '');
     if (filledAges.length < formData.childrenCount) {
-      newErrors.childrenAges = t('form.errors.fillAllAges');
+      newErrors.childrenAges =
+        t('form.errors.fillAllAges') || 'Please fill all children ages';
     }
 
     // Validate special needs details if that option is selected
     if (formData.hasSpecialNeeds && !formData.specialNeedsDetails.trim()) {
-      newErrors.specialNeedsDetails = t('form.errors.required');
+      newErrors.specialNeedsDetails =
+        t('form.errors.required') || 'Special needs details are required';
     }
 
     setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [formData, t]);
 
-    // Submit if no errors
-    if (Object.keys(newErrors).length === 0) {
-      onSubmit(formData);
-    }
-  };
+  // ✅ Handle form submission - CAMBIO CRÍTICO AQUÍ
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-  // Handle input changes
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
+      if (!validateForm()) return;
 
-    if (name === 'hasSpecialNeeds' && !checked) {
-      // If turning off special needs, reset details
-      setFormData((prev) => ({
-        ...prev,
-        hasSpecialNeeds: checked,
-        specialNeedsDetails: '',
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value,
-      }));
-    }
-  };
+      setIsSubmitting(true);
 
-  // Handle children count changes
-  const updateChildrenCount = (increment: boolean) => {
-    setFormData((prev) => {
+      try {
+        // ✅ ESTRUCTURA EXACTA COMO AIRPORT TRANSFER
+        const reservationData = {
+          service,
+          totalPrice: currentPrice, // ✅ CAMPO CRÍTICO EN EL NIVEL RAÍZ
+          formData: {
+            serviceId: service.id,
+            serviceName: service.name,
+            serviceType: 'babysitter', // ✅ AGREGAR serviceType
+            date: formData.date,
+            startTime: formData.startTime,
+            endTime: formData.endTime,
+            location: formData.location,
+            childrenCount: formData.childrenCount,
+            childrenAges: formData.childrenAges,
+            hasSpecialNeeds: formData.hasSpecialNeeds,
+            specialNeedsDetails: formData.specialNeedsDetails,
+            specialRequests: formData.specialRequests,
+            calculatedPrice: currentPrice,
+          },
+          bookingDate: new Date(),
+          clientInfo: undefined, // ✅ MANTENER CONSISTENCIA
+        };
+
+        console.log('🍼 BabysitterForm - Reservation data:', reservationData);
+        console.log('💰 Total Price at root level:', currentPrice);
+
+        // ✅ USAR EL MISMO PATRÓN QUE AIRPORT TRANSFER
+        setReservationData(reservationData);
+        router.push('/reservation-confirmation');
+      } catch (error) {
+        console.error('❌ Babysitter booking error:', error);
+        alert('Error processing booking. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [validateForm, service, formData, currentPrice, setReservationData, router]
+  );
+
+  // ✅ Handle input changes - mejorado
+  const handleChange = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
+    ) => {
+      const { name, value, type } = e.target;
+      const checked = (e.target as HTMLInputElement).checked;
+
+      if (name === 'hasSpecialNeeds' && !checked) {
+        // Si se desactiva special needs, resetear detalles
+        updateFormField('hasSpecialNeeds', checked);
+        updateFormField('specialNeedsDetails', '');
+      } else {
+        updateFormField(name, type === 'checkbox' ? checked : value);
+      }
+    },
+    [updateFormField]
+  );
+
+  // ✅ Handle children count changes - corregido
+  const updateChildrenCount = useCallback(
+    (increment: boolean) => {
       const newCount = increment
-        ? prev.childrenCount + 1
-        : Math.max(1, prev.childrenCount - 1);
+        ? formData.childrenCount + 1
+        : Math.max(1, formData.childrenCount - 1);
 
       // Update ages array to match the new count
-      let newAges = [...prev.childrenAges];
+      let newAges = [...formData.childrenAges];
       if (increment) {
         newAges.push(''); // Add empty age for new child
-      } else if (prev.childrenCount > 1) {
+      } else if (formData.childrenCount > 1) {
         newAges = newAges.slice(0, -1); // Remove last age
       }
 
-      return {
+      setFormData((prev) => ({
         ...prev,
         childrenCount: newCount,
         childrenAges: newAges,
-      };
-    });
-  };
+      }));
 
-  // Handle child age changes
-  const handleAgeChange = (index: number, value: string) => {
-    setFormData((prev) => {
-      const newAges = [...prev.childrenAges];
+      // Limpiar errores relacionados
+      if (errors.childrenAges) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.childrenAges;
+          return newErrors;
+        });
+      }
+    },
+    [formData.childrenCount, formData.childrenAges, errors]
+  );
+
+  // ✅ Handle child age changes - corregido
+  const handleAgeChange = useCallback(
+    (index: number, value: string) => {
+      const newAges = [...formData.childrenAges];
       newAges[index] = value;
-      return {
-        ...prev,
-        childrenAges: newAges,
-      };
-    });
-  };
+      updateFormField('childrenAges', newAges);
+    },
+    [formData.childrenAges, updateFormField]
+  );
+
+  // ✅ Toggle special needs - corregido
+  const toggleSpecialNeeds = useCallback(() => {
+    const newValue = !formData.hasSpecialNeeds;
+    updateFormField('hasSpecialNeeds', newValue);
+    if (!newValue) {
+      updateFormField('specialNeedsDetails', '');
+    }
+  }, [formData.hasSpecialNeeds, updateFormField]);
 
   return (
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
@@ -238,28 +327,20 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               ></path>
             </svg>
           </div>
-          <div className='absolute left-4 bottom-40 opacity-5 w-40 h-40 -rotate-12'>
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>
-              <path
-                fill='currentColor'
-                d='M501.905 10.593C489.743-1.57 468.721-2.766 456.56 10.086L416.717 46.576L347.621 15.71a23.803 23.803 0 0 0-28.06 7.72l-51.15 74.893L157.188 25.103a23.832 23.832 0 0 0-28.46.82L12.543 128.39c-11.95 10.894-12.003 31.375-.053 42.268 11.95 10.894 31.347 9.914 43.408-1.09l93.338-84.593 110.233 72.32a23.784 23.784 0 0 0 30.322-4.962l51.15-74.892 47.289 21.097-10.675 43.653a23.786 23.786 0 0 0 6.56 22.43l57.47 50.412-39.626 48.103-94.697-42.414a23.803 23.803 0 0 0-25.47 3.723l-48.103 39.625-49.199-22.93a23.827 23.827 0 0 0-27.136 5.01l-84.593 93.339-104.9-52.076c-14.142-6.982-31.302-1.156-38.336 12.992-7.034 14.15-1.172 31.899 12.97 38.88l117.773 58.497c8.797 4.358 18.988 1.818 25.506-6.414l76.144-84.058 44.84 20.901a23.798 23.798 0 0 0 24.992-2.776l42.268-34.795 92.89 42.268a23.827 23.827 0 0 0 27.135-5.01l54.693-66.399c7.883-9.57 7.988-24.26.053-33.883L385.01 165.68l9.131-37.333 60.382-48.472 34.795 42.268a23.775 23.775 0 0 0 22.537 8.026c11.854-2.37 19.574-14.477 17.205-26.332l-17.205-86.024c-1.338-6.625-5.263-12.289-10.95-15.22zM278.254 256.051l42.268 21.134c7.07 3.535 15.553 1.84 20.9-4.146l21.134-28.179c1.948-2.586 2.917-5.679 2.873-8.772-2.361.365-4.742.365-7.148-.106l-47.065-10.46-42.268 21.134-8.347 4.175 17.653 5.22zM367.98 328.479l-42.268-21.133c-7.07-3.535-15.553-1.841-20.9 4.145l-21.133 28.18c-2.849 3.794-3.382 8.698-1.884 12.938l37.228-17.32 42.267-21.133 14.117-7.059-7.427 21.382z'
-              ></path>
-            </svg>
-          </div>
 
           {/* Scheduling Section */}
           <div className='space-y-6'>
             <h3 className='text-xl font-bold text-purple-900 flex items-center'>
               <Calendar className='w-6 h-6 mr-2 text-purple-600' />
-              {t('services.babysitter.form.scheduling')}
+              {t('services.babysitter.form.scheduling', 'Scheduling')}
               <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
             </h3>
 
-            {/* Date Field */}
+            {/* Date Field - ✅ CORREGIDO */}
             <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
               <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                 <Calendar className='w-5 h-5 mr-2 text-purple-600' />
-                {t('services.babysitter.form.date')} *
+                {t('services.babysitter.form.date', 'Date')} *
               </label>
               <input
                 type='date'
@@ -285,7 +366,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
                 <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                   <Clock className='w-5 h-5 mr-2 text-purple-600' />
-                  {t('services.babysitter.form.startTime')} *
+                  {t('services.babysitter.form.startTime', 'Start Time')} *
                 </label>
                 <input
                   type='time'
@@ -308,7 +389,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
                 <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                   <Clock className='w-5 h-5 mr-2 text-purple-600' />
-                  {t('services.babysitter.form.endTime')} *
+                  {t('services.babysitter.form.endTime', 'End Time')} *
                 </label>
                 <input
                   type='time'
@@ -340,23 +421,27 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             </div>
           </div>
 
-          {/* Location */}
-          <div>
-            <label className='flex items-center text-sm font-medium  text-purple-800 mb-2'>
-              <MapPin className='w-4 h-4 mr-2 ' />
+          {/* Location - ✅ CORREGIDO */}
+          <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
+            <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
+              <MapPin className='w-5 h-5 mr-2 text-purple-600' />
               Location *
             </label>
             <input
+              type='text'
               name='location'
               value={formData.location}
               onChange={handleChange}
-              className={`w-full p-3 border ${
-                errors.location ? 'border-red-500' : 'border-gray-300'
-              } `}
-              placeholder='Please provide the complete address where the personal training will take place'
+              className={`w-full p-4 border-2 ${
+                errors.location ? 'border-red-400' : 'border-purple-200'
+              } rounded-xl focus:ring-2 focus:ring-purple-400 focus:border-purple-400 bg-white shadow-sm transition-all duration-200`}
+              placeholder='Please provide the complete address where the babysitting will take place'
             />
             {errors.location && (
-              <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+              <p className='text-red-500 text-xs mt-2 flex items-center'>
+                <AlertCircle className='w-3 h-3 mr-1' />
+                {errors.location}
+              </p>
             )}
           </div>
 
@@ -371,7 +456,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
             </h3>
 
-            {/* Children Count */}
+            {/* Children Count - ✅ CORREGIDO */}
             <div className='bg-pink-50 p-6 rounded-xl border border-pink-100 shadow-sm'>
               <label className='flex items-center text-sm font-medium text-pink-800 mb-3'>
                 <Users className='w-5 h-5 mr-2 text-pink-600' />
@@ -385,7 +470,8 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 <button
                   type='button'
                   onClick={() => updateChildrenCount(false)}
-                  className='w-16 py-3 bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold text-xl transition-colors'
+                  disabled={formData.childrenCount <= 1}
+                  className='w-16 py-3 bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold text-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                   -
                 </button>
@@ -461,16 +547,11 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               </div>
             </div>
 
-            {/* Special Needs Toggle */}
+            {/* Special Needs Toggle - ✅ CORREGIDO */}
             <div className='mt-6'>
               <div
                 className='flex items-center justify-between p-5 border-2 border-purple-200 rounded-xl bg-white hover:border-purple-300 transition cursor-pointer shadow-sm'
-                onClick={() =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    hasSpecialNeeds: !prev.hasSpecialNeeds,
-                  }))
-                }
+                onClick={toggleSpecialNeeds}
               >
                 <div className='flex items-center'>
                   <div
@@ -600,10 +681,24 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
               <button
                 type='submit'
-                className='px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center font-medium'
+                disabled={isSubmitting}
+                className={`px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center font-medium ${
+                  isSubmitting
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white'
+                }`}
               >
-                <CreditCard className='h-5 w-5 mr-2' />
-                {t('services.babysitter.form.bookNow', 'Book Your Sitter')}
+                {isSubmitting ? (
+                  <>
+                    <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2'></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className='h-5 w-5 mr-2' />
+                    {t('services.babysitter.form.bookNow', 'Book Your Sitter')}
+                  </>
+                )}
               </button>
             </div>
           </div>

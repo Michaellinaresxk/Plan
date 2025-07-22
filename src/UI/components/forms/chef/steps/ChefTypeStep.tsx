@@ -73,7 +73,6 @@ const ChefTypeStep: React.FC<ChefTypeStepProps> = ({
           </p>
         </div>
       </div>
-
       {/* Simplified Chef Cards */}
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         {chefTypes.map((chef) => (
@@ -179,7 +178,6 @@ const ChefTypeStep: React.FC<ChefTypeStepProps> = ({
           </div>
         ))}
       </div>
-
       {/* Error Display */}
       {errors.chefType && (
         <div className='text-center'>
@@ -191,7 +189,6 @@ const ChefTypeStep: React.FC<ChefTypeStepProps> = ({
           </div>
         </div>
       )}
-
       {/* Quick Comparison */}
       <div className='bg-gray-50 rounded-xl p-4'>
         <h4 className='font-semibold text-center text-gray-900 mb-3'>
@@ -226,8 +223,7 @@ const ChefTypeStep: React.FC<ChefTypeStepProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Selection Confirmation */}
+      Selection Confirmation
       {formData.chefType && (
         <div className='text-center'>
           <div

@@ -1,5 +1,5 @@
 import { CHEF_SERVICE_TYPES } from '@/constants/chef/chefInfo';
-import { cn } from '@/utils/chefFormUtils';
+import { cn } from '@/utils/cheff/chefFormUtils';
 import { animations, motion } from 'framer-motion';
 import { Check, ChefHat, Crown, DollarSign } from 'lucide-react';
 

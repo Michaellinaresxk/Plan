@@ -12,6 +12,9 @@ import {
   DollarSign,
   Check,
   X,
+  Phone,
+  User,
+  MapPin as LocationIcon,
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
@@ -35,12 +38,103 @@ interface FormData {
   hour: string;
   deliveryAddress: string;
   exactAddress: string;
+  numberOfGuests: number;
+  receiveTheGrocery: string;
   items: GroceryItem[];
   hasAllergies: 'yes' | 'no';
   allergyDetails: string;
   foodRestrictions: string;
   specialRequests: string;
 }
+
+// Separate validation logic
+const validateFormData = (
+  formData: FormData,
+  t: any
+): Record<string, string> => {
+  const errors: Record<string, string> = {};
+
+  if (!formData.date) {
+    errors.date = t('grocery.form.errors.dateRequired', {
+      fallback: 'Delivery date is required',
+    });
+  }
+
+  if (!formData.hour) {
+    errors.hour = t('grocery.form.errors.timeRequired', {
+      fallback: 'Arrival estimate is required',
+    });
+  }
+
+  if (!formData.deliveryAddress.trim()) {
+    errors.deliveryAddress = t('grocery.form.errors.addressRequired', {
+      fallback: 'Delivery address is required',
+    });
+  }
+
+  if (!formData.receiveTheGrocery.trim()) {
+    errors.receiveTheGrocery = t('grocery.form.errors.receiveTheGrocery', {
+      fallback: 'Contact information is required',
+    });
+  }
+
+  if (formData.numberOfGuests < 1) {
+    errors.numberOfGuests = t('grocery.form.errors.guestsRequired', {
+      fallback: 'Number of guests must be at least 1',
+    });
+  }
+
+  if (formData.items.length === 0) {
+    errors.items = t('grocery.form.errors.itemsRequired', {
+      fallback: 'Please select at least one item from the grocery list',
+    });
+  }
+
+  if (formData.hasAllergies === 'yes' && !formData.allergyDetails.trim()) {
+    errors.allergyDetails = t('grocery.form.errors.allergyDetailsRequired', {
+      fallback: 'Please specify allergy details',
+    });
+  }
+
+  return errors;
+};
+
+// Utility functions
+const categorizeItems = (items: GroceryItem[]) => {
+  const categories: Record<
+    string,
+    { category: string; subcategories: Record<string, GroceryItem[]> }
+  > = {};
+
+  items.forEach((item) => {
+    if (!categories[item.category]) {
+      categories[item.category] = {
+        category: item.category,
+        subcategories: {},
+      };
+    }
+
+    const subcategory = item.subcategory || 'general';
+    if (!categories[item.category].subcategories[subcategory]) {
+      categories[item.category].subcategories[subcategory] = [];
+    }
+
+    categories[item.category].subcategories[subcategory].push(item);
+  });
+
+  return categories;
+};
+
+const generateTimeSlots = () => {
+  const slots = [];
+  for (let hour = 8; hour <= 20; hour++) {
+    slots.push(`${hour.toString().padStart(2, '0')}:00`);
+    if (hour < 20) {
+      slots.push(`${hour.toString().padStart(2, '0')}:30`);
+    }
+  }
+  return slots;
+};
 
 const GroceryForm: React.FC<GroceryFormProps> = ({
   service,
@@ -56,6 +150,8 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
     hour: '',
     deliveryAddress: '',
     exactAddress: '',
+    receiveTheGrocery: '',
+    numberOfGuests: 1,
     items: selectedItems,
     hasAllergies: 'no',
     allergyDetails: '',
@@ -66,13 +162,12 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // FIXED: Update items when selectedItems prop changes with proper dependency
-  useEffect(() => {
-    console.log('🛒 GroceryForm - selectedItems prop changed:', selectedItems);
+  const isPremium = service.packageType.includes('premium');
 
+  // Update items when selectedItems prop changes
+  useEffect(() => {
     if (selectedItems && selectedItems.length > 0) {
       setFormData((prev) => {
-        // Only update if items actually changed
         const currentItemIds = prev.items.map((item) => item.id).sort();
         const newItemIds = selectedItems.map((item) => item.id).sort();
 
@@ -80,67 +175,33 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
           currentItemIds.length !== newItemIds.length ||
           !currentItemIds.every((id, index) => id === newItemIds[index])
         ) {
-          console.log('🛒 GroceryForm - Items changed, updating form data');
-          return {
-            ...prev,
-            items: selectedItems,
-          };
+          return { ...prev, items: selectedItems };
         }
-
-        console.log('🛒 GroceryForm - Items unchanged, keeping current state');
         return prev;
       });
     }
   }, [selectedItems]);
-
-  // Categorize items for better display
-  const categorizeItems = (items: GroceryItem[]) => {
-    const categories: Record<
-      string,
-      {
-        category: string;
-        subcategories: Record<string, GroceryItem[]>;
-      }
-    > = {};
-
-    items.forEach((item) => {
-      if (!categories[item.category]) {
-        categories[item.category] = {
-          category: item.category,
-          subcategories: {},
-        };
-      }
-
-      const subcategory = item.subcategory || 'general';
-      if (!categories[item.category].subcategories[subcategory]) {
-        categories[item.category].subcategories[subcategory] = [];
-      }
-
-      categories[item.category].subcategories[subcategory].push(item);
-    });
-
-    return categories;
-  };
-
-  // Generate time slots for delivery
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 8; hour <= 20; hour++) {
-      slots.push(`${hour.toString().padStart(2, '0')}:00`);
-      if (hour < 20) {
-        slots.push(`${hour.toString().padStart(2, '0')}:30`);
-      }
-    }
-    return slots;
-  };
 
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+
+    let processedValue = value;
+
+    // Handle number inputs properly
+    if (type === 'number') {
+      processedValue = Math.max(1, parseInt(value) || 1).toString();
+    }
+
+    // Handle tel inputs - only allow numbers, +, -, spaces, and parentheses
+    if (type === 'tel') {
+      processedValue = value.replace(/[^0-9+\-\s\(\)]/g, '');
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: processedValue }));
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -148,96 +209,39 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
     }
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.date) {
-      newErrors.date = t('grocery.form.errors.dateRequired', {
-        fallback: 'Delivery date is required',
-      });
-    }
-
-    if (!formData.hour) {
-      newErrors.hour = t('grocery.form.errors.timeRequired', {
-        fallback: 'Delivery time is required',
-      });
-    }
-
-    if (!formData.deliveryAddress.trim()) {
-      newErrors.deliveryAddress = t('grocery.form.errors.addressRequired', {
-        fallback: 'Delivery address is required',
-      });
-    }
-
-    if (formData.items.length === 0) {
-      newErrors.items = t('grocery.form.errors.itemsRequired', {
-        fallback: 'Please select at least one item from the grocery list',
-      });
-    }
-
-    if (formData.hasAllergies === 'yes' && !formData.allergyDetails.trim()) {
-      newErrors.allergyDetails = t(
-        'grocery.form.errors.allergyDetailsRequired',
-        {
-          fallback: 'Please specify allergy details',
-        }
-      );
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const calculateEstimatedTotal = (): number => {
-    // Base service price
     let total = service.price;
-
-    // Add estimated cost per item (this should come from a pricing service)
-    const estimatedCostPerItem = 5; // $5 average per item
+    const estimatedCostPerItem = 5;
     total += formData.items.length * estimatedCostPerItem;
-
     return total;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    const validationErrors = validateFormData(formData, t);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      console.log(
-        '🛒 GroceryForm - Submitting reservation with items:',
-        formData.items
-      );
-
-      // Create reservation data with properly structured items
       const reservationData = {
         service,
         formData: {
           ...formData,
-          // Ensure items are properly structured
           categorizedItems: categorizeItems(formData.items),
           itemCount: formData.items.length,
           serviceType: 'grocery-shopping',
         },
         totalPrice: calculateEstimatedTotal(),
         bookingDate: new Date(`${formData.date}T${formData.hour}`),
-        clientInfo: undefined, // Will be filled in the confirmation page
+        clientInfo: undefined,
       };
 
-      console.log(
-        '🛒 GroceryForm - Reservation data created:',
-        reservationData
-      );
-
-      // Store in context
       setReservationData(reservationData);
-
-      // Navigate to confirmation page
       router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ GroceryForm - Error submitting form:', error);
@@ -251,11 +255,10 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
     }
   };
 
-  const isPremium = service.packageType.includes('premium');
   const categorizedItems = categorizeItems(formData.items);
 
   return (
-    <div className='space-y-6'>
+    <div className='max-w-4xl mx-auto space-y-6'>
       {/* Selected Items Summary */}
       {formData.items.length > 0 && (
         <motion.div
@@ -278,8 +281,8 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
                 isPremium ? 'text-amber-800' : 'text-blue-800'
               }`}
             >
-              {t('grocery.form.selectedItems', { fallback: 'Selected Items' })}(
-              {formData.items.length})
+              {t('grocery.form.selectedItems', { fallback: 'Selected Items' })}{' '}
+              ({formData.items.length})
             </h3>
           </div>
 
@@ -298,12 +301,12 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
                             {subKey}:{' '}
                           </span>
                         )}
-                        {items.map((item) => (
+                        {items.map((item, index) => (
                           <span key={item.id} className='inline-block mr-1'>
                             {t(item.translationKey || item.id, {
                               fallback: item.name,
                             })}
-                            {items.indexOf(item) < items.length - 1 && ', '}
+                            {index < items.length - 1 && ', '}
                           </span>
                         ))}
                       </div>
@@ -318,9 +321,8 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
 
       {/* Form */}
       <form onSubmit={handleSubmit} className='space-y-6'>
-        {/* Delivery Details */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {/* Date */}
+        {/* Date & Time Row */}
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
             <label
               htmlFor='date'
@@ -352,14 +354,16 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
             )}
           </div>
 
-          {/* Time */}
           <div>
             <label
               htmlFor='hour'
               className='block text-sm font-medium text-gray-700 mb-2'
             >
               <Clock className='h-4 w-4 inline mr-1' />
-              {t('grocery.form.deliveryTime', { fallback: 'Delivery Time' })} *
+              {t('grocery.form.arrivalEstimate', {
+                fallback: 'Arrival Estimate',
+              })}{' '}
+              *
             </label>
             <select
               id='hour'
@@ -392,172 +396,257 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
           </div>
         </div>
 
-        {/* Delivery Address */}
-        <div>
-          <label
-            htmlFor='deliveryAddress'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
-            <MapPin className='h-4 w-4 inline mr-1' />
-            {t('grocery.form.deliveryAddress', {
-              fallback: 'Delivery Address',
-            })}{' '}
-            *
-          </label>
-          <input
-            type='text'
-            id='deliveryAddress'
-            name='deliveryAddress'
-            value={formData.deliveryAddress}
-            onChange={handleInputChange}
-            placeholder={t('grocery.form.addressPlaceholder', {
-              fallback: 'Hotel name or general area',
-            })}
-            className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
-              errors.deliveryAddress
-                ? 'border-red-300 focus:ring-red-500'
-                : isPremium
-                ? 'border-amber-300 focus:ring-amber-500'
-                : 'border-blue-300 focus:ring-blue-500'
-            }`}
-          />
-          {errors.deliveryAddress && (
-            <p className='mt-1 text-sm text-red-600 flex items-center'>
-              <AlertTriangle className='h-4 w-4 mr-1' />
-              {errors.deliveryAddress}
-            </p>
-          )}
-        </div>
-
-        {/* Allergies */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-3'>
-            {t('grocery.form.allergies', {
-              fallback: 'Do you have any food allergies?',
-            })}
-          </label>
-          <div className='flex space-x-4 mb-3'>
-            <label className='flex items-center'>
-              <input
-                type='radio'
-                name='hasAllergies'
-                value='no'
-                checked={formData.hasAllergies === 'no'}
-                onChange={handleInputChange}
-                className={`mr-2 ${
-                  isPremium ? 'text-amber-600' : 'text-blue-600'
-                }`}
-              />
-              {t('common.no', { fallback: 'No' })}
+        {/* Contact & Guests Row */}
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div>
+            <label
+              htmlFor='receiveTheGrocery'
+              className='block text-sm font-medium text-gray-700 mb-2'
+            >
+              <Phone className='h-4 w-4 inline mr-1' />
+              {t('grocery.form.receiveTheGrocery', {
+                fallback: 'Who will receive the grocery shopping',
+              })}{' '}
+              *
             </label>
-            <label className='flex items-center'>
-              <input
-                type='radio'
-                name='hasAllergies'
-                value='yes'
-                checked={formData.hasAllergies === 'yes'}
-                onChange={handleInputChange}
-                className={`mr-2 ${
-                  isPremium ? 'text-amber-600' : 'text-blue-600'
-                }`}
-              />
-              {t('common.yes', { fallback: 'Yes' })}
-            </label>
+            <input
+              type='tel'
+              id='receiveTheGrocery'
+              name='receiveTheGrocery'
+              value={formData.receiveTheGrocery}
+              onChange={handleInputChange}
+              placeholder={t('grocery.form.receiveTheGrocery', {
+                fallback: 'Provides your concierge contact number',
+              })}
+              pattern='[0-9+\-\s\(\)]*'
+              inputMode='tel'
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                errors.receiveTheGrocery
+                  ? 'border-red-300 focus:ring-red-500'
+                  : isPremium
+                  ? 'border-amber-300 focus:ring-amber-500'
+                  : 'border-blue-300 focus:ring-blue-500'
+              }`}
+            />
+            {errors.receiveTheGrocery && (
+              <p className='mt-1 text-sm text-red-600 flex items-center'>
+                <Phone className='h-4 w-4 mr-1' />
+                {errors.receiveTheGrocery}
+              </p>
+            )}
           </div>
 
-          {formData.hasAllergies === 'yes' && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className='mt-3'
+          <div>
+            <label
+              htmlFor='numberOfGuests'
+              className='block text-sm font-medium text-gray-700 mb-2'
             >
-              <textarea
-                name='allergyDetails'
-                value={formData.allergyDetails}
-                onChange={handleInputChange}
-                rows={2}
-                placeholder={t('grocery.form.allergyPlaceholder', {
-                  fallback: 'Please specify your allergies...',
+              <User className='h-4 w-4 inline mr-1' />
+              {t('grocery.form.numberOfGuests', {
+                fallback: 'Number of guests',
+              })}{' '}
+              *
+            </label>
+            <input
+              type='number'
+              id='numberOfGuests'
+              name='numberOfGuests'
+              value={formData.numberOfGuests}
+              onChange={handleInputChange}
+              min='1'
+              max='50'
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                errors.numberOfGuests
+                  ? 'border-red-300 focus:ring-red-500'
+                  : isPremium
+                  ? 'border-amber-300 focus:ring-amber-500'
+                  : 'border-blue-300 focus:ring-blue-500'
+              }`}
+            />
+            {errors.numberOfGuests && (
+              <p className='mt-1 text-sm text-red-600 flex items-center'>
+                <AlertTriangle className='h-4 w-4 mr-1' />
+                {errors.numberOfGuests}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Delivery Address */}
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div>
+            <label
+              htmlFor='deliveryAddress'
+              className='block text-sm font-medium text-gray-700 mb-2'
+            >
+              <MapPin className='h-4 w-4 inline mr-1' />
+              {t('grocery.form.deliveryAddress', {
+                fallback: 'Delivery Address',
+              })}{' '}
+              *
+            </label>
+            <input
+              type='text'
+              id='deliveryAddress'
+              name='deliveryAddress'
+              value={formData.deliveryAddress}
+              onChange={handleInputChange}
+              placeholder={t('grocery.form.addressPlaceholder', {
+                fallback: 'Hotel name or general area',
+              })}
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                errors.deliveryAddress
+                  ? 'border-red-300 focus:ring-red-500'
+                  : isPremium
+                  ? 'border-amber-300 focus:ring-amber-500'
+                  : 'border-blue-300 focus:ring-blue-500'
+              }`}
+            />
+            {errors.deliveryAddress && (
+              <p className='mt-1 text-sm text-red-600 flex items-center'>
+                <AlertTriangle className='h-4 w-4 mr-1' />
+                {errors.deliveryAddress}
+              </p>
+            )}
+          </div>
+        </div>
+        {/* Allergies Section */}
+        <div className='bg-gray-50 p-4 rounded-lg'>
+          <h4 className='font-medium text-gray-900 mb-3'>
+            {t('grocery.form.dietaryInfo', { fallback: 'Dietary Information' })}
+          </h4>
+
+          <div className='space-y-4'>
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>
+                {t('grocery.form.allergies', {
+                  fallback: 'Do you have any allergies?',
                 })}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
-                  errors.allergyDetails
-                    ? 'border-red-300 focus:ring-red-500'
-                    : isPremium
-                    ? 'border-amber-300 focus:ring-amber-500'
-                    : 'border-blue-300 focus:ring-blue-500'
-                }`}
-              />
-              {errors.allergyDetails && (
-                <p className='mt-1 text-sm text-red-600 flex items-center'>
-                  <AlertTriangle className='h-4 w-4 mr-1' />
-                  {errors.allergyDetails}
-                </p>
-              )}
-            </motion.div>
-          )}
-        </div>
+              </label>
+              <div className='flex space-x-6'>
+                <label className='flex items-center'>
+                  <input
+                    type='radio'
+                    name='hasAllergies'
+                    value='no'
+                    checked={formData.hasAllergies === 'no'}
+                    onChange={handleInputChange}
+                    className={`mr-2 ${
+                      isPremium ? 'text-amber-600' : 'text-blue-600'
+                    }`}
+                  />
+                  {t('common.no', { fallback: 'No' })}
+                </label>
+                <label className='flex items-center'>
+                  <input
+                    type='radio'
+                    name='hasAllergies'
+                    value='yes'
+                    checked={formData.hasAllergies === 'yes'}
+                    onChange={handleInputChange}
+                    className={`mr-2 ${
+                      isPremium ? 'text-amber-600' : 'text-blue-600'
+                    }`}
+                  />
+                  {t('common.yes', { fallback: 'Yes' })}
+                </label>
+              </div>
+            </div>
 
-        {/* Food Restrictions */}
-        <div>
-          <label
-            htmlFor='foodRestrictions'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
-            {t('grocery.form.foodRestrictions', {
-              fallback: 'Dietary Restrictions',
-            })}
-          </label>
-          <textarea
-            id='foodRestrictions'
-            name='foodRestrictions'
-            value={formData.foodRestrictions}
-            onChange={handleInputChange}
-            rows={2}
-            placeholder={t('grocery.form.restrictionsPlaceholder', {
-              fallback: 'Vegetarian, vegan, gluten-free, etc.',
-            })}
-            className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
-              isPremium
-                ? 'border-amber-300 focus:ring-amber-500'
-                : 'border-blue-300 focus:ring-blue-500'
-            }`}
-          />
-        </div>
+            {formData.hasAllergies === 'yes' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+              >
+                <textarea
+                  name='allergyDetails'
+                  value={formData.allergyDetails}
+                  onChange={handleInputChange}
+                  rows={2}
+                  placeholder={t('grocery.form.allergyPlaceholder', {
+                    fallback: 'Please specify your allergies...',
+                  })}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                    errors.allergyDetails
+                      ? 'border-red-300 focus:ring-red-500'
+                      : isPremium
+                      ? 'border-amber-300 focus:ring-amber-500'
+                      : 'border-blue-300 focus:ring-blue-500'
+                  }`}
+                />
+                {errors.allergyDetails && (
+                  <p className='mt-1 text-sm text-red-600 flex items-center'>
+                    <AlertTriangle className='h-4 w-4 mr-1' />
+                    {errors.allergyDetails}
+                  </p>
+                )}
+              </motion.div>
+            )}
 
-        {/* Special Requests */}
-        <div>
-          <label
-            htmlFor='specialRequests'
-            className='block text-sm font-medium text-gray-700 mb-2'
-          >
-            {t('grocery.form.specialRequests', {
-              fallback: 'Special Requests',
-            })}
-          </label>
-          <textarea
-            id='specialRequests'
-            name='specialRequests'
-            value={formData.specialRequests}
-            onChange={handleInputChange}
-            rows={3}
-            placeholder={t('grocery.form.requestsPlaceholder', {
-              fallback: 'Any special requests or preferences...',
-            })}
-            className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
-              isPremium
-                ? 'border-amber-300 focus:ring-amber-500'
-                : 'border-blue-300 focus:ring-blue-500'
-            }`}
-          />
-        </div>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div>
+                <label
+                  htmlFor='foodRestrictions'
+                  className='block text-sm font-medium text-gray-700 mb-2'
+                >
+                  {t('grocery.form.foodRestrictions', {
+                    fallback: 'Dietary Restrictions',
+                  })}
+                </label>
+                <textarea
+                  id='foodRestrictions'
+                  name='foodRestrictions'
+                  value={formData.foodRestrictions}
+                  onChange={handleInputChange}
+                  rows={2}
+                  placeholder={t('grocery.form.restrictionsPlaceholder', {
+                    fallback: 'Vegetarian, vegan, gluten-free, etc.',
+                  })}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                    isPremium
+                      ? 'border-amber-300 focus:ring-amber-500'
+                      : 'border-blue-300 focus:ring-blue-500'
+                  }`}
+                />
+              </div>
 
+              <div>
+                <label
+                  htmlFor='specialRequests'
+                  className='block text-sm font-medium text-gray-700 mb-2'
+                >
+                  {t('grocery.form.specialRequests', {
+                    fallback: 'Special Requests',
+                  })}
+                </label>
+                <textarea
+                  id='specialRequests'
+                  name='specialRequests'
+                  value={formData.specialRequests}
+                  onChange={handleInputChange}
+                  rows={2}
+                  placeholder={t('grocery.form.requestsPlaceholder', {
+                    fallback: 'Any special requests or preferences...',
+                  })}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:border-transparent ${
+                    isPremium
+                      ? 'border-amber-300 focus:ring-amber-500'
+                      : 'border-blue-300 focus:ring-blue-500'
+                  }`}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
         {/* Estimated Total */}
         <div
-          className={`p-4 rounded-lg ${
-            isPremium ? 'bg-amber-50' : 'bg-blue-50'
+          className={`p-4 rounded-lg border ${
+            isPremium
+              ? 'bg-amber-50 border-amber-200'
+              : 'bg-blue-50 border-blue-200'
           }`}
         >
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between mb-2'>
             <span
               className={`text-sm font-medium ${
                 isPremium ? 'text-amber-800' : 'text-blue-800'
@@ -569,23 +658,22 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
               :
             </span>
             <span
-              className={`text-lg font-bold ${
+              className={`text-xl font-bold ${
                 isPremium ? 'text-amber-900' : 'text-blue-900'
               }`}
             >
-              <DollarSign className='h-4 w-4 inline' />
+              <DollarSign className='h-5 w-5 inline' />
               {calculateEstimatedTotal().toFixed(2)}
             </span>
           </div>
-          <p className='text-xs text-gray-600 mt-1'>
+          <p className='text-xs text-gray-600'>
             {t('grocery.form.estimateNote', {
               fallback:
                 'Final price will be calculated based on actual items and market prices',
             })}
           </p>
         </div>
-
-        {/* Errors */}
+        {/* Error Messages */}
         {errors.items && (
           <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
             <p className='text-sm text-red-600 flex items-center'>
@@ -594,7 +682,6 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
             </p>
           </div>
         )}
-
         {errors.submit && (
           <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
             <p className='text-sm text-red-600 flex items-center'>
@@ -603,13 +690,12 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
             </p>
           </div>
         )}
-
         {/* Submit Buttons */}
-        <div className='flex flex-col sm:flex-row gap-3 pt-4'>
+        <div className='flex flex-col sm:flex-row gap-3 pt-4 border-t'>
           <button
             type='button'
             onClick={onCancel}
-            className='flex-1 py-3 px-6 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors'
+            className='flex-1 py-3 px-6 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium'
           >
             {t('common.cancel', { fallback: 'Cancel' })}
           </button>
@@ -621,8 +707,8 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
               isSubmitting || formData.items.length === 0
                 ? 'bg-gray-400 cursor-not-allowed'
                 : isPremium
-                ? 'bg-amber-600 hover:bg-amber-700'
-                : 'bg-blue-600 hover:bg-blue-700'
+                ? 'bg-amber-600 hover:bg-amber-700 active:bg-amber-800'
+                : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
             }`}
           >
             {isSubmitting ? (

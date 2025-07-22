@@ -282,7 +282,11 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                   className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
                   variants={fadeInUp}
                 >
-                 {t("services.standard.yoga.yogaTitlePage")}
+                  Yoga
+                  <br />
+                  <span className='bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent'>
+                    Meditation
+                  </span>
                 </motion.h1>
 
                 <motion.p
