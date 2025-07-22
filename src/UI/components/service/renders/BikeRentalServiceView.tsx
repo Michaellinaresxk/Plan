@@ -701,7 +701,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                       )}
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Clock className='w-4 h-4 mr-2 text-green-700' />
                         End Time *
@@ -720,7 +720,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                           {errors.endTime}
                         </p>
                       )}
-                    </div>
+                    </div> */}
                   </div>
 
                   {formData.startDate && formData.endDate && (
@@ -759,23 +759,6 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                         {errors.location}
                       </p>
                     )}
-                  </div>
-
-                  <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-                    <input
-                      type='checkbox'
-                      id='deliveryToHotel'
-                      name='deliveryToHotel'
-                      checked={formData.deliveryToHotel}
-                      onChange={handleInputChange}
-                      className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
-                    />
-                    <label
-                      htmlFor='deliveryToHotel'
-                      className='ml-2 text-sm text-gray-700'
-                    >
-                      This is a hotel/resort address
-                    </label>
                   </div>
                 </div>
 

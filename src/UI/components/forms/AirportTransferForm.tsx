@@ -93,6 +93,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     departureTerminal: '',
     passengerCount: 2,
     kidsCount: 0,
+    kidsAges: [],
     needsCarSeat: false,
     carSeatCount: 0,
     vehicleType: 'suv',
@@ -429,6 +430,14 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
         };
       }
 
+      if (totalPassengers > 12) {
+        return {
+          type: 'info',
+          message: `For ${totalPassengers} passengers, we recommend a Van or t SUVs.`,
+          showFor: ['suv'],
+        };
+      }
+
       return null;
     };
 
@@ -438,11 +447,14 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       if (totalPassengers > 6) {
         return vehicleKey === 'van' || vehicleKey === 'two_suvs';
       }
-
+      if (totalPassengers > 12) {
+        return vehicleKey === 'van' || vehicleKey === 'three_suvs';
+      }
       return false;
     };
 
     const getRecommendedVehicle = () => {
+      if (totalPassengers > 12) return 'van';
       if (totalPassengers > 10) return 'van';
       if (totalPassengers > 6) return 'van';
       return recommendedVehicle;
@@ -851,7 +863,8 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                     <div>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Calendar className='w-4 h-4 mr-2 text-blue-700' />
-                        Departure Date *
+                        Departure Okay, tell The okay Ola la de persona soup say
+                        say OK OK OK selectionDate *
                       </label>
                       <input
                         type='date'
@@ -881,7 +894,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                       value={formData.returnAirline}
                       onChange={handleInputChange}
                       error={errors.returnAirline}
-                      label='Departure Airline *'
+                      label='Airline *'
                       placeholder='Search for your return airline...'
                     />
 
@@ -889,7 +902,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                     <div>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Plane className='w-4 h-4 mr-2 text-blue-700' />
-                        Departure Flight Number *
+                        Flight Number *
                       </label>
                       <input
                         type='text'
@@ -911,7 +924,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                     </div>
 
                     {/* Departure Time */}
-                    <div>
+                    {/* <div>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Clock className='w-4 h-4 mr-2 text-blue-700' />
                         Departure Time *
@@ -932,7 +945,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                           {errors.departureTime}
                         </p>
                       )}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               )}

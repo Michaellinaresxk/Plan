@@ -195,7 +195,6 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     // Required fields
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
     if (!formData.endDate) newErrors.endDate = 'End date is required';
-    if (!formData.endTime) newErrors.endTime = 'End time is required';
     if (!formData.location) newErrors.location = 'Location is required';
 
     // Date validations
@@ -655,26 +654,6 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                   <p className='text-red-500 text-xs mt-1'>{errors.endDate}</p>
                 )}
               </div>
-
-              {/* End Time */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock className='w-4 h-4 mr-2 text-green-700' />
-                  End Time *
-                </label>
-                <input
-                  type='time'
-                  name='endTime'
-                  value={formData.endTime}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.endTime ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-green-500 focus:border-green-500 bg-gray-50`}
-                />
-                {errors.endTime && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.endTime}</p>
-                )}
-              </div>
             </div>
 
             {/* Rental period display */}
@@ -822,82 +801,6 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
               Bike Selection
             </h3>
             <BikeSelector />
-          </div>
-
-          {/* Additional Options Section */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Additional Options
-            </h3>
-
-            <div className='space-y-4'>
-              <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-                <input
-                  type='checkbox'
-                  id='needsHelmet'
-                  name='needsHelmet'
-                  checked={formData.needsHelmet}
-                  onChange={handleInputChange}
-                  className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
-                />
-                <label
-                  htmlFor='needsHelmet'
-                  className='ml-2 text-sm text-gray-700 flex items-center'
-                >
-                  <Shield className='w-4 h-4 mr-1 text-green-600' />
-                  Include safety helmets (Free - Highly recommended)
-                </label>
-              </div>
-
-              <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-                <input
-                  type='checkbox'
-                  id='needsLock'
-                  name='needsLock'
-                  checked={formData.needsLock}
-                  onChange={handleInputChange}
-                  className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
-                />
-                <label
-                  htmlFor='needsLock'
-                  className='ml-2 text-sm text-gray-700'
-                >
-                  Include bike locks (Free)
-                </label>
-              </div>
-
-              <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-                <input
-                  type='checkbox'
-                  id='deliveryToHotel'
-                  name='deliveryToHotel'
-                  checked={formData.deliveryToHotel}
-                  onChange={handleInputChange}
-                  className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
-                />
-                <label
-                  htmlFor='deliveryToHotel'
-                  className='ml-2 text-sm text-gray-700'
-                >
-                  This is a hotel/resort address
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                <Info className='w-4 h-4 mr-2 text-green-700' />
-                Special Requests or Notes
-              </label>
-              <textarea
-                name='specialRequests'
-                value={formData.specialRequests}
-                onChange={handleInputChange}
-                rows={3}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500'
-                placeholder='Any special requests, preferred routes, or additional information...'
-              />
-            </div>
           </div>
 
           {/* Safety Information */}

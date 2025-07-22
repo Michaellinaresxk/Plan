@@ -11,7 +11,7 @@ import {
   Timer,
   Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 const TIME_SLOTS = [
   '09:00',
@@ -26,60 +26,95 @@ const TIME_SLOTS = [
 ];
 
 const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
-  const [duration, setDuration] = useState(service.durations[0].duration);
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [location, setLocation] = useState(''); // ✅ AGREGAR location
-  const [persons, setPersons] = useState(1);
-  const [specialNeeds, setSpecialNeeds] = useState('');
-  const [errors, setErrors] = useState({}); // ✅ AGREGAR validación
+  // ✅ Estado unificado para evitar inconsistencias
+  const [formData, setFormData] = useState({
+    duration: service.durations[0].duration,
+    date: '',
+    time: '',
+    location: '',
+    persons: 1,
+    specialNeeds: '',
+  });
+
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const currentPrice =
-    service.durations.find((d) => d.duration === duration)?.price || 0;
-  const totalPrice = currentPrice * persons;
+  // ✅ Helper para actualizar campos del formulario
+  const updateFormField = useCallback(
+    (field, value) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
 
-  // ✅ AGREGAR validación
-  const validateForm = () => {
+      // Limpiar error cuando el usuario corrige
+      if (errors[field]) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+    },
+    [errors]
+  );
+
+  // ✅ Validación mejorada
+  const validateForm = useCallback(() => {
     const newErrors = {};
-    if (!date) newErrors.date = 'Date is required';
-    if (!time) newErrors.time = 'Time is required';
-    if (!location) newErrors.location = 'Address is required';
+
+    if (!formData.date) {
+      newErrors.date = 'Date is required';
+    }
+
+    if (!formData.time) {
+      newErrors.time = 'Time is required';
+    }
+
+    if (!formData.location.trim()) {
+      newErrors.location = 'Address is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
-  // ✅ handleSubmit CORREGIDO
-  const handleSubmit = async () => {
+  // ✅ Cálculos derivados
+  const currentPrice =
+    service.durations.find((d) => d.duration === formData.duration)?.price || 0;
+  const totalPrice = currentPrice * formData.persons;
+  const isFormValid =
+    formData.date && formData.time && formData.location.trim();
+
+  // ✅ Submit handler corregido - estructura completa para reserva
+  const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
-      // ✅ ESTRUCTURA EXACTA que espera MassageForm
-      const formData = {
+      // Estructura completa que espera MassageForm y ReservationConfirmationPage
+      const bookingData = {
         serviceId: service.id,
         serviceName: service.name,
-        duration,
-        date,
-        time,
-        location, // ✅ INCLUIR location
-        persons,
-        specialNeeds,
-        calculatedPrice: totalPrice, // ✅ calculatedPrice, no price
+        duration: formData.duration,
+        date: formData.date,
+        time: formData.time,
+        location: formData.location,
+        persons: formData.persons,
+        specialNeeds: formData.specialNeeds,
+        calculatedPrice: totalPrice, // Este es el precio que se usa
+        price: totalPrice, // Agregamos también 'price' por compatibilidad
       };
 
-      console.log('PreSelectedBookingForm sending:', formData);
-      await onConfirm(formData);
+      console.log('PreSelectedBookingForm sending bookingData:', bookingData);
+      await onConfirm(bookingData);
     } catch (error) {
       console.error('Booking error:', error);
       alert('Error processing booking. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const isFormValid = date && time && location; // ✅ INCLUIR location en validación
+  }, [validateForm, service, formData, totalPrice, onConfirm]);
 
   return (
     <div className='max-w-4xl mx-auto space-y-8'>
@@ -102,9 +137,10 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
           {service.durations.map((option, index) => (
             <button
               key={option.duration}
-              onClick={() => setDuration(option.duration)}
+              type='button'
+              onClick={() => updateFormField('duration', option.duration)}
               className={`relative p-6 rounded-xl border-2 transition-all text-left ${
-                duration === option.duration
+                formData.duration === option.duration
                   ? 'border-stone-800 bg-stone-50 shadow-md'
                   : 'border-stone-200 hover:border-stone-300 hover:shadow-sm'
               }`}
@@ -127,7 +163,7 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
                 ${option.price}
               </div>
               <div className='text-sm text-stone-500'>
-                ${option.price * persons} total
+                ${option.price * formData.persons} total
               </div>
             </button>
           ))}
@@ -148,11 +184,18 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
             </label>
             <input
               type='date'
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={formData.date}
+              onChange={(e) => updateFormField('date', e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className='w-full p-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg'
+              className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
+                errors.date
+                  ? 'border-red-300 bg-red-50 focus:border-red-400'
+                  : 'border-stone-300'
+              }`}
             />
+            {errors.date && (
+              <p className='text-red-500 text-sm mt-2'>{errors.date}</p>
+            )}
           </div>
 
           <div>
@@ -160,9 +203,13 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
               Select Time
             </label>
             <select
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className='w-full p-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg'
+              value={formData.time}
+              onChange={(e) => updateFormField('time', e.target.value)}
+              className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
+                errors.time
+                  ? 'border-red-300 bg-red-50 focus:border-red-400'
+                  : 'border-stone-300'
+              }`}
             >
               <option value=''>Choose time slot</option>
               {TIME_SLOTS.map((slot) => (
@@ -171,29 +218,37 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
                 </option>
               ))}
             </select>
+            {errors.time && (
+              <p className='text-red-500 text-sm mt-2'>{errors.time}</p>
+            )}
           </div>
         </div>
 
-        {/* Location */}
-        <div className='mt-10  '>
-          <label className='flex items-center text-lg font-medium  text-grey-800 mb-3'>
-            <MapPin className='mr-2 w-6 h-6 ' />
+        {/* Location - ✅ CORREGIDO */}
+        <div className='mt-6'>
+          <label className='flex items-center text-lg font-medium text-stone-800 mb-3'>
+            <MapPin className='mr-2 w-6 h-6 text-stone-600' />
             Address *
           </label>
           <input
+            type='text'
             name='location'
-            value={location}
-            onChange={(e) => setDate(e.target.value)}
-            className={`w-full p-3 border  border-2 border-stone-300 rounded-xl`}
-            placeholder='Please provide the complete address where the personal training will take place'
+            value={formData.location}
+            onChange={(e) => updateFormField('location', e.target.value)}
+            className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
+              errors.location
+                ? 'border-red-300 bg-red-50 focus:border-red-400'
+                : 'border-stone-300'
+            }`}
+            placeholder='Please provide the complete address where the service will take place'
           />
-          {/* {errors.location && (
-          <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
-        )} */}
+          {errors.location && (
+            <p className='text-red-500 text-sm mt-2'>{errors.location}</p>
+          )}
         </div>
       </div>
 
-      {/* Persons Selection */}
+      {/* Persons Selection - ✅ CORREGIDO */}
       <div className='bg-white rounded-2xl shadow-lg p-8'>
         <h3 className='text-2xl font-semibold text-stone-800 mb-6 flex items-center gap-3'>
           <Users className='w-6 h-6 text-stone-600' />
@@ -203,19 +258,28 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
         <div className='flex items-center justify-between bg-stone-50 rounded-xl p-6'>
           <div className='flex items-center gap-6'>
             <button
-              onClick={() => setPersons(Math.max(1, persons - 1))}
-              className='w-12 h-12 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors shadow-sm'
+              type='button'
+              onClick={() =>
+                updateFormField('persons', Math.max(1, formData.persons - 1))
+              }
+              className='w-12 h-12 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed'
+              disabled={formData.persons <= 1}
             >
               <Minus className='w-6 h-6 text-stone-600' />
             </button>
             <span className='text-3xl font-semibold text-stone-800 w-16 text-center'>
-              {persons}
+              {formData.persons}
             </span>
             <button
+              type='button'
               onClick={() =>
-                setPersons(Math.min(service.maxPersons, persons + 1))
+                updateFormField(
+                  'persons',
+                  Math.min(service.maxPersons, formData.persons + 1)
+                )
               }
-              className='w-12 h-12 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors shadow-sm'
+              className='w-12 h-12 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed'
+              disabled={formData.persons >= service.maxPersons}
             >
               <Plus className='w-6 h-6 text-stone-600' />
             </button>
@@ -236,8 +300,8 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
         </h3>
 
         <textarea
-          value={specialNeeds}
-          onChange={(e) => setSpecialNeeds(e.target.value)}
+          value={formData.specialNeeds}
+          onChange={(e) => updateFormField('specialNeeds', e.target.value)}
           placeholder='Please mention any medical conditions, disabilities, injuries, pregnancy, allergies, mobility restrictions, or special accommodations we should consider to personalize your experience safely...'
           className='w-full p-4 border-2 border-stone-300 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent resize-none h-32 text-lg'
         />
@@ -264,29 +328,33 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
                 <span className='text-xl'>{service.emoji}</span>
                 <span className='text-lg'>{service.name}</span>
               </div>
-              <div>{duration} minutes treatment</div>
+              <div>{formData.duration} minutes treatment</div>
               <div>
-                {persons} {persons === 1 ? 'person' : 'people'}
+                {formData.persons}{' '}
+                {formData.persons === 1 ? 'person' : 'people'}
               </div>
-              {date && time && (
+              {formData.date && formData.time && (
                 <div className='flex items-center gap-2'>
                   <Calendar className='w-4 h-4' />
                   <span>
-                    {new Date(date).toLocaleDateString('en-US', {
+                    {new Date(formData.date).toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}{' '}
-                    at {time}
+                    at {formData.time}
                   </span>
                 </div>
               )}
-              {specialNeeds && (
+              {formData.location && (
+                <div className='text-sm'>📍 {formData.location}</div>
+              )}
+              {formData.specialNeeds && (
                 <div className='text-sm bg-white/10 rounded-lg p-3 mt-3'>
                   <strong>Special considerations:</strong>{' '}
-                  {specialNeeds.slice(0, 100)}
-                  {specialNeeds.length > 100 ? '...' : ''}
+                  {formData.specialNeeds.slice(0, 100)}
+                  {formData.specialNeeds.length > 100 ? '...' : ''}
                 </div>
               )}
             </div>
@@ -301,23 +369,34 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
       {/* Action Buttons */}
       <div className='flex gap-4 pt-4'>
         <button
+          type='button'
           onClick={onCancel}
           className='flex-1 py-4 border-2 border-stone-300 text-stone-700 rounded-xl hover:bg-stone-50 transition-colors font-semibold text-lg'
         >
           Change Service
         </button>
         <button
+          type='button'
           onClick={handleSubmit}
-          disabled={!isFormValid}
+          disabled={!isFormValid || isSubmitting}
           className={`flex-1 py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-3 transition-all ${
-            isFormValid
+            isFormValid && !isSubmitting
               ? 'bg-stone-800 text-white hover:bg-stone-700 shadow-lg'
               : 'bg-stone-300 text-stone-500 cursor-not-allowed'
           }`}
         >
-          <Heart className='w-6 h-6' />
-          Confirm Booking
-          <ArrowRight className='w-6 h-6' />
+          {isSubmitting ? (
+            <>
+              <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
+              Processing...
+            </>
+          ) : (
+            <>
+              <Heart className='w-6 h-6' />
+              Confirm Booking
+              <ArrowRight className='w-6 h-6' />
+            </>
+          )}
         </button>
       </div>
     </div>

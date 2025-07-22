@@ -583,69 +583,6 @@ const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
           </div>
         </motion.div>
 
-        {/* Testimonials */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='text-center mb-12'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
-              Client Experiences
-            </h2>
-            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-              Hear from guests who experienced the magic of live music at their
-              events
-            </p>
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            {TESTIMONIALS.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                className='bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group'
-                variants={fadeInUp}
-                whileHover={{ y: -4 }}
-              >
-                <div className='flex items-center mb-4'>
-                  <div className='relative w-12 h-12 rounded-full overflow-hidden mr-3'>
-                    <Image
-                      src={testimonial.image}
-                      alt={testimonial.author}
-                      fill
-                      className='object-cover'
-                    />
-                  </div>
-                  <div>
-                    <h4 className='font-bold text-gray-800'>
-                      {testimonial.author}
-                    </h4>
-                    <p className='text-gray-500 text-sm'>{testimonial.event}</p>
-                    <div className='flex mt-1'>
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className='w-4 h-4 text-yellow-400 fill-current'
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <Quote className='w-6 h-6 text-slate-500 mb-3' />
-                <p className='text-gray-700 mb-4 leading-relaxed italic'>
-                  "{testimonial.text}"
-                </p>
-
-                <div className='text-sm text-slate-600 font-medium bg-slate-100 px-3 py-1 rounded-full inline-block'>
-                  {testimonial.ensemble}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Call to Action */}
         <motion.div
           className='px-4'

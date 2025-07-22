@@ -419,43 +419,43 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     </div>
   );
 
-  // Age restrictions component
-  const AgeRestrictionsSection = () => (
-    <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-      <div className='flex items-start'>
-        <Info className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
-        <div>
-          <h4 className='font-medium text-blue-800 mb-2'>
-            Age & Pricing Information
-          </h4>
-          <div className='text-sm text-blue-700 space-y-2'>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              <div className='bg-white p-3 rounded border border-blue-100'>
-                <div className='font-medium text-green-600'>
-                  Ages 0-{AGE_CONFIG.FREE_AGE_LIMIT}
-                </div>
-                <div className='text-xs'>FREE</div>
-                <div className='text-xs text-gray-600'>No charge</div>
-              </div>
-              <div className='bg-white p-3 rounded border border-blue-100'>
-                <div className='font-medium text-orange-600'>
-                  Ages {AGE_CONFIG.FREE_AGE_LIMIT + 1}-
-                  {AGE_CONFIG.CHILD_PRICE_LIMIT}
-                </div>
-                <div className='text-xs'>${AGE_CONFIG.CHILD_PRICE}</div>
-                <div className='text-xs text-gray-600'>Child price</div>
-              </div>
-              <div className='bg-white p-3 rounded border border-blue-100'>
-                <div className='font-medium text-blue-600'>Ages 13+</div>
-                <div className='text-xs'>${AGE_CONFIG.ADULT_PRICE}</div>
-                <div className='text-xs text-gray-600'>Adult price</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  // // Age restrictions component
+  // const AgeRestrictionsSection = () => (
+  //   <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+  //     <div className='flex items-start'>
+  //       <Info className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
+  //       <div>
+  //         <h4 className='font-medium text-blue-800 mb-2'>
+  //           Age & Pricing Information
+  //         </h4>
+  //         <div className='text-sm text-blue-700 space-y-2'>
+  //           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+  //             <div className='bg-white p-3 rounded border border-blue-100'>
+  //               <div className='font-medium text-green-600'>
+  //                 Ages 0-{AGE_CONFIG.FREE_AGE_LIMIT}
+  //               </div>
+  //               <div className='text-xs'>FREE</div>
+  //               <div className='text-xs text-gray-600'>No charge</div>
+  //             </div>
+  //             <div className='bg-white p-3 rounded border border-blue-100'>
+  //               <div className='font-medium text-orange-600'>
+  //                 Ages {AGE_CONFIG.FREE_AGE_LIMIT + 1}-
+  //                 {AGE_CONFIG.CHILD_PRICE_LIMIT}
+  //               </div>
+  //               <div className='text-xs'>${AGE_CONFIG.CHILD_PRICE}</div>
+  //               <div className='text-xs text-gray-600'>Child price</div>
+  //             </div>
+  //             <div className='bg-white p-3 rounded border border-blue-100'>
+  //               <div className='font-medium text-blue-600'>Ages 13+</div>
+  //               <div className='text-xs'>${AGE_CONFIG.ADULT_PRICE}</div>
+  //               <div className='text-xs text-gray-600'>Adult price</div>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
   // Tour restrictions component
   const TourRestrictionsSection = () => (
@@ -694,7 +694,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
               Age Restrictions & Pricing
             </h3>
-            <AgeRestrictionsSection />
+            {/* <AgeRestrictionsSection /> */}
           </div>
 
           {/* What's Included Section */}
