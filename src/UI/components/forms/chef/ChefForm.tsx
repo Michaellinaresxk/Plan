@@ -1,4 +1,3 @@
-// ChefForm.tsx - FIXED VERSION
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -27,8 +26,14 @@ interface ChefFormProps {
 
 const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
   const { t } = useTranslation();
+<<<<<<< Updated upstream
 
   // State for multi-step form
+=======
+  const router = useRouter();
+  const { setReservationData } = useReservation();
+
+>>>>>>> Stashed changes
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 7;
 
@@ -36,7 +41,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     chefType: '',
     serviceType: 'single',
-    dates: [] as string[], // Explicitly typed as string array
+    dates: [] as string[],
     date: '',
     time: '',
     occasion: '',
@@ -53,33 +58,31 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     selectedSpecialMenu: '',
   });
 
-  // Validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Current price calculation
   const [currentPrice, setCurrentPrice] = useState(service.price);
+
+  // AUTO-SCROLL TO TOP WHEN STEP CHANGES - MOBILE OPTIMIZATION
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }, [currentStep]);
 
   // Callback para actualizar fechas múltiples
   const handleDateSelect = useCallback(
     (dates: string[]) => {
       console.log('📅 handleDateSelect called with:', dates);
-      console.log('📅 Previous formData.dates:', formData.dates);
+      setFormData((prev) => ({
+        ...prev,
+        dates: [...dates],
+      }));
 
-      setFormData((prev) => {
-        const newFormData = {
-          ...prev,
-          dates: [...dates], // Create new array to ensure state update
-        };
-        console.log('📅 New formData will be:', newFormData);
-        return newFormData;
-      });
-
-      // Clear date error if any
       if (errors.dates) {
         setErrors((prev) => ({ ...prev, dates: '' }));
       }
     },
-    [formData.dates, errors.dates]
+    [errors.dates]
   );
 
   // Callback para actualizar campos del formulario
@@ -90,7 +93,6 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
         [field]: value,
       }));
 
-      // Clear error for this field
       if (errors[field]) {
         setErrors((prev) => ({ ...prev, [field]: '' }));
       }
@@ -101,14 +103,6 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
   // Form validation for each step
   const validateStep = (step: number) => {
     const newErrors: Record<string, string> = {};
-
-    console.log('🔍 Validating step:', step);
-    console.log('📋 Current formData:', {
-      serviceType: formData.serviceType,
-      date: formData.date,
-      dates: formData.dates,
-      datesLength: formData.dates?.length,
-    });
 
     switch (step) {
       case 1: // Chef Type Selection
@@ -136,18 +130,10 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             });
           }
         } else {
-          // Multiple days validation
-          if (
-            !formData.dates ||
-            !Array.isArray(formData.dates) ||
-            formData.dates.length === 0
-          ) {
+          if (!formData.dates || formData.dates.length === 0) {
             newErrors.dates = t('form.errors.required', {
               fallback: 'Please select at least one date',
             });
-            console.log('❌ Dates validation failed:', formData.dates);
-          } else {
-            console.log('✅ Dates validation passed:', formData.dates);
           }
         }
 
@@ -176,31 +162,6 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             fallback: 'At least 1 guest is required',
           });
         }
-
-        if (formData.guestCount > 20) {
-          newErrors.guestCount = t('form.errors.maxGuests', {
-            fallback: 'Maximum 20 guests allowed',
-          });
-        }
-
-        if (formData.childrenCount < 0) {
-          newErrors.childrenCount = t('form.errors.invalidCount', {
-            fallback: 'Invalid children count',
-          });
-        }
-
-        if (
-          formData.childrenCount > 0 &&
-          (!formData.childrenAges ||
-            (Array.isArray(formData.childrenAges) &&
-              formData.childrenAges.length === 0) ||
-            (typeof formData.childrenAges === 'string' &&
-              !formData.childrenAges.trim()))
-        ) {
-          newErrors.childrenAges = t('form.errors.required', {
-            fallback: 'Please specify children ages',
-          });
-        }
         break;
 
       case 5: // Cuisine type and budget
@@ -209,24 +170,9 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             fallback: 'Cuisine type is required',
           });
         }
-
-        if (!formData.budgetOption) {
-          newErrors.budgetOption = t('form.errors.required', {
-            fallback: 'Budget option is required',
-          });
-        }
         break;
 
-      case 6: // Dietary restrictions
-        if (
-          formData.dietaryRestrictions &&
-          formData.dietaryRestrictions.length > 500
-        ) {
-          newErrors.dietaryRestrictions = t('form.errors.maxLength', {
-            max: 500,
-            fallback: 'Maximum 500 characters allowed',
-          });
-        }
+      case 6: // Dietary restrictions - optional
         break;
 
       case 7: // Event description
@@ -235,28 +181,11 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
             fallback: 'Event description is required',
           });
         }
-
-        if (
-          formData.eventDescription &&
-          formData.eventDescription.length > 1000
-        ) {
-          newErrors.eventDescription = t('form.errors.maxLength', {
-            max: 1000,
-            fallback: 'Maximum 1000 characters allowed',
-          });
-        }
         break;
     }
 
     setErrors(newErrors);
-    const hasErrors = Object.keys(newErrors).length > 0;
-
-    console.log('🔍 Validation result:', hasErrors ? 'FAILED' : 'PASSED');
-    if (hasErrors) {
-      console.log('❌ Errors:', newErrors);
-    }
-
-    return !hasErrors;
+    return Object.keys(newErrors).length === 0;
   };
 
   // Navigation functions
@@ -284,10 +213,9 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
         [name]: (e.target as HTMLInputElement).checked,
       });
     } else if (type === 'custom' && name === 'childrenAges') {
-      // Handle custom children ages array
       setFormData({
         ...formData,
-        [name]: value, // value is already the array of children
+        [name]: value,
       });
     } else {
       setFormData({
@@ -296,7 +224,6 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
       });
     }
 
-    // Clear error for this field when user types
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -317,17 +244,58 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
       const numberOfDays =
         formData.serviceType === 'multiple' ? formData.dates.length : 1;
 
+<<<<<<< Updated upstream
       onSubmit({
         ...formData,
         totalPrice: currentPrice,
         numberOfDays,
+=======
+      const submissionData = {
+        ...formData,
+        service: {
+          id: service.id,
+          name: service.name,
+          description: service.description,
+          price: service.price,
+          category: service.category,
+        },
+        serviceId: service.id,
+        serviceName: service.name || 'Personal Chef Service',
+        totalPrice: currentPrice,
+        numberOfDays,
+        location: formData.locationAddress,
+>>>>>>> Stashed changes
         formattedOccasion:
           formData.occasion === 'other'
             ? formData.otherOccasion
             : occasionTypes.find((o) => o.id === formData.occasion)?.name ||
               formData.occasion,
+<<<<<<< Updated upstream
         formattedLocation: formData.locationAddress,
       });
+=======
+        bookingDate:
+          formData.serviceType === 'single'
+            ? formData.date
+            : formData.dates[0] || '',
+        startTime: formData.time || '',
+        endTime: '',
+        chefType: formData.chefType,
+        cuisineType: formData.cuisineType,
+        budgetOption: formData.budgetOption,
+        selectedSpecialMenu: formData.selectedSpecialMenu,
+        adultsCount: formData.guestCount,
+        childrenCount: formData.childrenCount,
+        totalGuests: formData.guestCount + formData.childrenCount,
+        specialRequests: formData.eventDescription,
+        dietaryRestrictions: formData.dietaryRestrictions,
+        hasAllergies: formData.hasAllergies,
+      };
+
+      setReservationData(submissionData);
+      onSubmit(submissionData);
+      router.push('/reservation-confirmation');
+>>>>>>> Stashed changes
     } else {
       goToNextStep();
     }
@@ -337,7 +305,6 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
   useEffect(() => {
     let basePrice = service.price;
 
-    // Override base price based on chef type
     if (formData.chefType === 'standard') {
       basePrice = 120;
     } else if (formData.chefType === 'professional') {
@@ -349,11 +316,9 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
 
     let totalPrice = basePrice * numberOfDays;
 
-    // Add price based on guest count (assuming base price is for 2 people)
     const extraGuests = Math.max(0, formData.guestCount - 2);
-    totalPrice += extraGuests * 50; // $50 per additional guest
+    totalPrice += extraGuests * 50;
 
-    // Add price based on cuisine type
     if (formData.cuisineType) {
       const selectedCuisine = cuisineTypes.find(
         (cuisine) => cuisine.id === formData.cuisineType
@@ -363,17 +328,15 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
       }
     }
 
-    // Add price based on budget option
     if (formData.budgetOption) {
       const selectedBudget = budgetOptions.find(
         (budget) => budget.id === formData.budgetOption
       );
       if (selectedBudget) {
-        totalPrice += selectedBudget.price - 120; // Subtract the standard price already included
+        totalPrice += selectedBudget.price - 120;
       }
     }
 
-    // Add price if a chef's special menu is selected
     if (formData.selectedSpecialMenu) {
       const selectedMenu = chefsSpecialMenus.find(
         (menu) => menu.id === formData.selectedSpecialMenu
@@ -421,18 +384,22 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
     }
   }, [formData.serviceType]);
 
+<<<<<<< Updated upstream
   // Debug effect to monitor formData.dates changes
   useEffect(() => {
     console.log('📅 ChefForm - formData.dates changed:', formData.dates);
   }, [formData.dates]);
 
   // Progress bar calculation
+=======
+>>>>>>> Stashed changes
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
-      <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-        {/* Form Header */}
+    <div className='w-full mx-auto overflow-hidden'>
+      {/* MOBILE/DESKTOP RESPONSIVE CONTAINER */}
+      <div className='bg-white rounded-xl shadow-lg border border-gray-100 max-w-4xl mx-auto'>
+        {/* Form Header with Mobile Optimization */}
         <FormHeader
           title={t('chef.form.title', { fallback: 'Personal Chef Booking' })}
           subtitle={t('chef.form.subtitle', {
@@ -444,8 +411,8 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
           progressPercentage={progressPercentage}
         />
 
-        {/* Form Body */}
-        <div className='p-8 space-y-8'>
+        {/* Form Body with Responsive Padding */}
+        <div className='p-4 md:p-8 space-y-6 md:space-y-8'>
           {/* Step 1: Chef Type Selection */}
           {currentStep === 1 && (
             <ChefTypeStep
@@ -538,7 +505,7 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
           )}
         </div>
 
-        {/* Form Footer with Total Price and Navigation */}
+        {/* Form Footer with Mobile Optimization */}
         <ChefFormFooter
           currentPrice={currentPrice}
           formData={formData}
@@ -546,10 +513,10 @@ const ChefForm: React.FC<ChefFormProps> = ({ service, onSubmit, onCancel }) => {
           totalSteps={totalSteps}
           onCancel={onCancel}
           onBack={goToPreviousStep}
-          onNext={goToNextStep}
+          onNext={handleSubmit} // This handles both next and submit
         />
       </div>
-    </form>
+    </div>
   );
 };
 
