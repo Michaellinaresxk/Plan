@@ -56,7 +56,7 @@
     "hero": {
       "title": "Punta Cana Plan",
       "subtitle": "Elevate your experience with Premium services",
-      "subtitle2": "Unique moments • Eternal memories", 
+      "subtitle2": "Unique moments • Eternal memories",
       "exploreButton": "Explore Packages",
       "learnMoreButton": "Learn More"
     },
@@ -100,7 +100,7 @@
     },
     "standard": {
       "yoga": {
-        "yogaTitlePage":"Yoga & meditation",
+        "yogaTitlePage": "Yoga & meditation",
         "name": "Yoga",
         "title": "EXPERIENCE A PERSONALIZED PRACTICE:",
         "short": "Expert-led sessions tailored to your needs in the comfort of your space",
@@ -341,7 +341,7 @@
         }
       },
       "groceryShopping": {
-        "name": "Grocery Shopping Assistance",
+        "name": "Grocery Shopping",
         "short": "We shop for groceries and deliver to your accommodation",
         "full": "Forget the lines and wasted time. With our grocery shopping service, we stock your kitchen with everything you need before or during your stay. Fresh, local, and imported products delivered straight to your accommodation. Place your order today and enjoy more of your vacation."
       }

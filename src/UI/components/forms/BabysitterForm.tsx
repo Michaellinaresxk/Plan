@@ -656,20 +656,6 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
         {/* Modern Footer with Price and Actions */}
         <div className='bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-700 text-white p-8 rounded-b-2xl'>
           <div className='flex flex-col md:flex-row items-center justify-between'>
-            <div className='flex flex-col items-center md:items-start mb-6 md:mb-0'>
-              <span className='text-purple-200 text-sm uppercase tracking-wide font-medium'>
-                {t('services.babysitter.form.totalPrice', 'Estimated Total')}
-              </span>
-              <div className='flex items-center mt-1'>
-                <span className='text-4xl font-bold'>
-                  ${currentPrice.toFixed(2)}
-                </span>
-                <span className='ml-2 bg-purple-500/50 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full uppercase tracking-wide'>
-                  {t('services.babysitter.form.fullService', 'Full Service')}
-                </span>
-              </div>
-            </div>
-
             <div className='flex flex-col sm:flex-row gap-4'>
               <button
                 type='button'

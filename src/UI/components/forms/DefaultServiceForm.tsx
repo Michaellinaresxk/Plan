@@ -1,4 +1,3 @@
-// src/UI/components/forms/DefaultServiceForm.tsx
 import React, { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';

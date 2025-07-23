@@ -1,4 +1,3 @@
-// src/utils/formRegistry.ts
 /**
  * Sistema de Auto-Registro de Formularios
  *

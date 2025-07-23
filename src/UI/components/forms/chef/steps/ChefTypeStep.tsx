@@ -223,7 +223,7 @@ const ChefTypeStep: React.FC<ChefTypeStepProps> = ({
           </div>
         </div>
       </div>
-      Selection Confirmation
+
       {formData.chefType && (
         <div className='text-center'>
           <div

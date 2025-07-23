@@ -1086,38 +1086,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
         </div>
 
         {/* Footer with Price and Actions */}
-        <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
-          <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-            <span className='text-gray-400 text-sm uppercase tracking-wide'>
-              Total Price
-            </span>
-            <div className='flex items-center mt-1'>
-              <span className='text-3xl font-light'>
-                ${calculatePrice.toFixed(2)}
-              </span>
-              {formData.isRoundTrip && (
-                <span className='ml-2 text-sm bg-blue-800 px-2 py-1 rounded'>
-                  Round Trip
-                </span>
-              )}
-            </div>
-
-            {/* Price breakdown */}
-            <div className='text-xs text-gray-400 mt-2 space-y-1'>
-              <div>Base: ${service.price}</div>
-              {VEHICLE_OPTIONS[formData.vehicleType]?.additionalCost > 0 && (
-                <div>
-                  Vehicle upgrade: +$
-                  {VEHICLE_OPTIONS[formData.vehicleType].additionalCost}
-                </div>
-              )}
-              {formData.isRoundTrip && <div>Round trip: x1.8</div>}
-              {formData.carSeatCount > 0 && (
-                <div>Car seats: +${formData.carSeatCount * 25}</div>
-              )}
-            </div>
-          </div>
-
+        <div className='bg-gray-900 text-white p-6 flex justify-end'>
           <div className='flex space-x-4'>
             <button
               type='button'

@@ -143,6 +143,63 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
 
   return (
     <div className='space-y-16'>
+      {/* Hero section con llamado a la acción */}
+      <div className='w-full relative rounded-2xl overflow-hidden'>
+        <div className='absolute inset-0 z-0'>
+          <Image
+            src={service.img || galleryImages[0].src}
+            alt={service.name}
+            fill
+            className='object-cover'
+          />
+          <div className='absolute inset-0 bg-gradient-to-r from-gray-900/95 to-gray-900/70'></div>
+        </div>
+
+        <div className='relative z-10 px-6 md:px-12 py-16 lg:py-24'>
+          <div className='max-w-xl'>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              {isPremium && (
+                <span className='inline-block px-3 py-1 bg-amber-400 text-amber-900 text-xs font-bold uppercase rounded-full mb-4'>
+                  Premium Service
+                </span>
+              )}
+
+              <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>
+                {tagline}
+              </h1>
+
+              <p className='text-lg text-gray-300 mb-6'>
+                Seamless transportation to and from the airport
+              </p>
+
+              <p className='text-white/80 mb-8'>
+                {serviceData?.fullDescriptionKey
+                  ? t(serviceData.fullDescriptionKey)
+                  : 'Skip the taxi lines and begin your vacation right away with our private airport transfer service. Your personal driver will be waiting, ready to welcome you with comfort and efficiency.'}
+              </p>
+
+              <div className='flex flex-wrap gap-4'>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className={`flex items-center px-6 py-3 ${
+                    isPremium
+                      ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  } rounded-lg font-bold shadow-lg transform transition-all duration-300 hover:scale-105`}
+                >
+                  Book Now
+                  <ArrowRight className='ml-2 h-5 w-5' />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
       {/* Trip options section */}
       <div
         className={`rounded-xl ${
@@ -335,62 +392,6 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
               For departures, schedule your pickup with ample time before your
               flight
             </p>
-          </div>
-        </div>
-      </div>
-      {/* Hero section con llamado a la acción */}
-      <div className='w-full relative rounded-2xl overflow-hidden'>
-        <div className='absolute inset-0 z-0'>
-          <Image
-            src={service.img || galleryImages[0].src}
-            alt={service.name}
-            fill
-            className='object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-gray-900/95 to-gray-900/70'></div>
-        </div>
-
-        <div className='relative z-10 px-6 md:px-12 py-16 lg:py-24'>
-          <div className='max-w-xl'>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              {isPremium && (
-                <span className='inline-block px-3 py-1 bg-amber-400 text-amber-900 text-xs font-bold uppercase rounded-full mb-4'>
-                  Premium Service
-                </span>
-              )}
-
-              <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>
-                {tagline}
-              </h1>
-
-              <p className='text-lg text-gray-300 mb-6'>
-                Seamless transportation to and from the airport
-              </p>
-
-              <p className='text-white/80 mb-8'>
-                {serviceData?.fullDescriptionKey
-                  ? t(serviceData.fullDescriptionKey)
-                  : 'Skip the taxi lines and begin your vacation right away with our private airport transfer service. Your personal driver will be waiting, ready to welcome you with comfort and efficiency.'}
-              </p>
-
-              <div className='flex flex-wrap gap-4'>
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className={`flex items-center px-6 py-3 ${
-                    isPremium
-                      ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  } rounded-lg font-bold shadow-lg transform transition-all duration-300 hover:scale-105`}
-                >
-                  Book Now
-                  <ArrowRight className='ml-2 h-5 w-5' />
-                </button>
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>

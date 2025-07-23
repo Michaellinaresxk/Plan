@@ -160,7 +160,7 @@ const ContactPage = () => {
                   {t('contact.channel2SubTitle')}
                 </p>
                 <p className='text-amber-600 font-medium'>
-                  info@puntacanaplan.com
+                  info@luxpuntacana.com
                 </p>
               </motion.div>
             </div>

@@ -33,7 +33,7 @@ const DescriptionBlock: React.FC<DescriptionBlockProps> = ({
     : service.name;
 
   const description = serviceData?.descriptionKey
-    ? t(serviceData.descriptionKey, { fallback: service.description })
+    ? t(serviceData.descriptionKey)
     : service.description;
 
   const fullDescription = serviceData?.fullDescriptionKey
