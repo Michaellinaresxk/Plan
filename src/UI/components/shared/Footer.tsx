@@ -93,8 +93,7 @@ const Footer = () => {
               <li className='flex items-start'>
                 <MapPin className='h-5 w-5 mr-3 mt-0.5 text-gray-400' />
                 <span className='text-gray-400'>
-                  Hacienda B-25, Puntacana Resort & Club, Punta Cana, Dominican
-                  Republic
+                  Puntacana Resort & Club, Punta Cana, Dominican Republic
                 </span>
               </li>
               <li className='flex items-center'>
@@ -103,7 +102,7 @@ const Footer = () => {
               </li>
               <li className='flex items-center'>
                 <Mail className='h-5 w-5 mr-3 text-gray-400' />
-                <span className='text-gray-400'>info@puntacanaplan.com</span>
+                <span className='text-gray-400'>info@luxpuntacana.com</span>
               </li>
             </ul>
           </div>

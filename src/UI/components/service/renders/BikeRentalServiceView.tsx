@@ -537,7 +537,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
           </p>
         </div>
 
-        <div className='grid md:grid-cols-2 lg:grid-cols-5 gap-6'>
+        <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {BIKE_TYPES.map((bike, index) => {
             const isSelected = formData.selectedBikes[bike.id] > 0;
             const quantity = formData.selectedBikes[bike.id] || 0;

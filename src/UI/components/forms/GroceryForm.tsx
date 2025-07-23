@@ -259,66 +259,6 @@ const GroceryForm: React.FC<GroceryFormProps> = ({
 
   return (
     <div className='max-w-4xl mx-auto space-y-6'>
-      {/* Selected Items Summary */}
-      {formData.items.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`p-4 rounded-lg border ${
-            isPremium
-              ? 'bg-amber-50 border-amber-200'
-              : 'bg-blue-50 border-blue-200'
-          }`}
-        >
-          <div className='flex items-center mb-3'>
-            <ShoppingBag
-              className={`h-5 w-5 mr-2 ${
-                isPremium ? 'text-amber-600' : 'text-blue-600'
-              }`}
-            />
-            <h3
-              className={`font-medium ${
-                isPremium ? 'text-amber-800' : 'text-blue-800'
-              }`}
-            >
-              {t('grocery.form.selectedItems', { fallback: 'Selected Items' })}{' '}
-              ({formData.items.length})
-            </h3>
-          </div>
-
-          <div className='space-y-2 max-h-32 overflow-y-auto'>
-            {Object.entries(categorizedItems).map(
-              ([categoryKey, categoryData]) => (
-                <div key={categoryKey} className='text-sm'>
-                  <span className='font-medium text-gray-700 capitalize'>
-                    {categoryKey}:
-                  </span>
-                  {Object.entries(categoryData.subcategories).map(
-                    ([subKey, items]) => (
-                      <div key={subKey} className='ml-2 text-gray-600'>
-                        {subKey !== 'general' && (
-                          <span className='text-xs text-gray-500'>
-                            {subKey}:{' '}
-                          </span>
-                        )}
-                        {items.map((item, index) => (
-                          <span key={item.id} className='inline-block mr-1'>
-                            {t(item.translationKey || item.id, {
-                              fallback: item.name,
-                            })}
-                            {index < items.length - 1 && ', '}
-                          </span>
-                        ))}
-                      </div>
-                    )
-                  )}
-                </div>
-              )
-            )}
-          </div>
-        </motion.div>
-      )}
-
       {/* Form */}
       <form onSubmit={handleSubmit} className='space-y-6'>
         {/* Date & Time Row */}

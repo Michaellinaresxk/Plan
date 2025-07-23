@@ -1,9 +1,7 @@
 import { Service, EnhancedService, PackageType } from '@/types/type';
 import { ServiceData, ServiceExtendedDetails } from '@/types/services';
 import { ServiceId, isValidServiceId } from '../constants/services/serviceId';
-import {
-  getServiceExtendedDetails,
-} from '../constants/services/serviceDetails';
+import { getServiceExtendedDetails } from '../constants/services/serviceDetails';
 import {
   SERVICES_DATA,
   getServiceDataById,
@@ -27,7 +25,7 @@ export function adaptServiceDataToService(serviceData: ServiceData): Service {
     id: serviceData.id,
     name: serviceData.id, // This will be replaced with i18n translation in the components
     img: serviceData.imageUrl,
-    description: serviceData.descriptionKey, // This will be replaced with i18n translation in the components
+    // description: serviceData.descriptionKey, // This will be replaced with i18n translation in the components
     packageType: serviceData.packageType as PackageType[],
     price: serviceData.basePrice,
     duration: serviceData.duration || 0,

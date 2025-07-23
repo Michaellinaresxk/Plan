@@ -209,9 +209,6 @@ const stagger = {
 
 const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
   service,
-  serviceData,
-  extendedDetails,
-  primaryColor = 'blue',
   viewContext,
 }) => {
   const { t } = useTranslation();
@@ -234,43 +231,6 @@ const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
   const isSelected = useMemo(
     () => selectedServices.some((s) => s.id === service.id),
     [selectedServices, service.id]
-  );
-
-  const highlights = useMemo(
-    () => [
-      {
-        icon: Ship,
-        title: 'Catamaran & Speedboat',
-        description: isPremium
-          ? 'Premium catamaran experience one way and thrilling speedboat return'
-          : 'Comfortable catamaran journey and exciting speedboat experience',
-        color: 'from-blue-500 to-cyan-500',
-      },
-      {
-        icon: Palmtree,
-        title: 'Pristine Beaches',
-        description:
-          'Explore the stunning white sand beaches of Saona Island National Park',
-        color: 'from-green-500 to-emerald-500',
-      },
-      {
-        icon: Utensils,
-        title: 'Island Buffet',
-        description: isPremium
-          ? 'Gourmet tropical buffet with premium drinks and specialties'
-          : 'Traditional Dominican buffet with tropical fruits and beverages',
-        color: 'from-orange-500 to-red-500',
-      },
-      {
-        icon: Users,
-        title: 'Group Experience',
-        description: isPremium
-          ? 'Smaller groups for a more personalized experience'
-          : 'Fun group atmosphere with our friendly staff',
-        color: 'from-purple-500 to-pink-500',
-      },
-    ],
-    [isPremium]
   );
 
   const handleBookingConfirm = useCallback(
@@ -685,42 +645,6 @@ const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
                   </div>
                 </div>
               </div>
-
-              {/* Highlights Cards */}
-              <motion.div
-                className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'
-                initial='hidden'
-                animate='visible'
-                variants={stagger}
-              >
-                {highlights.map((highlight, index) => (
-                  <motion.div
-                    key={index}
-                    className='group relative overflow-hidden rounded-2xl p-8 text-white cursor-pointer transition-all duration-300 hover:scale-105'
-                    variants={fadeIn}
-                    whileHover={{ y: -5 }}
-                  >
-                    {/* Gradient Background */}
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${highlight.color} opacity-90 group-hover:opacity-100 transition-opacity`}
-                    />
-
-                    {/* Content */}
-                    <div className='relative z-10'>
-                      <highlight.icon className='w-10 h-10 mb-6' />
-                      <h3 className='text-xl font-bold mb-3'>
-                        {highlight.title}
-                      </h3>
-                      <p className='text-sm opacity-90 leading-relaxed'>
-                        {highlight.description}
-                      </p>
-                    </div>
-
-                    {/* Hover Effect */}
-                    <div className='absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity' />
-                  </motion.div>
-                ))}
-              </motion.div>
             </motion.div>
           )}
 
@@ -892,91 +816,6 @@ const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
           </div>
         </motion.div>
 
-        {/* Testimonials Section */}
-        <motion.div
-          className='bg-gradient-to-r from-cyan-100 to-blue-100 rounded-3xl p-12 border border-cyan-200'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='text-center mb-10'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-              What Our Travelers Say
-            </h2>
-            <p className='text-xl text-gray-600'>
-              Real experiences from real adventurers
-            </p>
-          </div>
-
-          <div className='grid md:grid-cols-3 gap-8'>
-            {[
-              {
-                name: 'Sarah & Michael',
-                location: 'New York, USA',
-                quote:
-                  'Absolutely magical! The catamaran ride was so relaxing and the speedboat return was thrilling. Saona Island exceeded all our expectations.',
-                rating: 5,
-                image:
-                  'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?q=80&w=100',
-              },
-              {
-                name: 'Carlos Rodriguez',
-                location: 'Madrid, Spain',
-                quote:
-                  'Perfect day trip! The natural pools with starfish were incredible. Great food, friendly staff, and beautiful beaches.',
-                rating: 5,
-                image:
-                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100',
-              },
-              {
-                name: 'Emma Thompson',
-                location: 'London, UK',
-                quote:
-                  'A true Caribbean paradise! The whole family loved it. Professional guides and amazing scenery. Highly recommend!',
-                rating: 5,
-                image:
-                  'https://images.unsplash.com/photo-1494790108755-2616b332c58c?q=80&w=100',
-              },
-            ].map((testimonial, index) => (
-              <motion.div
-                key={index}
-                className='bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-white/50 shadow-lg'
-                variants={slideIn}
-                whileHover={{ scale: 1.02 }}
-              >
-                <div className='flex items-center mb-6'>
-                  <Image
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    width={60}
-                    height={60}
-                    className='rounded-full mr-4'
-                  />
-                  <div>
-                    <div className='font-bold text-gray-800'>
-                      {testimonial.name}
-                    </div>
-                    <div className='text-sm text-gray-600'>
-                      {testimonial.location}
-                    </div>
-                  </div>
-                </div>
-                <div className='flex mb-4'>
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className='w-5 h-5 text-yellow-400 fill-current'
-                    />
-                  ))}
-                </div>
-                <p className='text-gray-700 italic leading-relaxed'>
-                  "{testimonial.quote}"
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Important Information */}
         <motion.div
           className='bg-amber-50/80 backdrop-blur-sm border border-amber-200 rounded-2xl p-8'
@@ -1018,61 +857,6 @@ const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
             </div>
           </div>
         </motion.div>
-
-        {/* Final CTA */}
-        <div className='relative overflow-hidden rounded-3xl shadow-2xl'>
-          <Image
-            src='https://images.unsplash.com/photo-1551918120-9739cb430c6d?q=80&w=1400'
-            alt='Palm trees paradise'
-            fill
-            className='object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent' />
-
-          <div className='relative z-10 p-12 text-center text-white'>
-            <div className='max-w-3xl mx-auto'>
-              <h2 className='text-4xl md:text-5xl font-bold mb-6'>
-                Your Paradise Awaits
-              </h2>
-              <p className='text-xl text-white/90 mb-10'>
-                Don't wait – Saona Island is calling. Book your unforgettable
-                Caribbean adventure today and discover why this is the Dominican
-                Republic's most beloved destination.
-              </p>
-
-              <div className='flex flex-col md:flex-row gap-6 justify-center items-center'>
-                <div className='text-center'>
-                  <div className='text-sm text-white/70'>Starting from</div>
-                  <div className='text-4xl font-bold'>${service.price}</div>
-                  <div className='text-white/70'>per person</div>
-                </div>
-
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className='bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 transition-all duration-300 hover:scale-105 shadow-2xl'
-                >
-                  {isSelected ? (
-                    <>
-                      <CheckCheck className='w-6 h-6' />
-                      Added to Package
-                    </>
-                  ) : (
-                    <>
-                      <Ship className='w-6 h-6' />
-                      Book Your Paradise Adventure
-                      <ArrowRight className='w-6 h-6' />
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <p className='text-white/70 text-sm mt-6'>
-                🏝️ Instant confirmation • Full refund if cancelled due to
-                weather • Professional guides included
-              </p>
-            </div>
-          </div>
-        </div>
 
         {/* Booking Modal */}
         {isModalOpen && (

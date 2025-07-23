@@ -91,7 +91,6 @@ const animations = {
   },
 };
 
-
 const CuisineSection: React.FC<{
   selectedCuisine: string;
   onCuisineSelect: (id: string) => void;
@@ -135,20 +134,11 @@ const CuisineSection: React.FC<{
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent group-hover:bg-gradient-to-t group-hover:from-black/80 group-hover:via-black/40 group-hover:to-black/10 transition-all duration-500' />
 
-            <div className='absolute top-6 left-6'>
-              <div className='px-4 py-2 rounded-full bg-orange-500/80 text-white text-sm font-semibold backdrop-blur-sm border border-orange-500/50'>
-                Signature Cuisine
-              </div>
-            </div>
-
             <div className='absolute bottom-6 left-6 right-6 text-white'>
               <h3 className='text-2xl font-bold mb-2'>{cuisine.name}</h3>
               <p className='text-white/90 mb-3 leading-relaxed'>
                 {cuisine.description}
               </p>
-              <div className='text-sm font-medium text-orange-300'>
-                {cuisine.signature}
-              </div>
             </div>
           </div>
         </motion.div>
@@ -347,13 +337,11 @@ const ChefServiceView: React.FC<ChefServiceViewProps> = ({
           onServiceTypeSelect={handleServiceTypeSelect}
         />
 
-
         {/* Cuisine Selection */}
         <CuisineSection
           selectedCuisine={selectedCuisine}
           onCuisineSelect={handleCuisineSelect}
         />
-
 
         {/* What's Included & Dietary Accommodations */}
         <IncludedServicesSection />

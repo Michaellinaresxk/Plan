@@ -8,7 +8,7 @@ import LiveMusicForm from '@/UI/components/forms/LiveMusicForm';
 import MassageForm from '@/UI/components/forms/massage/MassageForm';
 import YogaServiceForm from '@/UI/components/forms/YogaServiceForm';
 import SaonaIslandForm from '@/UI/components/forms/SaonaIslandForm';
-import KaraokeFrom from '@/UI/components/forms/KaraokeFrom';
+import KaraokeForm from '@/UI/components/forms/KaraokeFrom';
 
 export interface ServiceFormField {
   id: string;

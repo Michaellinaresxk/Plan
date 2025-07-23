@@ -166,8 +166,7 @@ export default function PrivacyPolicyPage() {
                 <br />
                 Phone: +1 (809) 555-1234
                 <br />
-                Address: Hacienda B-25, Puntacana Resort & Club, Punta Cana,
-                Dominican Republic
+                Address: Puntacana Resort & Club, Punta Cana, Dominican Republic
               </p>
             </div>
           </motion.div>

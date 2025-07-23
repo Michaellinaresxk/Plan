@@ -173,7 +173,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       </div>
                     </motion.div>
                   )}
-                  {/* Rating stars and details */}
+                  {/* Rating stars and details
                   <div className='flex justify-between items-start mb-4'>
                     <div className='flex items-center'>
                       {[1, 2, 3, 4, 5].map((rating) => (
@@ -193,7 +193,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         {formattedPrice}
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                   {/* Service title */}
                   <h3 className='text-2xl font-bold mb-3 text-white tracking-tight'>
                     {t(`${translationPath}.name`, { fallback: service.name })}
@@ -223,10 +223,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   <div className='grid grid-cols-2 gap-4'>
                     <Link
                       href={`/${servicePath}/${service.id}`}
-                      className='py-3 px-5 flex items-center justify-center bg-black/40 hover:bg-black/70 backdrop-blur-md font-medium text-white rounded-lg transition-all duration-300 border border-amber-500/30 group overflow-hidden relative'
+                      className='py-3 px-53 flex items-center justify-center bg-black/40 hover:bg-black/70 backdrop-blur-md font-medium text-white rounded-lg transition-all duration-300 border border-amber-500/30 group overflow-hidden relative'
                     >
                       <span className='relative z-10 flex items-center'>
-                        {t('services.actions.details', { fallback: 'Details' })}
+                        <p>{t('services.actions.details')}</p>
                         <ArrowUpRight
                           size={16}
                           className='ml-1.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform'
@@ -370,26 +370,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     </div>
                   </motion.div>
                 )}
-                {/* Rating stars and details */}
-                <div className='flex justify-between items-start mb-4'>
-                  <div className='flex items-center'>
-                    {[1, 2, 3, 4].map((rating) => (
-                      <Star
-                        key={rating}
-                        size={16}
-                        className='text-blue-500 fill-blue-500 mr-0.5'
-                      />
-                    ))}
-                    <Star key={5} size={16} className='text-gray-300 mr-0.5' />
-                    <span className='text-gray-500 text-xs ml-2 font-medium'>
-                      (4.0)
-                    </span>
-                  </div>
-                  {/* <div className='flex items-center text-blue-600'>
-                    <DollarSign className='h-4 w-4 mr-0.5' />
-                    <span className='font-bold text-lg'>{formattedPrice}</span>
-                  </div> */}
-                </div>
                 {/* Service title */}
                 <h3 className='text-2xl font-bold mb-3 text-gray-900 tracking-tight'>
                   {t(`${translationPath}.name`, { fallback: service.name })}
@@ -419,7 +399,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <div className='grid grid-cols-2 gap-4'>
                   <Link
                     href={`/${servicePath}/${service.id}`}
-                    className='py-3 px-5 flex items-center justify-center bg-gray-100 hover:bg-gray-200 font-medium text-gray-800 rounded-lg transition-all duration-300 border border-gray-200 group'
+                    className='flex items-center justify-center bg-gray-100 hover:bg-gray-200 font-medium text-gray-800 rounded-lg transition-all duration-300 border border-gray-200 group'
                   >
                     <span className='flex items-center'>
                       {t('services.actions.details', { fallback: 'Details' })}
@@ -431,7 +411,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   </Link>
                   <button
                     onClick={() => setIsModalOpen(true)}
-                    className={`py-3 px-5 flex items-center justify-center ${
+                    className={`py-2 px-3 flex items-center justify-center ${
                       isSelected ? 'bg-blue-600' : 'bg-blue-500'
                     } hover:bg-blue-600 text-white font-medium rounded-lg transition-all duration-300 shadow-md shadow-blue-500/20`}
                   >
