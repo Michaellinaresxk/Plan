@@ -1,12 +1,8 @@
-import React, { useState, useCallback } from 'react';
-import { useTranslation } from '@/lib/i18n/client';
-import { useRouter } from 'next/navigation';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
+import React, { useState, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useReservation } from '@/context/BookingContext'; // Cambio: usar useReservation en lugar de useBooking
-import { SPA_SERVICES } from '@/constants/spaServices';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
 import {
   Leaf,
   Clock,
@@ -16,400 +12,1125 @@ import {
   Heart,
   CheckCircle,
   Phone,
+  Users,
+  Timer,
+  Zap,
+  Sparkles,
+  Plus,
+  X,
+  MapPin,
+  Calendar,
+  Accessibility,
+  Info,
+  CreditCard,
+  Minus,
+  Filter,
+  Search,
+  SlidersHorizontal,
+  Tag,
 } from 'lucide-react';
-import InlineBookingForm from '../../forms/massage/InlineBookingForm';
 
-interface MassageServiceViewProps {
-  service: Service;
-  serviceData?: ServiceData;
-  primaryColor?: string;
-  viewContext?: 'standard-view' | 'premium-view';
-}
+// Mock data - reemplaza esto con SPA_SERVICES.massages
+const SPA_SERVICES = {
+  massages: [
+    {
+      id: 'swedish',
+      name: 'Swedish Massage',
+      description: 'Classic relaxing massage with long, flowing strokes',
+      category: 'relaxation',
+      durations: [
+        { duration: 60, price: 120 },
+        { duration: 90, price: 160 },
+      ],
+      emoji: '🌿',
+      maxPersons: 4,
+      intensity: 'gentle',
+      isPremium: false,
+      imageUrl:
+        'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400',
+      benefits: ['Stress Relief', 'Muscle Relaxation'],
+    },
+    {
+      id: 'deep-tissue',
+      name: 'Deep Tissue',
+      description: 'Therapeutic massage targeting deep muscle layers',
+      category: 'therapeutic',
+      durations: [
+        { duration: 60, price: 140 },
+        { duration: 90, price: 180 },
+      ],
+      emoji: '💪',
+      maxPersons: 2,
+      intensity: 'strong',
+      isPremium: true,
+      imageUrl:
+        'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=400',
+      benefits: ['Pain Relief', 'Tension Release'],
+    },
+    {
+      id: 'hot-stone',
+      name: 'Hot Stone',
+      description: 'Relaxing massage using heated volcanic stones',
+      category: 'signature',
+      durations: [{ duration: 90, price: 200 }],
+      emoji: '🔥',
+      maxPersons: 2,
+      intensity: 'medium',
+      isPremium: true,
+      imageUrl:
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+      benefits: ['Deep Relaxation', 'Improved Blood Flow'],
+    },
+    {
+      id: 'aromatherapy',
+      name: 'Aromatherapy',
+      description: 'Sensory journey with essential oils',
+      category: 'relaxation',
+      durations: [
+        { duration: 60, price: 130 },
+        { duration: 90, price: 170 },
+      ],
+      emoji: '🌸',
+      maxPersons: 3,
+      intensity: 'gentle',
+      isPremium: false,
+      imageUrl:
+        'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=400',
+      benefits: ['Mental Clarity', 'Emotional Balance'],
+    },
+    {
+      id: 'prenatal',
+      name: 'Prenatal Massage',
+      description: 'Specialized care for expecting mothers',
+      category: 'therapeutic',
+      durations: [{ duration: 60, price: 150 }],
+      emoji: '🤱',
+      maxPersons: 1,
+      intensity: 'gentle',
+      isPremium: true,
+      imageUrl:
+        'https://images.unsplash.com/photo-1527196850338-c9e2cfac4d5a?w=400',
+      benefits: ['Pregnancy Comfort', 'Swelling Reduction'],
+    },
+    {
+      id: 'sports',
+      name: 'Sports Massage',
+      description: 'Performance-focused therapy for athletes',
+      category: 'therapeutic',
+      durations: [
+        { duration: 60, price: 155 },
+        { duration: 90, price: 195 },
+      ],
+      emoji: '🏃‍♂️',
+      maxPersons: 2,
+      intensity: 'strong',
+      isPremium: false,
+      imageUrl:
+        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
+      benefits: ['Performance Enhancement', 'Injury Prevention'],
+    },
+    {
+      id: 'reflexology',
+      name: 'Reflexology',
+      description: 'Pressure point therapy focusing on feet and hands',
+      category: 'therapeutic',
+      durations: [
+        { duration: 45, price: 100 },
+        { duration: 60, price: 130 },
+      ],
+      emoji: '👣',
+      maxPersons: 2,
+      intensity: 'medium',
+      isPremium: false,
+      imageUrl:
+        'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400',
+      benefits: ['Stress Relief', 'Improved Circulation'],
+    },
+    {
+      id: 'thai',
+      name: 'Thai Massage',
+      description: 'Traditional stretching and pressure point massage',
+      category: 'signature',
+      durations: [
+        { duration: 90, price: 180 },
+        { duration: 120, price: 220 },
+      ],
+      emoji: '🧘‍♀️',
+      maxPersons: 1,
+      intensity: 'medium',
+      isPremium: true,
+      imageUrl:
+        'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=400',
+      benefits: ['Flexibility', 'Energy Balance'],
+    },
+    {
+      id: 'couples',
+      name: 'Couples Massage',
+      description: 'Romantic massage experience for two',
+      category: 'signature',
+      durations: [
+        { duration: 60, price: 240 },
+        { duration: 90, price: 320 },
+      ],
+      emoji: '💑',
+      maxPersons: 2,
+      intensity: 'gentle',
+      isPremium: true,
+      imageUrl:
+        'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=400',
+      benefits: ['Romantic Experience', 'Shared Relaxation'],
+    },
+    {
+      id: 'lymphatic',
+      name: 'Lymphatic Drainage',
+      description: 'Gentle massage to stimulate lymph flow',
+      category: 'therapeutic',
+      durations: [{ duration: 60, price: 145 }],
+      emoji: '💧',
+      maxPersons: 1,
+      intensity: 'gentle',
+      isPremium: true,
+      imageUrl:
+        'https://images.unsplash.com/photo-1552693673-1bf958298935?w=400',
+      benefits: ['Detoxification', 'Reduced Swelling'],
+    },
+    {
+      id: 'cupping',
+      name: 'Cupping Therapy',
+      description: 'Traditional therapy using suction cups',
+      category: 'therapeutic',
+      durations: [
+        { duration: 45, price: 120 },
+        { duration: 60, price: 150 },
+      ],
+      emoji: '🥢',
+      maxPersons: 1,
+      intensity: 'medium',
+      isPremium: false,
+      imageUrl:
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
+      benefits: ['Pain Relief', 'Muscle Recovery'],
+    },
+    {
+      id: 'bamboo',
+      name: 'Bamboo Massage',
+      description: 'Unique massage using warm bamboo sticks',
+      category: 'signature',
+      durations: [{ duration: 75, price: 165 }],
+      emoji: '🎋',
+      maxPersons: 2,
+      intensity: 'medium',
+      isPremium: true,
+      imageUrl:
+        'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400',
+      benefits: ['Deep Tissue Work', 'Unique Experience'],
+    },
+  ],
+};
 
-const MASSAGE_TYPES = SPA_SERVICES.massages;
+const TIME_SLOTS = [
+  '09:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+];
 
-const MassageServiceView = ({}: MassageServiceViewProps) => {
-  const { t } = useTranslation();
+// Componente de filtros
+const FilterBar = ({ filters, onFilterChange, onClearFilters }) => {
+  return (
+    <div className='bg-white rounded-xl shadow-sm border border-stone-200 p-6 mb-8'>
+      <div className='flex items-center justify-between mb-4'>
+        <h3 className='text-lg font-semibold text-stone-800 flex items-center gap-2'>
+          <SlidersHorizontal className='w-5 h-5' />
+          Filter Treatments
+        </h3>
+        <button
+          onClick={onClearFilters}
+          className='text-sm text-stone-600 hover:text-stone-800 transition-colors'
+        >
+          Clear All
+        </button>
+      </div>
+
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+        {/* Search */}
+        <div>
+          <label className='block text-sm font-medium text-stone-700 mb-2'>
+            Search
+          </label>
+          <div className='relative'>
+            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-stone-400' />
+            <input
+              type='text'
+              value={filters.search}
+              onChange={(e) => onFilterChange('search', e.target.value)}
+              placeholder='Search treatments...'
+              className='w-full pl-10 pr-4 py-2 border border-stone-300 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500'
+            />
+          </div>
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className='block text-sm font-medium text-stone-700 mb-2'>
+            Category
+          </label>
+          <select
+            value={filters.category}
+            onChange={(e) => onFilterChange('category', e.target.value)}
+            className='w-full px-3 py-2 border border-stone-300 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500'
+          >
+            <option value=''>All Categories</option>
+            <option value='relaxation'>Relaxation</option>
+            <option value='therapeutic'>Therapeutic</option>
+            <option value='signature'>Signature</option>
+          </select>
+        </div>
+
+        {/* Intensity */}
+        <div>
+          <label className='block text-sm font-medium text-stone-700 mb-2'>
+            Intensity
+          </label>
+          <select
+            value={filters.intensity}
+            onChange={(e) => onFilterChange('intensity', e.target.value)}
+            className='w-full px-3 py-2 border border-stone-300 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500'
+          >
+            <option value=''>All Intensities</option>
+            <option value='gentle'>Gentle</option>
+            <option value='medium'>Medium</option>
+            <option value='strong'>Strong</option>
+          </select>
+        </div>
+
+        {/* Price Range */}
+        <div>
+          <label className='block text-sm font-medium text-stone-700 mb-2'>
+            Price Range
+          </label>
+          <select
+            value={filters.priceRange}
+            onChange={(e) => onFilterChange('priceRange', e.target.value)}
+            className='w-full px-3 py-2 border border-stone-300 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500'
+          >
+            <option value=''>All Prices</option>
+            <option value='0-120'>$0 - $120</option>
+            <option value='120-180'>$120 - $180</option>
+            <option value='180-250'>$180 - $250</option>
+            <option value='250+'>$250+</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Premium toggle */}
+      <div className='mt-4 flex items-center gap-4'>
+        <label className='flex items-center'>
+          <input
+            type='checkbox'
+            checked={filters.premiumOnly}
+            onChange={(e) => onFilterChange('premiumOnly', e.target.checked)}
+            className='rounded border-stone-300 text-amber-600 focus:ring-amber-500'
+          />
+          <span className='ml-2 text-sm text-stone-700'>Premium Only</span>
+        </label>
+      </div>
+    </div>
+  );
+};
+
+// Componente de Badge de Intensidad
+const IntensityBadge = ({ intensity }) => {
+  const styles = {
+    gentle: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    medium: 'bg-amber-100 text-amber-700 border-amber-200',
+    strong: 'bg-red-100 text-red-700 border-red-200',
+  };
+
+  const icons = {
+    gentle: <Leaf className='w-3 h-3' />,
+    medium: <Zap className='w-3 h-3' />,
+    strong: <Sparkles className='w-3 h-3' />,
+  };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${styles[intensity]}`}
+    >
+      {icons[intensity]}
+      {intensity}
+    </span>
+  );
+};
+
+// Modal de configuración de masaje mejorado
+const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
+  const [formData, setFormData] = useState({
+    // Información del masaje
+    massageId: massage.id,
+    massageName: massage.name,
+    selectedDuration: massage.durations[0],
+    persons: 1,
+
+    // Información de booking
+    date: '',
+    time: '',
+    location: '',
+    specialNeeds: '',
+
+    // Metadata
+    serviceType: 'massage-therapy',
+  });
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const updateField = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
+    // Limpiar error
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.date) newErrors.date = 'Date is required';
+    if (!formData.time) newErrors.time = 'Time is required';
+    if (!formData.location.trim()) newErrors.location = 'Address is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const totalPrice = formData.selectedDuration.price * formData.persons;
+
+      // Estructura similar al airport transfer
+      const reservationData = {
+        service: {
+          id: 'massage-therapy',
+          name: 'Massage Therapy Service',
+          type: 'massage-therapy',
+          price: totalPrice,
+        },
+        totalPrice,
+        formData: {
+          ...formData,
+          // Información adicional del masaje
+          massageDetails: {
+            id: massage.id,
+            name: massage.name,
+            category: massage.category,
+            intensity: massage.intensity,
+            isPremium: massage.isPremium,
+            benefits: massage.benefits,
+            emoji: massage.emoji,
+            maxPersons: massage.maxPersons,
+          },
+          calculatedPrice: totalPrice,
+        },
+        bookingDate: new Date(`${formData.date}T${formData.time}`),
+        clientInfo: undefined,
+      };
+
+      console.log('🌿 Massage therapy - Reservation data:', reservationData);
+      console.log('💰 Total Price included:', totalPrice);
+
+      await onConfirm(reservationData);
+    } catch (error) {
+      console.error('Error submitting massage booking:', error);
+      setErrors({ submit: 'Failed to submit booking. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const totalPrice = formData.selectedDuration.price * formData.persons;
+  const isValid = formData.date && formData.time && formData.location.trim();
+
+  if (!isOpen) return null;
+
+  return (
+    <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
+      {/* Backdrop */}
+      <div
+        className='absolute inset-0 bg-black/50 backdrop-blur-sm'
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className='relative bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto'
+      >
+        {/* Header */}
+        <div className='sticky top-0 bg-gradient-to-r from-stone-800 to-stone-900 text-white p-6'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-4'>
+              <div className='w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-2xl'>
+                {massage.emoji}
+              </div>
+              <div>
+                <h3 className='text-xl font-semibold'>{massage.name}</h3>
+                <p className='text-stone-300'>
+                  Configure your massage therapy booking
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className='p-2 hover:bg-white/10 rounded-lg transition-colors'
+            >
+              <X className='w-6 h-6' />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className='p-6 space-y-6'>
+          {/* Massage Information */}
+          <div className='bg-stone-50 rounded-xl p-4'>
+            <div className='flex items-center gap-3 mb-3'>
+              <IntensityBadge intensity={massage.intensity} />
+              <span className='text-sm text-stone-600'>•</span>
+              <span className='text-sm text-stone-600'>
+                Max {massage.maxPersons} people
+              </span>
+              {massage.isPremium && (
+                <>
+                  <span className='text-sm text-stone-600'>•</span>
+                  <span className='inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full'>
+                    <Star className='w-3 h-3' />
+                    Premium
+                  </span>
+                </>
+              )}
+            </div>
+            <p className='text-stone-700 text-sm mb-3'>{massage.description}</p>
+            <div className='flex flex-wrap gap-2'>
+              {massage.benefits.map((benefit, idx) => (
+                <span
+                  key={idx}
+                  className='text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-md'
+                >
+                  {benefit}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Duration & Persons */}
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            {/* Duration Selection */}
+            <div>
+              <label className='block text-sm font-medium text-stone-800 mb-3'>
+                <Timer className='w-4 h-4 inline mr-2' />
+                Duration & Price
+              </label>
+              <div className='space-y-3'>
+                {massage.durations.map((option) => (
+                  <button
+                    key={option.duration}
+                    onClick={() => updateField('selectedDuration', option)}
+                    className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+                      formData.selectedDuration.duration === option.duration
+                        ? 'border-stone-800 bg-stone-50'
+                        : 'border-stone-200 hover:border-stone-300'
+                    }`}
+                  >
+                    <div className='flex justify-between items-center'>
+                      <div>
+                        <div className='font-semibold text-stone-800'>
+                          {option.duration} minutes
+                        </div>
+                        <div className='text-sm text-stone-600'>
+                          Perfect for a complete experience
+                        </div>
+                      </div>
+                      <div className='text-xl font-bold text-stone-800'>
+                        ${option.price}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Number of Persons */}
+            <div>
+              <label className='block text-sm font-medium text-stone-800 mb-3'>
+                <Users className='w-4 h-4 inline mr-2' />
+                Number of People
+              </label>
+              <div className='flex items-center justify-between bg-stone-50 rounded-xl p-4'>
+                <div className='flex items-center gap-4'>
+                  <button
+                    onClick={() =>
+                      updateField('persons', Math.max(1, formData.persons - 1))
+                    }
+                    disabled={formData.persons <= 1}
+                    className='w-10 h-10 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 disabled:opacity-50 transition-colors'
+                  >
+                    <Minus className='w-4 h-4' />
+                  </button>
+                  <span className='text-2xl font-semibold text-stone-800 w-12 text-center'>
+                    {formData.persons}
+                  </span>
+                  <button
+                    onClick={() =>
+                      updateField(
+                        'persons',
+                        Math.min(massage.maxPersons, formData.persons + 1)
+                      )
+                    }
+                    disabled={formData.persons >= massage.maxPersons}
+                    className='w-10 h-10 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 disabled:opacity-50 transition-colors'
+                  >
+                    <Plus className='w-4 h-4' />
+                  </button>
+                </div>
+                <span className='text-stone-600 text-sm'>
+                  Max: {massage.maxPersons}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Date & Time */}
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div>
+              <label className='block text-sm font-medium text-stone-800 mb-2'>
+                <Calendar className='w-4 h-4 inline mr-2' />
+                Date *
+              </label>
+              <input
+                type='date'
+                value={formData.date}
+                onChange={(e) => updateField('date', e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                className={`w-full p-3 border-2 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500 ${
+                  errors.date ? 'border-red-300 bg-red-50' : 'border-stone-200'
+                }`}
+              />
+              {errors.date && (
+                <p className='text-red-500 text-sm mt-1'>{errors.date}</p>
+              )}
+            </div>
+
+            <div>
+              <label className='block text-sm font-medium text-stone-800 mb-2'>
+                <Clock className='w-4 h-4 inline mr-2' />
+                Time *
+              </label>
+              <select
+                value={formData.time}
+                onChange={(e) => updateField('time', e.target.value)}
+                className={`w-full p-3 border-2 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500 ${
+                  errors.time ? 'border-red-300 bg-red-50' : 'border-stone-200'
+                }`}
+              >
+                <option value=''>Select time</option>
+                {TIME_SLOTS.map((slot) => (
+                  <option key={slot} value={slot}>
+                    {slot}
+                  </option>
+                ))}
+              </select>
+              {errors.time && (
+                <p className='text-red-500 text-sm mt-1'>{errors.time}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Address */}
+          <div>
+            <label className='block text-sm font-medium text-stone-800 mb-2'>
+              <MapPin className='w-4 h-4 inline mr-2' />
+              Service Address *
+            </label>
+            <input
+              type='text'
+              value={formData.location}
+              onChange={(e) => updateField('location', e.target.value)}
+              placeholder='Enter complete address where the massage will take place'
+              className={`w-full p-3 border-2 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500 ${
+                errors.location
+                  ? 'border-red-300 bg-red-50'
+                  : 'border-stone-200'
+              }`}
+            />
+            {errors.location && (
+              <p className='text-red-500 text-sm mt-1'>{errors.location}</p>
+            )}
+          </div>
+
+          {/* Special Needs */}
+          <div>
+            <label className='block text-sm font-medium text-stone-800 mb-2'>
+              <Accessibility className='w-4 h-4 inline mr-2' />
+              Special Needs & Medical Considerations
+            </label>
+            <textarea
+              value={formData.specialNeeds}
+              onChange={(e) => updateField('specialNeeds', e.target.value)}
+              placeholder='Please mention any medical conditions, disabilities, injuries, pregnancy, allergies, preferences...'
+              className='w-full p-3 border-2 border-stone-200 rounded-lg focus:border-stone-500 focus:ring-1 focus:ring-stone-500 resize-none h-20'
+            />
+            <div className='flex items-start gap-2 mt-2 text-stone-600'>
+              <Info className='w-4 h-4 mt-0.5 flex-shrink-0' />
+              <p className='text-xs'>
+                This information helps our therapists provide the best possible
+                service
+              </p>
+            </div>
+          </div>
+
+          {/* Price Summary */}
+          <div className='bg-gradient-to-br from-stone-800 to-stone-900 text-white rounded-xl p-6'>
+            <div className='flex justify-between items-center'>
+              <div>
+                <h4 className='text-lg font-semibold mb-2'>Booking Summary</h4>
+                <div className='space-y-1 text-stone-300'>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-xl'>{massage.emoji}</span>
+                    <span>{massage.name}</span>
+                  </div>
+                  <div>
+                    {formData.selectedDuration.duration} minutes •{' '}
+                    {formData.persons}{' '}
+                    {formData.persons === 1 ? 'person' : 'people'}
+                  </div>
+                  {formData.date && formData.time && (
+                    <div>
+                      {new Date(formData.date).toLocaleDateString()} at{' '}
+                      {formData.time}
+                    </div>
+                  )}
+                  {formData.location && (
+                    <div className='text-sm'>📍 {formData.location}</div>
+                  )}
+                </div>
+              </div>
+              <div className='text-right'>
+                <div className='text-3xl font-bold'>${totalPrice}</div>
+                <div className='text-stone-300'>Total Price</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Error */}
+          {errors.submit && (
+            <div className='p-4 bg-red-50 border border-red-200 rounded-lg'>
+              <p className='text-red-800 text-sm'>{errors.submit}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className='sticky bottom-0 bg-white border-t border-stone-200 p-6'>
+          <div className='flex gap-4'>
+            <button
+              onClick={onClose}
+              disabled={isSubmitting}
+              className='flex-1 py-3 border-2 border-stone-300 text-stone-700 rounded-xl hover:bg-stone-50 transition-colors font-medium'
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!isValid || isSubmitting}
+              className={`flex-1 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                isValid && !isSubmitting
+                  ? 'bg-stone-800 text-white hover:bg-stone-700'
+                  : 'bg-stone-300 text-stone-500 cursor-not-allowed'
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white' />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className='w-4 h-4' />
+                  Confirm Booking
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Card compacta de masaje
+const MassageCard = ({ massage, isSelected, onSelect }) => {
+  const prices = massage.durations.map((d) => d.price);
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const priceDisplay =
+    minPrice === maxPrice ? `$${minPrice}` : `$${minPrice} - $${maxPrice}`;
+
+  return (
+    <motion.div
+      className={`group relative bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${
+        isSelected ? 'ring-2 ring-green-500 shadow-xl' : ''
+      }`}
+      whileHover={{ y: -2 }}
+      onClick={onSelect}
+    >
+      {/* Image */}
+      <div className='relative h-40 overflow-hidden'>
+        <Image
+          src={massage.imageUrl}
+          alt={massage.name}
+          fill
+          className='object-cover group-hover:scale-105 transition-transform duration-500'
+        />
+
+        <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
+
+        {massage.isPremium && (
+          <div className='absolute top-2 right-2 bg-amber-500 text-white px-2 py-1 rounded-full text-xs font-medium'>
+            <Star className='w-3 h-3 inline mr-1' />
+            Premium
+          </div>
+        )}
+
+        {isSelected && (
+          <div className='absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium'>
+            <CheckCircle className='w-3 h-3 inline mr-1' />
+            Selected
+          </div>
+        )}
+
+        <div className='absolute bottom-2 left-2 right-2'>
+          <div className='flex items-center justify-between text-white text-xs'>
+            <div className='flex items-center gap-1'>
+              <Timer className='w-3 h-3' />
+              <span>
+                {massage.durations.map((d) => `${d.duration}min`).join('/')}
+              </span>
+            </div>
+            <div className='font-semibold'>{priceDisplay}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className='p-3'>
+        <div className='flex items-center gap-2 mb-2'>
+          <span className='text-lg'>{massage.emoji}</span>
+          <h3 className='font-semibold text-stone-800 text-sm line-clamp-1'>
+            {massage.name}
+          </h3>
+        </div>
+
+        <p className='text-stone-600 text-xs mb-3 line-clamp-2'>
+          {massage.description}
+        </p>
+
+        <div className='flex items-center justify-between'>
+          <IntensityBadge intensity={massage.intensity} />
+          <div className='flex items-center gap-1 text-xs text-stone-500'>
+            <Users className='w-3 h-3' />
+            <span>{massage.maxPersons}</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Componente principal MassageServiceView
+const MassageServiceView = () => {
   const router = useRouter();
   const { setReservationData } = useReservation();
 
-  const [selectedMassage, setSelectedMassage] = useState(null);
+  const [selectedMassages, setSelectedMassages] = useState([]);
+  const [currentMassage, setCurrentMassage] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  // Animaciones
-  const fadeUp = {
-    hidden: { opacity: 0, y: 60 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 1, ease: [0.25, 0.46, 0.45, 0.94] },
-    },
-  };
+  // Estados de filtro
+  const [filters, setFilters] = useState({
+    search: '',
+    category: '',
+    intensity: '',
+    priceRange: '',
+    premiumOnly: false,
+  });
 
-  const stagger = {
-    visible: {
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  // Handlers
-  const handleMassageSelect = useCallback((massage) => {
-    setSelectedMassage(massage);
-    setTimeout(() => {
-      const formElement = document.getElementById('booking-form');
-      if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Filtrar masajes
+  const filteredMassages = useMemo(() => {
+    return SPA_SERVICES.massages.filter((massage) => {
+      // Search filter
+      if (
+        filters.search &&
+        !massage.name.toLowerCase().includes(filters.search.toLowerCase()) &&
+        !massage.description
+          .toLowerCase()
+          .includes(filters.search.toLowerCase())
+      ) {
+        return false;
       }
-    }, 200);
+
+      // Category filter
+      if (filters.category && massage.category !== filters.category) {
+        return false;
+      }
+
+      // Intensity filter
+      if (filters.intensity && massage.intensity !== filters.intensity) {
+        return false;
+      }
+
+      // Price range filter
+      if (filters.priceRange) {
+        const minPrice = Math.min(...massage.durations.map((d) => d.price));
+        switch (filters.priceRange) {
+          case '0-120':
+            if (minPrice > 120) return false;
+            break;
+          case '120-180':
+            if (minPrice < 120 || minPrice > 180) return false;
+            break;
+          case '180-250':
+            if (minPrice < 180 || minPrice > 250) return false;
+            break;
+          case '250+':
+            if (minPrice < 250) return false;
+            break;
+        }
+      }
+
+      // Premium filter
+      if (filters.premiumOnly && !massage.isPremium) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [filters]);
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      search: '',
+      category: '',
+      intensity: '',
+      priceRange: '',
+      premiumOnly: false,
+    });
+  };
+
+  const handleMassageSelect = useCallback((massage) => {
+    setCurrentMassage(massage);
+    setShowModal(true);
   }, []);
 
-  const handleCancelBooking = useCallback(() => {
-    console.log('Cancel booking called'); // Para debug
-
-    // Limpiar el estado inmediatamente
-    setSelectedMassage(null);
-
-    // Opcional: scroll hacia arriba para mejor UX
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+  const handleModalClose = useCallback(() => {
+    setShowModal(false);
+    setCurrentMassage(null);
   }, []);
 
-  // Corregido: manejar confirmación de reserva
-  const handleConfirmBooking = useCallback(
+  const handleMassageConfirm = useCallback(
     async (reservationData) => {
       try {
-        console.log('Setting reservation data:', reservationData);
+        console.log('🌿 Setting massage reservation data:', reservationData);
 
-        // Establecer los datos de reserva en el contexto
+        // Establecer los datos en el contexto global
         setReservationData(reservationData);
 
-        // Navegar a la página de confirmación de reserva (proceso de pago)
+        // Navegar a la página de confirmación
         router.push('/reservation-confirmation');
 
-        // Cerrar el formulario
-        setSelectedMassage(null);
+        // Cerrar modal
+        setShowModal(false);
+        setCurrentMassage(null);
       } catch (error) {
-        console.error('Error processing booking:', error);
-        alert(
-          'Hubo un error procesando la reserva. Por favor intenta de nuevo.'
-        );
+        console.error('Error processing massage booking:', error);
+        alert('Error processing booking. Please try again.');
       }
     },
     [setReservationData, router]
   );
 
+  const totalFilteredCount = filteredMassages.length;
+  const totalMassagesCount = SPA_SERVICES.massages.length;
+
   return (
     <div className='min-h-screen bg-gradient-to-b from-stone-50 via-amber-25 to-stone-100'>
-      <div className='max-w-8xl mx-auto'>
-        {/* Hero Section */}
-        <motion.section
-          className='relative h-screen flex items-center justify-center px-6'
-          initial='hidden'
-          animate='visible'
-          variants={fadeUp}
-        >
-          <div className='absolute inset-0 z-0'>
-            <Image
-              src='https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1600&auto=format&fit=crop'
-              alt='BF Paradise Spa Experience'
-              fill
-              className='object-cover'
-              priority
-            />
-            <div className='absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/50 to-stone-900/70' />
-          </div>
+      {/* Hero Section */}
+      <section className='relative h-[50vh] sm:h-[60vh] flex items-center justify-center px-4 sm:px-6'>
+        <div className='absolute inset-0 z-0'>
+          <Image
+            src='https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1600'
+            alt='BF Paradise Spa Experience'
+            fill
+            className='object-cover'
+            priority
+          />
+          <div className='absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/50 to-stone-900/70' />
+        </div>
 
-          <div className='relative z-20 text-center max-w-4xl'>
-            <motion.div
-              className='inline-flex items-center bg-white/20 backdrop-blur-md px-4 md:px-8 py-3 md:py-4 rounded-full border border-white/30 mb-8 md:mb-12'
-              variants={fadeUp}
-            >
-              <Leaf className='w-5 h-5 md:w-6 md:h-6 text-white mr-3 md:mr-4' />
-              <span className='text-white font-medium text-sm md:text-lg'>
-                BF Paradise Premium Wellness
-              </span>
-            </motion.div>
-
-            <motion.h1
-              className='text-4xl md:text-6xl lg:text-8xl font-light text-white mb-6 md:mb-8 leading-tight'
-              variants={fadeUp}
-            >
-              Massage
-              <br />
-              <span className='font-normal'>Therapy</span>
-            </motion.h1>
-
-            <motion.p
-              className='text-lg md:text-2xl lg:text-3xl text-white/90 mb-12 md:mb-16 leading-relaxed font-light max-w-3xl mx-auto px-4'
-              variants={fadeUp}
-            >
-              Rediscover harmony between body and mind in a sensory journey
-              designed to restore your vital energy
-            </motion.p>
-
-            <motion.div
-              className='flex flex-col items-center'
-              variants={fadeUp}
-            >
-              <div className='text-white/70 text-base md:text-lg'>
-                ↓ Choose your perfect treatment below
-              </div>
-            </motion.div>
-          </div>
-        </motion.section>
-
-        {/* Sección de Masajes */}
-        <motion.section
-          id='massage-selection'
-          className='py-32 px-6 bg-white/50 backdrop-blur-sm'
-          initial='hidden'
-          animate='visible'
-          variants={stagger}
-        >
-          <motion.div className='text-center mb-24' variants={fadeUp}>
-            <h2 className='text-5xl md:text-6xl font-light text-stone-800 mb-8'>
-              Find Your Balance
-            </h2>
-            <p className='text-2xl text-stone-600 max-w-4xl mx-auto font-light leading-relaxed'>
-              Each technique is a unique journey towards wellness
-            </p>
+        <div className='relative z-20 text-center max-w-4xl'>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className='inline-flex items-center bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30 mb-6'
+          >
+            <Leaf className='w-4 h-4 text-white mr-2' />
+            <span className='text-white font-medium text-sm'>
+              BF Paradise Premium Wellness
+            </span>
           </motion.div>
 
-          <div className='space-y-16'>
-            {MASSAGE_TYPES.map((massage, index) => {
-              const prices = massage.durations.map((d) => d.price);
-              const minPrice = Math.min(...prices);
-              const maxPrice = Math.max(...prices);
-              const priceDisplay =
-                minPrice === maxPrice
-                  ? `$${minPrice}`
-                  : `$${minPrice} - $${maxPrice}`;
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className='text-3xl sm:text-5xl lg:text-6xl font-light text-white mb-4 leading-tight'
+          >
+            Massage Therapy
+          </motion.h1>
 
-              return (
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className='text-lg sm:text-xl text-white/90 mb-8 leading-relaxed font-light max-w-2xl mx-auto'
+          >
+            Discover our complete collection of {totalMassagesCount} therapeutic
+            treatments
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className='py-12 px-4 sm:px-6'>
+        <div className='max-w-7xl mx-auto'>
+          {/* Filter Bar */}
+          <FilterBar
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+          />
+
+          {/* Results Count */}
+          <div className='mb-6'>
+            <p className='text-stone-600'>
+              Showing {totalFilteredCount} of {totalMassagesCount} treatments
+              {totalFilteredCount !== totalMassagesCount && (
+                <button
+                  onClick={handleClearFilters}
+                  className='ml-2 text-stone-800 hover:text-stone-600 underline'
+                >
+                  Clear filters
+                </button>
+              )}
+            </p>
+          </div>
+
+          {/* Massage Grid - Máximo 4 por línea */}
+          {totalFilteredCount > 0 ? (
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12'>
+              {filteredMassages.map((massage, index) => (
                 <motion.div
                   key={massage.id}
-                  className={`relative overflow-hidden rounded-3xl shadow-2xl transition-all duration-700 cursor-pointer group ${
-                    selectedMassage?.id === massage.id
-                      ? 'ring-4 ring-stone-300 shadow-3xl'
-                      : 'hover:shadow-3xl'
-                  }`}
-                  variants={fadeUp}
-                  onClick={() => handleMassageSelect(massage)}
-                  whileHover={{ scale: 1.01 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  <div
-                    className={`grid grid-cols-1 lg:grid-cols-2 min-h-[400px] md:min-h-[600px] ${
-                      index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''
-                    }`}
-                  >
-                    {/* Imagen */}
-                    <div
-                      className={`relative overflow-hidden order-1 lg:order-none ${
-                        index % 2 === 1 ? 'lg:col-start-2' : ''
-                      }`}
-                    >
-                      <div className='relative h-64 md:h-full w-full'>
-                        <Image
-                          src={massage.imageUrl}
-                          alt={massage.name}
-                          fill
-                          className='object-cover group-hover:scale-110 transition-transform duration-1000'
-                        />
-
-                        {massage.isPremium && (
-                          <div className='absolute top-4 right-4 bg-white/20 backdrop-blur-md text-white px-3 md:px-6 py-2 md:py-3 rounded-full font-medium border border-white/30 text-sm md:text-base'>
-                            <Star className='w-4 h-4 md:w-5 md:h-5 inline mr-1 md:mr-2' />
-                            Premium Experience
-                          </div>
-                        )}
-
-                        <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
-
-                        <div className='absolute bottom-4 md:bottom-8 left-4 md:left-8 text-white'>
-                          <div className='text-2xl md:text-4xl font-light mb-1 md:mb-2'>
-                            {priceDisplay}
-                          </div>
-                          <div className='text-white/90 text-sm md:text-base'>
-                            {massage.durations
-                              .map((d) => `${d.duration}min`)
-                              .join(' • ')}
-                          </div>
-                        </div>
-
-                        {/* Hover overlay - solo en desktop */}
-                        <div className='hidden lg:flex absolute inset-0 bg-stone-800/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center'>
-                          <div className='text-white text-center'>
-                            <div className='text-5xl mb-4'>{massage.emoji}</div>
-                            <div className='text-2xl font-light mb-4'>
-                              Book Now
-                            </div>
-                            <div className='flex items-center justify-center gap-2'>
-                              <Heart className='w-6 h-6' />
-                              <span className='text-lg'>Click to continue</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Contenido */}
-                    <div
-                      className={`bg-gradient-to-br from-stone-100 to-amber-50 p-6 md:p-12 lg:p-16 flex flex-col justify-center order-2 lg:order-none ${
-                        index % 2 === 1 ? 'lg:col-start-1' : ''
-                      }`}
-                    >
-                      <div className='mb-6 md:mb-8'>
-                        <div className='flex flex-col sm:flex-row sm:items-center mb-4 md:mb-6'>
-                          <span className='text-3xl md:text-5xl mr-0 sm:mr-4 mb-2 sm:mb-0'>
-                            {massage.emoji}
-                          </span>
-                          <div>
-                            <h3 className='text-2xl md:text-3xl font-light text-stone-800 mb-1 md:mb-2'>
-                              {massage.name}
-                            </h3>
-                            <div className='flex flex-wrap items-center gap-2 text-xs md:text-sm text-stone-600 mb-2'>
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  massage.intensity === 'gentle'
-                                    ? 'bg-emerald-100 text-emerald-700'
-                                    : massage.intensity === 'medium'
-                                    ? 'bg-amber-100 text-amber-700'
-                                    : 'bg-red-100 text-red-700'
-                                }`}
-                              >
-                                {massage.intensity}
-                              </span>
-                              <span className='text-stone-500'>•</span>
-                              <span>Max {massage.maxPersons} persons</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <p className='text-lg md:text-xl text-stone-700 leading-relaxed mb-6 md:mb-8'>
-                          {massage.description}
-                        </p>
-
-                        <div className='space-y-2 md:space-y-3 mb-6 md:mb-8'>
-                          {massage.benefits.slice(0, 3).map((benefit, idx) => (
-                            <div
-                              key={idx}
-                              className='flex items-start text-stone-600'
-                            >
-                              <div className='w-2 h-2 bg-stone-400 rounded-full mr-3 md:mr-4 mt-2 md:mt-3 flex-shrink-0' />
-                              <span className='text-base md:text-lg leading-relaxed'>
-                                {benefit}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <button
-                        className={`self-start px-6 md:px-8 py-3 md:py-4 rounded-2xl font-medium transition-all duration-300 w-full sm:w-auto ${
-                          selectedMassage?.id === massage.id
-                            ? 'bg-stone-700 text-white shadow-lg'
-                            : 'bg-white/80 text-stone-700 hover:bg-white hover:shadow-lg'
-                        }`}
-                      >
-                        {selectedMassage?.id === massage.id ? (
-                          <span className='flex items-center justify-center'>
-                            <CheckCircle className='w-4 h-4 md:w-5 md:h-5 mr-2' />
-                            <span className='text-sm md:text-base'>
-                              Selected - Complete booking below
-                            </span>
-                          </span>
-                        ) : (
-                          <span className='flex items-center justify-center'>
-                            <Heart className='w-4 h-4 md:w-5 md:h-5 mr-2' />
-                            <span className='text-sm md:text-base'>
-                              Book {massage.name}
-                            </span>
-                            <ArrowRight className='w-4 h-4 md:w-5 md:h-5 ml-2' />
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Formulario inline aparece aquí */}
-                  <AnimatePresence mode='wait'>
-                    {' '}
-                    {/* Agregar mode="wait" */}
-                    {selectedMassage?.id === massage.id && (
-                      <InlineBookingForm
-                        key={`form-${massage.id}`} // Agregar key único
-                        selectedMassage={selectedMassage}
-                        onCancel={handleCancelBooking}
-                        onConfirm={handleConfirmBooking}
-                      />
-                    )}
-                  </AnimatePresence>
+                  <MassageCard
+                    massage={massage}
+                    isSelected={false}
+                    onSelect={() => handleMassageSelect(massage)}
+                  />
                 </motion.div>
-              );
-            })}
-          </div>
-        </motion.section>
-
-        {/* Call to Action Final */}
-        <motion.section
-          className='py-32 px-6 bg-gradient-to-b from-stone-800 to-stone-900'
-          initial='hidden'
-          animate='visible'
-          variants={fadeUp}
-        >
-          <div className='max-w-4xl mx-auto text-center text-white'>
-            <motion.h3
-              className='text-4xl md:text-5xl font-light mb-8'
-              variants={fadeUp}
-            >
-              Ready to Begin Your Journey?
-            </motion.h3>
-            <motion.p
-              className='text-xl text-stone-300 mb-12 leading-relaxed'
-              variants={fadeUp}
-            >
-              Book your personalized massage experience today and discover the
-              transformative power of therapeutic touch in the comfort of your
-              own space.
-            </motion.p>
-
-            <motion.div className='space-y-6' variants={fadeUp}>
+              ))}
+            </div>
+          ) : (
+            <div className='text-center py-12'>
+              <div className='text-6xl mb-4'>🔍</div>
+              <h3 className='text-xl font-semibold text-stone-800 mb-2'>
+                No treatments found
+              </h3>
+              <p className='text-stone-600 mb-4'>
+                Try adjusting your filters to see more options
+              </p>
               <button
-                onClick={() => {
-                  const massageSection =
-                    document.getElementById('massage-selection');
-                  if (massageSection) {
-                    massageSection.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className='bg-white text-stone-800 px-12 py-6 rounded-2xl font-medium text-xl hover:bg-stone-50 transition-colors flex items-center justify-center gap-4 mx-auto group'
+                onClick={handleClearFilters}
+                className='px-6 py-2 bg-stone-800 text-white rounded-lg hover:bg-stone-700 transition-colors'
               >
-                <Heart className='w-6 h-6 group-hover:scale-110 transition-transform' />
-                Choose Your Perfect Treatment
-                <ArrowRight className='w-6 h-6 group-hover:translate-x-2 transition-transform' />
+                Clear All Filters
               </button>
+            </div>
+          )}
+        </div>
+      </section>
 
-              <div className='flex justify-center gap-12 text-stone-400 text-sm'>
-                <div className='flex items-center gap-3'>
-                  <Phone className='w-5 h-5' />
-                  <span>Expert consultation included</span>
-                </div>
-                <div className='flex items-center gap-3'>
-                  <CheckCircle className='w-5 h-5' />
-                  <span>Cancel up to 4h before</span>
-                </div>
-                <div className='flex items-center gap-3'>
-                  <Shield className='w-5 h-5' />
-                  <span>100% secure booking</span>
-                </div>
-              </div>
-            </motion.div>
+      {/* Modal */}
+      <AnimatePresence>
+        {showModal && currentMassage && (
+          <MassageConfigModal
+            massage={currentMassage}
+            isOpen={showModal}
+            onClose={handleModalClose}
+            onConfirm={handleMassageConfirm}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Call to Action */}
+      <section className='py-16 px-4 sm:px-6 bg-gradient-to-b from-stone-800 to-stone-900'>
+        <div className='max-w-4xl mx-auto text-center text-white'>
+          <h2 className='text-2xl sm:text-4xl font-light mb-6'>
+            Ready for Your Perfect Wellness Experience?
+          </h2>
+          <p className='text-lg text-stone-300 mb-8 leading-relaxed'>
+            Book your personalized massage therapy and discover the
+            transformative power of therapeutic touch.
+          </p>
+
+          <div className='flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 text-stone-400 text-sm'>
+            <div className='flex items-center justify-center gap-2'>
+              <Phone className='w-4 h-4' />
+              <span>Expert therapists</span>
+            </div>
+            <div className='flex items-center justify-center gap-2'>
+              <CheckCircle className='w-4 h-4' />
+              <span>Flexible scheduling</span>
+            </div>
+            <div className='flex items-center justify-center gap-2'>
+              <Shield className='w-4 h-4' />
+              <span>Professional service</span>
+            </div>
           </div>
-        </motion.section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 };

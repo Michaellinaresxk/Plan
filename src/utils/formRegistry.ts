@@ -253,6 +253,20 @@ registerForm({
   }),
 });
 
+// Personal Trainer Form
+registerForm({
+  name: 'personalTraining',
+  component: () => import('@/UI/components/forms/PersonalTrainerForm'),
+  servicePatterns: ['personal-training', 'luxe-fitness', 'fitness'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit ||
+      ((data: any) => console.log('Personal Trainer:', data)),
+    onCancel,
+  }),
+});
+
 // Karaoke Form
 registerForm({
   name: 'KaraokeFrom',
