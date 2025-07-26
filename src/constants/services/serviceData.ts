@@ -1333,7 +1333,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     basePrice: 450,
     priceUnit: 'services.priceUnits.perTrip',
     category: 'water-activities',
-    packageType: ['standard', 'premium'],
+    packageType: ['premium'],
     imageUrl:
       'https://moonshadow-tqc.com.au/wp-content/uploads/sites/5204/2022/01/MSTQC-Boats-slide-into-clear-waters.png?resize=360%2C240&zoom=2',
     duration: 3,

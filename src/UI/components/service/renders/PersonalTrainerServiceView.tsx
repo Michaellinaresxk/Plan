@@ -161,15 +161,12 @@ const ANIMATION_VARIANTS = {
 const PersonalTrainerServiceView: React.FC<PersonalTrainerServiceViewProps> = ({
   service,
   serviceData,
-  viewContext,
 }) => {
   const { t } = useTranslation();
   const { bookService } = useBooking();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrainingType, setSelectedTrainingType] = useState('');
 
-  const isPremium =
-    service.packageType.includes('premium') || viewContext === 'premium-view';
   const sessionDuration = serviceData?.metaData?.sessionDuration || 60;
 
   const handleBookingConfirm = (
@@ -244,41 +241,43 @@ const HeroSection: React.FC<{
   onBookClick: () => void;
 }> = ({ sessionDuration, onBookClick }) => (
   <motion.div
-    className='relative overflow-hidden rounded-3xl mx-4 mt-8'
+    className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
     initial='hidden'
     animate='visible'
     variants={ANIMATION_VARIANTS.fadeIn}
   >
-    <div className='relative h-[70vh] bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900'>
-      <Image
-        src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=1200'
+    <div className='relative h-[70vh] sm:h-[75vh] lg:h-[80vh] bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900'>
+      <img
+        src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         alt='Personal training session'
-        fill
-        className='object-cover mix-blend-overlay opacity-60'
-        priority
+        className='absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60'
       />
 
-      <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
-        <div className='max-w-4xl'>
+      {/* Overlay adicional para mejor contraste */}
+      <div className='absolute inset-0 bg-black/20 z-[1]' />
+      <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
+
+      <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
+        <div className='max-w-4xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
           <motion.div
-            className='inline-flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 mb-6'
+            className='inline-flex items-center bg-white/10 backdrop-blur-sm px-3 py-1 sm:px-4 sm:py-2 rounded-full border border-white/20'
             variants={ANIMATION_VARIANTS.slideIn}
           >
-            <Dumbbell className='w-5 h-5 text-white mr-2' />
-            <span className='text-white font-medium'>
+            <Dumbbell className='w-4 h-4 sm:w-5 sm:h-5 text-white mr-2' />
+            <span className='text-white font-medium text-sm sm:text-base'>
               Your Strength. Your Progress.
             </span>
           </motion.div>
 
           <motion.h1
-            className='text-5xl md:text-7xl font-bold text-white mb-6 leading-tight'
+            className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight'
             variants={ANIMATION_VARIANTS.fadeIn}
           >
             Personal Training
           </motion.h1>
 
           <motion.p
-            className='text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto'
+            className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 max-w-3xl mx-auto leading-relaxed px-2'
             variants={ANIMATION_VARIANTS.fadeIn}
           >
             Transform your fitness with one-on-one sessions tailored to your
@@ -286,24 +285,34 @@ const HeroSection: React.FC<{
           </motion.p>
 
           <motion.div
-            className='flex flex-wrap justify-center gap-8 mb-10'
+            className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-8 max-w-4xl mx-auto justify-center'
             variants={ANIMATION_VARIANTS.slideIn}
           >
-            <StatChip icon={Clock} text={`${sessionDuration} Minutes`} />
-            <StatChip icon={Star} text='5.0 Rating' iconFill />
-            <StatChip icon={MapPin} text='Any Location' />
+            <div className='flex-1 sm:flex-none'>
+              <StatChip icon={Clock} text={`${sessionDuration} Minutes`} />
+            </div>
+            <div className='flex-1 sm:flex-none'>
+              <StatChip icon={Star} text='5.0 Rating' iconFill />
+            </div>
+            <div className='flex-1 sm:flex-none'>
+              <StatChip icon={MapPin} text='Any Location' />
+            </div>
           </motion.div>
 
-          <motion.button
-            onClick={onBookClick}
-            className='bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white px-10 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-            variants={ANIMATION_VARIANTS.slideIn}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Play className='w-6 h-6' fill='currentColor' />
-            Start Your Transformation
-          </motion.button>
+          <div className='pt-4 sm:pt-6 lg:pt-8'>
+            <motion.button
+              onClick={onBookClick}
+              className='bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-5 rounded-xl lg:rounded-2xl font-bold text-base sm:text-lg lg:text-xl flex items-center gap-2 sm:gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl max-w-xs sm:max-w-none'
+              variants={ANIMATION_VARIANTS.slideIn}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Play className='w-5 h-5 sm:w-6 sm:h-6' fill='currentColor' />
+              <span className='whitespace-nowrap'>
+                Start Your Transformation
+              </span>
+            </motion.button>
+          </div>
         </div>
       </div>
     </div>

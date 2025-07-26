@@ -64,7 +64,7 @@ const CustomDecorationsServiceView: React.FC<
       <div className='max-w-8xl mx-auto space-y-16 pb-16'>
         {/* Hero Section */}
         <motion.div
-          className='relative overflow-hidden rounded-3xl mx-4 mt-8 h-[80vh] shadow-2xl'
+          className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12 h-[70vh] sm:h-[75vh] lg:h-[80vh] shadow-2xl'
           initial='hidden'
           animate='visible'
           variants={fadeIn}
@@ -79,41 +79,34 @@ const CustomDecorationsServiceView: React.FC<
 
           <div className='absolute inset-0 bg-gradient-to-br from-black/60 via-pink-900/40 to-purple-900/60' />
 
-          {/* Floating elements */}
-          <div className='absolute top-6 left-6 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20'>
-            <span className='text-white/90 text-sm font-medium'>
+          {/* Overlay adicional para mejor contraste */}
+          <div className='absolute inset-0 bg-black/10 z-[1]' />
+
+          {/* Floating elements - Responsive */}
+          <div className='absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/10 backdrop-blur-md rounded-full px-3 py-1 sm:px-4 sm:py-2 border border-white/20 hidden sm:block'>
+            <span className='text-white/90 text-xs sm:text-sm font-medium'>
               ✨ Villa Decoration Specialists
             </span>
           </div>
 
-          <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
-            <div className='max-w-5xl'>
-              <motion.div
-                className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8'
-                variants={slideIn}
-              >
-                <Palette className='w-5 h-5 text-white mr-3' />
-                <span className='text-white font-semibold text-lg'>
-                  Your Moment. Your Style. Your Villa.
-                </span>
-              </motion.div>
-
+          <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
+            <div className='max-w-5xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
               <motion.h1
-                className='text-6xl md:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-white to-pink-200 bg-clip-text text-transparent'
+                className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight bg-gradient-to-r from-white to-pink-200 bg-clip-text text-transparent'
                 variants={fadeIn}
               >
                 Custom Decorations
               </motion.h1>
 
               <motion.p
-                className='text-2xl md:text-3xl text-white/90 mb-4 font-light'
+                className='text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 font-light'
                 variants={fadeIn}
               >
                 Transform Your Villa into a Celebration
               </motion.p>
 
               <motion.p
-                className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
+                className='text-sm sm:text-base lg:text-lg text-white/80 max-w-3xl mx-auto leading-relaxed px-2'
                 variants={fadeIn}
               >
                 From intimate romantic dinners to vibrant birthday celebrations,
@@ -121,9 +114,9 @@ const CustomDecorationsServiceView: React.FC<
                 the perfect venue for life's special moments.
               </motion.p>
 
-              {/* Hero Stats */}
+              {/* Hero Stats - Responsive */}
               <motion.div
-                className='flex flex-wrap justify-center gap-6 mb-10'
+                className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 max-w-4xl mx-auto justify-center'
                 variants={stagger}
                 initial='hidden'
                 animate='visible'
@@ -140,29 +133,35 @@ const CustomDecorationsServiceView: React.FC<
                   <motion.div
                     key={index}
                     variants={slideIn}
-                    className='flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-xl border border-white/20'
+                    className='flex items-center bg-white/10 backdrop-blur-md px-3 py-2 sm:px-6 sm:py-3 rounded-xl border border-white/20 min-w-0 flex-1 sm:flex-none'
                   >
-                    <stat.icon className='w-5 h-5 mr-3 text-pink-300' />
-                    <div className='text-left'>
-                      <div className='font-semibold text-white'>
+                    <stat.icon className='w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-pink-300 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='font-semibold text-white text-sm sm:text-base truncate'>
                         {stat.text}
                       </div>
-                      <div className='text-xs text-white/70'>{stat.label}</div>
+                      <div className='text-xs text-white/70 truncate'>
+                        {stat.label}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
               </motion.div>
 
-              <motion.button
-                onClick={() => setIsModalOpen(true)}
-                className='bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-                variants={slideIn}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Sparkles className='w-6 h-6' />
-                Create Your Perfect Setting
-              </motion.button>
+              <div className='pt-4 sm:pt-6 lg:pt-8'>
+                <motion.button
+                  onClick={() => setIsModalOpen(true)}
+                  className='bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-5 rounded-xl lg:rounded-2xl font-bold text-base sm:text-lg lg:text-xl flex items-center gap-2 sm:gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl max-w-xs sm:max-w-none'
+                  variants={slideIn}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Sparkles className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6' />
+                  <span className='whitespace-nowrap'>
+                    Create Your Perfect Setting
+                  </span>
+                </motion.button>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -633,61 +632,6 @@ const CustomDecorationsServiceView: React.FC<
                   </p>
                 </motion.div>
               ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Final CTA with urgency */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='relative overflow-hidden rounded-3xl h-[40vh] shadow-2xl'>
-            <Image
-              src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?q=80&w=1400'
-              alt='Villa celebration'
-              fill
-              className='object-cover'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent' />
-
-            <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
-              <div className='max-w-3xl'>
-                <motion.h3
-                  className='text-4xl md:text-5xl font-bold mb-6'
-                  variants={fadeIn}
-                >
-                  Don't Wait – Book Your Dream Setup Today
-                </motion.h3>
-                <motion.p
-                  className='text-xl text-white/90 mb-8'
-                  variants={fadeIn}
-                >
-                  Popular dates fill up quickly. Secure your perfect villa
-                  celebration now and let us create magic for your special
-                  moment.
-                </motion.p>
-                <motion.div
-                  className='flex flex-col sm:flex-row gap-4 justify-center items-center'
-                  variants={slideIn}
-                >
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className='bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 transition-all duration-300 hover:scale-105 shadow-2xl'
-                  >
-                    <Sparkles className='w-6 h-6' />
-                    Book Your Celebration
-                    <ArrowRight className='w-6 h-6' />
-                  </button>
-
-                  <div className='text-center'>
-                    <div className='text-sm text-white/70'>Starting from</div>
-                    <div className='text-2xl font-bold'>${service.price}</div>
-                  </div>
-                </motion.div>
-              </div>
             </div>
           </div>
         </motion.div>

@@ -17,7 +17,6 @@ import {
 import BookingModal from '@/UI/components/modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
 import { BookingDate } from '@/types/type';
-import { ChefSpecialty } from '@/types/chef';
 import {
   CUISINE_TYPES,
   DIETARY_ACCOMMODATIONS,
@@ -28,54 +27,6 @@ import { cn } from '@/utils/cheff/chefFormUtils';
 import ChefCTASection from '../chef/ChefCTASection';
 import ChefHeroSection from '../chef/ChefHeroSection';
 import ChefServiceTypesSection from '../chef/ServiceTypesSection';
-
-const CHEF_SPECIALTIES: ChefSpecialty[] = [
-  {
-    id: 'fine-dining',
-    name: 'Fine Dining',
-    description: 'Michelin-starred techniques with exquisite presentation',
-    icon: <Crown className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=800',
-    features: [
-      'Molecular Gastronomy',
-      'Premium Ingredients',
-      'Artistic Plating',
-    ],
-  },
-  {
-    id: 'comfort-gourmet',
-    name: 'Comfort Gourmet',
-    description: 'Elevated comfort food with sophisticated twists',
-    icon: <Heart className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?auto=format&fit=crop&q=80&w=800',
-    features: ['Local Flavors', 'Modern Techniques', 'Nostalgic Appeal'],
-  },
-  {
-    id: 'international-fusion',
-    name: 'International Fusion',
-    description: 'Global cuisines with creative contemporary interpretations',
-    icon: <Trophy className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&q=80&w=800',
-    features: ['Cultural Blend', 'Innovation', 'Authentic Spices'],
-  },
-  {
-    id: 'healthy-luxury',
-    name: 'Healthy Luxury',
-    description:
-      'Nutritious cuisine without compromising on flavor or elegance',
-    icon: <Shield className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
-    features: [
-      'Organic Ingredients',
-      'Nutritionist Approved',
-      'Beautiful Presentation',
-    ],
-  },
-];
 
 const animations = {
   fadeInUp: {

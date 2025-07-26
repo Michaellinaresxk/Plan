@@ -232,6 +232,11 @@
         "short": "Fun karaoke setup in your accommodation",
         "full": "Enjoy a night full of music and fun with our karaoke service. Sing your favorite songs and create unforgettable memories with friends and family in a lively atmosphere. Sing, laugh, and turn every moment into a party! Book your karaoke session today and enjoy maximum fun."
       },
+      "saonaIslandTour": {
+        "name": "Saona Island Tour",
+        "short": "Day trip to the idyllic Caribbean island known for its pristine beaches and turquoise waters.",
+        "full": "A Saona Island tour is a popular excursion from Punta Cana and Bayahibe in the Dominican Republic, offering a day trip to the idyllic Caribbean island known for its pristine beaches and turquoise waters. Tours typically include transportation by speedboat and catamaran, a stop at a natural swimming pool, a buffet lunch, and an open bar, as well as time to relax on the beach and enjoy the scenery. "
+      },
       "karaokeDetails": {
         "songLibrary": "Song Library",
         "songsAvailable": "{{count}}+ songs in multiple languages",

@@ -8,7 +8,6 @@ import {
   Crown,
   Play,
   Users,
-  Utensils,
 } from 'lucide-react';
 import Image from 'next/image';
 const ChefHeroSection: React.FC<{
@@ -16,55 +15,30 @@ const ChefHeroSection: React.FC<{
   maxPeople: number;
   isPremium: boolean;
   onBookClick: () => void;
-}> = ({ service, maxPeople, isPremium, onBookClick }) => (
+}> = ({ maxPeople, isPremium, onBookClick }) => (
   <motion.div
-    className='relative overflow-hidden rounded-3xl mx-4 mt-8'
+    className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
     initial='hidden'
     animate='visible'
     variants={animations.fadeInUp}
   >
-    <div className='relative h-[85vh] bg-gradient-to-r from-green-900/60 via-black-900/70 to-blue-800/50'>
+    <div className='relative h-[90vh] sm:h-[75vh] lg:h-[80vh] bg-gradient-to-r from-green-900/60 via-black-900/70 to-blue-800/50'>
       <Image
         src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1200'
         alt='Professional chef preparing gourmet cuisine'
         fill
-        className='object-cover mix-blend-overlay'
+        className='object-cover'
         priority
       />
 
-      {/* Floating Culinary Elements */}
-      <motion.div
-        className='absolute top-20 right-20 w-20 h-20 bg-orange-500/20 rounded-full backdrop-blur-sm border border-orange-500/30 flex items-center justify-center'
-        animate={{ y: [-10, 10, -10], rotate: [0, 5, -5, 0] }}
-        transition={{ duration: 6, repeat: Infinity }}
-      >
-        <ChefHat className='w-8 h-8 text-white' />
-      </motion.div>
-      <motion.div
-        className='absolute bottom-32 left-16 w-16 h-16 bg-amber-500/20 rounded-full backdrop-blur-sm border border-amber-500/30 flex items-center justify-center'
-        animate={{ y: [10, -10, 10], rotate: [0, -5, 5, 0] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      >
-        <Utensils className='w-6 h-6 text-white' />
-      </motion.div>
+      {/* Overlay simplificado */}
+      <div className='absolute inset-0 bg-black/40 z-[1]' />
+      <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 z-[2]' />
 
-      <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
-        <div className='max-w-6xl'>
-          <motion.div
-            className='inline-flex items-center bg-white/15 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-8'
-            variants={animations.slideIn}
-          >
-            {isPremium && <Crown className='w-5 h-5 text-amber-300 mr-3' />}
-            <ChefHat className='w-5 h-5 text-white mr-3' />
-            <span className='text-white font-medium text-lg'>
-              {isPremium
-                ? 'Professional Excellence'
-                : 'Culinary Artistry at Home'}
-            </span>
-          </motion.div>
-
+      <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
+        <div className='max-w-4xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
           <motion.h1
-            className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
+            className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight'
             variants={animations.fadeInUp}
           >
             Private Chef
@@ -75,56 +49,67 @@ const ChefHeroSection: React.FC<{
           </motion.h1>
 
           <motion.p
-            className='text-2xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed'
+            className='text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed px-2'
             variants={animations.fadeInUp}
           >
-           Enhance your dining experience into an extraordinary culinary journey with skilled chefs in your own space.
+            Enhance your dining experience into an extraordinary culinary
+            journey with skilled chefs in your own space.
           </motion.p>
 
           <motion.div
-            className='flex flex-wrap justify-center gap-8 mb-12'
+            className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-8 max-w-3xl mx-auto justify-center'
             variants={animations.slideIn}
           >
-            <div className='flex items-center bg-white/15 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-              <Users className='w-6 h-6 text-white mr-3' />
+            <div className='flex items-center bg-white/15 backdrop-blur-sm px-3 py-3 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-xl border border-white/20 flex-1 sm:flex-none'>
+              <Users className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
               <div className='text-left'>
-                <div className='text-white font-semibold'>
+                <div className='text-white font-semibold text-sm sm:text-base'>
                   {maxPeople} Guests +
                 </div>
-                <div className='text-white/70 text-sm'>
+                <div className='text-white/70 text-xs sm:text-sm'>
                   Perfect for Groups
                 </div>
               </div>
             </div>
-            <div className='flex items-center bg-white/15 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-              <Clock className='w-6 h-6 text-white mr-3' />
+
+            <div className='flex items-center bg-white/15 backdrop-blur-sm px-3 py-3 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-xl border border-white/20 flex-1 sm:flex-none'>
+              <Clock className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
               <div className='text-left'>
-                <div className='text-white font-semibold'>Select</div>
-                <div className='text-white/70 text-sm'>Standard Chef</div>
+                <div className='text-white font-semibold text-sm sm:text-base'>
+                  Select
+                </div>
+                <div className='text-white/70 text-xs sm:text-sm'>
+                  Standard Chef
+                </div>
               </div>
             </div>
-            <div className='flex items-center bg-white/15 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-              <Award className='w-6 h-6 text-white mr-3' />
+
+            <div className='flex items-center bg-white/15 backdrop-blur-sm px-3 py-3 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-xl border border-white/20 flex-1 sm:flex-none'>
+              <Award className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
               <div className='text-left'>
-                <div className='text-white font-semibold'>Skilled Chefs</div>
-                <div className='text-white/70 text-sm'>
+                <div className='text-white font-semibold text-sm sm:text-base'>
+                  Skilled Chefs
+                </div>
+                <div className='text-white/70 text-xs sm:text-sm'>
                   Professional Service
                 </div>
               </div>
             </div>
           </motion.div>
 
-          <motion.button
-            onClick={onBookClick}
-            className='group bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500 hover:from-orange-600 hover:via-amber-600 hover:to-orange-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-            variants={animations.slideIn}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Play className='w-7 h-7' fill='currentColor' />
-            Book Your Chef
-            <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
-          </motion.button>
+          <div className='pt-4 sm:pt-6 lg:pt-8'>
+            <motion.button
+              onClick={onBookClick}
+              className='bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500 hover:from-orange-600 hover:via-amber-600 hover:to-orange-600 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-5 rounded-xl lg:rounded-2xl font-bold text-base sm:text-lg lg:text-xl flex items-center gap-2 sm:gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl max-w-xs sm:max-w-none'
+              variants={animations.slideIn}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Play className='w-5 h-5 sm:w-6 sm:h-6' fill='currentColor' />
+              <span className='whitespace-nowrap'>Book Your Chef</span>
+              <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform' />
+            </motion.button>
+          </div>
         </div>
       </div>
     </div>

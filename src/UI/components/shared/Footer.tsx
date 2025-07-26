@@ -112,7 +112,7 @@ const Footer = () => {
 
         <div className='flex flex-col md:flex-row justify-between items-center'>
           <p className='text-gray-500 text-sm mb-4 md:mb-0'>
-            &copy; {new Date().getFullYear()} Punta Cana Plan. All rights
+            &copy; {new Date().getFullYear()} Lux Punta Cana. All rights
             reserved.
           </p>
           <div className='flex space-x-6'>

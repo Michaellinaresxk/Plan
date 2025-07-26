@@ -12,12 +12,10 @@ import {
   Calendar,
   CheckCircle,
   ArrowRight,
-  Info,
   Shield,
   AlertTriangle,
   Plane,
   Repeat,
-  ChevronRight,
   Check,
 } from 'lucide-react';
 import { useBooking } from '@/context/BookingContext';
@@ -144,55 +142,58 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
   return (
     <div className='space-y-16'>
       {/* Hero section con llamado a la acción */}
-      <div className='w-full relative rounded-2xl overflow-hidden'>
+      <div className='w-full relative overflow-hidden my-6 sm:my-8 lg:my-12'>
         <div className='absolute inset-0 z-0'>
-          <Image
+          <img
             src={service.img || galleryImages[0].src}
             alt={service.name}
-            fill
-            className='object-cover'
+            className='absolute inset-0 w-full h-full object-cover'
           />
           <div className='absolute inset-0 bg-gradient-to-r from-gray-900/95 to-gray-900/70'></div>
+
+          {/* Overlay adicional para mejor contraste */}
+          <div className='absolute inset-0 bg-black/10 z-[1]' />
         </div>
 
-        <div className='relative z-10 px-6 md:px-12 py-16 lg:py-24'>
-          <div className='max-w-xl'>
+        <div className='relative z-10 px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 lg:py-20 xl:py-24'>
+          <div className='max-w-4xl mx-auto'>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
+              className='space-y-4 sm:space-y-6 lg:space-y-8'
             >
               {isPremium && (
-                <span className='inline-block px-3 py-1 bg-amber-400 text-amber-900 text-xs font-bold uppercase rounded-full mb-4'>
+                <span className='inline-block px-3 py-1 sm:px-4 sm:py-2 bg-amber-400 text-amber-900 text-xs sm:text-sm font-bold uppercase rounded-full'>
                   Premium Service
                 </span>
               )}
 
-              <h1 className='text-4xl md:text-5xl font-bold text-white mb-4'>
+              <h1 className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight'>
                 {tagline}
               </h1>
 
-              <p className='text-lg text-gray-300 mb-6'>
+              <p className='text-base sm:text-lg lg:text-xl text-gray-300'>
                 Seamless transportation to and from the airport
               </p>
 
-              <p className='text-white/80 mb-8'>
+              <p className='text-sm sm:text-base lg:text-lg text-white/80 max-w-3xl leading-relaxed'>
                 {serviceData?.fullDescriptionKey
                   ? t(serviceData.fullDescriptionKey)
                   : 'Skip the taxi lines and begin your vacation right away with our private airport transfer service. Your personal driver will be waiting, ready to welcome you with comfort and efficiency.'}
               </p>
 
-              <div className='flex flex-wrap gap-4'>
+              <div className='pt-2 sm:pt-4'>
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className={`flex items-center px-6 py-3 ${
+                  className={`flex items-center px-4 py-2 sm:px-6 sm:py-3 lg:px-8 lg:py-4 ${
                     isPremium
                       ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  } rounded-lg font-bold shadow-lg transform transition-all duration-300 hover:scale-105`}
+                  } rounded-lg font-bold text-sm sm:text-base lg:text-lg shadow-lg transform transition-all duration-300 hover:scale-105`}
                 >
-                  Book Now
-                  <ArrowRight className='ml-2 h-5 w-5' />
+                  <span>Book Now</span>
+                  <ArrowRight className='ml-2 h-4 w-4 sm:h-5 sm:w-5' />
                 </button>
               </div>
             </motion.div>
@@ -297,8 +298,8 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
       </div>
 
       {/* Gallery section - stylish design */}
-      <div>
-        <div className='flex items-center justify-between mb-8'>
+      <div className='px-6 py-8'>
+        <div className='flex items-center justify-between mb-8 '>
           <h2 className='text-3xl font-bold text-gray-900'>
             Our Service Gallery
           </h2>
@@ -333,7 +334,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
 
       {/* Traveler tips section */}
       <div
-        className={`rounded-xl ${
+        className={`rounded-xl px-6 py-8 ${
           isPremium
             ? 'bg-amber-50 border border-amber-100'
             : 'bg-blue-50 border border-blue-100'
@@ -397,7 +398,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
       </div>
 
       {/* Service features section */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-10'>
+      <div className='grid grid-cols-1 px-6 py-8 lg:grid-cols-2 gap-10'>
         <div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -565,7 +566,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
       </div>
 
       {/* Final booking call-to-action */}
-      <div className='bg-gray-900 rounded-xl overflow-hidden'>
+      <div className='bg-gray-900  overflow-hidden'>
         <div className='p-8 md:p-12'>
           <div className='flex flex-col md:flex-row items-center justify-between gap-8'>
             <div>
@@ -594,7 +595,7 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
       </div>
 
       {/* Key features section */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 px-6 py-8 md:grid-cols-3 gap-6'>
         {features.map((feature, index) => (
           <motion.div
             key={index}
