@@ -109,7 +109,8 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
       newErrors.date = 'Bookings must be made at least 24 hours in advance';
     }
 
-    return newErrors;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   // Handle form submission
@@ -123,23 +124,23 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
     setIsSubmitting(true);
 
     try {
-      // Create reservation data with properly structured items
+      const totalPrice = calculatePrice;
+
+      // Create reservation data structure similar to other forms
       const reservationData = {
         service,
+        totalPrice, // ✅ Include total price
         formData: {
           ...formData,
-          // Ensure items are properly structured
           serviceType: 'karaoke',
+          calculatedPrice: totalPrice,
         },
-        // totalPrice: calculateEstimatedTotal(),
-        bookingDate: new Date(`${formData.date}T${formData.hour}`),
-        clientInfo: undefined, // Will be filled in the confirmation page
+        bookingDate: new Date(`${formData.date}T${formData.startTime}`),
+        clientInfo: undefined,
       };
 
-      console.log(
-        '🛒 GroceryForm - Reservation data created:',
-        reservationData
-      );
+      console.log('🎤 Karaoke - Reservation data:', reservationData);
+      console.log('💰 Total Price included:', totalPrice);
 
       // Store in context
       setReservationData(reservationData);
@@ -147,7 +148,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
       // Navigate to confirmation page
       router.push('/reservation-confirmation');
     } catch (error) {
-      console.error('❌ DefaultServiceForm - Error submitting form:', error);
+      console.error('❌ KaraokeForm - Error submitting form:', error);
       setErrors({
         submit: t('form.errors.submitError', {
           fallback: 'Failed to submit reservation. Please try again.',
@@ -526,14 +527,14 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                 <div key={index} className='flex gap-3'>
                   <div className='flex-1'>
                     <input
-                      type='url'
+                      type='text'
                       value={reference}
                       onChange={(e) =>
                         updateMusicReference(index, e.target.value)
                       }
                       placeholder={`Song request ${
                         index + 1
-                      } (YouTube, Spotify, etc.)`}
+                      } (YouTube, Spotify, or just song name)`}
                       className='w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500'
                     />
                   </div>
@@ -640,20 +641,34 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
             <button
               type='button'
               onClick={onCancel}
-              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition'
+              disabled={isSubmitting}
+              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
             >
               Cancel
             </button>
 
             <button
               type='submit'
-              className='px-8 py-3 bg-purple-700 hover:bg-purple-600 text-white rounded-lg transition flex items-center'
+              disabled={isSubmitting}
+              className='px-8 py-3 bg-purple-700 hover:bg-purple-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
             >
               <CreditCard className='h-4 w-4 mr-2' />
-              Book Karaoke
+              {isSubmitting ? 'Processing...' : 'Book Karaoke'}
             </button>
           </div>
         </div>
+
+        {/* Submit Error */}
+        {errors.submit && (
+          <div className='p-4 bg-red-50 border border-red-200 rounded-lg mt-4'>
+            <div className='flex items-start'>
+              <AlertCircle className='w-4 h-4 text-red-600 mr-2 mt-0.5' />
+              <div className='text-sm text-red-800'>
+                <strong>Error:</strong> {errors.submit}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </form>
   );

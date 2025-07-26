@@ -1,4 +1,3 @@
-// src/UI/components/forms/ServiceFormFactory.tsx
 import React, { useMemo, Suspense } from 'react';
 import { Service } from '@/types/type';
 import { useTranslation } from '@/lib/i18n/client';
@@ -196,7 +195,7 @@ export default ServiceFormFactory;
 PARA AGREGAR UN NUEVO FORMULARIO:
 
 1. Crea tu componente de formulario normalmente
-2. Agrega una línea en formRegistry.ts:
+2. Agrega una línea en formRegistry.ts: se encuentra en src/utils/formRegistry.ts
 3. ¡YA ESTÁ! El sistema detectará automáticamente cuándo usar tu formulario.
 
 PATRÓN DE NOMENCLATURA RECOMENDADO:
