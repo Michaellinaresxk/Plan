@@ -1,7 +1,13 @@
 // components/grocery/GroceryShoppingService.tsx - FINAL FIXED VERSION
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
-import { ShoppingBag, Utensils, Wine, ShoppingCart } from 'lucide-react';
+import {
+  ShoppingBag,
+  Utensils,
+  Wine,
+  ShoppingCart,
+  ArrowRight,
+} from 'lucide-react';
 import GroceryShoppingSelector from './GroceryShoppingSelector';
 
 // Enhanced interface to match our expected structure
@@ -198,25 +204,57 @@ const GroceryShoppingService: React.FC<GroceryShoppingServiceProps> = ({
       </div>
 
       {/* How It Works Section */}
-      <div className='mb-16'>
-        <div className='bg-white rounded-xl p-8 shadow-sm border border-gray-100'>
-          <h2 className='text-2xl font-bold text-gray-900 mb-6'>
-            {t('grocery.service.howItWorks', { fallback: 'How It Works' })}
-          </h2>
+      <div className='mb-12 sm:mb-16 lg:mb-20'>
+        <div className='bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-gray-100'>
+          <div className='flex flex-col lg:flex-row'>
+            {/* Imagen */}
+            <div className='lg:w-1/2 h-64 sm:h-80 lg:h-auto relative'>
+              <img
+                src='https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&q=80&w=800'
+                alt='How our grocery service works'
+                className='absolute inset-0 w-full h-full object-cover'
+              />
+              <div className='absolute inset-0 bg-gradient-to-r from-blue-900/20 to-transparent lg:from-transparent lg:to-blue-900/10' />
 
-          <div className='space-y-6'>
-            {steps.map((step) => (
-              <div key={step.number} className='flex items-start'>
-                <div className='flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white mr-4'>
-                  <span className='text-sm font-medium'>{step.number}</span>
-                </div>
-                <div className='pt-1'>
-                  <p className='text-gray-700'>
-                    {t(step.textKey, { fallback: step.textFallback })}
-                  </p>
-                </div>
+              {/* Badge flotante en la imagen */}
+              <div className='absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/90 backdrop-blur-sm px-3 py-1 sm:px-4 sm:py-2 rounded-full border border-gray-200'>
+                <span className='text-blue-600 font-semibold text-xs sm:text-sm'>
+                  ✨ Simple Process
+                </span>
               </div>
-            ))}
+            </div>
+
+            {/* Contenido */}
+            <div className='lg:w-1/2 p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-center'>
+              <h2 className='text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 sm:mb-8'>
+                {t('grocery.service.howItWorks', { fallback: 'How It Works' })}
+              </h2>
+
+              <div className='space-y-4 sm:space-y-6'>
+                {steps.map((step) => (
+                  <div key={step.number} className='flex items-start group'>
+                    <div className='flex-shrink-0 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-blue-500 group-hover:bg-blue-600 text-white mr-3 sm:mr-4 transition-colors duration-200'>
+                      <span className='text-sm sm:text-base font-medium'>
+                        {step.number}
+                      </span>
+                    </div>
+                    <div className='pt-1 sm:pt-2 flex-1 min-w-0'>
+                      <p className='text-gray-700 text-sm sm:text-base leading-relaxed'>
+                        {t(step.textKey, { fallback: step.textFallback })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA opcional */}
+              <div className='mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-100'>
+                <button className='inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold text-sm sm:text-base transition-colors duration-200'>
+                  <span>Get Started Now</span>
+                  <ArrowRight className='ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform' />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

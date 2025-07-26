@@ -44,7 +44,7 @@ interface SaonaIslandTourServiceViewProps {
 // Constants
 const GALLERY_IMAGES = [
   {
-    src: 'https://images.unsplash.com/photo-1615787421738-e980903b0640?q=80&w=2874&auto=format&fit=crop',
+    src: '/img/saona-island/saona-4.jpg',
     alt: 'Pristine beaches of Saona Island',
     caption:
       'The stunning white sand beaches of Saona Island, Dominican Republic',
@@ -445,51 +445,6 @@ const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
           </div>
         </motion.div>
 
-        {/* Call to Action Banner 1 - Adventure Focus */}
-        <motion.div
-          className='relative overflow-hidden rounded-3xl h-[60vh] shadow-2xl'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <Image
-            src='https://images.unsplash.com/photo-1502402772916-f8a62ea50180?q=80&w=1400'
-            alt='Catamaran sailing adventure'
-            fill
-            className='object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-blue-900/80 via-cyan-900/50 to-black/70' />
-
-          <div className='absolute inset-0 flex items-center text-white p-12'>
-            <div className='max-w-2xl'>
-              <motion.h3
-                className='text-5xl md:text-6xl font-bold mb-6'
-                variants={fadeIn}
-              >
-                Sail to Paradise,
-                <br />
-                Return in Adventure
-              </motion.h3>
-              <motion.p
-                className='text-xl text-white/90 mb-8 leading-relaxed'
-                variants={fadeIn}
-              >
-                Experience the best of both worlds: a relaxing catamaran cruise
-                to the island and an exhilarating speedboat journey back. Two
-                different adventures, one perfect day.
-              </motion.p>
-              <motion.button
-                onClick={() => setIsModalOpen(true)}
-                className='bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center gap-3 transition-all duration-300 border border-white/30'
-                variants={slideIn}
-              >
-                <Waves className='w-5 h-5' />
-                Experience Both Adventures
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Navigation Tabs */}
         <div className='bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-gray-200/50'>
           <nav className='flex space-x-2'>
@@ -557,49 +512,6 @@ const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
                   />
                 </div>
               </div>
-
-              {/* Call to Action Banner 2 - Natural Pools Focus */}
-              <motion.div
-                className='relative overflow-hidden rounded-3xl h-[50vh] shadow-2xl'
-                initial='hidden'
-                animate='visible'
-                variants={fadeIn}
-              >
-                <Image
-                  src='https://images.unsplash.com/photo-1514907283155-ea5f4094c70c?q=80&w=1400'
-                  alt='Natural pools with starfish'
-                  fill
-                  className='object-cover'
-                />
-                <div className='absolute inset-0 bg-gradient-to-l from-emerald-900/80 via-teal-900/50 to-black/70' />
-
-                <div className='absolute inset-0 flex items-center justify-end text-white p-12'>
-                  <div className='max-w-2xl text-right'>
-                    <motion.h3
-                      className='text-4xl md:text-5xl font-bold mb-4'
-                      variants={fadeIn}
-                    >
-                      Swim with Starfish
-                    </motion.h3>
-                    <motion.p
-                      className='text-lg text-white/90 mb-6'
-                      variants={fadeIn}
-                    >
-                      Experience the magical natural pools where hundreds of
-                      starfish call home. These shallow, crystal-clear waters
-                      are perfect for swimming and snorkeling.
-                    </motion.p>
-                    <motion.button
-                      onClick={() => setIsModalOpen(true)}
-                      className='bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-4 rounded-xl font-semibold flex items-center gap-3 transition-all duration-300 ml-auto'
-                      variants={slideIn}
-                    >
-                      <Fish className='w-5 h-5' />
-                      Discover Marine Life
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
 
               {/* What's Included Section */}
               <div className='grid md:grid-cols-2 gap-8'>

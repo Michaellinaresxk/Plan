@@ -429,10 +429,10 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
   );
 
   return (
-    <div className='max-w-8xl mx-auto px-6 py-8 space-y-16'>
+    <div className='max-w-8xl mx-auto  space-y-16'>
       {/* Hero Section */}
       <motion.div
-        className='relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black'
+        className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12 bg-gradient-to-br from-gray-900 via-gray-800 to-black'
         initial='hidden'
         animate='visible'
         variants={fadeInUp}
@@ -447,80 +447,49 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
           />
         </div>
 
-        <div className='relative z-10 p-12 md:p-16 text-white'>
-          <motion.div
-            className='inline-flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 mb-6'
-            variants={fadeInUp}
-          >
-            <Bike className='w-5 h-5 text-white mr-2' />
-            <span className='text-white font-medium'>
-              Your Ride. Your Freedom.
-            </span>
-          </motion.div>
+        {/* Overlay adicional para mejor contraste */}
+        <div className='absolute inset-0 bg-black/20 z-[1]' />
+        <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 z-[2]' />
 
-          <motion.h1
-            className='text-4xl md:text-6xl font-bold mb-6 leading-tight'
-            variants={fadeInUp}
-          >
-            Bike Rental
-            <br />
-            <span className='text-gray-300'>Explore At Your Own Pace</span>
-          </motion.h1>
-
-          <motion.p
-            className='text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl leading-relaxed'
-            variants={fadeInUp}
-          >
-            Discover Punta Cana like a local with our high-quality bikes,
-            delivered straight to your accommodation. Whether you're cruising
-            along the coast or exploring hidden paths, our bikes are maintained
-            to the highest standard for a smooth and safe ride.
-          </motion.p>
-        </div>
-      </motion.div>
-
-      {/* Features Grid */}
-      <motion.div
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true }}
-        variants={stagger}
-      >
-        <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
-            Why Choose Our Bikes?
-          </h2>
-          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-            Premium quality, reliable service, and the freedom to explore
-          </p>
-        </div>
-
-        <div className='grid md:grid-cols-3 gap-8'>
-          {FEATURES.map((feature, index) => (
+        <div className='relative z-10 px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12 lg:py-16 xl:py-20 text-white'>
+          <div className='max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10'>
             <motion.div
-              key={index}
-              className='text-center p-8'
+              className='inline-flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-2 rounded-full border border-white/20'
               variants={fadeInUp}
-              whileHover={{ y: -4 }}
             >
-              <div
-                className={`w-16 h-16 rounded-2xl ${feature.color} flex items-center justify-center mx-auto mb-6`}
-              >
-                {feature.icon}
-              </div>
-              <h3 className='text-xl font-bold text-gray-900 mb-3'>
-                {feature.title}
-              </h3>
-              <p className='text-gray-600 leading-relaxed'>
-                {feature.description}
-              </p>
+              <Bike className='w-4 h-4 sm:w-5 sm:h-5 text-white mr-2' />
+              <span className='text-white font-medium text-sm sm:text-base'>
+                Your Ride. Your Freedom.
+              </span>
             </motion.div>
-          ))}
+
+            <motion.h1
+              className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight max-w-4xl'
+              variants={fadeInUp}
+            >
+              Bike Rental
+              <br />
+              <span className='text-gray-300 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl'>
+                Explore At Your Own Pace
+              </span>
+            </motion.h1>
+
+            <motion.p
+              className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-300 max-w-4xl leading-relaxed'
+              variants={fadeInUp}
+            >
+              Discover Punta Cana like a local with our high-quality bikes,
+              delivered straight to your accommodation. Whether you're cruising
+              along the coast or exploring hidden paths, our bikes are
+              maintained to the highest standard for a smooth and safe ride.
+            </motion.p>
+          </div>
         </div>
       </motion.div>
 
       {/* Bike Selection */}
       <motion.div
+        className='px-6 py-8'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
@@ -1193,7 +1162,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
 
       {/* What's Included */}
       <motion.div
-        className='grid md:grid-cols-2 gap-12'
+        className='grid md:grid-cols-2 gap-12 px-6 py-8'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
@@ -1319,58 +1288,46 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         </cite>
       </motion.div>
 
-      {/* Location & Availability */}
+      {/* Features Grid */}
       <motion.div
-        className='grid md:grid-cols-3 gap-8'
+        className='px-6 py-8'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
         variants={stagger}
       >
-        <motion.div className='text-center p-6' variants={fadeInUp}>
-          <Clock className='w-12 h-12 text-blue-600 mx-auto mb-4' />
-          <h3 className='font-bold text-gray-900 mb-2'>Flexible Timing</h3>
-          <p className='text-gray-600'>Available 24/7 to fit your schedule</p>
-        </motion.div>
-
-        <motion.div className='text-center p-6' variants={fadeInUp}>
-          <Users className='w-12 h-12 text-green-600 mx-auto mb-4' />
-          <h3 className='font-bold text-gray-900 mb-2'>All Ages Welcome</h3>
-          <p className='text-gray-600'>
-            Children's bikes and safety gear available
-          </p>
-        </motion.div>
-
-        <motion.div className='text-center p-6' variants={fadeInUp}>
-          <MapPin className='w-12 h-12 text-purple-600 mx-auto mb-4' />
-          <h3 className='font-bold text-gray-900 mb-2'>Wide Coverage</h3>
-          <p className='text-gray-600'>Delivery throughout Punta Cana area</p>
-        </motion.div>
-      </motion.div>
-
-      {/* Final CTA - Only show when no bike is selected */}
-      {!selectedBikeType && (
-        <motion.div
-          className='bg-gray-900 rounded-3xl p-8 md:p-12 text-white text-center'
-          initial='hidden'
-          whileInView='visible'
-          viewport={{ once: true }}
-          variants={fadeInUp}
-        >
-          <h2 className='text-3xl md:text-4xl font-bold mb-4'>
-            Ready to Explore?
+        <div className='text-center mb-12'>
+          <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
+            Why Choose Our Bikes?
           </h2>
-          <p className='text-xl text-gray-300 mb-8 max-w-2xl mx-auto'>
-            Select a bike above to start your booking and discover Punta Cana
-            from a new perspective
+          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+            Premium quality, reliable service, and the freedom to explore
           </p>
+        </div>
 
-          <div className='flex items-center justify-center gap-3 text-gray-400'>
-            <ArrowUp className='w-6 h-6' />
-            <span className='text-lg'>Choose your bike to continue</span>
-          </div>
-        </motion.div>
-      )}
+        <div className='grid md:grid-cols-3 gap-8'>
+          {FEATURES.map((feature, index) => (
+            <motion.div
+              key={index}
+              className='text-center p-8'
+              variants={fadeInUp}
+              whileHover={{ y: -4 }}
+            >
+              <div
+                className={`w-16 h-16 rounded-2xl ${feature.color} flex items-center justify-center mx-auto mb-6`}
+              >
+                {feature.icon}
+              </div>
+              <h3 className='text-xl font-bold text-gray-900 mb-3'>
+                {feature.title}
+              </h3>
+              <p className='text-gray-600 leading-relaxed'>
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 };

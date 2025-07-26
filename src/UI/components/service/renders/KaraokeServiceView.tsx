@@ -219,16 +219,6 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
             <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
               <div className='max-w-6xl'>
-                <motion.div
-                  className='inline-flex items-center bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-8'
-                  variants={slideIn}
-                >
-                  <Sparkles className='w-5 h-5 text-pink-300 mr-3' />
-                  <span className='text-white font-medium text-lg'>
-                    Sing, Dance, Create Memories
-                  </span>
-                </motion.div>
-
                 <motion.h1
                   className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
                   variants={fadeInUp}

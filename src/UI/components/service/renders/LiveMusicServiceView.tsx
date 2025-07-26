@@ -128,12 +128,14 @@ const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
       <div className='max-w-8xl mx-auto space-y-16 pb-16'>
         {/* Hero Section */}
         <motion.div
-          className='relative overflow-hidden rounded-3xl mx-4 mt-8'
+          className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
         >
-          <div className='relative h-[85vh] bg-gradient-to-r from-slate-900/90 via-gray-800/80 to-slate-900/90'>
+          <div className='relative h-[70vh] sm:h-[80vh] lg:h-[85vh] bg-gradient-to-r from-slate-900/90 via-gray-800/80 to-slate-900/90'>
+            {/* Overlay adicional para mejor contraste */}
+            <div className='absolute inset-0 bg-black/20 z-[1]' />
             <Image
               src='https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=1200'
               alt='Professional live music performance'
@@ -142,45 +144,40 @@ const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
               priority
             />
 
+            {/* Overlay adicional para mejor contraste */}
+            <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
+
             {/* Subtle floating elements */}
             <motion.div
-              className='absolute top-20 right-20 w-16 h-16 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center'
+              className='absolute top-8 right-4 sm:top-12 sm:right-8 lg:top-20 lg:right-20 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center hidden sm:flex'
               animate={{ y: [-10, 10, -10] }}
               transition={{ duration: 6, repeat: Infinity }}
             >
-              <Music className='w-6 h-6 text-white' />
+              <Music className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white' />
             </motion.div>
             <motion.div
-              className='absolute bottom-32 left-16 w-12 h-12 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center'
+              className='absolute bottom-16 left-4 sm:bottom-24 sm:left-8 lg:bottom-32 lg:left-16 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center hidden sm:flex'
               animate={{ y: [10, -10, 10] }}
               transition={{ duration: 8, repeat: Infinity }}
             >
-              <Waves className='w-5 h-5 text-white' />
+              <Waves className='w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-white' />
             </motion.div>
 
-            <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
-              <div className='max-w-5xl'>
-                <motion.div
-                  className='inline-flex items-center bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-8'
-                  variants={slideIn}
-                >
-                  <Music className='w-5 h-5 text-white mr-3' />
-                  <span className='text-white font-medium text-lg'>
-                    Your Rhythm. Your Celebration.
-                  </span>
-                </motion.div>
-
+            <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
+              <div className='max-w-5xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
                 <motion.h1
-                  className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
+                  className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-bold text-white leading-tight'
                   variants={fadeInUp}
                 >
                   Live Music
                   <br />
-                  <span className='text-gray-300'>Entertainment</span>
+                  <span className='text-gray-300 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl'>
+                    Entertainment
+                  </span>
                 </motion.h1>
 
                 <motion.p
-                  className='text-2xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed'
+                  className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 max-w-4xl mx-auto leading-relaxed px-2'
                   variants={fadeInUp}
                 >
                   Create unforgettable memories with live music at your villa,
@@ -188,55 +185,57 @@ const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
                 </motion.p>
 
                 <motion.div
-                  className='flex flex-wrap justify-center gap-8 mb-12'
+                  className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-8 max-w-4xl mx-auto justify-center'
                   variants={slideIn}
                 >
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <Users className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 min-w-0 flex-1 sm:flex-none'>
+                    <Users className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         1-5 Musicians
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Soloist to Quintet
                       </div>
                     </div>
                   </div>
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <Clock className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 min-w-0 flex-1 sm:flex-none'>
+                    <Clock className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         60-90 Minutes
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Customizable Sets
                       </div>
                     </div>
                   </div>
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <MapPin className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 min-w-0 flex-1 sm:flex-none'>
+                    <MapPin className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         Any Location
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Villa, Beach, Event
                       </div>
                     </div>
                   </div>
                 </motion.div>
 
-                <motion.button
-                  onClick={() => setIsModalOpen(true)}
-                  className='group bg-slate-800 hover:bg-slate-700 text-white px-12 py-5 rounded-2xl font-semibold text-xl flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl border border-slate-600'
-                  variants={slideIn}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className='w-6 h-6' />
-                  Book Live Music
-                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
-                </motion.button>
+                <div className='pt-4 sm:pt-6 lg:pt-8'>
+                  <motion.button
+                    onClick={() => setIsModalOpen(true)}
+                    className='group bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-12 lg:py-5 rounded-xl lg:rounded-2xl font-semibold text-base sm:text-lg lg:text-xl flex items-center gap-2 sm:gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl border border-slate-600 max-w-xs sm:max-w-none'
+                    variants={slideIn}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Play className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6' />
+                    <span className='whitespace-nowrap'>Book Live Music</span>
+                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:translate-x-1 transition-transform' />
+                  </motion.button>
+                </div>
               </div>
             </div>
           </div>
@@ -265,7 +264,7 @@ const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
             </motion.p>
           </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
             {ENSEMBLE_OPTIONS.map((ensemble, index) => (
               <motion.div
                 key={ensemble.id}
@@ -674,51 +673,6 @@ const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
           variants={fadeInUp}
         >
           <div className='bg-gradient-to-r from-slate-100 to-gray-100 rounded-3xl p-12 text-center'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-8'>
-              Why Choose Our Live Music?
-            </h2>
-
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mb-8'>
-              <div className='text-center'>
-                <div className='w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4'>
-                  <Users className='w-8 h-8 text-white' />
-                </div>
-                <h3 className='text-xl font-bold text-gray-800 mb-2'>
-                  Professional Musicians
-                </h3>
-                <p className='text-gray-600'>
-                  Experienced performers with extensive repertoires and
-                  professional training
-                </p>
-              </div>
-
-              <div className='text-center'>
-                <div className='w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4'>
-                  <Heart className='w-8 h-8 text-white' />
-                </div>
-                <h3 className='text-xl font-bold text-gray-800 mb-2'>
-                  Personalized Experience
-                </h3>
-                <p className='text-gray-600'>
-                  Custom song selections and arrangements tailored to your event
-                  and preferences
-                </p>
-              </div>
-
-              <div className='text-center'>
-                <div className='w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4'>
-                  <Settings className='w-8 h-8 text-white' />
-                </div>
-                <h3 className='text-xl font-bold text-gray-800 mb-2'>
-                  Complete Service
-                </h3>
-                <p className='text-gray-600'>
-                  From setup to breakdown, we handle all technical aspects
-                  professionally
-                </p>
-              </div>
-            </div>
-
             <div className='bg-white rounded-2xl p-8 max-w-4xl mx-auto'>
               <Quote className='w-10 h-10 text-slate-500 mx-auto mb-4' />
               <blockquote className='text-2xl font-medium text-gray-800 mb-4 italic leading-relaxed'>

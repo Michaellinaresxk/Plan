@@ -49,6 +49,8 @@ const YOGA_STYLES = [
     level: 'Beginner',
     duration: '60-75 min',
     benefits: ['Flexibility', 'Balance', 'Stress Relief'],
+    accentColor: 'slate',
+    gradient: 'from-green-50 via-emerald-50 to-teal-50',
   },
   {
     id: 'vinyasa',
@@ -58,6 +60,8 @@ const YOGA_STYLES = [
     level: 'Intermediate',
     duration: '60-90 min',
     benefits: ['Strength', 'Cardio', 'Mindfulness'],
+    accentColor: 'stone',
+    gradient: 'from-slate-50 via-blue-50 to-indigo-50',
   },
   {
     id: 'ashtanga',
@@ -67,6 +71,8 @@ const YOGA_STYLES = [
     level: 'Advanced',
     duration: '75-90 min',
     benefits: ['Power', 'Discipline', 'Purification'],
+    accentColor: 'amber',
+    gradient: 'from-stone-50 via-amber-50 to-orange-50',
   },
   {
     id: 'yin',
@@ -76,6 +82,8 @@ const YOGA_STYLES = [
     level: 'All Levels',
     duration: '60-75 min',
     benefits: ['Deep Stretch', 'Relaxation', 'Meditation'],
+    accentColor: 'emerald',
+    gradient: 'from-neutral-50 via-stone-100 to-amber-50',
   },
   {
     id: 'restorative',
@@ -85,6 +93,8 @@ const YOGA_STYLES = [
     level: 'All Levels',
     duration: '60-75 min',
     benefits: ['Recovery', 'Stress Relief', 'Sleep Quality'],
+    accentColor: 'slate',
+    gradient: 'from-green-50 via-emerald-50 to-teal-50',
   },
   {
     id: 'sunrise',
@@ -94,6 +104,8 @@ const YOGA_STYLES = [
     level: 'All Levels',
     duration: '45-60 min',
     benefits: ['Energy', 'Clarity', 'Vitality'],
+    accentColor: 'emerald',
+    gradient: 'from-green-50 via-emerald-50 to-teal-50',
   },
 ];
 
@@ -167,36 +179,6 @@ const BENEFITS = [
   },
 ];
 
-const TESTIMONIALS = [
-  {
-    text: "This was absolutely transformative. The instructor's guidance and the beautiful setting created the perfect environment for deep practice.",
-    author: 'Sarah M.',
-    location: 'New York',
-    image:
-      'https://images.unsplash.com/photo-1494790108755-2616b612b593?auto=format&fit=crop&q=80&w=150',
-    rating: 5,
-    session: 'Vinyasa Flow • Beach',
-  },
-  {
-    text: "I've practiced yoga for years, but this experience elevated my practice to a whole new level. Truly magical.",
-    author: 'Michael R.',
-    location: 'London',
-    image:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
-    rating: 5,
-    session: 'Hatha • Garden',
-  },
-  {
-    text: 'The perfect blend of challenge and relaxation. I left feeling completely renewed and centered.',
-    author: 'Emma L.',
-    location: 'Sydney',
-    image:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150',
-    rating: 5,
-    session: 'Yin • Poolside',
-  },
-];
-
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -223,9 +205,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
   const [selectedStyle, setSelectedStyle] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
 
-  const isPremium =
-    service.packageType.includes('premium') || viewContext === 'premium-view';
-
   const handleBookingConfirm = (
     service: Service,
     dates: BookingDate,
@@ -235,17 +214,29 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
     setIsModalOpen(false);
   };
 
+  const getAccentColors = (color) => {
+    const colors = {
+      slate: 'ring-slate-300 bg-slate-50 text-slate-700 bg-slate-400',
+      stone: 'ring-stone-300 bg-stone-50 text-stone-700 bg-stone-400',
+      amber: 'ring-amber-300 bg-amber-50 text-amber-700 bg-amber-400',
+      emerald: 'ring-emerald-300 bg-emerald-50 text-emerald-700 bg-emerald-400',
+    };
+    return colors[color] || colors.emerald;
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-blue-50'>
       <div className='max-w-8xl mx-auto space-y-16 pb-16'>
         {/* Hero Section */}
         <motion.div
-          className='relative overflow-hidden rounded-3xl mx-4 mt-8'
+          className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
         >
-          <div className='relative h-[80vh] bg-gradient-to-r from-emerald-900/80 via-teal-800/70 to-cyan-900/80'>
+          <div className='relative h-[70vh] sm:h-[80vh] lg:h-[85vh] bg-gradient-to-r from-emerald-900/80 via-teal-800/70 to-cyan-900/80'>
+            {/* Overlay adicional para mejor contraste */}
+            <div className='absolute inset-0 bg-black/30 z-[1]' />
             <Image
               src='https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1200'
               alt='Serene yoga practice at sunset'
@@ -254,32 +245,25 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               priority
             />
 
+            {/* Overlay adicional para mejor contraste */}
+            <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
+
             {/* Floating Elements */}
             <motion.div
-              className='absolute top-20 right-20 w-32 h-32 bg-white/10 rounded-full backdrop-blur-sm border border-white/20'
+              className='absolute top-8 right-4 sm:top-12 sm:right-8 lg:top-20 lg:right-20 w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hidden sm:block'
               animate={{ y: [-10, 10, -10] }}
               transition={{ duration: 4, repeat: Infinity }}
             />
             <motion.div
-              className='absolute bottom-32 left-16 w-24 h-24 bg-emerald-500/20 rounded-full backdrop-blur-sm'
+              className='absolute bottom-16 left-4 sm:bottom-24 sm:left-8 lg:bottom-32 lg:left-16 w-12 h-12 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-emerald-500/20 rounded-full backdrop-blur-sm hidden sm:block'
               animate={{ y: [10, -10, 10] }}
               transition={{ duration: 6, repeat: Infinity }}
             />
 
-            <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
-              <div className='max-w-5xl'>
-                <motion.div
-                  className='inline-flex items-center bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-8'
-                  variants={slideIn}
-                >
-                  <Leaf className='w-5 h-5 text-white mr-3' />
-                  <span className='text-white font-medium text-lg'>
-                    Find Your Inner Balance
-                  </span>
-                </motion.div>
-
+            <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
+              <div className='max-w-5xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
                 <motion.h1
-                  className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
+                  className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-bold text-white leading-tight'
                   variants={fadeInUp}
                 >
                   Yoga
@@ -290,7 +274,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                 </motion.h1>
 
                 <motion.p
-                  className='text-2xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed'
+                  className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 max-w-4xl mx-auto leading-relaxed px-2'
                   variants={fadeInUp}
                 >
                   Embark on a transformative journey of self-discovery through
@@ -298,53 +282,62 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                 </motion.p>
 
                 <motion.div
-                  className='flex flex-wrap justify-center gap-8 mb-12'
+                  className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-8 max-w-4xl mx-auto justify-center'
                   variants={slideIn}
                 >
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <Clock className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 min-w-0 flex-1 sm:flex-none'>
+                    <Clock className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         60-90 Minutes
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Flexible Duration
                       </div>
                     </div>
                   </div>
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <User className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>All Levels</div>
-                      <div className='text-white/70 text-sm'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 min-w-0 flex-1 sm:flex-none'>
+                    <User className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
+                        All Levels
+                      </div>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Personalized Practice
                       </div>
                     </div>
                   </div>
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <MapPin className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border border-white/20 min-w-0 flex-1 sm:flex-none'>
+                    <MapPin className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         Your Choice
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Beach, Pool, Garden, Villa
                       </div>
                     </div>
                   </div>
                 </motion.div>
 
-                <motion.button
-                  onClick={() => setIsModalOpen(true)}
-                  className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-                  variants={slideIn}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className='w-7 h-7' fill='currentColor' />
-                  Begin Your Journey
-                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
-                </motion.button>
+                <div className='pt-4 sm:pt-6 lg:pt-8'>
+                  <motion.button
+                    onClick={() => setIsModalOpen(true)}
+                    className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-12 lg:py-5 rounded-xl lg:rounded-2xl font-bold text-base sm:text-lg lg:text-xl flex items-center gap-2 sm:gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl max-w-xs sm:max-w-none'
+                    variants={slideIn}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Play
+                      className='w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7'
+                      fill='currentColor'
+                    />
+                    <span className='whitespace-nowrap'>
+                      Begin Your Journey
+                    </span>
+                    <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:translate-x-1 transition-transform' />
+                  </motion.button>
+                </div>
               </div>
             </div>
           </div>
@@ -424,68 +417,121 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
             </p>
           </div>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-            {YOGA_STYLES.map((style, index) => (
-              <motion.div
-                key={style.id}
-                className={`relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer group ${
-                  selectedStyle === style.id
-                    ? 'ring-4 ring-emerald-500 scale-105'
-                    : ''
-                }`}
-                onClick={() =>
-                  setSelectedStyle(selectedStyle === style.id ? '' : style.id)
-                }
-                variants={fadeInUp}
-                whileHover={{ y: -8 }}
-              >
-                <div className='relative h-48 bg-gradient-to-br from-emerald-500 to-teal-600'>
-                  <div className='absolute inset-0 bg-black/20' />
-                  <div className='absolute top-6 left-6 text-white'>
-                    {style.icon}
-                  </div>
-                  <div className='absolute bottom-6 left-6 text-white'>
-                    <div className='text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm'>
-                      {style.level}
-                    </div>
-                  </div>
-                  <div className='absolute bottom-6 right-6 text-white'>
-                    <div className='text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm'>
-                      {style.duration}
-                    </div>
-                  </div>
-                </div>
+          <div className='py-12 px-4 max-w-6xl mx-auto'>
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+              {YOGA_STYLES.map((service, index) => {
+                const accentColors = getAccentColors(service.accentColor);
 
-                <div className='p-6'>
-                  <h3 className='text-xl font-bold text-gray-800 mb-3'>
-                    {style.name}
-                  </h3>
-                  <p className='text-gray-600 mb-4 leading-relaxed'>
-                    {style.description}
-                  </p>
-
-                  <div className='flex flex-wrap gap-2'>
-                    {style.benefits.map((benefit, idx) => (
-                      <span
-                        key={idx}
-                        className='text-xs bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full font-medium'
-                      >
-                        {benefit}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {selectedStyle === style.id && (
+                return (
                   <motion.div
-                    className='absolute inset-0 bg-emerald-500/10 border-4 border-emerald-500 rounded-3xl'
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
-              </motion.div>
-            ))}
+                    key={service.id}
+                    className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 cursor-pointer overflow-hidden ${
+                      selectedStyle === service.id
+                        ? `ring-2 ${accentColors.split(' ')[0]} shadow-lg`
+                        : ''
+                    }`}
+                    onClick={() =>
+                      setSelectedStyle(
+                        selectedStyle === service.id ? '' : service.id
+                      )
+                    }
+                    variants={fadeInUp}
+                    initial='hidden'
+                    animate='visible'
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {/* Header visual con gradiente */}
+                    <div
+                      className={`relative h-32 bg-gradient-to-r ${service.gradient} p-6 flex items-center justify-between`}
+                    >
+                      {/* Patrón decorativo sutil */}
+                      <div className='absolute inset-0 opacity-10'>
+                        <div className='absolute top-4 right-4 w-16 h-16 border border-gray-300/40 rounded-full'></div>
+                        <div className='absolute bottom-2 left-8 w-8 h-8 border border-gray-300/40 rounded-full'></div>
+                        <div className='absolute top-8 left-1/3 w-4 h-4 bg-gray-400/30 rounded-full'></div>
+                      </div>
+
+                      {/* Icono principal */}
+                      <div className='relative z-10 text-gray-600 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-sm'>
+                        {service.icon}
+                      </div>
+
+                      {/* Precio */}
+                      <div className='relative z-10 bg-white/95 backdrop-blur-sm text-gray-800 font-bold px-4 py-2 rounded-full shadow-sm border border-gray-200/50'>
+                        {service.price}
+                      </div>
+                    </div>
+
+                    {/* Contenido */}
+                    <div className='p-6'>
+                      <div className='flex flex-wrap items-center gap-2 mb-3'>
+                        <h3 className='text-xl font-bold text-gray-800 flex-1'>
+                          {service.name}
+                        </h3>
+                        <div className='flex gap-2'>
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full font-medium ${
+                              accentColors.split(' ')[1]
+                            } ${accentColors.split(' ')[2]}`}
+                          >
+                            {service.level}
+                          </span>
+                          <span className='text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium flex items-center gap-1'>
+                            <Clock className='w-3 h-3' />
+                            {service.duration}
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className='text-gray-600 mb-4 leading-relaxed'>
+                        {service.description}
+                      </p>
+
+                      {/* Beneficios en formato compacto */}
+                      <div className='space-y-2 mb-6'>
+                        <h4 className='text-xs font-semibold text-gray-500 uppercase tracking-wide'>
+                          Benefits
+                        </h4>
+                        <div className='flex flex-wrap gap-1'>
+                          {service.benefits.map((benefit, idx) => (
+                            <span
+                              key={idx}
+                              className='text-xs bg-gray-50 text-gray-700 px-2 py-1 rounded-full border flex items-center gap-1'
+                            >
+                              <CheckCircle className='w-3 h-3 text-green-500' />
+                              {benefit}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <motion.button
+                        className={`w-full text-white px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
+                          accentColors.split(' ')[3]
+                        } hover:shadow-lg`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Sparkles className='w-4 h-4' />
+                        Book {service.name}
+                      </motion.button>
+                    </div>
+
+                    {/* Indicador de selección */}
+                    {selectedStyle === service.id && (
+                      <motion.div
+                        className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-20 rounded-2xl pointer-events-none border-2 border-gray-300/30`}
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </motion.div>
 

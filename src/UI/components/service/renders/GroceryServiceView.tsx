@@ -1,4 +1,3 @@
-// views/GroceryServiceView.tsx - FINAL FIXED VERSION
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -21,7 +20,6 @@ import {
 
 import GroceryShoppingService from '../../grocery/GroceryShoppingService';
 
-// Interface for grocery items - UPDATED to match our schema
 interface GroceryItem {
   id: string;
   name: string;
@@ -38,13 +36,7 @@ interface GroceryServiceViewProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
-  service,
-  serviceData,
-  extendedDetails,
-  primaryColor,
-  viewContext,
-}) => {
+const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({ service }) => {
   const { t } = useTranslation();
 
   // State - UPDATED to store proper item structure
@@ -57,13 +49,11 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
   // Determine if this is a premium service
   const isPremium = service.packageType.includes('premium');
 
-  // FIXED: Memoize all categories to prevent recreation
   const allCategories = useMemo(
     () => [...GROCERY_CATEGORIES, ...SPIRIT_CATEGORIES],
     []
   );
 
-  // FIXED: Convert item IDs to proper GroceryItem objects - wrapped in useCallback
   const convertIdsToItems = useCallback(
     (itemIds: string[]): GroceryItem[] => {
       console.log('🛒 GroceryServiceView - Converting IDs to items:', itemIds);
@@ -98,7 +88,6 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
     [allCategories, t]
   );
 
-  // FIXED: Handle selected items from the grocery selector without causing setState during render
   const handleItemsSelected = useCallback(
     (itemIds: string[]) => {
       console.log('🛒 GroceryServiceView - Raw selected item IDs:', itemIds);
@@ -126,7 +115,6 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
     [convertIdsToItems]
   );
 
-  // FIXED: Wrap modal handlers in useCallback
   const handleOpenBookingModal = useCallback(() => {
     console.log(
       '🛒 GroceryServiceView - Opening modal with items:',
@@ -148,7 +136,6 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
     setIsModalOpen(false);
   }, []);
 
-  // FIXED: Memoize the total calculation
   const estimatedTotal = useMemo(() => {
     const basePrice = service.price;
     const estimatedItemCost = selectedItems.length * 5; // $5 per item estimate
@@ -159,77 +146,88 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
     <div className='space-y-12'>
       {/* Hero Section with Tagline */}
       <motion.div
-        className={`relative overflow-hidden rounded-2xl ${
+        className={`relative overflow-hidden w-full my-6 sm:my-8 lg:my-12 ${
           isPremium
-            ? 'bg-gradient-to-r from-amber-900/90 to-amber-700/80'
-            : 'bg-gradient-to-r from-blue-900/90 to-blue-700/80'
+            ? 'bg-gradient-to-r from-amber-900/30 to-amber-700/40'
+            : 'bg-gradient-to-r from-blue-900/30 to-blue-700/40'
         }`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className='absolute inset-0 -z-10'>
+        <div className='absolute inset-0'>
           <Image
             src='https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
             alt='Fresh groceries'
             fill
-            className='object-cover opacity-30'
+            className='object-cover opacity-70'
           />
         </div>
 
-        <div className='p-10 md:p-16 text-white'>
-          <h1 className='text-3xl md:text-5xl font-bold mb-4 leading-tight'>
-            {isPremium
-              ? 'Premium Grocery Delivery & Stocking Service'
-              : 'Fresh Groceries Delivered to Your Door'}
-          </h1>
-          <h2 className='text-xl md:text-2xl opacity-90 mb-8 max-w-3xl font-light'>
-            {isPremium
-              ? 'Your personalized grocery concierge service with premium selection and white-glove stocking'
-              : 'We shop for the freshest local ingredients and deliver them right to your vacation rental'}
-          </h2>
+        {/* Overlay adicional para mejor contraste */}
+        <div className='absolute inset-0 bg-black/40 z-[1]' />
+        <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
 
-          <div className='flex flex-wrap items-center gap-6 text-sm'>
-            <div className='flex items-center'>
-              <Clock className='h-5 w-5 mr-2 opacity-80' />
-              <span>
-                {isPremium
-                  ? 'Same-day delivery available'
-                  : 'Delivery within 24-48 hours'}
-              </span>
-            </div>
-            <div className='flex items-center'>
-              <Truck className='h-5 w-5 mr-2 opacity-80' />
-              <span>Island-wide delivery service</span>
-            </div>
-            <div className='flex items-center'>
-              <ShoppingBag className='h-5 w-5 mr-2 opacity-80' />
-              <span>Local & imported products</span>
-            </div>
-          </div>
+        <div className='relative z-10 px-4 sm:px-6 lg:px-8 xl:px-10 py-8 sm:py-12 lg:py-16 xl:py-20 text-white'>
+          <div className='max-w-6xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10'>
+            <h1 className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight max-w-4xl'>
+              {isPremium
+                ? 'Premium Grocery Delivery & Stocking Service'
+                : 'Fresh Groceries Delivered to Your Door'}
+            </h1>
 
-          {/* CTA Button - opens the grocery selection */}
-          <div className='mt-8'>
-            <button
-              onClick={() => {
-                document
-                  .getElementById('grocery-selection')
-                  ?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className={`flex items-center px-8 py-4 ${
-                isPremium
-                  ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              } rounded-full font-bold shadow-lg transform transition-all duration-300 hover:scale-105`}
-            >
-              Shop Now
-              <ShoppingCart className='ml-2 h-5 w-5' />
-            </button>
+            <h2 className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl opacity-90 max-w-3xl font-light leading-relaxed'>
+              {isPremium
+                ? 'Your personalized grocery concierge service with premium selection and white-glove stocking'
+                : 'We shop for the freshest local ingredients and deliver them right to your vacation rental'}
+            </h2>
+
+            {/* Features - Responsive */}
+            <div className='flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 lg:gap-6 text-sm sm:text-base max-w-4xl'>
+              <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-white/20'>
+                <Clock className='h-4 h-4 sm:h-5 sm:w-5 mr-2 opacity-80 flex-shrink-0' />
+                <span className='whitespace-nowrap'>
+                  {isPremium
+                    ? 'Same-day delivery available'
+                    : 'Delivery within 24-48 hours'}
+                </span>
+              </div>
+              <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-white/20'>
+                <Truck className='h-4 h-4 sm:h-5 sm:w-5 mr-2 opacity-80 flex-shrink-0' />
+                <span className='whitespace-nowrap'>
+                  Island-wide delivery service
+                </span>
+              </div>
+              <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-white/20'>
+                <ShoppingBag className='h-4 h-4 sm:h-5 sm:w-5 mr-2 opacity-80 flex-shrink-0' />
+                <span className='whitespace-nowrap'>
+                  Local & imported products
+                </span>
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className='pt-4 sm:pt-6 lg:pt-8'>
+              <button
+                onClick={() => {
+                  document
+                    .getElementById('grocery-selection')
+                    ?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`flex items-center px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-5 ${
+                  isPremium
+                    ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                } rounded-full font-bold text-base sm:text-lg shadow-lg transform transition-all duration-300 hover:scale-105`}
+              >
+                <span>Shop Now</span>
+                <ShoppingCart className='ml-2 h-4 h-4 sm:h-5 sm:w-5' />
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Grocery Selection Section - UPDATED */}
       <div id='grocery-selection'>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -237,7 +235,7 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <GroceryShoppingService
-            onItemsSelected={handleItemsSelected} // FIXED: Now passes proper function
+            onItemsSelected={handleItemsSelected}
             handleOpenBookingModal={handleOpenBookingModal}
             service={service}
           />

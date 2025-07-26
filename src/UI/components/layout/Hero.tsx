@@ -90,7 +90,7 @@ const Hero = () => {
       {/* Luxury Background */}
       <div className='absolute inset-0 z-0'>
         <div className='hero-img absolute inset-0 bg-cover bg-center' />
-        <div className='absolute inset-0 bg-gradient-to-br from-black/50 via-black/50 to-black/70 z-10'></div>
+        <div className='absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/70 z-10'></div>
         <div className='absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/70 z-10'></div>
         <div className='absolute inset-0 bg-black/9 z-10'></div>
       </div>
