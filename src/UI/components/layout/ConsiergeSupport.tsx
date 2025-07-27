@@ -129,7 +129,7 @@ const ConsiergeSupport = () => {
             >
               <div className='rounded-2xl overflow-hidden shadow-2xl'>
                 <Image
-                  src='/img/consierge.jpg'
+                  src='/img/concierge.jpg'
                   alt='Concierge team'
                   width={600}
                   height={800}
@@ -141,7 +141,7 @@ const ConsiergeSupport = () => {
                     <div className='flex items-center mb-4'>
                       <div className='w-12 h-12 rounded-full overflow-hidden border-2 border-blue-500 mr-4'>
                         <Image
-                          src='/img/consierge.jpg'
+                          src='/img/concierge.jpg'
                           alt='Concierge portrait'
                           width={48}
                           height={48}
@@ -150,16 +150,13 @@ const ConsiergeSupport = () => {
                       </div>
                       <div>
                         <h4 className='font-semibold text-gray-900'>
-                          Ramon Brito
+                          Bladimir Rodriguez
                         </h4>
                         <p className='text-gray-600 text-sm'>
                           Head of Concierge Services
                         </p>
                       </div>
                     </div>
-                    <p className='text-gray-700 italic'>
-                      {t('common.consierge.testimonial')}
-                    </p>
                   </div>
                 </div>
               </div>

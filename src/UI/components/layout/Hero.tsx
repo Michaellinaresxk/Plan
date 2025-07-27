@@ -102,7 +102,7 @@ const Hero = () => {
       <div className='relative z-20 min-h-screen flex flex-col'>
         {/* Top Section */}
         <div className='flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8'>
-          <div className='max-w-6xl mx-auto text-center space-y-8'>
+          <div className='max-w-6xl mx-auto text-center space-y-20'>
             {/* Revolutionary Title Design */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -116,13 +116,10 @@ const Hero = () => {
                   initial={{ opacity: 0, y: 60, scale: 0.8 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: 1, duration: 1.2, ease: 'easeOut' }}
-                  className='text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter relative'
+                  className='text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tighter relative'
                 >
                   <span className='relative inline-block'>
-                    <span className='absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-300 bg-clip-text text-transparent blur-sm scale-110 opacity-40'></span>
-                    <span className='relative bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400 bg-clip-text text-transparent'>
-                      Lux
-                    </span>
+                    <span className='relative'>Lux</span>
                   </span>
                 </motion.h1>
 
@@ -141,9 +138,12 @@ const Hero = () => {
                 transition={{ delay: 1.4, duration: 0.8 }}
                 className='space-y-2'
               >
-                <div className='text-xl sm:text-2xl md:text-3xl font-light text-white/95 tracking-[0.3em] uppercase'>
+                <div className='subtitle text-xl sm:text-2xl md:text-3xl font-light text-white/50 tracking-[0.3em] uppercase'>
                   Punta Cana
                 </div>
+                {/* <div className='text-base sm:text-lg md:text-xl text-amber-300/90 font-medium italic'>
+                  {t('home.hero.subtitle2')}
+                </div> */}
                 <div className='flex items-center justify-center gap-4'>
                   <div className='w-16 h-px bg-gradient-to-r from-transparent to-amber-400'></div>
                   <Sparkles size={20} className='text-amber-400' />
@@ -161,13 +161,9 @@ const Hero = () => {
             >
               <div className='relative'>
                 <div className='absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent rounded-xl'></div>
-                <p className='relative text-lg sm:text-xl md:text-2xl text-white/90 leading-relaxed font-light px-6 py-4'>
+                {/* <p className='relative text-lg sm:text-xl md:text-2xl text-white/90 leading-relaxed font-light px-6 py-4'>
                   {t('home.hero.subtitle')}
-                </p>
-              </div>
-
-              <div className='text-base sm:text-lg md:text-xl text-amber-300/90 font-medium italic'>
-                {t('home.hero.subtitle2')}
+                </p> */}
               </div>
             </motion.div>
 
@@ -177,48 +173,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.5, duration: 0.8 }}
               className='pt-6 space-y-6'
-            >
-              <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                <Link href='/custom-package'>
-                  <motion.button
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: '0 25px 50px rgba(245, 158, 11, 0.4)',
-                      y: -5,
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    className='group relative px-10 py-5 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white font-bold rounded-2xl text-lg shadow-2xl overflow-hidden'
-                  >
-                    <span className='relative z-10 flex items-center justify-center'>
-                      {t('common.button.explore')}
-                      <ChevronRight
-                        className='ml-3 transition-transform group-hover:translate-x-2'
-                        size={22}
-                      />
-                    </span>
-                    <div className='absolute inset-0 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-                    <div className='absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12'></div>
-                  </motion.button>
-                </Link>
-
-                <Link href='/contact'>
-                  <motion.button
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: '0 25px 50px rgba(255, 255, 255, 0.15)',
-                      y: -5,
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    className='group px-10 py-5 bg-white/5 border-2 border-white/20 hover:border-amber-400/60 text-white font-bold rounded-2xl text-lg backdrop-blur-xl transition-all duration-300 relative overflow-hidden'
-                  >
-                    <span className='relative z-10 group-hover:text-amber-200 transition-colors duration-300'>
-                      {t('common.button.contactUs')}
-                    </span>
-                    <div className='absolute inset-0 bg-gradient-to-r from-amber-400/10 to-yellow-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-                  </motion.button>
-                </Link>
-              </div>
-            </motion.div>
+            ></motion.div>
           </div>
         </div>
 
@@ -229,8 +184,28 @@ const Hero = () => {
           transition={{ delay: 3, duration: 1 }}
           className='pb-8 flex flex-col items-center space-y-4'
         >
-          <div className='text-white/50 text-xs uppercase tracking-[0.3em] font-medium'>
-            Discover More
+          <div className='flex mt-30 flex-col sm:flex-row gap-6 justify-center'>
+            <Link href='/custom-package'>
+              <motion.button
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: '0 25px 50px rgba(245, 158, 11, 0.4)',
+                  y: -5,
+                }}
+                whileTap={{ scale: 0.95 }}
+                className='main-button group relative px-7 py-3 bg-gradient-to-r  text-white font-bold  shadow-2xl overflow-hidden'
+              >
+                <span className=' relative z-10 flex items-center justify-center'>
+                  {t('common.button.explore')}
+                  <ChevronRight
+                    className='transition-transform group-hover:translate-x-2'
+                    size={22}
+                  />
+                </span>
+                <div className='absolute inset-0 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+                <div className='absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12'></div>
+              </motion.button>
+            </Link>
           </div>
           <motion.div
             animate={{ y: [0, 15, 0] }}
