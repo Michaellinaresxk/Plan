@@ -175,15 +175,15 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50'>
-      <div className='max-w-8xl mx-auto space-y-16 pb-16'>
+      <div className='max-w-8xl mx-auto pb-16'>
         {/* Hero Section */}
         <motion.div
-          className='relative overflow-hidden rounded-3xl mx-4 mt-8'
+          className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
         >
-          <div className='relative h-[90vh] bg-gradient-to-r from-purple-900/90 via-pink-800/80 to-blue-900/90'>
+          <div className='relative h-[70vh] sm:h-[75vh] lg:h-[80vh] xl:h-[90vh] bg-gradient-to-r from-purple-900/90 via-pink-800/80 to-blue-900/90'>
             <Image
               src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=1200'
               alt='Epic karaoke party with friends singing and dancing'
@@ -192,35 +192,39 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
               priority
             />
 
+            {/* Overlay adicional para mejor contraste */}
+            <div className='absolute inset-0 bg-black/20 z-[1]' />
+            <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
+
             {/* Floating Musical Elements */}
             <motion.div
-              className='absolute top-20 right-20 w-20 h-20 bg-pink-500/20 rounded-full backdrop-blur-sm border border-pink-500/30 flex items-center justify-center'
+              className='absolute top-12 sm:top-16 lg:top-20 right-8 sm:right-12 lg:right-20 w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-pink-500/20 rounded-full backdrop-blur-sm border border-pink-500/30 flex items-center justify-center'
               variants={bounce}
               animate='animate'
             >
-              <MicVocal className='w-8 h-8 text-white' />
+              <MicVocal className='w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white' />
             </motion.div>
             <motion.div
-              className='absolute bottom-32 left-16 w-16 h-16 bg-purple-500/20 rounded-full backdrop-blur-sm border border-purple-500/30 flex items-center justify-center'
+              className='absolute bottom-24 sm:bottom-28 lg:bottom-32 left-6 sm:left-10 lg:left-16 w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-purple-500/20 rounded-full backdrop-blur-sm border border-purple-500/30 flex items-center justify-center'
               variants={bounce}
               animate='animate'
               transition={{ delay: 1 }}
             >
-              <Music className='w-6 h-6 text-white' />
+              <Music className='w-3 h-3 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white' />
             </motion.div>
             <motion.div
-              className='absolute top-1/3 left-20 w-12 h-12 bg-blue-500/20 rounded-full backdrop-blur-sm border border-blue-500/30 flex items-center justify-center'
+              className='absolute top-1/3 left-6 sm:left-12 lg:left-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-blue-500/20 rounded-full backdrop-blur-sm border border-blue-500/30 flex items-center justify-center'
               variants={bounce}
               animate='animate'
               transition={{ delay: 2 }}
             >
-              <Star className='w-5 h-5 text-white' />
+              <Star className='w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-white' />
             </motion.div>
 
-            <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
-              <div className='max-w-6xl'>
+            <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
+              <div className='max-w-4xl xl:max-w-6xl w-full space-y-6 sm:space-y-8 lg:space-y-10 xl:space-y-12'>
                 <motion.h1
-                  className='text-6xl md:text-8xl font-bold text-white mb-8 leading-tight'
+                  className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold text-white leading-tight'
                   variants={fadeInUp}
                 >
                   Karaoke
@@ -231,7 +235,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
                 </motion.h1>
 
                 <motion.p
-                  className='text-2xl md:text-3xl text-white/90 mb-12 max-w-4xl mx-auto leading-relaxed'
+                  className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 max-w-3xl xl:max-w-4xl mx-auto leading-relaxed px-2'
                   variants={fadeInUp}
                 >
                   Transform any space into the ultimate karaoke stage with
@@ -239,38 +243,38 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
                 </motion.p>
 
                 <motion.div
-                  className='flex flex-wrap justify-center gap-8 mb-12'
+                  className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 xl:gap-8 max-w-4xl mx-auto justify-center'
                   variants={slideIn}
                 >
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <Users className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border border-white/20'>
+                    <Users className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         2-25 People
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Any Group Size
                       </div>
                     </div>
                   </div>
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <Disc3 className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border border-white/20'>
+                    <Disc3 className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         5000+ Songs
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         All Genres & Languages
                       </div>
                     </div>
                   </div>
-                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-6 py-4 rounded-2xl border border-white/20'>
-                    <Zap className='w-6 h-6 text-white mr-3' />
-                    <div className='text-left'>
-                      <div className='text-white font-semibold'>
+                  <div className='flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-xl lg:rounded-2xl border border-white/20'>
+                    <Zap className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
+                    <div className='text-left min-w-0'>
+                      <div className='text-white font-semibold text-sm sm:text-base truncate'>
                         15 Min Setup
                       </div>
-                      <div className='text-white/70 text-sm'>
+                      <div className='text-white/70 text-xs sm:text-sm truncate'>
                         Quick & Professional
                       </div>
                     </div>
@@ -279,14 +283,17 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
                 <motion.button
                   onClick={() => setIsModalOpen(true)}
-                  className='group bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
+                  className='group bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-5 xl:px-12 xl:py-5 rounded-xl lg:rounded-2xl font-bold text-base sm:text-lg lg:text-xl xl:text-xl flex items-center gap-2 sm:gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl max-w-xs sm:max-w-none'
                   variants={slideIn}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Play className='w-7 h-7' fill='currentColor' />
+                  <Play
+                    className='w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7'
+                    fill='currentColor'
+                  />
                   Start the Party
-                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
+                  <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:translate-x-1 transition-transform' />
                 </motion.button>
               </div>
             </div>
@@ -354,7 +361,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
               Karaoke Fun Facts
             </h2>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
               {[
                 {
                   icon: <Music className='w-8 h-8' />,
@@ -399,7 +406,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
         {/* Pricing & CTA */}
         <motion.div
-          className='px-4'
+          className='px-4 mt-20'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
@@ -513,7 +520,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
         {/* Testimonials */}
         <motion.div
-          className='px-4'
+          className='px-4 mt-20'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}

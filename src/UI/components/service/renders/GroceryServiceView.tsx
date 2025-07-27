@@ -168,7 +168,7 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({ service }) => {
         <div className='absolute inset-0 bg-black/40 z-[1]' />
         <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
 
-        <div className='relative z-10 px-4 sm:px-6 lg:px-8 xl:px-10 py-8 sm:py-12 lg:py-16 xl:py-20 text-white'>
+        <div className='relative z-10 px-4 mt-10 sm:px-6 lg:px-8 xl:px-10 py-8 sm:py-12 lg:py-16 xl:py-20 text-white'>
           <div className='max-w-6xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10'>
             <h1 className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight max-w-4xl'>
               {isPremium
@@ -323,7 +323,7 @@ const GroceryServiceView: React.FC<GroceryServiceViewProps> = ({ service }) => {
             isOpen={isModalOpen}
             onClose={handleCloseModal}
             service={service}
-            selectedItems={selectedItems} // FIXED: Now passes the selected items
+            selectedItems={selectedItems}
           />
         )}
       </AnimatePresence>

@@ -148,7 +148,6 @@ const GroceryShoppingService: React.FC<GroceryShoppingServiceProps> = ({
     []
   );
 
-  // FIXED: Memoize FeatureCard component to prevent recreation
   const FeatureCard = useMemo(() => {
     return React.memo<{
       icon: React.ReactNode;
@@ -180,7 +179,7 @@ const GroceryShoppingService: React.FC<GroceryShoppingServiceProps> = ({
   }, [t]);
 
   return (
-    <section className='py-8 max-w-7xl mx-auto'>
+    <section className='py-8 px-3 max-w-7xl mx-auto'>
       {/* Features Section */}
       <div className='mb-16'>
         <h2 className='text-2xl font-bold text-gray-900 mb-6'>

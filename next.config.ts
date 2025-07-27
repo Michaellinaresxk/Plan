@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-   typescript: {
+  typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
       'coastalmags.com',
       'image.cnbj1.fds.api.mi-img.com',
       'i0.wp.com',
+      'ens3xeax5jd.exactdn.com',
+      'integrity-asia.com',
     ],
   },
 };

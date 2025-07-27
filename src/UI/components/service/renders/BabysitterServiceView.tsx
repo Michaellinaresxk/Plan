@@ -207,9 +207,9 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
         animate='visible'
         variants={fadeInUp}
       >
-        <div className='absolute top-0 right-0 w-1/3 h-full opacity-10'>
+        <div className='absolute top-0 right-0 w-full h-full opacity-10'>
           <Image
-            src='https://images.unsplash.com/photo-1560877241-1dc5479934b6?auto=format&fit=crop&q=80&w=800'
+            src='https://integrity-asia.com/wp-content/uploads/indoor-image-young-female-babysitter-sitting-dining-table-spacious-living-room-teaching-children-how-make-origami-three-kids-making-paper-planes-together-with-their-mother-home.jpg'
             alt='Children playing'
             fill
             className='object-cover'
@@ -290,7 +290,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
         viewport={{ once: true }}
         variants={stagger}
       >
-        <div className='text-center mb-12'>
+        <div className='text-center mb-12 mt-10'>
           <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
             Age-Appropriate Activities
           </h2>
@@ -300,7 +300,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
           </p>
         </div>
 
-        <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 px-5'>
           {ACTIVITIES.map((activity, index) => (
             <motion.div
               key={index}
@@ -326,7 +326,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
 
       {/* Interactive Gallery */}
       <motion.div
-        className='bg-gray-50 rounded-3xl p-8 md:p-12'
+        className='bg-gray-50 rounded-3xl p-5 md:p-5 mt-12 mb-12'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
@@ -381,7 +381,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
 
       {/* Safety & Trust Section */}
       <motion.div
-        className='grid md:grid-cols-2 gap-12 items-center'
+        className='grid md:grid-cols-2 gap-12 items-center px-5 md:px-12 mt-20'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
@@ -451,7 +451,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
 
       {/* Testimonials */}
       <motion.div
-        className='bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 md:p-12'
+        className='bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 md:p-12 mt-20'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
@@ -503,6 +503,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
         whileInView='visible'
         viewport={{ once: true }}
         variants={fadeInUp}
+        className='px-5 md:px-12 mt-20 mb-12'
       >
         <div className='text-center mb-12'>
           <h2 className='text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center'>
@@ -526,57 +527,6 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               <p className='text-gray-600 leading-relaxed'>{faq.answer}</p>
             </div>
           ))}
-        </div>
-      </motion.div>
-
-      {/* Contact CTA */}
-      <motion.div
-        className='bg-gray-900 rounded-3xl p-8 md:p-12 text-white text-center'
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true }}
-        variants={fadeInUp}
-      >
-        <h2 className='text-3xl md:text-4xl font-bold mb-4'>
-          Ready for Peace of Mind?
-        </h2>
-        <p className='text-xl text-gray-300 mb-8 max-w-2xl mx-auto'>
-          Book trusted, professional childcare for your next date night or
-          special occasion
-        </p>
-
-        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mb-8'>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className='bg-white text-gray-900 hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold text-lg flex items-center gap-3 transition-colors'
-          >
-            Book Babysitting Service
-            <ArrowRight className='w-5 h-5' />
-          </button>
-
-          <div className='flex gap-4'>
-            <button className='w-12 h-12 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors'>
-              <Phone className='w-6 h-6' />
-            </button>
-            <button className='w-12 h-12 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors'>
-              <Mail className='w-6 h-6' />
-            </button>
-          </div>
-        </div>
-
-        <div className='flex flex-wrap justify-center gap-6 text-gray-400'>
-          <div className='flex items-center gap-2'>
-            <CheckCircle className='w-5 h-5 text-green-400' />
-            <span>Instant booking</span>
-          </div>
-          <div className='flex items-center gap-2'>
-            <CheckCircle className='w-5 h-5 text-green-400' />
-            <span>24/7 support</span>
-          </div>
-          <div className='flex items-center gap-2'>
-            <CheckCircle className='w-5 h-5 text-green-400' />
-            <span>Satisfaction guaranteed</span>
-          </div>
         </div>
       </motion.div>
 
