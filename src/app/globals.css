@@ -41,7 +41,7 @@ body {
   background-position: top;
 }
 
-.container .main-text { 
+.container .main-text {
 opacity: 0.9;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
@@ -52,6 +52,19 @@ opacity: 0.9;
   background-position: center;
 }
 
+.main-bg-text {
+  color: "#FFF"
+}
+
+.main-button {
+  font-size: .8em;
+  border-radius: 20px;
+  
+}
+
+.subtitle {
+  font-size: 1.2em;
+}
 
 /* Estilos para el calendario */
 .rdp-custom .rdp {
