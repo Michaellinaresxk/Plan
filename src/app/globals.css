@@ -38,7 +38,7 @@ body {
 .hero-img {
   background-image: url("/img/beach-bg.jpg");
   background-size: cover;
-  background-position: top;
+  background-position: center;
 }
 
 .container .main-text {
@@ -49,7 +49,7 @@ opacity: 0.9;
 .standard-bg {
   background-image: url("/img/bike.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: top;
 }
 
 .main-bg-text {

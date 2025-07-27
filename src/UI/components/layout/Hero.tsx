@@ -141,9 +141,6 @@ const Hero = () => {
                 <div className='subtitle text-xl sm:text-2xl md:text-3xl font-light text-white/50 tracking-[0.3em] uppercase'>
                   Punta Cana
                 </div>
-                {/* <div className='text-base sm:text-lg md:text-xl text-amber-300/90 font-medium italic'>
-                  {t('home.hero.subtitle2')}
-                </div> */}
                 <div className='flex items-center justify-center gap-4'>
                   <div className='w-16 h-px bg-gradient-to-r from-transparent to-amber-400'></div>
                   <Sparkles size={20} className='text-amber-400' />
@@ -159,7 +156,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 3, duration: 1 }}
-          className='pb-40 flex flex-col items-center space-y-4'
+          className='pb-33 flex flex-col items-center space-y-4'
         >
           <div className='flex mt-30 flex-col sm:flex-row gap-6 justify-center'>
             <Link href='/custom-package'>
