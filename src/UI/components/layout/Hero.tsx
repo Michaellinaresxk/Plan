@@ -102,7 +102,7 @@ const Hero = () => {
       <div className='relative z-20 min-h-screen flex flex-col'>
         {/* Top Section */}
         <div className='flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8'>
-          <div className='max-w-6xl mx-auto text-center space-y-20'>
+          <div className='max-w-6xl mx-auto text-center'>
             {/* Revolutionary Title Design */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -151,29 +151,6 @@ const Hero = () => {
                 </div>
               </motion.div>
             </motion.div>
-
-            {/* Luxury Description */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2, duration: 1 }}
-              className='max-w-4xl mx-auto space-y-4'
-            >
-              <div className='relative'>
-                <div className='absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent rounded-xl'></div>
-                {/* <p className='relative text-lg sm:text-xl md:text-2xl text-white/90 leading-relaxed font-light px-6 py-4'>
-                  {t('home.hero.subtitle')}
-                </p> */}
-              </div>
-            </motion.div>
-
-            {/* Premium CTA Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2.5, duration: 0.8 }}
-              className='pt-6 space-y-6'
-            ></motion.div>
           </div>
         </div>
 
@@ -182,7 +159,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 3, duration: 1 }}
-          className='pb-8 flex flex-col items-center space-y-4'
+          className='pb-20 flex flex-col items-center space-y-4'
         >
           <div className='flex mt-30 flex-col sm:flex-row gap-6 justify-center'>
             <Link href='/custom-package'>
