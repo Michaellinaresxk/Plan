@@ -14,6 +14,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { useState } from 'react';
 
 const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
   const [formData, setFormData] = useState({

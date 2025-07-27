@@ -442,18 +442,6 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
                 className='flex flex-col sm:flex-row gap-8 justify-center items-center mb-12'
                 variants={fadeInUp}
               >
-                <div className='text-center'>
-                  <div className='text-5xl font-bold mb-2'>
-                    ${service.price || 299}
-                  </div>
-                  <div className='text-white/70 text-lg'>
-                    Complete karaoke experience
-                  </div>
-                  <div className='text-white/60 text-sm mt-1'>
-                    Setup, equipment & support included
-                  </div>
-                </div>
-
                 <button
                   onClick={() => setIsModalOpen(true)}
                   disabled={isLoading}

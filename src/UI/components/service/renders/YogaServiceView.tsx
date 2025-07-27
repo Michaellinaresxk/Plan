@@ -728,11 +728,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                 className='flex flex-col sm:flex-row gap-6 justify-center items-center'
                 variants={fadeInUp}
               >
-                <div className='text-center'>
-                  <div className='text-4xl font-bold'>${service.price}</div>
-                  <div className='text-white/70'>per session</div>
-                </div>
-
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'

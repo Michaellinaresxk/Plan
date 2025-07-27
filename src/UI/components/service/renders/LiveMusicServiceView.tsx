@@ -313,7 +313,6 @@ const LiveMusicServiceView = ({ service }: LiveMusicServiceViewProps) => {
               </motion.div>
             </div>
           </div>
-          
         </div>
       </motion.div>
 
@@ -626,11 +625,6 @@ const LiveMusicServiceView = ({ service }: LiveMusicServiceViewProps) => {
                 className='flex flex-col sm:flex-row gap-6 justify-center items-center'
                 variants={fadeInUp}
               >
-                <div className='text-center'>
-                  <div className='text-5xl font-bold mb-2'>From $180</div>
-                  <div className='text-white/80 text-lg'>Per performance</div>
-                </div>
-
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className='group bg-white text-orange-600 hover:bg-gray-100 px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
