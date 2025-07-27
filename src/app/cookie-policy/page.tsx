@@ -41,11 +41,11 @@ export default function CookiePolicyPage() {
 
               <h2>1. Introduction</h2>
               <p>
-                This Cookie Policy explains how RelaxInn Vacation Homes ("we,"
-                "our," or "us") uses cookies and similar technologies when you
-                visit our website or use our services. By continuing to browse
-                or use our website, you consent to our use of cookies as
-                described in this policy.
+                This Cookie Policy explains how Lux Punta Cana ("we," "our," or
+                "us") uses cookies and similar technologies when you visit our
+                website or use our services. By continuing to browse or use our
+                website, you consent to our use of cookies as described in this
+                policy.
               </p>
 
               <h2>2. What Are Cookies?</h2>

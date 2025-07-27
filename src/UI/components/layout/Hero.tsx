@@ -159,7 +159,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 3, duration: 1 }}
-          className='pb-20 flex flex-col items-center space-y-4'
+          className='pb-40 flex flex-col items-center space-y-4'
         >
           <div className='flex mt-30 flex-col sm:flex-row gap-6 justify-center'>
             <Link href='/custom-package'>
