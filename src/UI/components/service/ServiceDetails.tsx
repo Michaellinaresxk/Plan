@@ -22,13 +22,11 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({
       }`}
     >
       {/* Main Content Area - Now with 90% width */}
-      <div className='w-full mx-auto pt-12'>
-        <ServiceViewFactory
-          service={service}
-          serviceData={serviceData}
-          primaryColor={primaryColor}
-        />
-      </div>
+      <ServiceViewFactory
+        service={service}
+        serviceData={serviceData}
+        primaryColor={primaryColor}
+      />
     </div>
   );
 };

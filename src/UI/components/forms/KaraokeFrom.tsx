@@ -129,7 +129,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
       // Create reservation data structure similar to other forms
       const reservationData = {
         service,
-        totalPrice, // ✅ Include total price
+        totalPrice,
         formData: {
           ...formData,
           serviceType: 'karaoke',

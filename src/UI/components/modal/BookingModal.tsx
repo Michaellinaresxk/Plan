@@ -70,32 +70,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
         });
   };
 
-  // Get service description with item count for grocery
-  const getServiceDescription = () => {
-    if (service.id === 'grocery-shopping' || service.id === 'luxe-grocery') {
-      const itemCount = selectedItems?.length || 0;
-      if (itemCount > 0) {
-        return t('bookingModal.groceryDescription', {
-          count: itemCount,
-          fallback: `Complete your grocery delivery reservation with ${itemCount} selected items.`,
-        });
-      } else {
-        return t('bookingModal.groceryNoItems', {
-          fallback:
-            'Please select items from the grocery list before proceeding.',
-        });
-      }
-    }
-
-    return (
-      service.description ||
-      t('bookingModal.defaultDescription', {
-        service: service.name,
-        fallback: `Complete the form below to book your ${service.name} experience.`,
-      })
-    );
-  };
-
   return (
     <LuxuryModal
       isOpen={isOpen}
@@ -104,26 +78,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
       isPremium={isPremium}
     >
       <div className='py-2'>
-        {/* Service Description */}
-        <motion.div
-          className={`mb-6 p-4 rounded-lg ${
-            isPremium
-              ? 'bg-amber-50 border border-amber-200'
-              : 'bg-blue-50 border border-blue-200'
-          }`}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <p
-            className={`text-sm leading-relaxed mb-3 ${
-              isPremium ? 'text-amber-800' : 'text-blue-800'
-            }`}
-          >
-            {getServiceDescription()}
-          </p>
-        </motion.div>
-
         {/* The Service Form - This handles navigation automatically */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

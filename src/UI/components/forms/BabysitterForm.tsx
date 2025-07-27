@@ -341,41 +341,6 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
         {/* Form Body */}
         <div className='p-8 space-y-8 relative'>
-          {/* ✅ Debug Panel SEGURO (sin efectos secundarios) */}
-          <div className='bg-gray-100 p-4 rounded-lg text-sm'>
-            <h4 className='font-bold mb-2'>🔧 Debug Info:</h4>
-            <div>
-              Form Valid: {checkFormValidity.isValid ? '✅ Yes' : '❌ No'}
-            </div>
-            <div>
-              Date: {formData.date || 'empty'}{' '}
-              {checkFormValidity.checks.date ? '✅' : '❌'}
-            </div>
-            <div>
-              Start Time: {formData.startTime || 'empty'}{' '}
-              {checkFormValidity.checks.startTime ? '✅' : '❌'}
-            </div>
-            <div>
-              End Time: {formData.endTime || 'empty'}{' '}
-              {checkFormValidity.checks.endTime ? '✅' : '❌'}
-            </div>
-            <div>
-              Location: {formData.location || 'empty'}{' '}
-              {checkFormValidity.checks.location ? '✅' : '❌'}
-            </div>
-            <div>
-              Children Ages:{' '}
-              {formData.childrenAges.filter((age) => age.trim()).length}/
-              {formData.childrenCount}{' '}
-              {checkFormValidity.checks.ages ? '✅' : '❌'}
-            </div>
-            <div>
-              Special Needs Valid:{' '}
-              {checkFormValidity.checks.specialNeeds ? '✅' : '❌'}
-            </div>
-            <div>Price: ${currentPrice.toFixed(2)}</div>
-          </div>
-
           {/* Scheduling Section */}
           <div className='space-y-6'>
             <h3 className='text-xl font-bold text-purple-900 flex items-center'>
