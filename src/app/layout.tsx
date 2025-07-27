@@ -179,6 +179,10 @@ export default function RootLayout({
     <html lang='en'>
       <head>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <meta
+          name='google-site-verification'
+          content='oPvzSrKPE_LawXAm0InFeyYxibPpOalvIGo1ICIB4zg'
+        />
         <link rel='icon' href='/favicon.ico' />
         <link
           rel='apple-touch-icon'

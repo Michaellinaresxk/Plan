@@ -199,7 +199,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
   };
 
   return (
-    <div className='w-full mx-auto px-6 py-8 space-y-16'>
+    <div className='w-full mx-auto '>
       {/* Hero Section */}
       <motion.div
         className='relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
