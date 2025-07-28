@@ -733,27 +733,27 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
-  [SERVICE_IDS.GROCERY]: {
-    id: SERVICE_IDS.GROCERY,
-    titleKey: 'services.standard.groceryShopping.name',
-    descriptionKey: 'services.standard.groceryShopping.description',
-    fullDescriptionKey: 'services.standard.groceryShopping.full',
-    basePrice: 50, // Adjust as needed
-    priceUnit: 'services.priceUnits.perService',
-    category: 'leisure',
-    packageType: ['standard'],
-    imageUrl:
-      'https://plus.unsplash.com/premium_photo-1661381001052-2f5327899acd?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 0,
-    specialRender: 'grocery', // Indicates special rendering is needed
-    isPopular: false,
-    // Add other standard service properties as needed
-    tags: ['convenience', 'food', 'shopping'],
-    metaData: {
-      deliveryTime: '24-48 hours',
-      minimumOrder: '$50',
-    },
-  },
+  // [SERVICE_IDS.GROCERY]: {
+  //   id: SERVICE_IDS.GROCERY,
+  //   titleKey: 'services.standard.groceryShopping.name',
+  //   descriptionKey: 'services.standard.groceryShopping.description',
+  //   fullDescriptionKey: 'services.standard.groceryShopping.full',
+  //   basePrice: 50, // Adjust as needed
+  //   priceUnit: 'services.priceUnits.perService',
+  //   category: 'leisure',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://plus.unsplash.com/premium_photo-1661381001052-2f5327899acd?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   duration: 0,
+  //   specialRender: 'grocery', // Indicates special rendering is needed
+  //   isPopular: false,
+  //   // Add other standard service properties as needed
+  //   tags: ['convenience', 'food', 'shopping'],
+  //   metaData: {
+  //     deliveryTime: '24-48 hours',
+  //     minimumOrder: '$50',
+  //   },
+  // },
 
   // BABYSITTER SERVICE
   [SERVICE_IDS.BABYSITTER]: {

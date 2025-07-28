@@ -8,6 +8,7 @@ interface ClientInfo {
   name: string;
   email: string;
   phone: string;
+  hostInfo: string;
 }
 
 interface ClientInfoFormProps {
@@ -24,6 +25,7 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
     name: '',
     email: '',
     phone: '',
+    hostInfo: '',
   });
   const [errors, setErrors] = useState<Partial<ClientInfo>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -225,6 +227,44 @@ const ClientInfoForm: React.FC<ClientInfoFormProps> = ({
             >
               <AlertCircle className='w-4 h-4 mr-1' />
               {errors.phone}
+            </motion.p>
+          )}
+        </div>
+
+        {/* host info Field */}
+        <div>
+          <label
+            htmlFor='hostInfo'
+            className='block text-sm font-medium text-gray-700 mb-2'
+          >
+            <Mail className='w-4 h-4 inline mr-2' />
+            {t('form.labels.hostInfo', {
+              fallback: 'Phone or Email of your host',
+            })}
+            <span className='text-red-500 ml-1'>*</span>
+          </label>
+          <input
+            type='hostInfo'
+            id='hostInfo'
+            name='hostInfo'
+            value={formData.hostInfo}
+            onChange={handleChange}
+            placeholder={t('form.placeholders.hostInfo', {
+              fallback: 'Place phone or email of your host here',
+            })}
+            className={`
+              w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors
+              ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}
+            `}
+          />
+          {errors.hostInfo && (
+            <motion.p
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className='mt-1 text-sm text-red-600 flex items-center'
+            >
+              <AlertCircle className='w-4 h-4 mr-1' />
+              {errors.hostInfo}
             </motion.p>
           )}
         </div>

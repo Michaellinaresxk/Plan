@@ -51,7 +51,7 @@ const SERVICE_CATEGORY_MAP: Record<ServiceId, ServiceCategory> = {
   [SERVICE_IDS.KARAOKE]: 'leisure',
   [SERVICE_IDS.LIVE_MUSIC]: 'leisure',
   [SERVICE_IDS.CUSTOM_DECORATIONS]: 'leisure',
-  [SERVICE_IDS.GROCERY]: 'leisure',
+  // [SERVICE_IDS.GROCERY]: 'leisure',
 };
 
 /**

@@ -192,6 +192,7 @@ const ReservationConfirmationPage = () => {
         clientName: reservationData.clientInfo.name,
         clientEmail: reservationData.clientInfo.email,
         clientPhone: reservationData.clientInfo.phone,
+        hostInfo: reservationData.clientInfo.hostInfo,
         formData: reservationData.formData,
         notes: '', // Can be filled by admin later
       };
@@ -483,6 +484,15 @@ You will receive a confirmation email shortly. Our team will review your request
                       </span>
                       <span className='text-gray-900'>
                         {reservationData.clientInfo?.phone}
+                      </span>
+                    </div>
+
+                    <div className='flex justify-between items-center pb-2 border-b border-gray-200'>
+                      <span className='font-medium text-gray-700'>
+                        {t('reservation.phone', { fallback: 'Host info' })}:
+                      </span>
+                      <span className='text-gray-900'>
+                        {reservationData.clientInfo.hostInfo}
                       </span>
                     </div>
 
