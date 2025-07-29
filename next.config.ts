@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
       'i0.wp.com',
       'ens3xeax5jd.exactdn.com',
       'integrity-asia.com',
+      'prod-images.viravira.co',
     ],
   },
 };

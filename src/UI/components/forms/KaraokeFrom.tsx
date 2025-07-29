@@ -14,6 +14,8 @@ import {
   X,
   Plus,
   Info,
+  CheckCircle,
+  Volume2,
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
@@ -25,27 +27,56 @@ import {
   FormData,
 } from '@/constants/karaoke';
 
+// Location options configuration
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+] as const;
+
+// Enhanced FormData interface
+interface EnhancedFormData extends Omit<FormData, 'location'> {
+  location: string;
+  endTime: string;
+  confirmOutdoorPolicy: boolean;
+}
+
 const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { setReservationData } = useReservation();
 
-  // Form state
-  const [formData, setFormData] = useState<FormData>({
+  // Enhanced form state
+  const [formData, setFormData] = useState<EnhancedFormData>({
     date: '',
     startTime: '',
+    endTime: '',
     location: '',
     hasProjectionSpace: false,
     needsScreen: false,
     setupType: '',
     musicReferences: [''],
     specialRequests: '',
+    confirmOutdoorPolicy: false,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // Calculate total price based on selected options
+  // Calculate event duration in hours
+  const eventDuration = useMemo(() => {
+    if (!formData.startTime || !formData.endTime) return 0;
+
+    const start = new Date(`2000-01-01T${formData.startTime}`);
+    const end = new Date(`2000-01-01T${formData.endTime}`);
+
+    if (end <= start) return 0;
+
+    return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+  }, [formData.startTime, formData.endTime]);
+
+  // Enhanced price calculation with duration logic
   const calculatePrice = useMemo(() => {
     let total = PRICING.BASE_PRICE;
 
@@ -59,8 +90,14 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
       total += PRICING.OUTDOOR_SETUP;
     }
 
+    // Apply duration-based pricing (over 4 hours)
+    if (eventDuration > 4) {
+      const extraHours = eventDuration - 4;
+      total += extraHours * 50; // $50 per extra hour
+    }
+
     return total;
-  }, [formData.needsScreen, formData.setupType]);
+  }, [formData.needsScreen, formData.setupType, eventDuration]);
 
   // Date validation helpers
   const isSameDay = (dateString: string): boolean => {
@@ -79,8 +116,8 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
     return hours >= 24;
   };
 
-  // Form validation
-  const validateForm = (): FormErrors => {
+  // Enhanced form validation
+  const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
     // Required fields
@@ -92,12 +129,21 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
       newErrors.startTime = 'Start time is required';
     }
 
+    if (!formData.endTime) {
+      newErrors.endTime = 'End time is required';
+    }
+
     if (!formData.location) {
       newErrors.location = 'Event location is required';
     }
 
     if (!formData.setupType) {
       newErrors.setupType = 'Please select indoor or outdoor setup';
+    }
+
+    // Time validation
+    if (formData.startTime && formData.endTime && eventDuration <= 0) {
+      newErrors.endTime = 'End time must be after start time';
     }
 
     // Date validations
@@ -107,6 +153,12 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
       !hasMinimum24Hours(formData.date)
     ) {
       newErrors.date = 'Bookings must be made at least 24 hours in advance';
+    }
+
+    // Outdoor policy confirmation
+    if (formData.setupType === 'outdoor' && !formData.confirmOutdoorPolicy) {
+      newErrors.confirmOutdoorPolicy =
+        'Please confirm you understand the outdoor sound policy';
     }
 
     setErrors(newErrors);
@@ -125,8 +177,11 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
 
     try {
       const totalPrice = calculatePrice;
+      const selectedLocation =
+        LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
+        formData.location;
 
-      // Create reservation data structure similar to other forms
+      // Enhanced reservation data structure
       const reservationData = {
         service,
         totalPrice,
@@ -134,13 +189,28 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
           ...formData,
           serviceType: 'karaoke',
           calculatedPrice: totalPrice,
+          locationName: selectedLocation,
+          eventDuration,
         },
         bookingDate: new Date(`${formData.date}T${formData.startTime}`),
+        endDate: new Date(`${formData.date}T${formData.endTime}`),
         clientInfo: undefined,
+        karaokeSpecifics: {
+          setupType: formData.setupType,
+          location: formData.location,
+          locationName: selectedLocation,
+          hasProjectionSpace: formData.hasProjectionSpace,
+          needsScreen: formData.needsScreen,
+          musicReferences: formData.musicReferences.filter((ref) => ref.trim()),
+          specialRequests: formData.specialRequests,
+          eventDuration,
+          isExtendedSession: eventDuration > 4,
+        },
       };
 
-      console.log('🎤 Karaoke - Reservation data:', reservationData);
+      console.log('🎤 Karaoke - Enhanced reservation data:', reservationData);
       console.log('💰 Total Price included:', totalPrice);
+      console.log('⏱️ Event duration:', eventDuration, 'hours');
 
       // Store in context
       setReservationData(reservationData);
@@ -182,6 +252,22 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
     }
   };
 
+  // Handle location selection
+  const handleLocationSelect = (locationId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      location: locationId,
+    }));
+
+    // Clear location error if exists
+    if (errors.location) {
+      setErrors((prev) => ({
+        ...prev,
+        location: '',
+      }));
+    }
+  };
+
   // Handle projection space selection
   const handleProjectionSpaceChange = (hasSpace: boolean) => {
     setFormData((prev) => ({
@@ -191,11 +277,13 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
     }));
   };
 
-  // Handle setup type selection
+  // Handle setup type selection with outdoor policy logic
   const handleSetupTypeChange = (setupType: 'indoor' | 'outdoor') => {
     setFormData((prev) => ({
       ...prev,
       setupType,
+      confirmOutdoorPolicy:
+        setupType === 'indoor' ? false : prev.confirmOutdoorPolicy,
     }));
 
     // Clear error when user selects
@@ -256,7 +344,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
               Event Details
             </h3>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
               {/* Date */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
@@ -299,23 +387,83 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                   </p>
                 )}
               </div>
+
+              {/* End Time */}
+              <div>
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                  <Clock className='w-4 h-4 mr-2 text-purple-700' />
+                  End Time *
+                </label>
+                <input
+                  type='time'
+                  name='endTime'
+                  value={formData.endTime}
+                  onChange={handleInputChange}
+                  className={`w-full p-3 border ${
+                    errors.endTime ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-gray-50`}
+                />
+                {errors.endTime && (
+                  <p className='text-red-500 text-xs mt-1'>{errors.endTime}</p>
+                )}
+                {eventDuration > 0 && (
+                  <p className='text-purple-600 text-xs mt-1'>
+                    Duration: {eventDuration.toFixed(1)} hours
+                    {eventDuration > 4 && (
+                      <span className='text-orange-600 ml-1'>
+                        (+${((eventDuration - 4) * 50).toFixed(0)} extended
+                        session fee)
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
             </div>
 
-            {/* Location */}
-            <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+            {/* Location Selection */}
+            <div className='space-y-4'>
+              <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
                 <MapPin className='w-4 h-4 mr-2 text-purple-700' />
                 Event Location *
               </label>
-              <input
-                name='location'
-                value={formData.location}
-                onChange={handleInputChange}
-                className={`w-full p-3 border ${
-                  errors.location ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-purple-500 focus:border-purple-500`}
-                placeholder='Please provide the complete address where the karaoke setup will take place'
-              />
+
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                {LOCATION_OPTIONS.map((location) => (
+                  <div
+                    key={location.id}
+                    className={`
+                      border rounded-lg p-4 cursor-pointer transition-all
+                      ${
+                        formData.location === location.id
+                          ? 'bg-purple-50 border-purple-300 shadow-sm'
+                          : 'border-gray-200 hover:bg-gray-50'
+                      }
+                    `}
+                    onClick={() => handleLocationSelect(location.id)}
+                  >
+                    <div className='flex items-center'>
+                      <div
+                        className={`
+                        w-5 h-5 rounded-full border flex items-center justify-center mr-3
+                        ${
+                          formData.location === location.id
+                            ? 'border-purple-500 bg-purple-500'
+                            : 'border-gray-300'
+                        }
+                      `}
+                      >
+                        {formData.location === location.id && (
+                          <CheckCircle className='w-4 h-4 text-white' />
+                        )}
+                      </div>
+                      <span className='font-medium text-gray-800'>
+                        {location.name}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {errors.location && (
                 <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
               )}
@@ -355,7 +503,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
             <div className='space-y-4'>
               <div className='flex items-center text-sm font-medium text-gray-700 mb-3'>
                 <Monitor className='w-4 h-4 mr-2 text-purple-700' />
-                Do you have space for projection? *
+                Available projection setup *
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -370,10 +518,11 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                   <div className='flex items-center justify-between'>
                     <div>
                       <h4 className='font-medium text-gray-900 mb-1'>
-                        Yes, I have space
+                        The Place offers Large TV
                       </h4>
                       <p className='text-sm text-gray-600'>
-                        I have a wall, large TV, or projection screen available
+                        The venue has a wall, large TV, or projection screen
+                        available
                       </p>
                     </div>
                     {formData.hasProjectionSpace === true && (
@@ -393,7 +542,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                   <div className='flex items-center justify-between'>
                     <div>
                       <h4 className='font-medium text-gray-900 mb-1'>
-                        No, I need a screen
+                        Need professional screen
                       </h4>
                       <p className='text-sm text-gray-600'>
                         Please provide a projection screen (+$
@@ -504,6 +653,60 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
             {errors.setupType && (
               <p className='text-red-500 text-xs'>{errors.setupType}</p>
             )}
+
+            {/* Outdoor Sound Policy Warning */}
+            {formData.setupType === 'outdoor' && (
+              <div className='mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg'>
+                <div className='flex items-start'>
+                  <Volume2 className='w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5' />
+                  <div className='flex-1'>
+                    <h4 className='font-medium text-yellow-800 mb-2'>
+                      Outdoor Sound Policy
+                    </h4>
+                    <p className='text-sm text-yellow-700 mb-3'>
+                      For outdoor setups, please note:
+                    </p>
+                    <ul className='text-sm text-yellow-700 space-y-1 mb-4'>
+                      <li>
+                        • Sound levels must comply with local noise ordinances
+                      </li>
+                      <li>• Events typically must end by 10:00 PM</li>
+                      <li>
+                        • We may need to adjust volume based on venue
+                        requirements
+                      </li>
+                      <li>
+                        • Additional sound permits may be required for some
+                        locations
+                      </li>
+                    </ul>
+
+                    <div className='flex items-start'>
+                      <input
+                        type='checkbox'
+                        id='confirmOutdoorPolicy'
+                        name='confirmOutdoorPolicy'
+                        checked={formData.confirmOutdoorPolicy}
+                        onChange={handleInputChange}
+                        className='h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mt-0.5'
+                      />
+                      <label
+                        htmlFor='confirmOutdoorPolicy'
+                        className='ml-2 text-sm text-yellow-800'
+                      >
+                        I understand and agree to comply with the outdoor sound
+                        policy
+                      </label>
+                    </div>
+                    {errors.confirmOutdoorPolicy && (
+                      <p className='text-red-500 text-xs mt-1'>
+                        {errors.confirmOutdoorPolicy}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Music Preferences Section */}
@@ -607,6 +810,12 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                   {formData.needsScreen && (
                     <li>• Professional projection screen rental</li>
                   )}
+                  {eventDuration > 4 && (
+                    <li>
+                      • Extended session support ({eventDuration.toFixed(1)}{' '}
+                      hours)
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>
@@ -625,7 +834,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
               </span>
             </div>
 
-            {/* Price breakdown */}
+            {/* Enhanced price breakdown */}
             <div className='text-xs text-gray-400 mt-2 space-y-1'>
               <div>Base karaoke setup: ${PRICING.BASE_PRICE}</div>
               {formData.needsScreen && (
@@ -633,6 +842,21 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
               )}
               {formData.setupType === 'outdoor' && (
                 <div>Outdoor setup: +${PRICING.OUTDOOR_SETUP}</div>
+              )}
+              {eventDuration > 4 && (
+                <div className='text-orange-400'>
+                  Extended session ({(eventDuration - 4).toFixed(1)}h): +$
+                  {((eventDuration - 4) * 50).toFixed(0)}
+                </div>
+              )}
+              {formData.location && (
+                <div className='text-purple-400'>
+                  Location:{' '}
+                  {
+                    LOCATION_OPTIONS.find((loc) => loc.id === formData.location)
+                      ?.name
+                  }
+                </div>
               )}
             </div>
           </div>

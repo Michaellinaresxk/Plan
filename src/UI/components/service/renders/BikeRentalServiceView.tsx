@@ -21,18 +21,41 @@ import {
   Plus,
   Minus,
   ArrowUp,
+  User,
+  Sparkles,
+  Heart,
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
 import {
   BIKE_TYPES,
   BikeRentalServiceViewProps,
-  BookingFormData,
   FormErrors,
   INCLUDED_ITEMS,
   NOT_INCLUDED_ITEMS,
   PROCESS_STEPS,
 } from '@/types/bike';
+
+interface Person {
+  id: string;
+  type: 'adult' | 'child';
+  age?: number;
+  selectedBike: string;
+  name?: string;
+}
+
+interface BookingFormData {
+  startDate: string;
+  endDate: string;
+  endTime: string;
+  startTime: string;
+  location: string;
+  people: Person[];
+  needsHelmet: boolean;
+  needsLock: boolean;
+  deliveryToHotel: boolean;
+  specialRequests: string;
+}
 
 const FEATURES = [
   {
@@ -65,6 +88,11 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
+const slideIn = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+};
+
 const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
   service,
 }) => {
@@ -77,17 +105,17 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [selectedBikeType, setSelectedBikeType] = useState('');
 
-  // Booking form state
+  // Booking form state - REFACTORED: Now uses people array instead of counts
   const [formData, setFormData] = useState<BookingFormData>({
     startDate: '',
     endDate: '',
     endTime: '',
     startTime: '09:00',
     location: '',
-    adultCount: 2,
-    childCount: 0,
-    children: [],
-    selectedBikes: {},
+    people: [
+      { id: 'adult-1', type: 'adult', selectedBike: 'cityBike' },
+      { id: 'adult-2', type: 'adult', selectedBike: 'cityBike' },
+    ],
     needsHelmet: true,
     needsLock: true,
     deliveryToHotel: true,
@@ -106,64 +134,54 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
     return Math.max(1, diffDays + 1);
   }, [formData.startDate, formData.endDate]);
 
-  // Calculate total bikes needed
-  const totalBikesNeeded = useMemo(() => {
-    return formData.adultCount + formData.childCount;
-  }, [formData.adultCount, formData.childCount]);
+  // Calculate counts from people array
+  const adultCount = useMemo(
+    () => formData.people.filter((p) => p.type === 'adult').length,
+    [formData.people]
+  );
 
-  // Calculate total bikes selected
-  const totalBikesSelected = useMemo(() => {
-    return Object.values(formData.selectedBikes).reduce(
-      (sum, count) => sum + count,
-      0
-    );
-  }, [formData.selectedBikes]);
+  const childCount = useMemo(
+    () => formData.people.filter((p) => p.type === 'child').length,
+    [formData.people]
+  );
 
-  // Update children array when child count changes
-  useEffect(() => {
-    const currentChildrenCount = formData.children.length;
-    const newChildCount = formData.childCount;
+  const totalParticipants = formData.people.length;
 
-    if (newChildCount > currentChildrenCount) {
-      const newChildren = [...formData.children];
-      for (let i = currentChildrenCount; i < newChildCount; i++) {
-        newChildren.push({
-          id: `child-${i + 1}`,
-          age: 8,
-          recommendedBike: 'kids-bike',
-        });
+  // Calculate selected bikes summary from people
+  const selectedBikes = useMemo(() => {
+    const bikes: Record<string, number> = {};
+    formData.people.forEach((person) => {
+      if (person.selectedBike) {
+        bikes[person.selectedBike] = (bikes[person.selectedBike] || 0) + 1;
       }
-      setFormData((prev) => ({ ...prev, children: newChildren }));
-    } else if (newChildCount < currentChildrenCount) {
-      setFormData((prev) => ({
-        ...prev,
-        children: prev.children.slice(0, newChildCount),
-      }));
-    }
-  }, [formData.childCount]);
+    });
+    return bikes;
+  }, [formData.people]);
 
-  // Auto-apply selected bike when form opens
+  // Auto-apply selected bike when form opens with a specific bike
   useEffect(() => {
-    if (
-      showBookingForm &&
-      selectedBikeType &&
-      Object.keys(formData.selectedBikes).length === 0
-    ) {
+    if (showBookingForm && selectedBikeType && formData.people.length === 2) {
+      // Auto-assign the selected bike to the first adult
       setFormData((prev) => ({
         ...prev,
-        selectedBikes: { [selectedBikeType]: 1 },
+        people: prev.people.map((person, index) =>
+          index === 0 && person.type === 'adult'
+            ? { ...person, selectedBike: selectedBikeType }
+            : person
+        ),
       }));
     }
-  }, [showBookingForm, selectedBikeType, formData.selectedBikes]);
+  }, [showBookingForm, selectedBikeType]);
 
   // Calculate total price
   const calculatePrice = useMemo(() => {
     let total = 0;
 
-    Object.entries(formData.selectedBikes).forEach(([bikeType, count]) => {
-      const bike = BIKE_TYPES.find((b) => b.id === bikeType);
+    // Calculate bike rental costs from people
+    formData.people.forEach((person) => {
+      const bike = BIKE_TYPES.find((b) => b.id === person.selectedBike);
       if (bike) {
-        total += bike.price * count * rentalDays;
+        total += bike.price * rentalDays;
       }
     });
 
@@ -173,36 +191,35 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
 
     return total;
   }, [
-    formData.selectedBikes,
+    formData.people,
     formData.deliveryToHotel,
     formData.location,
     rentalDays,
   ]);
 
-  // Handle bike selection - now supports multiple bike types
-  const handleBikeSelect = useCallback(
-    (bikeId: string) => {
-      if (!showBookingForm) {
-        // First bike selection - open form
-        setSelectedBikeType(bikeId);
-        setShowBookingForm(true);
-        setFormData((prev) => ({
-          ...prev,
-          selectedBikes: { [bikeId]: 1 },
-        }));
-      } else {
-        // Add another bike type to existing selection
-        setFormData((prev) => ({
-          ...prev,
-          selectedBikes: {
-            ...prev.selectedBikes,
-            [bikeId]: (prev.selectedBikes[bikeId] || 0) + 1,
-          },
-        }));
-      }
-    },
-    [showBookingForm]
-  );
+  // Get recommended bike for child based on age
+  const getRecommendedBike = (age: number): string => {
+    const suitableBike = BIKE_TYPES.find(
+      (bike) => age >= bike.minAge && age <= bike.maxAge
+    );
+    return suitableBike?.id || 'kids-bike';
+  };
+
+  // Handle bike selection - now opens form and sets first person's bike
+  const handleBikeSelect = useCallback((bikeId: string) => {
+    setSelectedBikeType(bikeId);
+    setShowBookingForm(true);
+
+    // Set the selected bike for the first adult
+    setFormData((prev) => ({
+      ...prev,
+      people: prev.people.map((person, index) =>
+        index === 0 && person.type === 'adult'
+          ? { ...person, selectedBike: bikeId }
+          : person
+      ),
+    }));
+  }, []);
 
   // Form handlers
   const handleInputChange = (
@@ -223,52 +240,54 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
     }
   };
 
-  const createCounterHandler = (
-    field: keyof BookingFormData,
-    min = 0,
-    max = 20
-  ) => ({
-    increment: () =>
-      setFormData((prev) => ({
-        ...prev,
-        [field]: Math.min(max, (prev[field] as number) + 1),
-      })),
-    decrement: () =>
-      setFormData((prev) => ({
-        ...prev,
-        [field]: Math.max(min, (prev[field] as number) - 1),
-      })),
-  });
+  // Add person (adult or child)
+  const addPerson = (type: 'adult' | 'child') => {
+    const newId = `${type}-${Date.now()}`;
+    const newPerson: Person = {
+      id: newId,
+      type,
+      selectedBike: type === 'adult' ? 'cityBike' : 'kids-bike',
+      ...(type === 'child' && { age: 8 }),
+    };
 
-  const adultCounter = createCounterHandler('adultCount', 1);
-  const childCounter = createCounterHandler('childCount', 0);
-
-  const handleChildAgeChange = (childId: string, age: number) => {
     setFormData((prev) => ({
       ...prev,
-      children: prev.children.map((child) =>
-        child.id === childId
-          ? {
-              ...child,
-              age,
-              recommendedBike:
-                BIKE_TYPES.find(
-                  (bike) => age >= bike.minAge && age <= bike.maxAge
-                )?.id || 'kids-bike',
-            }
-          : child
-      ),
+      people: [...prev.people, newPerson],
     }));
   };
 
-  const handleBikeSelection = (bikeId: string, count: number) => {
+  // Remove person
+  const removePerson = (personId: string) => {
     setFormData((prev) => ({
       ...prev,
-      selectedBikes: {
-        ...prev.selectedBikes,
-        [bikeId]: Math.max(0, count),
-      },
+      people: prev.people.filter((p) => p.id !== personId),
     }));
+  };
+
+  // Update person data
+  const updatePerson = (personId: string, updates: Partial<Person>) => {
+    setFormData((prev) => ({
+      ...prev,
+      people: prev.people.map((person) =>
+        person.id === personId ? { ...person, ...updates } : person
+      ),
+    }));
+
+    // Clear related errors
+    const personIndex = formData.people.findIndex((p) => p.id === personId);
+    if (personIndex !== -1) {
+      setErrors((prev) => ({
+        ...prev,
+        [`person-${personIndex}-age`]: '',
+        [`person-${personIndex}-bike`]: '',
+      }));
+    }
+  };
+
+  // Handle child age change with bike recommendation
+  const handleChildAgeChange = (personId: string, age: number) => {
+    const recommendedBike = getRecommendedBike(age);
+    updatePerson(personId, { age, selectedBike: recommendedBike });
   };
 
   // Validation and submission
@@ -277,7 +296,6 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
 
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
     if (!formData.endDate) newErrors.endDate = 'End date is required';
-    if (!formData.endTime) newErrors.endTime = 'End time is required';
     if (!formData.location) newErrors.location = 'Location is required';
 
     if (formData.startDate && formData.endDate) {
@@ -286,20 +304,22 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
       }
     }
 
-    if (totalBikesNeeded < 1) {
-      newErrors.adultCount = 'At least one participant is required';
+    if (formData.people.length < 1) {
+      newErrors.people = 'At least one participant is required';
     }
 
-    formData.children.forEach((child, index) => {
-      if (child.age < 4 || child.age > 17) {
-        newErrors[`child-${index}-age`] = 'Child age must be between 4 and 17';
+    formData.people.forEach((person, index) => {
+      if (person.type === 'child') {
+        if (!person.age || person.age < 4 || person.age > 17) {
+          newErrors[`person-${index}-age`] =
+            'Child age must be between 4 and 17';
+        }
+      }
+      if (!person.selectedBike) {
+        newErrors[`person-${index}-bike`] =
+          'Please select a bike for this person';
       }
     });
-
-    // Bike validation - check if we have enough bikes selected
-    if (totalBikesSelected === 0) {
-      newErrors.selectedBikes = 'Please select at least one bike';
-    }
 
     return newErrors;
   };
@@ -317,7 +337,6 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Create booking date properly
       const bookingStartDate = new Date(
         `${formData.startDate}T${formData.startTime}`
       );
@@ -325,7 +344,6 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         `${formData.endDate}T${formData.endTime}`
       );
 
-      // Create reservation data with properly structured items
       const reservationData = {
         service: service || {
           id: 'bike-rental',
@@ -338,18 +356,43 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
           serviceType: 'bike-rental',
           totalPrice: calculatePrice,
           rentalDays,
-          totalBikesNeeded,
-          totalBikesSelected,
+          selectedBikes,
+          // Format people for payment display
+          peopleDetails: formData.people.map((person) => {
+            const bike = BIKE_TYPES.find((b) => b.id === person.selectedBike);
+            return {
+              id: person.id,
+              type: person.type,
+              age: person.age,
+              bikeName: bike?.name || 'Unknown Bike',
+              bikePrice: bike?.price || 0,
+              displayName:
+                person.type === 'adult'
+                  ? `Adult - ${bike?.name || 'Unknown Bike'}`
+                  : `Child (${person.age} years) - ${
+                      bike?.name || 'Unknown Bike'
+                    }`,
+            };
+          }),
         },
         totalPrice: calculatePrice,
         bookingDate: bookingStartDate,
         endDate: bookingEndDate,
         participants: {
-          adults: formData.adultCount,
-          children: formData.childCount,
-          total: totalBikesNeeded,
+          adults: adultCount,
+          children: childCount,
+          total: totalParticipants,
+          // Add formatted list for display
+          list: formData.people.map((person) => {
+            const bike = BIKE_TYPES.find((b) => b.id === person.selectedBike);
+            return person.type === 'adult'
+              ? `Adult with ${bike?.name || 'Unknown Bike'}`
+              : `Child (${person.age} years) with ${
+                  bike?.name || 'Unknown Bike'
+                }`;
+          }),
         },
-        selectedItems: Object.entries(formData.selectedBikes)
+        selectedItems: Object.entries(selectedBikes)
           .filter(([_, count]) => count > 0)
           .map(([bikeId, count]) => {
             const bike = BIKE_TYPES.find((b) => b.id === bikeId);
@@ -361,7 +404,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
               totalPrice: (bike?.price || 0) * count * rentalDays,
             };
           }),
-        clientInfo: undefined, // Will be filled in the confirmation page
+        clientInfo: undefined,
       };
 
       console.log(
@@ -369,10 +412,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         reservationData
       );
 
-      // Store in context
       setReservationData(reservationData);
-
-      // Navigate to confirmation page
       router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ BikeRentalServiceView - Error submitting form:', error);
@@ -386,53 +426,201 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
     }
   };
 
-  // Counter component
-  const Counter = ({
-    label,
-    value,
-    onIncrement,
-    onDecrement,
-    icon: Icon,
-    min = 0,
-  }: {
-    label: string;
-    value: number;
-    onIncrement: () => void;
-    onDecrement: () => void;
-    icon: React.ElementType;
-    min?: number;
-  }) => (
-    <div>
-      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-        <Icon className='w-4 h-4 mr-2 text-green-700' />
-        {label}
-      </label>
-      <div className='flex border border-gray-300 rounded-lg overflow-hidden bg-white'>
-        <button
-          type='button'
-          onClick={onDecrement}
-          disabled={value <= min}
-          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
-        >
-          <Minus className='w-4 h-4' />
-        </button>
-        <div className='flex-1 py-2 text-center font-medium'>{value}</div>
-        <button
-          type='button'
-          onClick={onIncrement}
-          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-        >
-          <Plus className='w-4 h-4' />
-        </button>
-      </div>
-    </div>
-  );
+  // Enhanced Person Card Component
+  const PersonCard = ({ person, index }: { person: Person; index: number }) => {
+    const selectedBikeData = BIKE_TYPES.find(
+      (b) => b.id === person.selectedBike
+    );
+    const isChild = person.type === 'child';
+    const canRemove = formData.people.length > 1;
+
+    return (
+      <motion.div
+        className='bg-gradient-to-br from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden'
+        variants={slideIn}
+        whileHover={{ y: -4 }}
+      >
+        {/* Decorative background element */}
+        <div className='absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full -mr-10 -mt-10 opacity-50' />
+
+        <div className='flex items-start justify-between mb-4 relative z-10'>
+          <div className='flex items-center'>
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center mr-3 ${
+                isChild
+                  ? 'bg-gradient-to-r from-blue-500 to-cyan-500'
+                  : 'bg-gradient-to-r from-green-500 to-emerald-500'
+              }`}
+            >
+              {isChild ? (
+                <Baby className='w-6 h-6 text-white' />
+              ) : (
+                <User className='w-6 h-6 text-white' />
+              )}
+            </div>
+            <div>
+              <h4 className='font-bold text-gray-800 text-lg'>
+                {isChild ? `Child ${index + 1}` : `Adult ${index + 1}`}
+              </h4>
+              <p className='text-sm text-gray-500 font-medium'>
+                {isChild ? '4-17 years old' : '18+ years old'}
+              </p>
+            </div>
+          </div>
+
+          {canRemove && (
+            <button
+              type='button'
+              onClick={() => removePerson(person.id)}
+              className='w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transition-colors flex items-center justify-center'
+              title='Remove person'
+            >
+              <X className='w-4 h-4' />
+            </button>
+          )}
+        </div>
+
+        {/* Age selector for children */}
+        {isChild && (
+          <div className='mb-4'>
+            <label className='block text-sm font-semibold text-gray-700 mb-2'>
+              <span className='flex items-center'>
+                <span className='w-2 h-2 bg-blue-500 rounded-full mr-2'></span>
+                Age *
+              </span>
+            </label>
+            <select
+              value={person.age || 8}
+              onChange={(e) =>
+                handleChildAgeChange(person.id, parseInt(e.target.value))
+              }
+              className={`w-full p-3 border-2 ${
+                errors[`person-${index}-age`]
+                  ? 'border-red-500'
+                  : 'border-gray-300'
+              } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white font-medium`}
+            >
+              {Array.from({ length: 14 }, (_, i) => i + 4).map((age) => (
+                <option key={age} value={age}>
+                  {age} years old
+                </option>
+              ))}
+            </select>
+            {errors[`person-${index}-age`] && (
+              <p className='text-red-500 text-xs mt-1 font-medium'>
+                {errors[`person-${index}-age`]}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Bike selection */}
+        <div className='mb-4'>
+          <label className='block text-sm font-semibold text-gray-700 mb-3'>
+            <span className='flex items-center'>
+              <Bike className='w-4 h-4 mr-2 text-green-600' />
+              Choose Your Bike *
+            </span>
+          </label>
+          <select
+            value={person.selectedBike}
+            onChange={(e) =>
+              updatePerson(person.id, { selectedBike: e.target.value })
+            }
+            className={`w-full p-3 border-2 ${
+              errors[`person-${index}-bike`]
+                ? 'border-red-500'
+                : 'border-gray-300'
+            } rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-white font-medium`}
+          >
+            <option value=''>🚲 Select your perfect ride...</option>
+            {BIKE_TYPES.filter((bike) => {
+              if (isChild && person.age) {
+                return person.age >= bike.minAge && person.age <= bike.maxAge;
+              }
+              return !isChild ? bike.id !== 'kids-bike' : true;
+            }).map((bike) => (
+              <option key={bike.id} value={bike.id}>
+                {bike.icon} {bike.name} - ${bike.price}/day
+                {bike.isPremium && ' ✨ Premium'}
+              </option>
+            ))}
+          </select>
+          {errors[`person-${index}-bike`] && (
+            <p className='text-red-500 text-xs mt-1 font-medium'>
+              {errors[`person-${index}-bike`]}
+            </p>
+          )}
+        </div>
+
+        {/* Selected bike preview */}
+        {selectedBikeData && (
+          <motion.div
+            className='p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl'
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className='flex items-center justify-between mb-3'>
+              <div className='flex items-center'>
+                <span className='text-2xl mr-3'>{selectedBikeData.icon}</span>
+                <div>
+                  <p className='font-bold text-gray-800'>
+                    {selectedBikeData.name}
+                  </p>
+                  <p className='text-sm text-gray-600'>
+                    {selectedBikeData.ageRange}
+                  </p>
+                </div>
+              </div>
+              <div className='text-right'>
+                <p className='font-bold text-green-600 text-xl'>
+                  ${selectedBikeData.price}/day
+                </p>
+                {rentalDays > 1 && (
+                  <p className='text-sm text-gray-600 font-medium'>
+                    Total: ${selectedBikeData.price * rentalDays}
+                  </p>
+                )}
+                {selectedBikeData.isPremium && (
+                  <div className='inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full mt-1'>
+                    <Sparkles className='w-3 h-3 mr-1' />
+                    Premium
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <p className='text-sm text-gray-700 mb-3 leading-relaxed'>
+              {selectedBikeData.description}
+            </p>
+
+            <div className='flex flex-wrap gap-2'>
+              {selectedBikeData.features.slice(0, 3).map((feature, i) => (
+                <span
+                  key={i}
+                  className='text-xs bg-white px-3 py-1 rounded-full border border-green-200 text-gray-700 font-medium'
+                >
+                  {feature}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
+    );
+  };
 
   return (
-    <div className='max-w-8xl mx-auto  space-y-16'>
-      {/* Hero Section */}
+    <div className='max-w-8xl mx-auto space-y-16'>
+      {/* Hero Section - FIXED: Separated background properties */}
       <motion.div
-        className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12 bg-gradient-to-br from-gray-900 via-gray-800 to-black'
+        className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
+        style={{
+          backgroundColor: '#111827',
+          backgroundImage:
+            'linear-gradient(135deg, #111827 0%, #1f2937 50%, #000000 100%)',
+        }}
         initial='hidden'
         animate='visible'
         variants={fadeInUp}
@@ -442,14 +630,19 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
             src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1200'
             alt='Bike rental adventure'
             fill
-            className='object-cover'
+            style={{ objectFit: 'cover' }}
             priority
           />
         </div>
 
-        {/* Overlay adicional para mejor contraste */}
         <div className='absolute inset-0 bg-black/20 z-[1]' />
-        <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 z-[2]' />
+        <div
+          className='absolute inset-0 z-[2]'
+          style={{
+            backgroundImage:
+              'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)',
+          }}
+        />
 
         <div className='relative z-10 px-4 sm:px-6 lg:px-8 xl:px-12 py-8 sm:py-12 lg:py-16 xl:py-20 text-white'>
           <div className='max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10'>
@@ -496,69 +689,98 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         variants={stagger}
       >
         <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
-            Choose Your Ride
-          </h2>
-          <p className='text-xl text-gray-600'>
+          <motion.h2
+            className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'
+            variants={fadeInUp}
+          >
+            Choose Your Perfect Ride
+          </motion.h2>
+          <motion.p className='text-xl text-gray-600' variants={fadeInUp}>
             {!showBookingForm
-              ? 'Beach Cruisers | City Bikes | Mountain Bikes | E-Bikes | Kids Bikes - Select a bike to start your booking'
-              : 'Click on additional bikes to add them to your selection'}
-          </p>
+              ? '🏖️ Beach Cruisers | 🏙️ City Bikes | 🏔️ Mountain Bikes | ⚡ E-Bikes | 👶 Kids Bikes - Click to start your adventure!'
+              : '✨ Click on additional bikes to add them to your selection'}
+          </motion.p>
         </div>
 
-        <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        <motion.div
+          className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'
+          variants={stagger}
+        >
           {BIKE_TYPES.map((bike, index) => {
-            const isSelected = formData.selectedBikes[bike.id] > 0;
-            const quantity = formData.selectedBikes[bike.id] || 0;
+            const isSelected = selectedBikes[bike.id] > 0;
+            const quantity = selectedBikes[bike.id] || 0;
 
             return (
               <motion.div
                 key={bike.id}
-                className={`bg-white rounded-2xl shadow-sm border-2 cursor-pointer transition-all duration-300 overflow-hidden relative ${
+                className={`bg-white rounded-3xl shadow-sm border-2 cursor-pointer transition-all duration-500 overflow-hidden relative group ${
                   isSelected
-                    ? 'border-green-500 shadow-lg'
-                    : 'border-gray-100 hover:border-gray-300 hover:shadow-md'
+                    ? 'border-green-500 shadow-xl ring-4 ring-green-100'
+                    : 'border-gray-100 hover:border-gray-300 hover:shadow-lg'
                 }`}
                 onClick={() => handleBikeSelect(bike.id)}
                 variants={fadeInUp}
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <div className='relative h-48'>
+                <div className='relative h-56'>
                   <Image
                     src={bike.image}
                     alt={bike.name}
                     fill
-                    className='object-cover'
+                    style={{ objectFit: 'cover' }}
                   />
+
+                  {/* Overlay effects */}
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+
                   {bike.isPremium && (
-                    <div className='absolute top-3 right-3 bg-gray-900 text-white px-2 py-1 rounded-full text-xs font-medium'>
+                    <div className='absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-lg'>
+                      <Sparkles className='w-3 h-3 mr-1' />
                       Premium
                     </div>
                   )}
+
                   {isSelected && (
-                    <div className='absolute top-3 left-3 bg-green-600 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1'>
-                      <CheckCircle className='w-3 h-3' />
-                      {quantity}
-                    </div>
+                    <motion.div
+                      className='absolute top-4 left-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center shadow-lg'
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    >
+                      <CheckCircle className='w-4 h-4 mr-1' />
+                      {quantity} Selected
+                    </motion.div>
                   )}
+
                   {showBookingForm && !isSelected && (
-                    <div className='absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1'>
-                      <Plus className='w-3 h-3' />
-                      Add
-                    </div>
+                    <motion.div
+                      className='absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity'
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <Plus className='w-4 h-4 mr-1' />
+                      Add to Selection
+                    </motion.div>
                   )}
                 </div>
 
                 <div className='p-6'>
-                  <div className='flex items-center justify-between mb-3'>
-                    <h3 className='text-lg font-bold text-gray-900'>
+                  <div className='flex items-center justify-between mb-4'>
+                    <h3 className='text-xl font-bold text-gray-900 flex items-center'>
+                      <span className='text-2xl mr-2'>{bike.icon}</span>
                       {bike.name}
                     </h3>
                     <div className='text-right'>
-                      <div className='text-xl font-bold text-gray-900'>
+                      <div className='text-2xl font-bold text-gray-900'>
                         ${bike.price}
                       </div>
-                      <div className='text-sm text-gray-500'>per day</div>
+                      <div className='text-sm text-gray-500 font-medium'>
+                        per day
+                      </div>
                     </div>
                   </div>
 
@@ -566,567 +788,445 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
                     {bike.description}
                   </p>
 
-                  <div className='space-y-1'>
+                  <div className='space-y-2'>
                     {bike.features.slice(0, 2).map((feature, idx) => (
                       <div
                         key={idx}
-                        className='flex items-center text-xs text-gray-500'
+                        className='flex items-center text-sm text-gray-600'
                       >
-                        <div className='w-1.5 h-1.5 bg-gray-400 rounded-full mr-2'></div>
+                        <div className='w-2 h-2 bg-green-500 rounded-full mr-3'></div>
                         {feature}
                       </div>
                     ))}
+                  </div>
+
+                  {/* Hover effect button */}
+                  <div className='mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                    <div className='w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center py-2 rounded-lg font-medium'>
+                      {isSelected
+                        ? `Selected (${quantity})`
+                        : 'Select This Bike'}
+                    </div>
                   </div>
                 </div>
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </motion.div>
 
-      {/* Inline Booking Form */}
+      {/* Enhanced Inline Booking Form */}
       <AnimatePresence>
         {showBookingForm && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, height: 0, y: -50 }}
+            animate={{ opacity: 1, height: 'auto', y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -50 }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
             className='overflow-hidden'
           >
-            <div className='bg-white rounded-2xl shadow-lg border border-gray-200 p-8'>
-              <div className='flex items-center justify-between mb-8'>
-                <div>
-                  <h3 className='text-2xl font-bold text-gray-900'>
-                    Complete Your Booking
-                  </h3>
-                  <p className='text-gray-600 mt-1'>
-                    Selected:{' '}
-                    {BIKE_TYPES.find((b) => b.id === selectedBikeType)?.name}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowBookingForm(false)}
-                  className='p-2 hover:bg-gray-100 rounded-lg transition-colors'
-                >
-                  <X className='w-6 h-6 text-gray-500' />
-                </button>
-              </div>
+            <div className='bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-200 p-8 mx-6 relative overflow-hidden'>
+              {/* Decorative background elements */}
+              <div className='absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full -mr-20 -mt-20 opacity-30' />
+              <div className='absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-green-100 to-emerald-100 rounded-full -ml-16 -mb-16 opacity-30' />
 
-              <form onSubmit={handleSubmit} className='space-y-8'>
-                {/* Rental Period */}
-                <div className='space-y-6'>
-                  <h4 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                    Rental Period
-                  </h4>
-
-                  <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                    <div>
-                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                        <Calendar className='w-4 h-4 mr-2 text-green-700' />
-                        Start Date *
-                      </label>
-                      <input
-                        type='date'
-                        name='startDate'
-                        value={formData.startDate}
-                        onChange={handleInputChange}
-                        className={`w-full p-3 border ${
-                          errors.startDate
-                            ? 'border-red-500'
-                            : 'border-gray-300'
-                        } rounded-lg focus:ring-green-500 focus:border-green-500`}
-                        min={new Date().toISOString().split('T')[0]}
-                      />
-                      {errors.startDate && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.startDate}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                        <Calendar className='w-4 h-4 mr-2 text-green-700' />
-                        End Date *
-                      </label>
-                      <input
-                        type='date'
-                        name='endDate'
-                        value={formData.endDate}
-                        onChange={handleInputChange}
-                        className={`w-full p-3 border ${
-                          errors.endDate ? 'border-red-500' : 'border-gray-300'
-                        } rounded-lg focus:ring-green-500 focus:border-green-500`}
-                        min={
-                          formData.startDate ||
-                          new Date().toISOString().split('T')[0]
-                        }
-                      />
-                      {errors.endDate && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.endDate}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* <div>
-                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                        <Clock className='w-4 h-4 mr-2 text-green-700' />
-                        End Time *
-                      </label>
-                      <input
-                        type='time'
-                        name='endTime'
-                        value={formData.endTime}
-                        onChange={handleInputChange}
-                        className={`w-full p-3 border ${
-                          errors.endTime ? 'border-red-500' : 'border-gray-300'
-                        } rounded-lg focus:ring-green-500 focus:border-green-500`}
-                      />
-                      {errors.endTime && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.endTime}
-                        </p>
-                      )}
-                    </div> */}
-                  </div>
-
-                  {formData.startDate && formData.endDate && (
-                    <div className='p-3 bg-green-50 border border-green-200 rounded-lg'>
-                      <p className='text-sm text-green-800'>
-                        <strong>Rental period:</strong> {rentalDays}{' '}
-                        {rentalDays === 1 ? 'day' : 'days'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Location */}
-                <div className='space-y-6'>
-                  <h4 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                    Location & Delivery
-                  </h4>
-
+              <div className='relative z-10'>
+                <div className='flex items-center justify-between mb-8'>
                   <div>
-                    <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                      <MapPin className='w-4 h-4 mr-2 text-green-700' />
-                      Delivery Address *
-                    </label>
-                    <input
-                      type='text'
-                      name='location'
-                      value={formData.location}
-                      onChange={handleInputChange}
-                      placeholder='Enter your hotel name, address, or specific location in Punta Cana...'
-                      className={`w-full p-3 border ${
-                        errors.location ? 'border-red-500' : 'border-gray-300'
-                      } rounded-lg focus:ring-green-500 focus:border-green-500`}
-                    />
-                    {errors.location && (
-                      <p className='text-red-500 text-xs mt-1'>
-                        {errors.location}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Participants */}
-                <div className='space-y-6'>
-                  <h4 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                    Participants
-                  </h4>
-
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                    <Counter
-                      label='Adults (18+)'
-                      value={formData.adultCount}
-                      onIncrement={adultCounter.increment}
-                      onDecrement={adultCounter.decrement}
-                      icon={Users}
-                      min={1}
-                    />
-
-                    <Counter
-                      label='Children (4-17)'
-                      value={formData.childCount}
-                      onIncrement={childCounter.increment}
-                      onDecrement={childCounter.decrement}
-                      icon={Baby}
-                    />
-                  </div>
-
-                  {/* Children Details */}
-                  {formData.childCount > 0 && (
-                    <div className='space-y-4'>
-                      <h5 className='font-medium text-gray-800'>
-                        Children Details
-                      </h5>
-                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                        {formData.children.map((child, index) => (
-                          <div
-                            key={child.id}
-                            className='p-4 bg-gray-50 rounded-lg'
-                          >
-                            <div className='flex items-center justify-between mb-2'>
-                              <label className='text-sm font-medium text-gray-700'>
-                                Child {index + 1} Age
-                              </label>
-                              {child.recommendedBike && (
-                                <span className='text-xs bg-green-100 text-green-800 px-2 py-1 rounded'>
-                                  {
-                                    BIKE_TYPES.find(
-                                      (b) => b.id === child.recommendedBike
-                                    )?.name
-                                  }
-                                </span>
-                              )}
-                            </div>
-                            <select
-                              value={child.age}
-                              onChange={(e) =>
-                                handleChildAgeChange(
-                                  child.id,
-                                  parseInt(e.target.value)
-                                )
-                              }
-                              className='w-full p-2 border border-gray-300 rounded focus:ring-green-500 focus:border-green-500'
-                            >
-                              {Array.from({ length: 14 }, (_, i) => i + 4).map(
-                                (age) => (
-                                  <option key={age} value={age}>
-                                    {age} years old
-                                  </option>
-                                )
-                              )}
-                            </select>
-                            {errors[`child-${index}-age`] && (
-                              <p className='text-red-500 text-xs mt-1'>
-                                {errors[`child-${index}-age`]}
-                              </p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className='p-3 bg-green-50 border border-green-200 rounded-lg'>
-                    <p className='text-sm text-green-800'>
-                      <strong>Total participants:</strong> {totalBikesNeeded} (
-                      {formData.adultCount} adults + {formData.childCount}{' '}
-                      children)
+                    <h3 className='text-3xl font-bold text-gray-900 mb-2 flex items-center'>
+                      <Sparkles className='w-8 h-8 mr-3 text-purple-600' />
+                      Complete Your Booking
+                    </h3>
+                    <p className='text-gray-600 text-lg'>
+                      First selection:{' '}
+                      <span className='font-semibold text-green-600'>
+                        {
+                          BIKE_TYPES.find((b) => b.id === selectedBikeType)
+                            ?.name
+                        }
+                      </span>
                     </p>
                   </div>
+                  <button
+                    onClick={() => setShowBookingForm(false)}
+                    className='w-12 h-12 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center group'
+                  >
+                    <X className='w-6 h-6 text-gray-500 group-hover:text-gray-700' />
+                  </button>
                 </div>
 
-                {/* Selected Bikes Summary */}
-                <div className='space-y-6'>
-                  <h4 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                    Your Selected Bikes
-                  </h4>
+                <form onSubmit={handleSubmit} className='space-y-10'>
+                  {/* Rental Period */}
+                  <motion.div className='space-y-6' variants={fadeInUp}>
+                    <h4 className='text-xl font-bold text-gray-800 pb-3 border-b-2 border-green-200 flex items-center'>
+                      <Calendar className='w-6 h-6 mr-3 text-green-600' />
+                      📅 When do you want to ride?
+                    </h4>
 
-                  <div className='space-y-4'>
-                    {Object.entries(formData.selectedBikes)
-                      .filter(([_, count]) => count > 0)
-                      .map(([bikeId, quantity]) => {
-                        const bike = BIKE_TYPES.find((b) => b.id === bikeId);
-                        if (!bike) return null;
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                      <div>
+                        <label className='flex items-center text-sm font-bold text-gray-700 mb-3'>
+                          <div className='w-3 h-3 bg-green-500 rounded-full mr-2'></div>
+                          Start Date *
+                        </label>
+                        <input
+                          type='date'
+                          name='startDate'
+                          value={formData.startDate}
+                          onChange={handleInputChange}
+                          className={`w-full p-4 border-2 ${
+                            errors.startDate
+                              ? 'border-red-500'
+                              : 'border-gray-300'
+                          } rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-white text-lg font-medium`}
+                          min={new Date().toISOString().split('T')[0]}
+                        />
+                        {errors.startDate && (
+                          <p className='text-red-500 text-sm mt-2 font-medium'>
+                            {errors.startDate}
+                          </p>
+                        )}
+                      </div>
 
-                        return (
-                          <div
-                            key={bikeId}
-                            className='bg-green-50 border-2 border-green-500 rounded-lg p-4'
-                          >
-                            <div className='flex items-center justify-between mb-3'>
-                              <div className='flex items-center'>
-                                <div className='relative w-16 h-16 mr-4'>
-                                  <Image
-                                    src={bike.image}
-                                    alt={bike.name}
-                                    fill
-                                    className='object-cover rounded'
-                                  />
-                                </div>
-                                <div>
-                                  <h5 className='text-lg font-bold text-gray-900'>
-                                    {bike.name}
-                                  </h5>
-                                  <p className='text-sm text-gray-600'>
-                                    {bike.ageRange}
-                                  </p>
-                                  <p className='text-sm text-gray-600'>
-                                    {bike.description}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className='text-right'>
-                                <div className='text-xl font-bold text-green-600'>
-                                  ${bike.price}
-                                </div>
-                                <div className='text-sm text-gray-500'>
-                                  per day
-                                </div>
-                                {bike.isPremium && (
-                                  <div className='text-xs bg-purple-500 text-white px-2 py-1 rounded mt-1'>
-                                    Premium
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className='mb-3'>
-                              <div className='text-sm text-gray-600 mb-2'>
-                                Features:
-                              </div>
-                              <div className='flex flex-wrap gap-1'>
-                                {bike.features.map((feature, index) => (
-                                  <span
-                                    key={index}
-                                    className='text-xs bg-white px-2 py-1 rounded border border-gray-200'
-                                  >
-                                    {feature}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div className='flex items-center justify-between'>
-                              <span className='text-sm font-medium text-gray-700'>
-                                Quantity:
-                              </span>
-                              <div className='flex items-center space-x-2'>
-                                <button
-                                  type='button'
-                                  onClick={() =>
-                                    handleBikeSelection(bikeId, quantity - 1)
-                                  }
-                                  disabled={quantity <= 0}
-                                  className='w-8 h-8 rounded-full bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center'
-                                >
-                                  <Minus className='w-4 h-4' />
-                                </button>
-                                <span className='w-8 text-center font-bold text-lg'>
-                                  {quantity}
-                                </span>
-                                <button
-                                  type='button'
-                                  onClick={() =>
-                                    handleBikeSelection(bikeId, quantity + 1)
-                                  }
-                                  className='w-8 h-8 rounded-full bg-white border border-gray-300 hover:bg-gray-50 flex items-center justify-center'
-                                >
-                                  <Plus className='w-4 h-4' />
-                                </button>
-                              </div>
-                            </div>
-
-                            <div className='mt-2 text-right'>
-                              <span className='text-sm text-gray-600'>
-                                Subtotal: $
-                                {(bike.price * quantity * rentalDays).toFixed(
-                                  2
-                                )}
-                                {rentalDays > 1 && ` (${rentalDays} days)`}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-
-                  {totalBikesSelected !== totalBikesNeeded && (
-                    <div className='p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start'>
-                      <AlertTriangle className='w-4 h-4 text-amber-600 mr-2 mt-0.5' />
-                      <div className='text-sm text-amber-800'>
-                        <strong>Note:</strong> You have {totalBikesSelected}{' '}
-                        bikes selected but need {totalBikesNeeded} total (
-                        {formData.adultCount} adults + {formData.childCount}{' '}
-                        children).
-                        {totalBikesSelected < totalBikesNeeded &&
-                          ' Click on more bikes above to add them to your selection.'}
+                      <div>
+                        <label className='flex items-center text-sm font-bold text-gray-700 mb-3'>
+                          <div className='w-3 h-3 bg-blue-500 rounded-full mr-2'></div>
+                          End Date *
+                        </label>
+                        <input
+                          type='date'
+                          name='endDate'
+                          value={formData.endDate}
+                          onChange={handleInputChange}
+                          className={`w-full p-4 border-2 ${
+                            errors.endDate
+                              ? 'border-red-500'
+                              : 'border-gray-300'
+                          } rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white text-lg font-medium`}
+                          min={
+                            formData.startDate ||
+                            new Date().toISOString().split('T')[0]
+                          }
+                        />
+                        {errors.endDate && (
+                          <p className='text-red-500 text-sm mt-2 font-medium'>
+                            {errors.endDate}
+                          </p>
+                        )}
                       </div>
                     </div>
-                  )}
 
-                  {totalBikesSelected > 0 && (
-                    <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-                      <p className='text-sm text-blue-800'>
-                        <strong>Total bikes selected:</strong>{' '}
-                        {totalBikesSelected}
-                        {totalBikesSelected === totalBikesNeeded &&
-                          ' ✓ Perfect match!'}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Additional Options */}
-                <div className='space-y-6'>
-                  <h4 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                    Additional Options
-                  </h4>
-
-                  <div className='space-y-4'>
-                    <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-                      <input
-                        type='checkbox'
-                        id='needsHelmet'
-                        name='needsHelmet'
-                        checked={formData.needsHelmet}
-                        onChange={handleInputChange}
-                        className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
-                      />
-                      <label
-                        htmlFor='needsHelmet'
-                        className='ml-2 text-sm text-gray-700 flex items-center'
+                    {formData.startDate && formData.endDate && (
+                      <motion.div
+                        className='p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl'
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                       >
-                        <Shield className='w-4 h-4 mr-1 text-green-600' />
-                        Include safety helmets (Free - Highly recommended)
-                      </label>
-                    </div>
+                        <p className='text-green-800 font-bold text-lg flex items-center'>
+                          <CheckCircle className='w-5 h-5 mr-2' />
+                          Adventure Duration: {rentalDays}{' '}
+                          {rentalDays === 1 ? 'day' : 'days'} 🚴‍♂️
+                        </p>
+                      </motion.div>
+                    )}
+                  </motion.div>
 
-                    <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-                      <input
-                        type='checkbox'
-                        id='needsLock'
-                        name='needsLock'
-                        checked={formData.needsLock}
-                        onChange={handleInputChange}
-                        className='h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded'
-                      />
-                      <label
-                        htmlFor='needsLock'
-                        className='ml-2 text-sm text-gray-700'
-                      >
-                        Include bike locks (Free)
-                      </label>
-                    </div>
-                  </div>
+                  {/* Location */}
+                  <motion.div className='space-y-6' variants={fadeInUp}>
+                    <h4 className='text-xl font-bold text-gray-800 pb-3 border-b-2 border-blue-200 flex items-center'>
+                      <MapPin className='w-6 h-6 mr-3 text-blue-600' />
+                      📍 Where should we deliver?
+                    </h4>
 
-                  <div>
-                    <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                      <Info className='w-4 h-4 mr-2 text-green-700' />
-                      Special Requests or Notes
-                    </label>
-                    <textarea
-                      name='specialRequests'
-                      value={formData.specialRequests}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className='w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500'
-                      placeholder='Any special requests, preferred routes, or additional information...'
-                    />
-                  </div>
-                </div>
-
-                {/* Safety Information */}
-                <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
-                  <div className='flex items-start'>
-                    <AlertTriangle className='w-5 h-5 text-amber-600 mr-3 flex-shrink-0 mt-0.5' />
                     <div>
-                      <h4 className='font-medium text-amber-800 mb-2'>
-                        Safety Information
+                      <label className='flex items-center text-sm font-bold text-gray-700 mb-3'>
+                        <Truck className='w-4 h-4 mr-2 text-green-600' />
+                        Delivery Address *
+                      </label>
+                      <input
+                        type='text'
+                        name='location'
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        placeholder='🏨 Hotel name, resort, or complete address in Punta Cana...'
+                        className={`w-full p-4 border-2 ${
+                          errors.location ? 'border-red-500' : 'border-gray-300'
+                        } rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors bg-white text-lg`}
+                      />
+                      {errors.location && (
+                        <p className='text-red-500 text-sm mt-2 font-medium'>
+                          {errors.location}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+
+                  {/* Participants - REFACTORED */}
+                  <motion.div className='space-y-8' variants={fadeInUp}>
+                    <div className='flex items-center justify-between'>
+                      <h4 className='text-xl font-bold text-gray-800 pb-3 border-b-2 border-purple-200 flex items-center flex-grow'>
+                        <Users className='w-6 h-6 mr-3 text-purple-600' />
+                        👥 Who's joining the adventure?
                       </h4>
-                      <ul className='text-sm text-amber-700 space-y-1'>
-                        <li>
-                          • Helmets are strongly recommended and provided free
-                          of charge
-                        </li>
-                        <li>
-                          • Children under 16 must be accompanied by an adult
-                        </li>
-                        <li>• Please follow all local traffic regulations</li>
-                        <li>• Rental includes basic insurance coverage</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Error Display */}
-                {errors.submit && (
-                  <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
-                    <p className='text-red-800 text-sm'>{errors.submit}</p>
-                  </div>
-                )}
-
-                {/* Footer with Price and Actions */}
-                <div className='bg-gray-900 text-white p-6 rounded-lg flex flex-col md:flex-row items-center justify-between'>
-                  <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-                    <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                      Total Price
-                    </span>
-                    <div className='flex items-center mt-1'>
-                      <span className='text-3xl font-light'>
-                        ${calculatePrice.toFixed(2)}
-                      </span>
-                      {rentalDays > 1 && (
-                        <span className='ml-2 text-sm bg-green-800 px-2 py-1 rounded'>
-                          {rentalDays} days
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Price breakdown */}
-                    <div className='text-xs text-gray-400 mt-2 space-y-1'>
-                      {Object.entries(formData.selectedBikes).map(
-                        ([bikeType, count]) => {
-                          if (count === 0) return null;
-                          const bike = BIKE_TYPES.find(
-                            (b) => b.id === bikeType
-                          );
-                          if (!bike) return null;
-                          return (
-                            <div key={bikeType}>
-                              {bike.name}: {count} × ${bike.price} ×{' '}
-                              {rentalDays} days = $
-                              {bike.price * count * rentalDays}
-                            </div>
-                          );
-                        }
-                      )}
-                      <div className='text-green-400'>
-                        Delivery & pickup: Free!
+                      <div className='ml-6 text-lg font-bold text-gray-600'>
+                        {totalParticipants}{' '}
+                        {totalParticipants === 1 ? 'person' : 'people'}
                       </div>
                     </div>
-                  </div>
 
-                  <div className='flex space-x-4'>
-                    <button
-                      type='button'
-                      onClick={() => setShowBookingForm(false)}
-                      className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition'
-                      disabled={isSubmitting}
+                    {/* People Cards */}
+                    <motion.div
+                      className='grid grid-cols-1 lg:grid-cols-2 gap-6'
+                      variants={stagger}
                     >
-                      Cancel
-                    </button>
+                      {formData.people.map((person, index) => (
+                        <PersonCard
+                          key={person.id}
+                          person={person}
+                          index={index}
+                        />
+                      ))}
+                    </motion.div>
 
-                    <button
-                      type='submit'
-                      disabled={isSubmitting}
-                      className='px-8 py-3 bg-green-700 hover:bg-green-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
+                    {/* Add Person Buttons */}
+                    <div className='flex flex-wrap gap-4 justify-center'>
+                      <motion.button
+                        type='button'
+                        onClick={() => addPerson('adult')}
+                        className='flex items-center px-6 py-3 border-3 border-dashed border-green-300 text-green-700 rounded-2xl hover:border-green-400 hover:bg-green-50 transition-all duration-300 font-bold text-lg'
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Plus className='w-5 h-5 mr-2' />
+                        👨 Add Adult
+                      </motion.button>
+
+                      <motion.button
+                        type='button'
+                        onClick={() => addPerson('child')}
+                        className='flex items-center px-6 py-3 border-3 border-dashed border-blue-300 text-blue-700 rounded-2xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 font-bold text-lg'
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Plus className='w-5 h-5 mr-2' />
+                        👶 Add Child
+                      </motion.button>
+                    </div>
+
+                    {errors.people && (
+                      <p className='text-red-500 text-center font-bold'>
+                        {errors.people}
+                      </p>
+                    )}
+                  </motion.div>
+
+                  {/* Booking Summary */}
+                  {totalParticipants > 0 && (
+                    <motion.div
+                      className='bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6 border-2 border-gray-200'
+                      variants={fadeInUp}
                     >
-                      <CreditCard className='h-4 w-4 mr-2' />
-                      {isSubmitting ? 'Booking...' : 'Book Bikes'}
-                    </button>
-                  </div>
-                </div>
-              </form>
+                      <h4 className='font-bold text-gray-800 mb-4 text-xl flex items-center'>
+                        <Heart className='w-6 h-6 mr-2 text-red-500' />
+                        📋 Your Adventure Summary
+                      </h4>
+                      <div className='grid grid-cols-2 gap-4 text-lg'>
+                        <div className='flex justify-between font-medium'>
+                          <span>👨 Adults:</span>
+                          <span className='text-green-600 font-bold'>
+                            {adultCount}
+                          </span>
+                        </div>
+                        <div className='flex justify-between font-medium'>
+                          <span>👶 Children:</span>
+                          <span className='text-blue-600 font-bold'>
+                            {childCount}
+                          </span>
+                        </div>
+                        <div className='col-span-2 border-t-2 border-gray-300 pt-3 mt-2'>
+                          <div className='flex justify-between font-bold text-xl'>
+                            <span>🚴‍♂️ Total Riders:</span>
+                            <span className='text-purple-600'>
+                              {totalParticipants}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Bike breakdown */}
+                        <div className='col-span-2 mt-4 space-y-2'>
+                          <h5 className='font-semibold text-gray-700 mb-2'>
+                            🚲 Selected Bikes:
+                          </h5>
+                          {Object.entries(selectedBikes).map(
+                            ([bikeType, count]) => {
+                              const bike = BIKE_TYPES.find(
+                                (b) => b.id === bikeType
+                              );
+                              if (!bike || count === 0) return null;
+                              return (
+                                <div
+                                  key={bikeType}
+                                  className='flex justify-between text-sm bg-white p-2 rounded-lg'
+                                >
+                                  <span className='flex items-center'>
+                                    <span className='mr-2'>{bike.icon}</span>
+                                    {bike.name}
+                                  </span>
+                                  <span className='font-bold text-green-600'>
+                                    {count} × ${bike.price} = $
+                                    {bike.price * count * rentalDays}
+                                  </span>
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Safety Information */}
+                  <motion.div
+                    className='bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-6'
+                    variants={fadeInUp}
+                  >
+                    <div className='flex items-start'>
+                      <AlertTriangle className='w-8 h-8 text-amber-600 mr-4 flex-shrink-0 mt-1' />
+                      <div>
+                        <h4 className='font-bold text-amber-800 mb-3 text-xl'>
+                          🛡️ Safety First - Your Adventure Guidelines
+                        </h4>
+                        <ul className='text-amber-700 space-y-2 font-medium'>
+                          <li className='flex items-center'>
+                            <Shield className='w-4 h-4 mr-2' />• Helmets are
+                            strongly recommended and provided FREE! 🪖
+                          </li>
+                          <li className='flex items-center'>
+                            <Users className='w-4 h-4 mr-2' />• Children under
+                            16 must be accompanied by an adult 👨‍👩‍👧‍👦
+                          </li>
+                          <li className='flex items-center'>
+                            <AlertTriangle className='w-4 h-4 mr-2' />• Please
+                            follow all local traffic regulations 🚦
+                          </li>
+                          <li className='flex items-center'>
+                            <CheckCircle className='w-4 h-4 mr-2' />• Rental
+                            includes basic insurance coverage 📋
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Error Display */}
+                  {errors.submit && (
+                    <motion.div
+                      className='p-4 bg-red-50 border-2 border-red-200 rounded-xl'
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      <p className='text-red-800 font-medium'>
+                        {errors.submit}
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {/* Enhanced Footer with Price and Actions */}
+                  <motion.div
+                    className='bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white p-8 rounded-2xl flex flex-col lg:flex-row items-center justify-between shadow-2xl'
+                    variants={fadeInUp}
+                  >
+                    <div className='flex flex-col items-center lg:items-start mb-6 lg:mb-0'>
+                      <span className='text-gray-300 text-sm uppercase tracking-wider font-bold mb-2'>
+                        🏷️ Total Adventure Cost
+                      </span>
+                      <div className='flex items-center mb-3'>
+                        <span className='text-4xl lg:text-5xl font-light'>
+                          ${calculatePrice.toFixed(2)}
+                        </span>
+                        {rentalDays > 1 && (
+                          <span className='ml-3 text-sm bg-green-600 px-3 py-1 rounded-full font-bold'>
+                            {rentalDays} days
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Enhanced Price breakdown */}
+                      <div className='text-xs text-gray-300 space-y-1 max-w-md'>
+                        {Object.entries(selectedBikes).map(
+                          ([bikeType, count]) => {
+                            if (count === 0) return null;
+                            const bike = BIKE_TYPES.find(
+                              (b) => b.id === bikeType
+                            );
+                            if (!bike) return null;
+                            return (
+                              <div
+                                key={bikeType}
+                                className='flex justify-between'
+                              >
+                                <span>
+                                  {bike.icon} {bike.name}:
+                                </span>
+                                <span className='font-medium'>
+                                  {count} × ${bike.price} × {rentalDays} days =
+                                  ${bike.price * count * rentalDays}
+                                </span>
+                              </div>
+                            );
+                          }
+                        )}
+                        <div className='text-green-400 font-medium pt-2 border-t border-gray-600'>
+                          🚚 Delivery & pickup: FREE! 🎁 Helmet & locks: FREE!
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='flex space-x-4'>
+                      <motion.button
+                        type='button'
+                        onClick={() => setShowBookingForm(false)}
+                        className='px-6 py-4 border-2 border-gray-600 rounded-xl text-gray-300 hover:text-white hover:border-gray-500 transition-colors font-bold'
+                        disabled={isSubmitting}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        ❌ Cancel
+                      </motion.button>
+
+                      <motion.button
+                        type='submit'
+                        disabled={isSubmitting}
+                        className='px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl transition-all flex items-center disabled:opacity-50 font-bold text-lg shadow-lg'
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <CreditCard className='h-5 w-5 mr-2' />
+                        {isSubmitting
+                          ? '⏳ Booking...'
+                          : '🚴‍♂️ Book My Adventure!'}
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                </form>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Rest of the component remains the same but with enhanced styling */}
       {/* What to Expect */}
       <motion.div
-        className='bg-gray-50 rounded-3xl p-8 md:p-12'
+        className='bg-gradient-to-br from-gray-50 to-blue-50 rounded-3xl p-8 md:p-12 border border-gray-200'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
         variants={fadeInUp}
       >
         <div className='text-center mb-12'>
-          <h2 className='text-3xl font-bold text-gray-900 mb-4'>
+          <h2 className='text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center'>
+            <Sparkles className='w-8 h-8 mr-3 text-purple-600' />
             What to Expect
           </h2>
           <p className='text-xl text-gray-600 mb-4'>
@@ -1136,31 +1236,36 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
             ride. We make it easy, fun, and fully adapted to your schedule.
           </p>
           <p className='text-lg text-gray-700 font-medium italic'>
-            Let the journey begin—on two wheels.
+            Let the journey begin—on two wheels. 🚴‍♀️✨
           </p>
         </div>
 
         <div className='grid md:grid-cols-4 gap-8'>
           {PROCESS_STEPS.map((step, index) => (
-            <div key={index} className='text-center'>
+            <motion.div
+              key={index}
+              className='text-center group'
+              variants={fadeInUp}
+              whileHover={{ y: -4 }}
+            >
               <div className='relative mb-6'>
-                <div className='w-16 h-16 bg-gray-900 text-white rounded-2xl flex items-center justify-center mx-auto font-bold text-xl'>
+                <div className='w-20 h-20 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-2xl flex items-center justify-center mx-auto font-bold text-2xl shadow-lg group-hover:shadow-xl transition-shadow'>
                   {step.step}
                 </div>
                 {index < PROCESS_STEPS.length - 1 && (
-                  <div className='hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-gray-200 -z-10'></div>
+                  <div className='hidden md:block absolute top-10 left-1/2 w-full h-1 bg-gradient-to-r from-gray-300 to-blue-300 -z-10 rounded'></div>
                 )}
               </div>
               <div className='mb-4'>
-                <step.icon className='w-8 h-8 text-gray-600 mx-auto' />
+                <step.icon className='w-10 h-10 text-gray-600 mx-auto group-hover:text-blue-600 transition-colors' />
               </div>
               <p className='text-gray-700 font-medium'>{step.text}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.div>
 
-      {/* What's Included */}
+      {/* What's Included - Enhanced */}
       <motion.div
         className='grid md:grid-cols-2 gap-12 px-6 py-8'
         initial='hidden'
@@ -1169,83 +1274,94 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         variants={stagger}
       >
         <motion.div variants={fadeInUp}>
-          <h2 className='text-3xl font-bold text-gray-900 mb-8'>
+          <h2 className='text-3xl font-bold text-gray-900 mb-8 flex items-center'>
+            <CheckCircle className='w-8 h-8 mr-3 text-green-600' />
             What's Included
           </h2>
           <div className='space-y-6'>
             {INCLUDED_ITEMS.map((item, index) => (
-              <div key={index} className='flex items-center'>
-                <div className='w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4'>
-                  <item.icon className='w-6 h-6 text-green-600' />
+              <motion.div
+                key={index}
+                className='flex items-center group'
+                whileHover={{ x: 4 }}
+              >
+                <div className='w-14 h-14 bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mr-4 group-hover:shadow-md transition-shadow'>
+                  <item.icon className='w-7 h-7 text-green-600' />
                 </div>
                 <span className='text-lg text-gray-700 font-medium'>
                   {item.text}
                 </span>
-              </div>
+              </motion.div>
             ))}
           </div>
 
           {/* Not Included Section */}
           <div className='mt-8'>
             <h3 className='text-xl font-bold text-gray-900 mb-4 flex items-center'>
-              <X className='w-5 h-5 text-red-500 mr-2' />
+              <X className='w-6 h-6 text-red-500 mr-2' />
               Not Included
             </h3>
             <div className='space-y-4'>
               {NOT_INCLUDED_ITEMS.map((item, index) => (
-                <div key={index} className='flex items-center'>
-                  <div className='w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mr-4'>
-                    <item.icon className='w-6 h-6 text-red-600' />
+                <motion.div
+                  key={index}
+                  className='flex items-center group'
+                  whileHover={{ x: 4 }}
+                >
+                  <div className='w-14 h-14 bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl flex items-center justify-center mr-4'>
+                    <item.icon className='w-7 h-7 text-red-600' />
                   </div>
                   <span className='text-lg text-gray-700 font-medium'>
                     {item.text}
                   </span>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
 
-          {/* Good to Know Section */}
-          <div className='mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-200'>
-            <h3 className='font-semibold text-blue-800 mb-4 flex items-center'>
-              <Info className='w-5 h-5 mr-2' />
-              Good to Know
+          {/* Enhanced Info Sections */}
+          <div className='mt-8 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border-2 border-blue-200'>
+            <h3 className='font-bold text-blue-800 mb-4 flex items-center text-lg'>
+              <Info className='w-6 h-6 mr-2' />
+              🌟 Good to Know
             </h3>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-blue-700'>
-              <div>
-                <div className='flex items-center mb-2'>
+              <div className='bg-white/60 p-3 rounded-lg'>
+                <div className='flex items-center mb-2 font-semibold'>
                   <Calendar className='w-4 h-4 mr-2' />
-                  <strong>Start & End Time:</strong>
+                  Start & End Time:
                 </div>
                 <p className='text-sm ml-6'>
                   According to your booking schedule
                 </p>
               </div>
-              <div>
-                <div className='flex items-center mb-2'>
+              <div className='bg-white/60 p-3 rounded-lg'>
+                <div className='flex items-center mb-2 font-semibold'>
                   <Baby className='w-4 h-4 mr-2' />
-                  <strong>Age Policy:</strong>
-                </div>
-                <p className='text-sm ml-6'>Children's bikes available</p>
-              </div>
-              <div className='md:col-span-2'>
-                <div className='flex items-center mb-2'>
-                  <MapPin className='w-4 h-4 mr-2' />
-                  <strong>Delivery Zone:</strong>
+                  Age Policy:
                 </div>
                 <p className='text-sm ml-6'>
-                  Available throughout Punta Cana area
+                  Children's bikes available 4-17 years
+                </p>
+              </div>
+              <div className='md:col-span-2 bg-white/60 p-3 rounded-lg'>
+                <div className='flex items-center mb-2 font-semibold'>
+                  <MapPin className='w-4 h-4 mr-2' />
+                  Delivery Zone:
+                </div>
+                <p className='text-sm ml-6'>
+                  Available throughout Punta Cana area - FREE delivery!
                 </p>
               </div>
             </div>
           </div>
 
-          <div className='mt-8 p-6 bg-amber-50 rounded-2xl border border-amber-200'>
-            <h3 className='font-semibold text-amber-800 mb-3 flex items-center'>
-              <AlertTriangle className='w-5 h-5 mr-2' />
-              Safety Disclaimer
+          <div className='mt-6 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200'>
+            <h3 className='font-bold text-amber-800 mb-3 flex items-center text-lg'>
+              <AlertTriangle className='w-6 h-6 mr-2' />
+              🛡️ Safety Disclaimer
             </h3>
-            <p className='text-amber-700'>
+            <p className='text-amber-700 font-medium'>
               For your safety, we recommend wearing a helmet and following all
               local traffic regulations.
               <strong> Your Safety, Your Responsibility.</strong>
@@ -1254,21 +1370,30 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         </motion.div>
 
         <motion.div
-          className='relative h-96 rounded-2xl overflow-hidden'
+          className='relative h-96 rounded-3xl overflow-hidden shadow-lg'
           variants={fadeInUp}
         >
           <Image
             src='https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&q=80&w=600'
             alt='Bike rental experience'
             fill
-            className='object-cover'
+            style={{ objectFit: 'cover' }}
           />
+          <div className='absolute inset-0 bg-gradient-to-t from-black/40 to-transparent' />
+          <div className='absolute bottom-6 left-6 text-white'>
+            <h3 className='text-2xl font-bold mb-2'>
+              Your Adventure Awaits! 🌴
+            </h3>
+            <p className='text-lg opacity-90'>
+              Premium bikes, delivered with care
+            </p>
+          </div>
         </motion.div>
       </motion.div>
 
-      {/* Testimonial */}
+      {/* Enhanced Testimonial */}
       <motion.div
-        className='bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-12 text-center'
+        className='bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-lg border border-gray-100 p-8 md:p-12 text-center'
         initial='hidden'
         whileInView='visible'
         viewport={{ once: true }}
@@ -1276,19 +1401,22 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
       >
         <div className='flex justify-center mb-6'>
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className='w-6 h-6 text-yellow-400 fill-current' />
+            <Star
+              key={i}
+              className='w-8 h-8 text-yellow-400 fill-current mx-1'
+            />
           ))}
         </div>
         <blockquote className='text-2xl md:text-3xl font-medium text-gray-900 mb-6 italic leading-relaxed'>
           "Fantastic service! The bike was delivered on time and in perfect
-          condition. Made exploring Punta Cana so much more enjoyable."
+          condition. Made exploring Punta Cana so much more enjoyable. 🚴‍♂️✨"
         </blockquote>
         <cite className='text-lg text-gray-600 font-medium'>
-          - Marcus T., Satisfied Customer
+          - Marcus T., Satisfied Customer 🌟
         </cite>
       </motion.div>
 
-      {/* Features Grid */}
+      {/* Enhanced Features Grid */}
       <motion.div
         className='px-6 py-8'
         initial='hidden'
@@ -1297,11 +1425,12 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
         variants={stagger}
       >
         <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
+          <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center'>
+            <Heart className='w-8 h-8 mr-3 text-red-500' />
             Why Choose Our Bikes?
           </h2>
           <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-            Premium quality, reliable service, and the freedom to explore
+            Premium quality, reliable service, and the freedom to explore 🌟
           </p>
         </div>
 
@@ -1309,12 +1438,12 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
           {FEATURES.map((feature, index) => (
             <motion.div
               key={index}
-              className='text-center p-8'
+              className='text-center p-8 bg-white rounded-3xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow group'
               variants={fadeInUp}
-              whileHover={{ y: -4 }}
+              whileHover={{ y: -8, scale: 1.02 }}
             >
               <div
-                className={`w-16 h-16 rounded-2xl ${feature.color} flex items-center justify-center mx-auto mb-6`}
+                className={`w-20 h-20 rounded-3xl ${feature.color} flex items-center justify-center mx-auto mb-6 group-hover:shadow-lg transition-shadow`}
               >
                 {feature.icon}
               </div>

@@ -2,13 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import {
-  ArrowDownCircle,
-  ChevronRight,
-  Crown,
-  Diamond,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowDownCircle, ChevronRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n/client';
 
@@ -90,8 +84,8 @@ const Hero = () => {
       {/* Luxury Background */}
       <div className='absolute inset-0 z-0'>
         <div className='hero-img absolute inset-0 bg-cover bg-center' />
-        <div className='absolute inset-0 bg-gradient-to-br from-black/30 via-black/20 to-black/70 z-10'></div>
-        <div className='absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/70 z-10'></div>
+        <div className='absolute inset-0 bg-gradient-to-br from-black/20 via-black/10 to-black/50 z-10'></div>
+        <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/50 z-10'></div>
         <div className='absolute inset-0 bg-black/9 z-10'></div>
       </div>
 
@@ -116,7 +110,7 @@ const Hero = () => {
                   initial={{ opacity: 0, y: 60, scale: 0.8 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: 1, duration: 1.2, ease: 'easeOut' }}
-                  className='text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tighter relative'
+                  className='text-white text-7xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tighter relative'
                 >
                   <span className='relative inline-block'>
                     <span className='relative'>Lux</span>

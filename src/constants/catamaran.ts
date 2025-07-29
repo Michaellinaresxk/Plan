@@ -13,7 +13,7 @@ import {
 // Gallery images - modern catamaran experience
 export const galleryImages = [
   {
-    src: 'https://images.unsplash.com/photo-1566416800269-eefb8666ae1b?q=80&w=1200',
+    src: 'https://prod-images.viravira.co/uploads/boats/11178/d10c6fb2-6866-4fe7-9e13-fb4f74fed055.jpg',
     alt: 'Luxury catamaran sailing',
     title: 'Sail in Paradise',
     subtitle: 'Experience the ultimate Caribbean adventure',
