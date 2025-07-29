@@ -5,6 +5,7 @@ import YogaServiceView from '../renders/YogaServiceView';
 import ChefServiceView from '../renders/ChefServiceView';
 import BabysitterServiceView from '../renders/BabysitterServiceView';
 import AirportServiceView from '../renders/AirportServiceView';
+import LuxYogaExperience from '../renders/LuxeYogaExperience';
 import CatamaranServiceView from '../renders/CatamaranServiceView';
 import GroceryServiceView from '../renders/GroceryServiceView';
 import LiveMusicServiceView from '../renders/LiveMusicServiceView';
@@ -54,7 +55,7 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'standard-massage': MassageServiceView,
 
     // Premium services
-    'luxe-yoga': YogaServiceView,
+    'luxe-yoga': LuxYogaExperience,
     'luxe-culinary': ChefServiceView,
     'luxe-arrival': AirportServiceView,
     'private-yacht': CatamaranServiceView,
