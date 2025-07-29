@@ -54,7 +54,7 @@
   },
   "home": {
     "hero": {
-      "title": "Punta Cana Plan",
+      "title": "Lux Punta Cana",
       "subtitle": "Elevate your experience with Premium services",
       "subtitle2": "Unique moments • Eternal memories",
       "exploreButton": "Explore Packages",
@@ -78,8 +78,8 @@
 
   "services": {
     "title": {
-      "standard": "Punta Cana Plan Services",
-      "premium": "Punta Cana Luxe Services"
+      "standard": "Lux Punta Cana Services",
+      "premium": "Luxe Punta Cana Services"
     },
     "subtitle": "Select the services you would like to include in your booking.",
     "actions": {
@@ -552,7 +552,7 @@
   },
   "about": {
     "aboutChip": "Our History",
-    "title": "About Punta Cana Plan",
+    "title": "About Lux Punta Cana",
     "subTitle": "Discover the story behind our exclusive vacation homes and our commitment to luxury experiences in Punta Cana.",
     "card1": "Years of Experience",
     "card2": "Exclusive Properties",
@@ -563,13 +563,13 @@
     "ourHistory": {
       "aboutChip": "Our History",
       "title": "A Track Record of Excellence in Luxury Tourism",
-      "p1": "Punta Cana Plan was born in 2010 with a clear vision: to offer luxury vacation experiences that combine the privacy of a home with the services of a five-star resort.",
+      "p1": "Lux Punta Cana was born in 2010 with a clear vision: to offer luxury vacation experiences that combine the privacy of a home with the services of a five-star resort.",
       "p2": "Founded by a group of Dominican tourism enthusiasts, our company started with just three properties in the Punta Cana area. Over the years, we have grown to manage more than 25 exclusive vacation homes in the most prestigious areas of the Dominican Republic.",
       "p3": "What sets us apart is not only the quality of our properties, but our focus on personalized service. We believe that each guest deserves a unique experience, tailored to their particular preferences."
     },
     "difference": {
       "differentChip": "Our Difference",
-      "differentTitle": "Why Choose Punta Cana Plan?",
+      "differentTitle": "Why Choose Lux Punta Cana?",
       "list1": "Personalized Service",
       "list1Text": "Each experience is tailored to the unique preferences of our guests, creating a truly tailor-made vacation.",
       "list2": "Exclusive Properties",
@@ -587,7 +587,7 @@
   "cartSide": {
     "title": "Your Selection",
     "selectedPackage:": "Selected Package:",
-    "services": "Services Plan Punta Cana",
+    "services": "Services Lux Punta Cana",
     "selectedServices:": "Selected Services",
     "selectedDates": "Selected Dates",
     "selectDate": "Select date",
@@ -629,7 +629,7 @@
   },
   "standardPage": {
     "chip": "STANDARD EXPERIENCE",
-    "tilte": "Punta Cana Plan",
+    "tilte": "Lux Punta Cana",
     "subTitle": "We guarantee the perfect vacation experience with essential services that transform your stay in Punta Cana into unforgettable memories, where adventure and relaxation are lived intensely.",
     "rating": "rating",
     "rastingText": "Standard Experience",
@@ -645,14 +645,14 @@
     },
     "testimonial": {
       "title": "Guest Testimonials",
-      "subtitle": "Dont just take our word for it. Here is what our guests have to say about their Punta Cana Plan experience.",
-      "testimonial1": "The Punta Cana Plan made our family vacation so easy and enjoyable. The airport transfers were smooth, the golf cart was perfect for getting around, and the catamaran trip was a highlight for the kids. Having a chef come to our villa for a night was such a special experience. Highly recommend!",
-      "testimonial2": "My husband and I celebrated our anniversary with the Punta Cana Plan package and it was perfect. The convenience of having transportation arranged and the freedom of the golf cart made exploring so much easier. The catamaran trip was absolutely stunning - best snorkeling I've ever done. The only thing I'd change is adding more food options to the package.",
+      "subtitle": "Dont just take our word for it. Here is what our guests have to say about their Lux Punta Cana  experience.",
+      "testimonial1": "The Lux Punta Cana made our family vacation so easy and enjoyable. The airport transfers were smooth, the golf cart was perfect for getting around, and the catamaran trip was a highlight for the kids. Having a chef come to our villa for a night was such a special experience. Highly recommend!",
+      "testimonial2": "My husband and I celebrated our anniversary with the Lux Punta Cana package and it was perfect. The convenience of having transportation arranged and the freedom of the golf cart made exploring so much easier. The catamaran trip was absolutely stunning - best snorkeling I've ever done. The only thing I'd change is adding more food options to the package.",
       "testimonial3": "As a group of friends celebrating a milestone birthday, we couldnt have asked for a better setup. The private chef was incredible - he prepared an authentic Dominican feast that we are still talking about. The catamaran trip was the perfect mix of relaxation and fun. Having the golf cart made late-night food runs a breeze. Will definitely book again!"
     },
     "standardPageCTA": {
       "title": "Ready for Your Dominican Adventure?",
-      "subtitle": "Book your Punta Cana Plan package now and get ready for an unforgettable Caribbean experience with all the essential services included.",
+      "subtitle": "Book your Lux Punta Cana package now and get ready for an unforgettable Caribbean experience with all the essential services included.",
       "btn1": "Customize Your Package",
       "btn2": "View Premium Package"
     }

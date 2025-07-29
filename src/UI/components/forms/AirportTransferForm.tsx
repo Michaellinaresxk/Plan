@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
-
 import {
   Plane,
   Calendar,
@@ -29,6 +28,38 @@ import {
   getAirlineInfo,
   validateAirlineWithTerminal,
 } from '@/constants/airlines';
+
+// Types and Interfaces
+interface FormData {
+  date: string;
+  airline: string;
+  flightNumber: string;
+  arrivalTime: string;
+  arrivalTerminal: string;
+  isRoundTrip: boolean;
+  returnDate: string;
+  returnAirline: string;
+  returnFlightNumber: string;
+  departureTime: string;
+  departureTerminal: string;
+  pickupTime: string; // New field for round trip pickup time
+  passengerCount: number;
+  kidsCount: number;
+  kidsAges: number[];
+  needsCarSeat: boolean;
+  carSeatCount: number;
+  vehicleType: string;
+  location: string;
+  pickupName: string;
+}
+
+interface FormErrors {
+  [key: string]: string;
+}
+
+interface FormErrors {
+  [key: string]: string;
+}
 
 interface AirportTransferFormProps {
   service: Service;
@@ -68,68 +99,30 @@ const VEHICLE_OPTIONS = {
   },
 };
 
-const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
-  service,
-  onSubmit,
-  onCancel,
-}) => {
-  const { t } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
-  const { setReservationData } = useReservation();
+// Custom Hooks for better logic separation
+const useFormValidation = () => {
+  const isSameDay = (dateString: string): boolean => {
+    if (!dateString) return false;
+    const today = new Date();
+    const selectedDate = new Date(dateString);
+    return today.toDateString() === selectedDate.toDateString();
+  };
 
-  // Form state with enhanced terminal tracking
-  const [formData, setFormData] = useState<FormData>({
-    date: '',
-    airline: '',
-    flightNumber: '',
-    arrivalTime: '',
-    arrivalTerminal: '',
-    isRoundTrip: false,
-    returnDate: '',
-    returnAirline: '',
-    returnFlightNumber: '',
-    departureTime: '',
-    departureTerminal: '',
-    passengerCount: 2,
-    kidsCount: 0,
-    kidsAges: [],
-    needsCarSeat: false,
-    carSeatCount: 0,
-    vehicleType: 'suv',
-    location: '',
-    pickupName: '',
-  });
+  const hasMinimum24Hours = (dateString: string): boolean => {
+    if (!dateString) return false;
+    const now = new Date();
+    const selectedDate = new Date(dateString);
+    const differenceMs = selectedDate.getTime() - now.getTime();
+    const hours = differenceMs / (1000 * 60 * 60);
+    return hours >= 24;
+  };
 
-  const [errors, setErrors] = useState<FormErrors>({});
+  return { isSameDay, hasMinimum24Hours };
+};
 
-  // Calculate total passengers
-  const totalPassengers = useMemo(
-    () => formData.passengerCount + formData.kidsCount,
-    [formData.passengerCount, formData.kidsCount]
-  );
-
-  // Vehicle recommendation logic
-  const recommendedVehicle = useMemo(() => {
-    if (totalPassengers > 6) {
-      return 'van';
-    }
-    return 'suv';
-  }, [totalPassengers]);
-
-  // Update vehicle type when passengers change
-  useEffect(() => {
-    if (totalPassengers > 6 && formData.vehicleType === 'suv') {
-      setFormData((prev) => ({
-        ...prev,
-        vehicleType: 'van',
-      }));
-    }
-  }, [totalPassengers, formData.vehicleType]);
-
-  // Calculate price
-  const calculatePrice = useMemo(() => {
-    let basePrice = service.price;
+const usePriceCalculation = (formData: FormData, servicePrice: number) => {
+  return useMemo(() => {
+    let basePrice = servicePrice;
 
     // Add vehicle cost
     const selectedVehicle = VEHICLE_OPTIONS[formData.vehicleType];
@@ -151,27 +144,296 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     formData.vehicleType,
     formData.isRoundTrip,
     formData.carSeatCount,
-    service.price,
+    servicePrice,
   ]);
+};
 
-  // Date validation helpers
-  const isSameDay = (dateString: string): boolean => {
-    if (!dateString) return false;
-    const today = new Date();
-    const selectedDate = new Date(dateString);
-    return today.toDateString() === selectedDate.toDateString();
+// Utility Functions
+const getAirlineCode = (airline: string): string => {
+  const airlineInfo = getAirlineInfo(airline);
+  return airlineInfo?.code || '';
+};
+
+const formatFlightNumber = (
+  flightNumber: string,
+  airlineCode: string
+): string => {
+  if (!airlineCode || !flightNumber) return flightNumber;
+
+  // Remove existing prefix if present
+  const cleanNumber = flightNumber.replace(/^[A-Z]{1,3}/i, '');
+
+  // Add airline code prefix
+  return `${airlineCode}${cleanNumber}`;
+};
+
+const validateFlightNumber = (
+  flightNumber: string,
+  airlineCode: string
+): boolean => {
+  if (!flightNumber) return false;
+  if (!airlineCode) return true; // If no airline selected, any format is acceptable
+
+  // Check if flight number starts with the correct airline code
+  return flightNumber.toUpperCase().startsWith(airlineCode.toUpperCase());
+};
+
+const generatePickupInstructions = (data: FormData): string => {
+  const arrivalTerminal = getAirlineInfo(data.airline)?.terminal;
+  const departureTerminal = data.isRoundTrip
+    ? getAirlineInfo(data.returnAirline)?.terminal
+    : null;
+
+  let instructions = [];
+
+  if (arrivalTerminal) {
+    instructions.push(`Pickup: Terminal ${arrivalTerminal} arrivals area`);
+  } else {
+    instructions.push(
+      'Pickup: Terminal will be confirmed based on flight details'
+    );
+  }
+
+  if (data.isRoundTrip && departureTerminal) {
+    instructions.push(`Return: Terminal ${departureTerminal} departures area`);
+  } else if (data.isRoundTrip) {
+    instructions.push(
+      'Return: Terminal will be confirmed based on flight details'
+    );
+  }
+
+  return instructions.join(' | ');
+};
+
+// Sub-components
+const Counter: React.FC<{
+  label: string;
+  value: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+  icon: React.ElementType;
+  min?: number;
+}> = ({ label, value, onIncrement, onDecrement, icon: Icon, min = 0 }) => (
+  <div>
+    <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+      <Icon className='w-4 h-4 mr-2 text-blue-700' />
+      {label}
+    </label>
+    <div className='flex border border-gray-300 rounded-lg overflow-hidden bg-white'>
+      <button
+        type='button'
+        onClick={onDecrement}
+        disabled={value <= min}
+        className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
+      >
+        -
+      </button>
+      <div className='flex-1 py-2 text-center font-medium'>{value}</div>
+      <button
+        type='button'
+        onClick={onIncrement}
+        className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+      >
+        +
+      </button>
+    </div>
+  </div>
+);
+
+const FlightNumberInput: React.FC<{
+  name: string;
+  value: string;
+  airline: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  label: string;
+}> = ({ name, value, airline, onChange, error, label }) => {
+  const airlineCode = getAirlineCode(airline);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value.toUpperCase();
+    let formattedValue = inputValue;
+
+    if (airlineCode) {
+      // Si intentan borrar el código de aerolínea, prevenirlo
+      if (inputValue.length < airlineCode.length) {
+        formattedValue = airlineCode;
+      }
+      // Si no empieza con el código correcto, arreglarlo
+      else if (!inputValue.startsWith(airlineCode)) {
+        // CLAVE: Extraer SOLO los números/letras después de cualquier prefijo existente
+        const numbersOnly = inputValue.replace(/^[A-Z]+/i, '');
+        formattedValue = `${airlineCode}${numbersOnly}`;
+      }
+      // Si ya empieza correctamente, dejar escribir libremente
+      else {
+        formattedValue = inputValue;
+      }
+    }
+
+    const syntheticEvent = {
+      ...e,
+      target: {
+        ...e.target,
+        value: formattedValue,
+      },
+    };
+
+    onChange(syntheticEvent);
   };
 
-  const hasMinimum24Hours = (dateString: string): boolean => {
-    if (!dateString) return false;
-    const now = new Date();
-    const selectedDate = new Date(dateString);
-    const differenceMs = selectedDate.getTime() - now.getTime();
-    const hours = differenceMs / (1000 * 60 * 60);
-    return hours >= 24;
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    // If empty and airline is selected, pre-fill with airline code
+    if (!value && airlineCode) {
+      const syntheticEvent = {
+        target: {
+          name: name,
+          value: airlineCode,
+          type: 'text',
+        },
+      } as React.ChangeEvent<HTMLInputElement>;
+      onChange(syntheticEvent);
+    }
   };
 
-  // Enhanced form validation with terminal validation
+  return (
+    <div>
+      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+        <Plane className='w-4 h-4 mr-2 text-blue-700' />
+        {label}
+      </label>
+      <div className='relative'>
+        <input
+          type='text'
+          name={name}
+          value={value}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          placeholder={airlineCode ? `${airlineCode}1234` : 'AA1234'}
+          className={`w-full p-3 border ${
+            error ? 'border-red-500' : 'border-gray-300'
+          } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50 pr-16`}
+        />
+        {airlineCode && (
+          <div className='absolute right-3 top-1/2 transform -translate-y-1/2'>
+            <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-medium'>
+              {airlineCode}
+            </span>
+          </div>
+        )}
+      </div>
+      {airlineCode && (
+        <p className='text-xs text-gray-500 mt-1'>
+          💡 Flight number will automatically include {airlineCode} prefix
+        </p>
+      )}
+      {error && <p className='text-red-500 text-xs mt-1'>{error}</p>}
+    </div>
+  );
+};
+
+const TerminalSummary: React.FC<{ formData: FormData }> = ({ formData }) => {
+  const arrivalInfo = getAirlineInfo(formData.airline);
+  const departureInfo = formData.isRoundTrip
+    ? getAirlineInfo(formData.returnAirline)
+    : null;
+
+  if (!arrivalInfo && !departureInfo) return null;
+
+  return (
+    <div className='mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg'>
+      <h4 className='font-medium text-blue-900 mb-3 flex items-center'>
+        <Info className='w-4 h-4 mr-2' />
+        Terminal Information Summary
+      </h4>
+
+      {arrivalInfo && (
+        <div className='mb-2'>
+          <span className='text-sm text-blue-800'>
+            <strong>Arrival:</strong> {formData.airline} → Terminal{' '}
+            {arrivalInfo.terminal}
+          </span>
+        </div>
+      )}
+
+      {departureInfo && (
+        <div>
+          <span className='text-sm text-blue-800'>
+            <strong>Departure:</strong> {formData.returnAirline} → Terminal{' '}
+            {departureInfo.terminal}
+          </span>
+        </div>
+      )}
+
+      <p className='text-xs text-blue-700 mt-2'>
+        Your driver will receive this terminal information to ensure smooth
+        pickup and drop-off.
+      </p>
+    </div>
+  );
+};
+
+// Main Component
+const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
+  service,
+  onSubmit,
+  onCancel,
+}) => {
+  const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { setReservationData } = useReservation();
+  const { isSameDay, hasMinimum24Hours } = useFormValidation();
+
+  // Form state
+  const [formData, setFormData] = useState<FormData>({
+    date: '',
+    airline: '',
+    flightNumber: '',
+    arrivalTime: '',
+    arrivalTerminal: '',
+    isRoundTrip: false,
+    returnDate: '',
+    returnAirline: '',
+    returnFlightNumber: '',
+    departureTime: '',
+    departureTerminal: '',
+    pickupTime: '', // New field
+    passengerCount: 2,
+    kidsCount: 0,
+    kidsAges: [],
+    needsCarSeat: false,
+    carSeatCount: 0,
+    vehicleType: 'suv',
+    location: '',
+    pickupName: '',
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  // Calculate total passengers
+  const totalPassengers = useMemo(
+    () => formData.passengerCount + formData.kidsCount,
+    [formData.passengerCount, formData.kidsCount]
+  );
+
+  // Vehicle recommendation logic
+  const recommendedVehicle = useMemo(() => {
+    if (totalPassengers > 6) return 'van';
+    return 'suv';
+  }, [totalPassengers]);
+
+  // Calculate price using custom hook
+  const calculatePrice = usePriceCalculation(formData, service.price);
+
+  // Update vehicle type when passengers change
+  useEffect(() => {
+    if (totalPassengers > 6 && formData.vehicleType === 'suv') {
+      setFormData((prev) => ({ ...prev, vehicleType: 'van' }));
+    }
+  }, [totalPassengers, formData.vehicleType]);
+
+  // Enhanced form validation
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -180,7 +442,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       { field: 'date', message: 'Date is required' },
       { field: 'airline', message: 'Airline is required' },
       { field: 'flightNumber', message: 'Flight number is required' },
-      { field: 'arrivalTime', message: 'Arrival time is required' },
+      { field: 'arrivalTime', message: 'Scheduled arrival time is required' },
       { field: 'location', message: 'Location is required' },
     ];
 
@@ -193,7 +455,8 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
           field: 'returnFlightNumber',
           message: 'Return flight number is required',
         },
-        { field: 'departureTime', message: 'Departure time is required' }
+        { field: 'departureTime', message: 'Departure time is required' },
+        { field: 'pickupTime', message: 'Pickup time is required' }
       );
     }
 
@@ -254,36 +517,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     return newErrors;
   };
 
-  // Generate pickup instructions based on terminal information
-  const generatePickupInstructions = (data: FormData): string => {
-    const arrivalTerminal = getAirlineInfo(data.airline)?.terminal;
-    const departureTerminal = data.isRoundTrip
-      ? getAirlineInfo(data.returnAirline)?.terminal
-      : null;
-
-    let instructions = [];
-
-    if (arrivalTerminal) {
-      instructions.push(`Pickup: Terminal ${arrivalTerminal} arrivals area`);
-    } else {
-      instructions.push(
-        'Pickup: Terminal will be confirmed based on flight details'
-      );
-    }
-
-    if (data.isRoundTrip && departureTerminal) {
-      instructions.push(
-        `Return: Terminal ${departureTerminal} departures area`
-      );
-    } else if (data.isRoundTrip) {
-      instructions.push(
-        'Return: Terminal will be confirmed based on flight details'
-      );
-    }
-
-    return instructions.join(' | ');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -296,17 +529,14 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      // ✅ CALCULAR EL PRECIO TOTAL ANTES DE CREAR LA RESERVA
-      const totalPrice = calculatePrice; // Ya está calculado con useMemo
+      const totalPrice = calculatePrice;
 
-      // Enhanced reservation data with terminal information AND totalPrice
       const reservationData = {
         service,
-        totalPrice, // ✅ AGREGAR ESTA LÍNEA - CRÍTICA PARA QUE NO FALLE
+        totalPrice,
         formData: {
           ...formData,
           serviceType: 'airport-transfers',
-          // Add terminal information
           terminalInfo: {
             arrival: {
               airline: formData.airline,
@@ -322,7 +552,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                 }
               : null,
           },
-          // Enhanced pickup instructions
           specialInstructions: generatePickupInstructions(formData),
         },
         bookingDate: new Date(`${formData.date}T${formData.arrivalTime}`),
@@ -333,7 +562,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
         '🛩️ Enhanced Airport transfer - Reservation data:',
         reservationData
       );
-      console.log('💰 Total Price included:', totalPrice); // Debug log
+      console.log('💰 Total Price included:', totalPrice);
 
       setReservationData(reservationData);
       router.push('/reservation-confirmation');
@@ -366,11 +595,27 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       if (name === 'airline') {
         const terminalInfo = getAirlineInfo(value);
         newData.arrivalTerminal = terminalInfo?.terminal || '';
+
+        // Auto-format existing flight number with new airline code
+        if (newData.flightNumber && terminalInfo?.code) {
+          newData.flightNumber = formatFlightNumber(
+            newData.flightNumber,
+            terminalInfo.code
+          );
+        }
       }
 
       if (name === 'returnAirline') {
         const terminalInfo = getAirlineInfo(value);
         newData.departureTerminal = terminalInfo?.terminal || '';
+
+        // Auto-format existing return flight number with new airline code
+        if (newData.returnFlightNumber && terminalInfo?.code) {
+          newData.returnFlightNumber = formatFlightNumber(
+            newData.returnFlightNumber,
+            terminalInfo.code
+          );
+        }
       }
 
       return newData;
@@ -378,18 +623,12 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
 
     // Clear car seat count if checkbox is unchecked
     if (name === 'needsCarSeat' && !checked) {
-      setFormData((prev) => ({
-        ...prev,
-        carSeatCount: 0,
-      }));
+      setFormData((prev) => ({ ...prev, carSeatCount: 0 }));
     }
 
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -410,291 +649,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   const passengerCounter = createCounterHandler('passengerCount', 1);
   const kidsCounter = createCounterHandler('kidsCount', 0);
   const carSeatCounter = createCounterHandler('carSeatCount', 0);
-
-  // Vehicle selection with recommendations
-  const VehicleSelector = () => {
-    const getRecommendationMessage = () => {
-      if (totalPassengers > 10) {
-        return {
-          type: 'warning',
-          message: `For ${totalPassengers} passengers, we strongly recommend a Van or consider booking two SUVs.`,
-          showFor: ['suv', 'sedan'],
-        };
-      }
-
-      if (totalPassengers > 6) {
-        return {
-          type: 'info',
-          message: `For ${totalPassengers} passengers, we recommend a Van or two SUVs.`,
-          showFor: ['suv'],
-        };
-      }
-
-      if (totalPassengers > 12) {
-        return {
-          type: 'info',
-          message: `For ${totalPassengers} passengers, we recommend a Van or t SUVs.`,
-          showFor: ['suv'],
-        };
-      }
-
-      return null;
-    };
-
-    const canVehicleAccommodate = (vehicleKey: string, vehicle: any) => {
-      if (totalPassengers <= vehicle.capacity) return true;
-
-      if (totalPassengers > 6) {
-        return vehicleKey === 'van' || vehicleKey === 'two_suvs';
-      }
-      if (totalPassengers > 12) {
-        return vehicleKey === 'van' || vehicleKey === 'three_suvs';
-      }
-      return false;
-    };
-
-    const getRecommendedVehicle = () => {
-      if (totalPassengers > 12) return 'van';
-      if (totalPassengers > 10) return 'van';
-      if (totalPassengers > 6) return 'van';
-      return recommendedVehicle;
-    };
-
-    const recommendation = getRecommendationMessage();
-    const currentRecommended = getRecommendedVehicle();
-
-    return (
-      <div className='space-y-4'>
-        <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-          <Car className='w-4 h-4 mr-2 text-blue-700' />
-          Vehicle Type *
-        </label>
-
-        {recommendation &&
-          recommendation.showFor.includes(formData.vehicleType) && (
-            <div
-              className={`p-3 border rounded-lg flex items-start ${
-                recommendation.type === 'warning'
-                  ? 'bg-red-50 border-red-200'
-                  : 'bg-yellow-50 border-yellow-200'
-              }`}
-            >
-              <AlertTriangle
-                className={`w-4 h-4 mr-2 mt-0.5 ${
-                  recommendation.type === 'warning'
-                    ? 'text-red-600'
-                    : 'text-yellow-600'
-                }`}
-              />
-              <div
-                className={`text-sm ${
-                  recommendation.type === 'warning'
-                    ? 'text-red-800'
-                    : 'text-yellow-800'
-                }`}
-              >
-                <strong>
-                  {recommendation.type === 'warning'
-                    ? 'Important:'
-                    : 'Recommendation:'}
-                </strong>{' '}
-                {recommendation.message}
-              </div>
-            </div>
-          )}
-
-        {totalPassengers > 10 && (
-          <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-            <div className='text-sm text-blue-800'>
-              <strong>Note:</strong> For groups larger than 10 passengers, you
-              can also consider:
-              <ul className='mt-1 ml-4 list-disc'>
-                <li>Booking two SUVs (more flexibility)</li>
-                <li>One Van (cost-effective, keeps group together)</li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          {Object.entries(VEHICLE_OPTIONS).map(([key, vehicle]) => {
-            const isSelected = formData.vehicleType === key;
-            const isRecommended = key === currentRecommended;
-            const canAccommodate = canVehicleAccommodate(key, vehicle);
-            const isDisabled = !canAccommodate;
-
-            return (
-              <div
-                key={key}
-                className={`relative p-4 border rounded-lg transition-all ${
-                  isDisabled
-                    ? 'border-red-300 bg-red-50 cursor-not-allowed opacity-75'
-                    : isSelected
-                    ? 'border-blue-500 bg-blue-50 cursor-pointer'
-                    : 'border-gray-300 hover:border-gray-400 cursor-pointer'
-                }`}
-                onClick={() => {
-                  if (!isDisabled) {
-                    setFormData((prev) => ({ ...prev, vehicleType: key }));
-                  }
-                }}
-              >
-                {isRecommended && canAccommodate && (
-                  <div className='absolute -top-2 left-4 bg-green-500 text-white text-xs px-2 py-1 rounded'>
-                    Recommended
-                  </div>
-                )}
-
-                <div className='flex items-center justify-between mb-2'>
-                  <div className='flex items-center'>
-                    {vehicle.icon}
-                    <span
-                      className={`ml-2 font-medium ${
-                        isDisabled ? 'text-gray-400' : ''
-                      }`}
-                    >
-                      {vehicle.name}
-                    </span>
-                  </div>
-                  {vehicle.additionalCost > 0 && (
-                    <span
-                      className={`text-sm ${
-                        isDisabled ? 'text-gray-400' : 'text-gray-600'
-                      }`}
-                    >
-                      +${vehicle.additionalCost}
-                    </span>
-                  )}
-                </div>
-
-                <p
-                  className={`text-sm mb-2 ${
-                    isDisabled ? 'text-gray-400' : 'text-gray-600'
-                  }`}
-                >
-                  {vehicle.description}
-                </p>
-
-                <div className='flex items-center justify-between text-sm'>
-                  <span
-                    className={`${
-                      canAccommodate ? 'text-green-600' : 'text-red-600'
-                    }`}
-                  >
-                    Capacity: {vehicle.capacity} passengers
-                  </span>
-                  {isSelected && (
-                    <CheckCircle className='w-4 h-4 text-blue-500' />
-                  )}
-                </div>
-
-                {!canAccommodate && (
-                  <div className='mt-2'>
-                    <p className='text-xs text-red-600'>
-                      Insufficient capacity for {totalPassengers} passengers
-                    </p>
-                    {totalPassengers > 10 && key !== 'van' && (
-                      <p className='text-xs text-red-500 font-medium'>
-                        Consider Van or multiple vehicles
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {errors.vehicleType && (
-          <p className='text-red-500 text-xs'>{errors.vehicleType}</p>
-        )}
-      </div>
-    );
-  };
-
-  // Counter component
-  const Counter = ({
-    label,
-    value,
-    onIncrement,
-    onDecrement,
-    icon: Icon,
-    min = 0,
-  }: {
-    label: string;
-    value: number;
-    onIncrement: () => void;
-    onDecrement: () => void;
-    icon: React.ElementType;
-    min?: number;
-  }) => (
-    <div>
-      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-        <Icon className='w-4 h-4 mr-2 text-blue-700' />
-        {label}
-      </label>
-      <div className='flex border border-gray-300 rounded-lg overflow-hidden bg-white'>
-        <button
-          type='button'
-          onClick={onDecrement}
-          disabled={value <= min}
-          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
-        >
-          -
-        </button>
-        <div className='flex-1 py-2 text-center font-medium'>{value}</div>
-        <button
-          type='button'
-          onClick={onIncrement}
-          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-        >
-          +
-        </button>
-      </div>
-    </div>
-  );
-
-  // Terminal Summary Component
-  const TerminalSummary = () => {
-    const arrivalInfo = getAirlineInfo(formData.airline);
-    const departureInfo = formData.isRoundTrip
-      ? getAirlineInfo(formData.returnAirline)
-      : null;
-
-    if (!arrivalInfo && !departureInfo) return null;
-
-    return (
-      <div className='mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg'>
-        <h4 className='font-medium text-blue-900 mb-3 flex items-center'>
-          <Info className='w-4 h-4 mr-2' />
-          Terminal Information Summary
-        </h4>
-
-        {arrivalInfo && (
-          <div className='mb-2'>
-            <span className='text-sm text-blue-800'>
-              <strong>Arrival:</strong> {formData.airline} → Terminal{' '}
-              {arrivalInfo.terminal}
-            </span>
-          </div>
-        )}
-
-        {departureInfo && (
-          <div>
-            <span className='text-sm text-blue-800'>
-              <strong>Departure:</strong> {formData.returnAirline} → Terminal{' '}
-              {departureInfo.terminal}
-            </span>
-          </div>
-        )}
-
-        <p className='text-xs text-blue-700 mt-2'>
-          Your driver will receive this terminal information to ensure smooth
-          pickup and drop-off.
-        </p>
-      </div>
-    );
-  };
 
   return (
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
@@ -750,34 +704,21 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                 placeholder='Search for your airline...'
               />
 
-              {/* Flight Number */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Plane className='w-4 h-4 mr-2 text-blue-700' />
-                  Flight Number *
-                </label>
-                <input
-                  type='text'
-                  name='flightNumber'
-                  value={formData.flightNumber}
-                  onChange={handleInputChange}
-                  placeholder='AA1234'
-                  className={`w-full p-3 border ${
-                    errors.flightNumber ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-                />
-                {errors.flightNumber && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.flightNumber}
-                  </p>
-                )}
-              </div>
+              {/* Flight Number with Auto-prefix */}
+              <FlightNumberInput
+                name='flightNumber'
+                value={formData.flightNumber}
+                airline={formData.airline}
+                onChange={handleInputChange}
+                error={errors.flightNumber}
+                label='Flight Number *'
+              />
 
-              {/* Arrival Time */}
+              {/* Scheduled Arrival Time */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Clock className='w-4 h-4 mr-2 text-blue-700' />
-                  Arrival Time *
+                  Scheduled Arrival *
                 </label>
                 <input
                   type='time'
@@ -863,8 +804,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                     <div>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Calendar className='w-4 h-4 mr-2 text-blue-700' />
-                        Departure Okay, tell The okay Ola la de persona soup say
-                        say OK OK OK selectionDate *
+                        Departure Date *
                       </label>
                       <input
                         type='date'
@@ -894,37 +834,22 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                       value={formData.returnAirline}
                       onChange={handleInputChange}
                       error={errors.returnAirline}
-                      label='Airline *'
+                      label='Departure Airline *'
                       placeholder='Search for your return airline...'
                     />
 
-                    {/* Return Flight Number */}
-                    <div>
-                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                        <Plane className='w-4 h-4 mr-2 text-blue-700' />
-                        Flight Number *
-                      </label>
-                      <input
-                        type='text'
-                        name='returnFlightNumber'
-                        value={formData.returnFlightNumber}
-                        onChange={handleInputChange}
-                        placeholder='AA4321'
-                        className={`w-full p-3 border ${
-                          errors.returnFlightNumber
-                            ? 'border-red-500'
-                            : 'border-gray-300'
-                        } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-                      />
-                      {errors.returnFlightNumber && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.returnFlightNumber}
-                        </p>
-                      )}
-                    </div>
+                    {/* Return Flight Number with Auto-prefix */}
+                    <FlightNumberInput
+                      name='returnFlightNumber'
+                      value={formData.returnFlightNumber}
+                      airline={formData.returnAirline}
+                      onChange={handleInputChange}
+                      error={errors.returnFlightNumber}
+                      label='Return Flight Number *'
+                    />
 
                     {/* Departure Time */}
-                    {/* <div>
+                    <div>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Clock className='w-4 h-4 mr-2 text-blue-700' />
                         Departure Time *
@@ -945,7 +870,35 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                           {errors.departureTime}
                         </p>
                       )}
-                    </div> */}
+                    </div>
+
+                    {/* NEW: Pickup Time for Round Trip */}
+                    <div className='md:col-span-2'>
+                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                        <Clock className='w-4 h-4 mr-2 text-blue-700' />
+                        Hotel Pickup Time *
+                      </label>
+                      <input
+                        type='time'
+                        name='pickupTime'
+                        value={formData.pickupTime}
+                        onChange={handleInputChange}
+                        className={`w-full p-3 border ${
+                          errors.pickupTime
+                            ? 'border-red-500'
+                            : 'border-gray-300'
+                        } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
+                      />
+                      <p className='text-xs text-gray-500 mt-1'>
+                        💡 We recommend pickup time 3-4 hours before departure
+                        for international flights
+                      </p>
+                      {errors.pickupTime && (
+                        <p className='text-red-500 text-xs mt-1'>
+                          {errors.pickupTime}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -955,7 +908,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
           {/* Terminal Summary */}
           {(formData.airline ||
             (formData.isRoundTrip && formData.returnAirline)) && (
-            <TerminalSummary />
+            <TerminalSummary formData={formData} />
           )}
 
           {/* Passenger Information */}
@@ -1034,14 +987,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
             </div>
           </div>
 
-          {/* Vehicle Selection */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Vehicle Selection
-            </h3>
-            <VehicleSelector />
-          </div>
-
           {/* Location */}
           <div>
             <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
@@ -1083,10 +1028,53 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
               <p className='text-red-500 text-xs mt-1'>{errors.pickupName}</p>
             )}
           </div>
+
+          {/* Price Summary */}
+          <div className='bg-gray-50 p-6 rounded-lg border'>
+            <h3 className='text-lg font-medium text-gray-800 mb-4'>
+              Price Summary
+            </h3>
+            <div className='space-y-2 text-sm'>
+              <div className='flex justify-between'>
+                <span>Base service:</span>
+                <span>${service.price}</span>
+              </div>
+              {VEHICLE_OPTIONS[formData.vehicleType]?.additionalCost > 0 && (
+                <div className='flex justify-between'>
+                  <span>
+                    Vehicle upgrade (
+                    {VEHICLE_OPTIONS[formData.vehicleType].name}):
+                  </span>
+                  <span>
+                    +${VEHICLE_OPTIONS[formData.vehicleType].additionalCost}
+                  </span>
+                </div>
+              )}
+              {formData.isRoundTrip && (
+                <div className='flex justify-between'>
+                  <span>Round trip (80% discount on return):</span>
+                  <span>×1.8</span>
+                </div>
+              )}
+              {formData.carSeatCount > 0 && (
+                <div className='flex justify-between'>
+                  <span>Car seats ({formData.carSeatCount}):</span>
+                  <span>+${formData.carSeatCount * 25}</span>
+                </div>
+              )}
+              <div className='border-t pt-2 font-bold flex justify-between'>
+                <span>Total:</span>
+                <span>${calculatePrice}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Footer with Price and Actions */}
-        <div className='bg-gray-900 text-white p-6 flex justify-end'>
+        {/* Footer with Actions */}
+        <div className='bg-gray-900 text-white p-6 flex justify-between items-center'>
+          <div className='text-xl font-bold'>
+            Total: <span className='text-blue-400'>${calculatePrice}</span>
+          </div>
           <div className='flex space-x-4'>
             <button
               type='button'

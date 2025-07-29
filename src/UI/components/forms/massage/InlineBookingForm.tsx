@@ -14,6 +14,7 @@ import {
   Info,
   CreditCard,
   MapPin,
+  CheckCircle,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
@@ -23,6 +24,16 @@ interface MassageServiceViewProps {
   primaryColor?: string;
   viewContext?: 'standard-view' | 'premium-view';
 }
+
+// ✅ Location options configuration - consistent with other forms
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'uvero-alto', name: 'Uvero Alto' },
+  { id: 'macao', name: 'Macao' },
+] as const;
 
 const InlineBookingForm = ({
   selectedMassage,
@@ -42,12 +53,12 @@ const InlineBookingForm = ({
     '18:00',
   ];
 
-  // ✅ Estado inicial bien estructurado
+  // ✅ Updated state with location as ID instead of free text
   const [formData, setFormData] = useState({
     selectedDuration: selectedMassage.durations[0],
     date: '',
     time: '',
-    location: '',
+    location: '', // Now stores location ID
     persons: 1,
     specialNeeds: '',
   });
@@ -55,7 +66,7 @@ const InlineBookingForm = ({
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Función helper para actualizar estado sin resetear otros campos
+  // ✅ Helper function to update form fields
   const updateFormField = useCallback(
     (field, value) => {
       setFormData((prev) => ({
@@ -63,7 +74,7 @@ const InlineBookingForm = ({
         [field]: value,
       }));
 
-      // Limpiar error específico cuando el usuario corrige
+      // Clear specific error when user corrects it
       if (errors[field]) {
         setErrors((prev) => {
           const newErrors = { ...prev };
@@ -75,7 +86,15 @@ const InlineBookingForm = ({
     [errors]
   );
 
-  // ✅ Validación mejorada
+  // ✅ Handle location selection - similar to other forms
+  const handleLocationSelect = useCallback(
+    (locationId) => {
+      updateFormField('location', locationId);
+    },
+    [updateFormField]
+  );
+
+  // ✅ Updated validation for location ID
   const validateForm = useCallback(() => {
     const newErrors = {};
 
@@ -87,48 +106,65 @@ const InlineBookingForm = ({
       newErrors.time = 'Time is required';
     }
 
-    if (!formData.location.trim()) {
-      newErrors.location = 'Address is required';
+    if (!formData.location) {
+      newErrors.location = 'Please select a location';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData.date, formData.time, formData.location]);
 
-  // ✅ Cálculos derivados
+  // ✅ Derived calculations
   const totalPrice = formData.selectedDuration.price * formData.persons;
-  const isFormValid =
-    formData.date && formData.time && formData.location.trim();
+  const isFormValid = formData.date && formData.time && formData.location;
 
-  // ✅ Submit handler corregido - manteniendo estructura original
+  // ✅ Updated submit handler to include location name
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      // Estructura exacta que espera la página de confirmación
+      // Get selected location name
+      const selectedLocation = LOCATION_OPTIONS.find(
+        (loc) => loc.id === formData.location
+      );
+
+      // Structure exactly as expected by confirmation page
       const reservationData = {
         service: selectedMassage,
         formData: {
           serviceId: selectedMassage.id,
           serviceName: selectedMassage.name,
+          serviceType: 'massage',
           duration: formData.selectedDuration.duration,
           date: formData.date,
           time: formData.time,
-          location: formData.location,
+          location: formData.location, // Location ID
+          locationName: selectedLocation?.name || formData.location, // Location name for display
           persons: formData.persons,
           specialNeeds: formData.specialNeeds,
           calculatedPrice: totalPrice,
         },
-        totalPrice: totalPrice, // Asegurar que sea un número
+        totalPrice: totalPrice,
         bookingDate: new Date(),
+        // ✅ Add massage specific data similar to other forms
+        massageSpecifics: {
+          duration: formData.selectedDuration.duration,
+          location: formData.location,
+          locationName: selectedLocation?.name || formData.location,
+          persons: formData.persons,
+          specialNeeds: formData.specialNeeds,
+          massageType: selectedMassage.name,
+          intensity: selectedMassage.intensity,
+        },
       };
 
       console.log(
         'InlineBookingForm sending reservationData:',
         reservationData
       );
+      console.log('📍 Selected location:', selectedLocation);
       await onConfirm(reservationData);
     } catch (error) {
       console.error('Booking error:', error);
@@ -262,30 +298,78 @@ const InlineBookingForm = ({
           </div>
         </div>
 
-        {/* Location - ✅ CORREGIDO */}
+        {/* ✅ Location Selection */}
         <div>
-          <label className='flex items-center text-lg font-semibold text-stone-800 mb-3'>
-            <MapPin className='w-5 h-5 mr-2 text-green-800' />
-            Address *
-          </label>
-          <input
-            type='text'
-            name='location'
-            value={formData.location}
-            onChange={(e) => updateFormField('location', e.target.value)}
-            className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
-              errors.location
-                ? 'border-red-300 bg-red-50 focus:border-red-400'
-                : 'border-stone-300'
-            }`}
-            placeholder='Please provide the complete address where the service will take place.'
-          />
+          <h4 className='text-lg font-semibold text-stone-800 mb-4 flex items-center gap-2'>
+            <MapPin className='w-5 h-5 text-green-800' />
+            Select your location
+          </h4>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+            {LOCATION_OPTIONS.map((location) => (
+              <div
+                key={location.id}
+                className={`
+                  border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                  ${
+                    formData.location === location.id
+                      ? 'border-stone-800 bg-stone-50 shadow-lg ring-2 ring-stone-200'
+                      : 'border-stone-200 bg-white hover:border-stone-300'
+                  }
+                `}
+                onClick={() => handleLocationSelect(location.id)}
+              >
+                <div className='flex items-center'>
+                  <div
+                    className={`
+                      w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                      ${
+                        formData.location === location.id
+                          ? 'border-stone-800 bg-stone-800'
+                          : 'border-stone-300'
+                      }
+                    `}
+                  >
+                    {formData.location === location.id && (
+                      <CheckCircle className='w-4 h-4 text-white' />
+                    )}
+                  </div>
+                  <div className='flex items-center'>
+                    <MapPin className='w-4 h-4 mr-2 text-stone-600' />
+                    <span className='font-medium text-stone-800 text-sm'>
+                      {location.name}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {errors.location && (
-            <p className='text-red-500 text-sm mt-2'>{errors.location}</p>
+            <p className='text-red-500 text-sm mt-3 flex items-center'>
+              <Info className='w-3 h-3 mr-1' />
+              {errors.location}
+            </p>
+          )}
+
+          {/* Display selected location */}
+          {formData.location && (
+            <div className='mt-4 p-3 bg-stone-100 rounded-lg border border-stone-200'>
+              <p className='text-sm text-stone-700 flex items-center'>
+                <CheckCircle className='w-4 h-4 mr-2 text-green-600' />
+                Selected:{' '}
+                <span className='font-medium ml-1'>
+                  {
+                    LOCATION_OPTIONS.find((loc) => loc.id === formData.location)
+                      ?.name
+                  }
+                </span>
+              </p>
+            </div>
           )}
         </div>
 
-        {/* Number of People - ✅ CORREGIDO */}
+        {/* Number of People */}
         <div>
           <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
             <Users className='w-5 h-5 text-green-800' />
@@ -370,7 +454,14 @@ const InlineBookingForm = ({
                   </div>
                 )}
                 {formData.location && (
-                  <div className='text-sm'>📍 {formData.location}</div>
+                  <div className='text-sm flex items-center'>
+                    <MapPin className='w-3 h-3 mr-1' />
+                    {
+                      LOCATION_OPTIONS.find(
+                        (loc) => loc.id === formData.location
+                      )?.name
+                    }
+                  </div>
                 )}
               </div>
             </div>

@@ -209,6 +209,20 @@ registerForm({
   }),
 });
 
+// Catamaran Form
+// registerForm({
+//   name: 'CatamaranForm',
+//   component: () => import('@/UI/components/forms/CatamaranForm'),
+//   servicePatterns: ['catamaran'],
+//   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+//     service,
+//     onSubmit:
+//       additionalData?.onSubmit ||
+//       ((data: any) => console.log('Catamaran:', data)),
+//     onCancel,
+//   }),
+// });
+
 // Chef Form
 registerForm({
   name: 'ChefForm',
@@ -284,7 +298,7 @@ registerForm({
 // Karaoke Form
 registerForm({
   name: 'private-catamaran',
-  component: () => import('@/UI/components/forms/SaonaIslandForm'),
+  component: () => import('@/UI/components/forms/CatamaranForm'),
   servicePatterns: ['private-catamaran'],
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,

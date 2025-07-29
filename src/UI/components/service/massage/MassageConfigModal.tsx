@@ -13,8 +13,19 @@ import {
   Timer,
   Users,
   X,
+  CheckCircle,
 } from 'lucide-react';
 import { useState } from 'react';
+
+// ✅ Location options configuration - consistent with other forms
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'uvero-alto', name: 'Uvero Alto' },
+  { id: 'macao', name: 'Macao' },
+] as const;
 
 const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
   const [formData, setFormData] = useState({
@@ -24,7 +35,7 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
     persons: 1,
     date: '',
     time: '',
-    location: '',
+    location: '', // Now stores location ID instead of free text
     specialNeeds: '',
     serviceType: 'massage-therapy',
   });
@@ -43,11 +54,17 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
     }
   };
 
+  // ✅ Handle location selection - similar to other forms
+  const handleLocationSelect = (locationId) => {
+    updateField('location', locationId);
+  };
+
+  // ✅ Updated validation for location ID
   const validateForm = () => {
     const newErrors = {};
     if (!formData.date) newErrors.date = 'Date is required';
     if (!formData.time) newErrors.time = 'Time is required';
-    if (!formData.location.trim()) newErrors.location = 'Address is required';
+    if (!formData.location) newErrors.location = 'Please select a location';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -58,6 +75,12 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
 
     try {
       const totalPrice = formData.selectedDuration.price * formData.persons;
+
+      // ✅ Get selected location name
+      const selectedLocation = LOCATION_OPTIONS.find(
+        (loc) => loc.id === formData.location
+      );
+
       const reservationData = {
         service: {
           id: 'massage-therapy',
@@ -68,6 +91,8 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
         totalPrice,
         formData: {
           ...formData,
+          serviceType: 'massage',
+          locationName: selectedLocation?.name || formData.location, // Add location name for display
           massageDetails: {
             id: massage.id,
             name: massage.name,
@@ -82,6 +107,16 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
         },
         bookingDate: new Date(`${formData.date}T${formData.time}`),
         clientInfo: undefined,
+        // ✅ Add massage specific data similar to other forms
+        massageSpecifics: {
+          duration: formData.selectedDuration.duration,
+          location: formData.location,
+          locationName: selectedLocation?.name || formData.location,
+          persons: formData.persons,
+          specialNeeds: formData.specialNeeds,
+          massageType: massage.name,
+          intensity: massage.intensity,
+        },
       };
 
       await onConfirm(reservationData);
@@ -94,7 +129,7 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
   };
 
   const totalPrice = formData.selectedDuration.price * formData.persons;
-  const isValid = formData.date && formData.time && formData.location.trim();
+  const isValid = formData.date && formData.time && formData.location;
 
   if (!isOpen) return null;
 
@@ -311,27 +346,80 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
             </div>
           </div>
 
+          {/* ✅ Updated Location Selection with Cards */}
           <div>
-            <label className='block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2'>
+            <label className='block text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2'>
               <MapPin className='w-5 h-5 text-emerald-600' />
-              Service Location *
+              Select your location *
             </label>
-            <input
-              type='text'
-              value={formData.location}
-              onChange={(e) => updateField('location', e.target.value)}
-              placeholder='Enter the complete address where you would like your massage'
-              className={`w-full p-4 border-2 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all text-lg ${
-                errors.location ? 'border-red-300 bg-red-50' : 'border-gray-200'
-              }`}
-            />
+
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {LOCATION_OPTIONS.map((location) => (
+                <div
+                  key={location.id}
+                  className={`
+                    border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                    ${
+                      formData.location === location.id
+                        ? 'border-emerald-500 bg-emerald-50 shadow-lg ring-2 ring-emerald-200'
+                        : 'border-gray-200 bg-white hover:border-emerald-300'
+                    }
+                  `}
+                  onClick={() => handleLocationSelect(location.id)}
+                >
+                  <div className='flex items-center'>
+                    <div
+                      className={`
+                        w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                        ${
+                          formData.location === location.id
+                            ? 'border-emerald-500 bg-emerald-500'
+                            : 'border-gray-300'
+                        }
+                      `}
+                    >
+                      {formData.location === location.id && (
+                        <CheckCircle className='w-4 h-4 text-white' />
+                      )}
+                    </div>
+                    <div className='flex items-center'>
+                      <MapPin className='w-4 h-4 mr-2 text-emerald-600' />
+                      <span className='font-medium text-gray-800 text-sm'>
+                        {location.name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {errors.location && (
-              <p className='text-red-500 text-sm mt-2'>{errors.location}</p>
+              <p className='text-red-500 text-sm mt-3 flex items-center'>
+                <Info className='w-3 h-3 mr-1' />
+                {errors.location}
+              </p>
             )}
-            <p className='text-gray-600 text-sm mt-2'>
-              We provide in-home, hotel, and office massage services throughout
-              the area
-            </p>
+
+            {/* Display selected location */}
+            {formData.location && (
+              <div className='mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200'>
+                <p className='text-sm text-emerald-700 flex items-center'>
+                  <CheckCircle className='w-4 h-4 mr-2 text-emerald-600' />
+                  Selected:{' '}
+                  <span className='font-medium ml-1'>
+                    {
+                      LOCATION_OPTIONS.find(
+                        (loc) => loc.id === formData.location
+                      )?.name
+                    }
+                  </span>
+                </p>
+                <p className='text-xs text-emerald-600 mt-1'>
+                  We provide in-home, hotel, and office massage services in this
+                  area
+                </p>
+              </div>
+            )}
           </div>
 
           <div>
@@ -392,7 +480,13 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
                   {formData.location && (
                     <div className='flex items-center gap-2 text-sm'>
                       <MapPin className='w-4 h-4' />
-                      <span className='truncate'>{formData.location}</span>
+                      <span>
+                        {
+                          LOCATION_OPTIONS.find(
+                            (loc) => loc.id === formData.location
+                          )?.name
+                        }
+                      </span>
                     </div>
                   )}
                 </div>

@@ -26,6 +26,16 @@ interface BabysitterFormProps {
   onCancel: () => void;
 }
 
+// ✅ Location options configuration - similar to YogaServiceForm
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'uvero-alto', name: 'Uvero Alto' },
+  { id: 'macao', name: 'Macao' },
+] as const;
+
 const BabysitterForm: React.FC<BabysitterFormProps> = ({
   service,
   onSubmit,
@@ -35,12 +45,12 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
   const { setReservationData } = useReservation();
   const router = useRouter();
 
-  // Estado unificado
+  // ✅ Updated state with location as ID instead of free text
   const [formData, setFormData] = useState({
     date: '',
     startTime: '',
     endTime: '',
-    location: '',
+    location: '', // Now stores the location ID
     childrenCount: 1,
     childrenAges: [''],
     hasSpecialNeeds: false,
@@ -57,12 +67,12 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     ? parseInt(serviceData.metaData.minimumBooking.toString())
     : 3;
 
-  // ✅ SOLUCIÓN: Función de validación SIN efectos secundarios para debug
+  // ✅ Updated validation to check location ID
   const checkFormValidity = useMemo(() => {
     const isDateValid = !!formData.date;
     const isStartTimeValid = !!formData.startTime;
     const isEndTimeValid = !!formData.endTime;
-    const isLocationValid = !!formData.location.trim();
+    const isLocationValid = !!formData.location; // Now checking for location ID
 
     const filledAges = formData.childrenAges.filter((age) => age.trim() !== '');
     const areAgesValid = filledAges.length >= formData.childrenCount;
@@ -143,7 +153,15 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     });
   }, []);
 
-  // ✅ Validación real CON efectos secundarios (solo para submit)
+  // ✅ Handle location selection - similar to YogaServiceForm
+  const handleLocationSelect = useCallback(
+    (locationId: string) => {
+      updateFormField('location', locationId);
+    },
+    [updateFormField]
+  );
+
+  // ✅ Updated validation for location ID
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
@@ -159,8 +177,8 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
       newErrors.endTime = 'End time is required';
     }
 
-    if (!formData.location.trim()) {
-      newErrors.location = 'Location is required';
+    if (!formData.location) {
+      newErrors.location = 'Please select a location';
     }
 
     const filledAges = formData.childrenAges.filter((age) => age.trim() !== '');
@@ -176,7 +194,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     return Object.keys(newErrors).length === 0;
   }, [formData]);
 
-  // Handle form submission
+  // ✅ Updated submit handler to include location name
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -196,6 +214,11 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
       setIsSubmitting(true);
 
       try {
+        // ✅ Get selected location name
+        const selectedLocation = LOCATION_OPTIONS.find(
+          (loc) => loc.id === formData.location
+        );
+
         const reservationData = {
           service,
           totalPrice: currentPrice,
@@ -206,7 +229,8 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             date: formData.date,
             startTime: formData.startTime,
             endTime: formData.endTime,
-            location: formData.location,
+            location: formData.location, // Location ID
+            locationName: selectedLocation?.name || formData.location, // Location name for display
             childrenCount: formData.childrenCount,
             childrenAges: formData.childrenAges,
             hasSpecialNeeds: formData.hasSpecialNeeds,
@@ -216,9 +240,29 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
           },
           bookingDate: new Date(),
           clientInfo: undefined,
+          // ✅ Add babysitter specific data similar to yogaSpecifics
+          babysitterSpecifics: {
+            location: formData.location,
+            locationName: selectedLocation?.name || formData.location,
+            childrenCount: formData.childrenCount,
+            childrenAges: formData.childrenAges,
+            hasSpecialNeeds: formData.hasSpecialNeeds,
+            specialNeedsDetails: formData.specialNeedsDetails,
+            specialRequests: formData.specialRequests,
+            duration:
+              formData.startTime && formData.endTime
+                ? Math.max(
+                    (new Date(`2000-01-01T${formData.endTime}`).getTime() -
+                      new Date(`2000-01-01T${formData.startTime}`).getTime()) /
+                      (1000 * 60 * 60),
+                    minimumBooking
+                  )
+                : minimumBooking,
+          },
         };
 
         console.log('🍼 BabysitterForm - Reservation data:', reservationData);
+        console.log('📍 Selected location:', selectedLocation);
         console.log('💰 Total Price at root level:', currentPrice);
 
         setReservationData(reservationData);
@@ -232,7 +276,15 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
         setIsSubmitting(false);
       }
     },
-    [validateForm, service, formData, currentPrice, setReservationData, router]
+    [
+      validateForm,
+      service,
+      formData,
+      currentPrice,
+      setReservationData,
+      router,
+      minimumBooking,
+    ]
   );
 
   // Handle input changes
@@ -449,32 +501,84 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             </div>
           </div>
 
-          {/* Location */}
-          <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
-            <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
-              <MapPin className='w-5 h-5 mr-2 text-purple-600' />
-              Location *
-            </label>
-            <input
-              type='text'
-              name='location'
-              value={formData.location}
-              onChange={handleChange}
-              className={`w-full p-4 border-2 rounded-xl shadow-sm transition-all duration-200 text-lg focus:ring-2 focus:outline-none
-                ${
-                  errors.location
-                    ? 'border-red-400 focus:border-red-500 focus:ring-red-200 bg-red-50'
-                    : 'border-purple-200 focus:border-purple-400 focus:ring-purple-200 bg-white'
-                }
-              `}
-              placeholder='Please provide the complete address where the babysitting will take place'
-            />
-            {errors.location && (
-              <p className='text-red-500 text-xs mt-2 flex items-center'>
-                <AlertCircle className='w-3 h-3 mr-1' />
-                {errors.location}
-              </p>
-            )}
+          {/* ✅ Location Selection - Updated to use selection cards */}
+          <div className='space-y-6'>
+            <h3 className='text-xl font-bold text-purple-900 flex items-center'>
+              <MapPin className='w-6 h-6 mr-2 text-purple-600' />
+              Location
+              <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
+            </h3>
+
+            <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
+              <label className='flex items-center text-sm font-medium text-purple-800 mb-4'>
+                <MapPin className='w-5 h-5 mr-2 text-purple-600' />
+                Select your location *
+              </label>
+
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                {LOCATION_OPTIONS.map((location) => (
+                  <div
+                    key={location.id}
+                    className={`
+                      border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                      ${
+                        formData.location === location.id
+                          ? 'border-purple-500 bg-white shadow-lg ring-2 ring-purple-200'
+                          : 'border-purple-200 bg-white hover:border-purple-300 hover:bg-purple-25'
+                      }
+                    `}
+                    onClick={() => handleLocationSelect(location.id)}
+                  >
+                    <div className='flex items-center'>
+                      <div
+                        className={`
+                          w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                          ${
+                            formData.location === location.id
+                              ? 'border-purple-500 bg-purple-500'
+                              : 'border-purple-300'
+                          }
+                        `}
+                      >
+                        {formData.location === location.id && (
+                          <CheckCircle className='w-4 h-4 text-white' />
+                        )}
+                      </div>
+                      <div className='flex items-center'>
+                        <MapPin className='w-4 h-4 mr-2 text-purple-500' />
+                        <span className='font-medium text-purple-900 text-sm'>
+                          {location.name}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {errors.location && (
+                <p className='text-red-500 text-xs mt-3 flex items-center'>
+                  <AlertCircle className='w-3 h-3 mr-1' />
+                  {errors.location}
+                </p>
+              )}
+
+              {/* Display selected location */}
+              {formData.location && (
+                <div className='mt-4 p-3 bg-purple-100 rounded-lg border border-purple-200'>
+                  <p className='text-sm text-purple-800 flex items-center'>
+                    <CheckCircle className='w-4 h-4 mr-2 text-purple-600' />
+                    Selected:{' '}
+                    <span className='font-medium ml-1'>
+                      {
+                        LOCATION_OPTIONS.find(
+                          (loc) => loc.id === formData.location
+                        )?.name
+                      }
+                    </span>
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Children Information */}
@@ -659,6 +763,29 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               <div className='text-center md:text-left'>
                 <p className='text-purple-200 text-sm'>Total Price</p>
                 <p className='text-3xl font-bold'>${currentPrice.toFixed(2)}</p>
+
+                {/* Price breakdown */}
+                <div className='text-xs text-purple-200 mt-2 space-y-1'>
+                  {formData.location && (
+                    <div>
+                      Babysitting at{' '}
+                      {
+                        LOCATION_OPTIONS.find(
+                          (loc) => loc.id === formData.location
+                        )?.name
+                      }
+                    </div>
+                  )}
+                  {formData.childrenCount > 1 && (
+                    <div className='text-pink-200'>
+                      {formData.childrenCount} children (+$10 per additional
+                      child)
+                    </div>
+                  )}
+                  {formData.hasSpecialNeeds && (
+                    <div>Special care needs: +$15</div>
+                  )}
+                </div>
               </div>
             </div>
 

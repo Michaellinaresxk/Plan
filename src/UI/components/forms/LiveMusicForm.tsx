@@ -26,9 +26,20 @@ import {
   Play,
   Pause,
   Globe,
+  CheckCircle,
+  Wine,
+  Building,
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
+
+// Location options configuration
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+] as const;
 
 const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -39,7 +50,7 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
     // Event Details
     date: '',
     startTime: '',
-    location: '',
+    location: '', // Changed to use location ID
     eventType: '',
 
     // Musicians Selection
@@ -170,13 +181,68 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
     },
   ];
 
+  // Modern Event Types with sophisticated design
   const eventTypes = [
-    { id: 'wedding', name: 'Wedding', icon: '💒' },
-    { id: 'anniversary', name: 'Anniversary', icon: '💕' },
-    { id: 'birthday', name: 'Birthday', icon: '🎂' },
-    { id: 'dinner', name: 'Dinner Party', icon: '🍷' },
-    { id: 'corporate', name: 'Corporate', icon: '🏢' },
-    { id: 'celebration', name: 'Celebration', icon: '🎉' },
+    {
+      id: 'wedding',
+      name: 'Wedding Ceremony',
+      icon: Heart,
+      gradient: 'from-rose-400 via-pink-400 to-rose-500',
+      description: 'Romantic melodies for your special day',
+      accentColor: 'bg-rose-500',
+      shadowColor: 'shadow-rose-500/20',
+      bgHover: 'group-hover:bg-rose-50',
+    },
+    {
+      id: 'anniversary',
+      name: 'Anniversary',
+      icon: Crown,
+      gradient: 'from-red-400 via-rose-400 to-pink-500',
+      description: 'Celebrating love and cherished memories',
+      accentColor: 'bg-red-500',
+      shadowColor: 'shadow-red-500/20',
+      bgHover: 'group-hover:bg-red-50',
+    },
+    {
+      id: 'birthday',
+      name: 'Birthday Party',
+      icon: Star,
+      gradient: 'from-purple-400 via-indigo-400 to-purple-500',
+      description: 'Joyful celebration of another year',
+      accentColor: 'bg-purple-500',
+      shadowColor: 'shadow-purple-500/20',
+      bgHover: 'group-hover:bg-purple-50',
+    },
+    {
+      id: 'dinner',
+      name: 'Dinner Experience',
+      icon: Wine,
+      gradient: 'from-amber-400 via-orange-400 to-red-500',
+      description: 'Sophisticated dining atmosphere',
+      accentColor: 'bg-amber-500',
+      shadowColor: 'shadow-amber-500/20',
+      bgHover: 'group-hover:bg-amber-50',
+    },
+    {
+      id: 'corporate',
+      name: 'Corporate Event',
+      icon: Building,
+      gradient: 'from-slate-400 via-gray-500 to-slate-600',
+      description: 'Professional networking ambiance',
+      accentColor: 'bg-slate-500',
+      shadowColor: 'shadow-slate-500/20',
+      bgHover: 'group-hover:bg-slate-50',
+    },
+    {
+      id: 'celebration',
+      name: 'Special Celebration',
+      icon: Sparkles,
+      gradient: 'from-emerald-400 via-teal-400 to-cyan-500',
+      description: 'Memorable moments deserve music',
+      accentColor: 'bg-emerald-500',
+      shadowColor: 'shadow-emerald-500/20',
+      bgHover: 'group-hover:bg-emerald-50',
+    },
   ];
 
   const performanceFormats = [
@@ -231,6 +297,22 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
     }
   };
 
+  // Handle location selection
+  const handleLocationSelect = (locationId) => {
+    setFormData((prev) => ({
+      ...prev,
+      location: locationId,
+    }));
+
+    // Clear location error if exists
+    if (errors.location) {
+      setErrors((prev) => ({
+        ...prev,
+        location: '',
+      }));
+    }
+  };
+
   const addMusicReference = () => {
     setFormData((prev) => ({
       ...prev,
@@ -260,8 +342,7 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
     if (step === 1) {
       if (!formData.date) newErrors.date = 'Please select a date';
       if (!formData.startTime) newErrors.startTime = 'Please select start time';
-      if (!formData.location)
-        newErrors.location = 'Please provide the location';
+      if (!formData.location) newErrors.location = 'Please select a location';
       if (!formData.eventType) newErrors.eventType = 'Please select event type';
     }
 
@@ -309,6 +390,11 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
         (l) => l.id === formData.musicLanguage
       );
 
+      // Get selected location name
+      const selectedLocation =
+        LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
+        formData.location;
+
       // ✅ CALCULAR EL PRECIO TOTAL ANTES DE CREAR LA RESERVA
       const totalPrice = selectedPerformer?.price || service.price || 180;
 
@@ -338,6 +424,7 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
           ),
           serviceType: 'live-music',
           calculatedPrice: totalPrice,
+          locationName: selectedLocation,
           performerName: selectedPerformer?.name,
           musicGenreName: selectedGenre?.name,
           performanceFormatName: selectedFormat?.name,
@@ -362,9 +449,21 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
             musicGenre: selectedGenre?.name,
             performanceFormat: selectedFormat?.name,
             musicLanguage: selectedLanguage?.name,
+            location: selectedLocation,
           },
         ],
         clientInfo: undefined, // Will be filled in the confirmation page
+        liveMusicSpecifics: {
+          performerType: formData.performerType,
+          musicGenre: formData.musicGenre,
+          performanceFormat: formData.performanceFormat,
+          musicLanguage: formData.musicLanguage,
+          location: formData.location,
+          locationName: selectedLocation,
+          eventType: formData.eventType,
+          musicReferences: formData.musicReferences.filter((ref) => ref.trim()),
+          specialRequests: formData.specialRequests,
+        },
       };
 
       console.log(
@@ -513,22 +612,50 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
                   </div>
                 </div>
 
-                <div>
-                  <label className='block text-sm font-bold text-gray-800 mb-3'>
-                    <MapPin className='w-4 h-4 inline mr-2' />
+                {/* Location Selection */}
+                <div className='space-y-4'>
+                  <label className='flex items-center text-sm font-bold text-gray-800 mb-3'>
+                    <MapPin className='w-4 h-4 mr-2 text-amber-600' />
                     Event Location *
                   </label>
-                  <input
-                    type='text'
-                    value={formData.location}
-                    onChange={(e) => handleChange('location', e.target.value)}
-                    placeholder='Villa address, venue, or detailed location'
-                    className={`w-full p-4 border-2 rounded-xl font-medium transition-all duration-300 focus:ring-4 focus:ring-amber-100 focus:border-amber-500 ${
-                      errors.location
-                        ? 'border-red-300 bg-red-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  />
+
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    {LOCATION_OPTIONS.map((location) => (
+                      <div
+                        key={location.id}
+                        className={`
+                          border-2 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:shadow-md
+                          ${
+                            formData.location === location.id
+                              ? 'bg-amber-50 border-amber-300 shadow-md'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }
+                        `}
+                        onClick={() => handleLocationSelect(location.id)}
+                      >
+                        <div className='flex items-center'>
+                          <div
+                            className={`
+                            w-5 h-5 rounded-full border flex items-center justify-center mr-3
+                            ${
+                              formData.location === location.id
+                                ? 'border-amber-500 bg-amber-500'
+                                : 'border-gray-300'
+                            }
+                          `}
+                          >
+                            {formData.location === location.id && (
+                              <CheckCircle className='w-4 h-4 text-white' />
+                            )}
+                          </div>
+                          <span className='font-medium text-gray-800'>
+                            {location.name}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
                   {errors.location && (
                     <p className='text-red-500 text-sm mt-2 flex items-center'>
                       <AlertCircle className='w-4 h-4 mr-1' />
@@ -537,30 +664,132 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
                   )}
                 </div>
 
+                {/* Modern Event Type Cards */}
                 <div>
-                  <label className='block text-sm font-bold text-gray-800 mb-4'>
+                  <label className='block text-sm font-bold text-gray-800 mb-6'>
                     Event Type *
                   </label>
-                  <div className='grid grid-cols-2 md:grid-cols-3 gap-3'>
-                    {eventTypes.map((type) => (
-                      <div
-                        key={type.id}
-                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 text-center hover:shadow-md ${
-                          formData.eventType === type.id
-                            ? 'border-amber-500 bg-amber-50 shadow-md'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => handleChange('eventType', type.id)}
-                      >
-                        <div className='text-2xl mb-2'>{type.icon}</div>
-                        <div className='font-medium text-sm text-gray-800'>
-                          {type.name}
-                        </div>
-                      </div>
-                    ))}
+                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+                    {eventTypes.map((type) => {
+                      const IconComponent = type.icon;
+                      const isSelected = formData.eventType === type.id;
+
+                      return (
+                        <motion.div
+                          key={type.id}
+                          className={`relative overflow-hidden rounded-3xl cursor-pointer transition-all duration-500 group border-2 ${
+                            isSelected
+                              ? `border-transparent shadow-2xl ${type.shadowColor} scale-105`
+                              : 'border-gray-200/60 hover:border-gray-300 hover:shadow-lg shadow-gray-200/20'
+                          }`}
+                          onClick={() => handleChange('eventType', type.id)}
+                          whileHover={{
+                            scale: isSelected ? 1.05 : 1.02,
+                            y: -5,
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          {/* Sophisticated Gradient Background */}
+                          <div
+                            className={`absolute inset-0 bg-gradient-to-br ${
+                              type.gradient
+                            } transition-opacity duration-500 ${
+                              isSelected
+                                ? 'opacity-15'
+                                : 'opacity-5 group-hover:opacity-10'
+                            }`}
+                          />
+
+                          {/* Animated Selection Ring */}
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              className={`absolute inset-0 bg-gradient-to-br ${type.gradient} opacity-20 rounded-3xl`}
+                            />
+                          )}
+
+                          {/* Selection Check - Top Right */}
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className={`absolute top-4 right-4 z-30 w-7 h-7 ${type.accentColor} rounded-full flex items-center justify-center shadow-lg`}
+                            >
+                              <Check className='w-4 h-4 text-white' />
+                            </motion.div>
+                          )}
+
+                          <div
+                            className={`relative z-20 p-8 text-center transition-all duration-300 ${type.bgHover}`}
+                          >
+                            {/* Modern Icon Container */}
+                            <div
+                              className={`relative mx-auto w-16 h-16 rounded-2xl mb-6 flex items-center justify-center transition-all duration-500 ${
+                                isSelected
+                                  ? `${type.accentColor} shadow-lg scale-110`
+                                  : `bg-white/80 group-hover:bg-white shadow-md group-hover:scale-105`
+                              }`}
+                            >
+                              <IconComponent
+                                className={`w-8 h-8 transition-all duration-300 ${
+                                  isSelected
+                                    ? 'text-white'
+                                    : 'text-gray-600 group-hover:text-gray-800'
+                                }`}
+                              />
+
+                              {/* Subtle glow effect */}
+                              {isSelected && (
+                                <div
+                                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${type.gradient} opacity-20 blur-sm`}
+                                />
+                              )}
+                            </div>
+
+                            {/* Enhanced Typography */}
+                            <h4
+                              className={`font-bold text-lg mb-3 transition-colors duration-300 ${
+                                isSelected
+                                  ? 'text-gray-900'
+                                  : 'text-gray-800 group-hover:text-gray-900'
+                              }`}
+                            >
+                              {type.name}
+                            </h4>
+
+                            <p
+                              className={`text-sm leading-relaxed transition-colors duration-300 ${
+                                isSelected
+                                  ? 'text-gray-700'
+                                  : 'text-gray-600 group-hover:text-gray-700'
+                              }`}
+                            >
+                              {type.description}
+                            </p>
+
+                            {/* Modern Bottom Accent */}
+                            <div
+                              className={`mt-6 h-1 w-16 mx-auto rounded-full transition-all duration-500 ${
+                                isSelected
+                                  ? `bg-gradient-to-r ${type.gradient} opacity-80 scale-110`
+                                  : `bg-gray-300 group-hover:bg-gradient-to-r group-hover:${type.gradient} group-hover:opacity-60 scale-90 group-hover:scale-100`
+                              }`}
+                            />
+                          </div>
+
+                          {/* Subtle Border Glow */}
+                          {isSelected && (
+                            <div
+                              className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${type.gradient} opacity-20 blur-xl`}
+                            />
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                   {errors.eventType && (
-                    <p className='text-red-500 text-sm mt-2 flex items-center'>
+                    <p className='text-red-500 text-sm mt-6 flex items-center'>
                       <AlertCircle className='w-4 h-4 mr-1' />
                       {errors.eventType}
                     </p>
@@ -893,6 +1122,14 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
                         <span className='text-gray-700'>Date & Time:</span>
                         <span className='font-bold text-gray-900'>
                           {formData.date} at {formData.startTime}
+                        </span>
+                      </div>
+                      <div className='flex justify-between items-center'>
+                        <span className='text-gray-700'>Location:</span>
+                        <span className='font-bold text-gray-900'>
+                          {LOCATION_OPTIONS.find(
+                            (loc) => loc.id === formData.location
+                          )?.name || 'Selected Location'}
                         </span>
                       </div>
                       <div className='flex justify-between items-center'>

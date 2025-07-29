@@ -11,30 +11,28 @@ import {
   CreditCard,
   Info,
   AlertTriangle,
-  Shield,
   Plus,
   Minus,
-  Clock,
   CheckCircle,
+  User,
 } from 'lucide-react';
 import { BIKE_TYPES, BikeFormProps, FormErrors } from '@/constants/bike/bike';
-import Image from 'next/image';
 
-// Define the FormData interface
+interface Person {
+  id: string;
+  type: 'adult' | 'child';
+  age?: number;
+  selectedBike: string;
+  name?: string;
+}
+
 interface FormData {
   startDate: string;
   endDate: string;
   endTime: string;
   startTime: string;
   location: string;
-  adultCount: number;
-  childCount: number;
-  children: Array<{
-    id: string;
-    age: number;
-    recommendedBike: string;
-  }>;
-  selectedBikes: Record<string, number>;
+  people: Person[];
   needsHelmet: boolean;
   needsLock: boolean;
   deliveryToHotel: boolean;
@@ -53,10 +51,10 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     endTime: '',
     startTime: '09:00',
     location: '',
-    adultCount: 2,
-    childCount: 0,
-    children: [],
-    selectedBikes: {},
+    people: [
+      { id: 'adult-1', type: 'adult', selectedBike: 'cityBike' },
+      { id: 'adult-2', type: 'adult', selectedBike: 'cityBike' },
+    ],
     needsHelmet: true,
     needsLock: true,
     deliveryToHotel: true,
@@ -73,99 +71,51 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     const end = new Date(formData.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return Math.max(1, diffDays + 1); // Include both start and end days
+    return Math.max(1, diffDays + 1);
   }, [formData.startDate, formData.endDate]);
 
-  // Calculate total bikes needed
-  const totalBikesNeeded = useMemo(() => {
-    return formData.adultCount + formData.childCount;
-  }, [formData.adultCount, formData.childCount]);
+  // Calculate counts
+  const adultCount = useMemo(
+    () => formData.people.filter((p) => p.type === 'adult').length,
+    [formData.people]
+  );
+  const childCount = useMemo(
+    () => formData.people.filter((p) => p.type === 'child').length,
+    [formData.people]
+  );
+  const totalParticipants = formData.people.length;
 
-  // Calculate total bikes selected
-  const totalBikesSelected = useMemo(() => {
-    return Object.values(formData.selectedBikes).reduce(
-      (sum, count) => sum + count,
-      0
-    );
-  }, [formData.selectedBikes]);
-
-  // Auto-recommend bikes based on children ages
-  const recommendedBikes = useMemo(() => {
-    const recommendations: Record<string, number> = {};
-
-    // Add recommendations for adults
-    if (formData.adultCount > 0) {
-      recommendations['cityBike'] =
-        (recommendations['cityBike'] || 0) + formData.adultCount;
-    }
-
-    // Add recommendations for children based on age
-    formData.children.forEach((child) => {
-      const suitableBike = BIKE_TYPES.find(
-        (bike) => child.age >= bike.minAge && child.age <= bike.maxAge
-      );
-      if (suitableBike) {
-        recommendations[suitableBike.id] =
-          (recommendations[suitableBike.id] || 0) + 1;
+  // Calculate selected bikes summary
+  const selectedBikes = useMemo(() => {
+    const bikes: Record<string, number> = {};
+    formData.people.forEach((person) => {
+      if (person.selectedBike) {
+        bikes[person.selectedBike] = (bikes[person.selectedBike] || 0) + 1;
       }
     });
-
-    return recommendations;
-  }, [formData.adultCount, formData.children]);
-
-  // Update children array when child count changes
-  useEffect(() => {
-    const currentChildrenCount = formData.children.length;
-    const newChildCount = formData.childCount;
-
-    if (newChildCount > currentChildrenCount) {
-      // Add new children
-      const newChildren = [...formData.children];
-      for (let i = currentChildrenCount; i < newChildCount; i++) {
-        newChildren.push({
-          id: `child-${i + 1}`,
-          age: 8, // Default age
-          recommendedBike: 'kids-bike',
-        });
-      }
-      setFormData((prev) => ({ ...prev, children: newChildren }));
-    } else if (newChildCount < currentChildrenCount) {
-      // Remove children
-      setFormData((prev) => ({
-        ...prev,
-        children: prev.children.slice(0, newChildCount),
-      }));
-    }
-  }, [formData.childCount]);
-
-  // Auto-apply recommendations when they change
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      selectedBikes: { ...recommendedBikes },
-    }));
-  }, [recommendedBikes]);
+    return bikes;
+  }, [formData.people]);
 
   // Calculate total price
   const calculatePrice = useMemo(() => {
     let total = 0;
 
     // Calculate bike rental costs
-    Object.entries(formData.selectedBikes).forEach(([bikeType, count]) => {
-      const bike = BIKE_TYPES.find((b) => b.id === bikeType);
+    formData.people.forEach((person) => {
+      const bike = BIKE_TYPES.find((b) => b.id === person.selectedBike);
       if (bike) {
-        total += bike.price * count * rentalDays;
+        total += bike.price * rentalDays;
       }
     });
 
     // Add delivery fee if needed
     if (formData.deliveryToHotel && formData.location !== 'Hotel pickup') {
-      total += 10; // Delivery fee
+      total += 10;
     }
 
     return total;
   }, [
-    formData.selectedBikes,
+    formData.people,
     formData.deliveryToHotel,
     formData.location,
     rentalDays,
@@ -188,7 +138,15 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     return hours >= 24;
   };
 
-  // Form validation - FIXED: Simplified validation like in BikeRentalServiceView
+  // Get recommended bike for child based on age
+  const getRecommendedBike = (age: number): string => {
+    const suitableBike = BIKE_TYPES.find(
+      (bike) => age >= bike.minAge && age <= bike.maxAge
+    );
+    return suitableBike?.id || 'kids-bike';
+  };
+
+  // Form validation
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -215,30 +173,31 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     }
 
     // Participant validation
-    if (totalBikesNeeded < 1) {
-      newErrors.adultCount = 'At least one participant is required';
+    if (formData.people.length < 1) {
+      newErrors.people = 'At least one participant is required';
     }
 
     // Children age validation
-    formData.children.forEach((child, index) => {
-      if (child.age < 4 || child.age > 17) {
-        newErrors[`child-${index}-age`] = 'Child age must be between 4 and 17';
+    formData.people.forEach((person, index) => {
+      if (person.type === 'child') {
+        if (!person.age || person.age < 4 || person.age > 17) {
+          newErrors[`person-${index}-age`] =
+            'Child age must be between 4 and 17';
+        }
+      }
+      if (!person.selectedBike) {
+        newErrors[`person-${index}-bike`] =
+          'Please select a bike for this person';
       }
     });
-
-    // Bike selection validation - FIXED: Check if we have bikes selected
-    if (totalBikesSelected === 0) {
-      newErrors.selectedBikes = 'Please select at least one bike';
-    }
 
     return newErrors;
   };
 
-  // Handle form submission - FIXED: Following BikeRentalServiceView pattern exactly
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form
     const validationErrors = validateForm();
     setErrors(validationErrors);
 
@@ -278,7 +237,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
         type: 'bike-rental',
       };
 
-      // FIXED: Create reservation data matching BikeRentalServiceView structure exactly
+      // Create reservation data with properly formatted people info
       const reservationData = {
         service: serviceData,
         formData: {
@@ -286,18 +245,43 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
           serviceType: 'bike-rental',
           totalPrice: calculatePrice,
           rentalDays,
-          totalBikesNeeded,
-          totalBikesSelected,
+          selectedBikes, // Convert people bikes to bike summary
+          // Format people for payment display
+          peopleDetails: formData.people.map((person) => {
+            const bike = BIKE_TYPES.find((b) => b.id === person.selectedBike);
+            return {
+              id: person.id,
+              type: person.type,
+              age: person.age,
+              bikeName: bike?.name || 'Unknown Bike',
+              bikePrice: bike?.price || 0,
+              displayName:
+                person.type === 'adult'
+                  ? `Adult - ${bike?.name || 'Unknown Bike'}`
+                  : `Child (${person.age} years) - ${
+                      bike?.name || 'Unknown Bike'
+                    }`,
+            };
+          }),
         },
         totalPrice: calculatePrice,
         bookingDate: bookingStartDate,
         endDate: bookingEndDate,
         participants: {
-          adults: formData.adultCount,
-          children: formData.childCount,
-          total: totalBikesNeeded,
+          adults: adultCount,
+          children: childCount,
+          total: totalParticipants,
+          // Add formatted list for display
+          list: formData.people.map((person) => {
+            const bike = BIKE_TYPES.find((b) => b.id === person.selectedBike);
+            return person.type === 'adult'
+              ? `Adult with ${bike?.name || 'Unknown Bike'}`
+              : `Child (${person.age} years) with ${
+                  bike?.name || 'Unknown Bike'
+                }`;
+          }),
         },
-        selectedItems: Object.entries(formData.selectedBikes)
+        selectedItems: Object.entries(selectedBikes)
           .filter(([_, count]) => count > 0)
           .map(([bikeId, count]) => {
             const bike = BIKE_TYPES.find((b) => b.id === bikeId);
@@ -309,20 +293,17 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
               totalPrice: (bike?.price || 0) * count * rentalDays,
             };
           }),
-        clientInfo: undefined, // Will be filled in the confirmation page
+        clientInfo: undefined,
       };
 
       console.log('🚴 BikeForm - Reservation data created:', reservationData);
 
-      // Store in context (like BikeRentalServiceView)
       setReservationData(reservationData);
 
-      // Call the onSubmit callback if provided (optional)
       if (onSubmit) {
         await onSubmit(reservationData);
       }
 
-      // Navigate to confirmation page (like BikeRentalServiceView)
       router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ BikeForm - Error submitting form:', error);
@@ -334,7 +315,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     }
   };
 
-  // Generic input handler - FIXED: Clear errors properly
+  // Generic input handler
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -348,7 +329,6 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
       [name]: type === 'checkbox' ? checked : value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -357,234 +337,207 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     }
   };
 
-  // Counter handlers
-  const createCounterHandler = (field: keyof FormData, min = 0, max = 20) => ({
-    increment: () =>
-      setFormData((prev) => ({
-        ...prev,
-        [field]: Math.min(max, (prev[field] as number) + 1),
-      })),
-    decrement: () =>
-      setFormData((prev) => ({
-        ...prev,
-        [field]: Math.max(min, (prev[field] as number) - 1),
-      })),
-  });
+  // Add person (adult or child)
+  const addPerson = (type: 'adult' | 'child') => {
+    const newId = `${type}-${Date.now()}`;
+    const newPerson: Person = {
+      id: newId,
+      type,
+      selectedBike: type === 'adult' ? 'cityBike' : 'kids-bike',
+      ...(type === 'child' && { age: 8 }),
+    };
 
-  const adultCounter = createCounterHandler('adultCount', 1);
-  const childCounter = createCounterHandler('childCount', 0);
-
-  // Child age handler
-  const handleChildAgeChange = (childId: string, age: number) => {
     setFormData((prev) => ({
       ...prev,
-      children: prev.children.map((child) =>
-        child.id === childId
-          ? {
-              ...child,
-              age,
-              recommendedBike:
-                BIKE_TYPES.find(
-                  (bike) => age >= bike.minAge && age <= bike.maxAge
-                )?.id || 'kids-bike',
-            }
-          : child
+      people: [...prev.people, newPerson],
+    }));
+  };
+
+  // Remove person
+  const removePerson = (personId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      people: prev.people.filter((p) => p.id !== personId),
+    }));
+  };
+
+  // Update person data
+  const updatePerson = (personId: string, updates: Partial<Person>) => {
+    setFormData((prev) => ({
+      ...prev,
+      people: prev.people.map((person) =>
+        person.id === personId ? { ...person, ...updates } : person
       ),
     }));
+
+    // Clear related errors
+    const personIndex = formData.people.findIndex((p) => p.id === personId);
+    if (personIndex !== -1) {
+      setErrors((prev) => ({
+        ...prev,
+        [`person-${personIndex}-age`]: '',
+        [`person-${personIndex}-bike`]: '',
+      }));
+    }
   };
 
-  // Bike selection handler
-  const handleBikeSelection = (bikeId: string, count: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      selectedBikes: {
-        ...prev.selectedBikes,
-        [bikeId]: Math.max(0, count),
-      },
-    }));
+  // Handle child age change with bike recommendation
+  const handleChildAgeChange = (personId: string, age: number) => {
+    const recommendedBike = getRecommendedBike(age);
+    updatePerson(personId, { age, selectedBike: recommendedBike });
   };
 
-  // Counter component
-  const Counter = ({
-    label,
-    value,
-    onIncrement,
-    onDecrement,
-    icon: Icon,
-    min = 0,
-  }: {
-    label: string;
-    value: number;
-    onIncrement: () => void;
-    onDecrement: () => void;
-    icon: React.ElementType;
-    min?: number;
-  }) => (
-    <div>
-      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-        <Icon className='w-4 h-4 mr-2 text-green-700' />
-        {label}
-      </label>
-      <div className='flex border border-gray-300 rounded-lg overflow-hidden bg-white'>
-        <button
-          type='button'
-          onClick={onDecrement}
-          disabled={value <= min}
-          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
-        >
-          <Minus className='w-4 h-4' />
-        </button>
-        <div className='flex-1 py-2 text-center font-medium'>{value}</div>
-        <button
-          type='button'
-          onClick={onIncrement}
-          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-        >
-          <Plus className='w-4 h-4' />
-        </button>
-      </div>
-    </div>
-  );
+  // Person component
+  const PersonCard = ({ person, index }: { person: Person; index: number }) => {
+    const selectedBikeData = BIKE_TYPES.find(
+      (b) => b.id === person.selectedBike
+    );
+    const isChild = person.type === 'child';
+    const canRemove = formData.people.length > 1;
 
-  // FIXED: Enhanced Bike selector component
-  const BikeSelector = () => (
-    <div className='space-y-6'>
-      <div className='flex items-center justify-between'>
-        <h4 className='text-lg font-medium text-gray-800'>Select Your Bikes</h4>
-        <div className='text-sm text-gray-600'>
-          {totalBikesSelected} of {totalBikesNeeded} bikes selected
-        </div>
-      </div>
-
-      {totalBikesSelected !== totalBikesNeeded && (
-        <div className='p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start'>
-          <AlertTriangle className='w-4 h-4 text-amber-600 mr-2 mt-0.5' />
-          <div className='text-sm text-amber-800'>
-            <strong>Note:</strong> Please select exactly {totalBikesNeeded}{' '}
-            bikes ({formData.adultCount} adults + {formData.childCount}{' '}
-            children).
-          </div>
-        </div>
-      )}
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        {BIKE_TYPES.map((bike) => {
-          const selectedCount = formData.selectedBikes[bike.id] || 0;
-          const recommendedCount = recommendedBikes[bike.id] || 0;
-          const isRecommended = recommendedCount > 0;
-          const isSelected = selectedCount > 0;
-
-          return (
-            <div
-              key={bike.id}
-              className={`relative p-4 border rounded-lg transition-all ${
-                isSelected
-                  ? 'border-green-500 bg-green-50'
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              {isRecommended && (
-                <div className='absolute -top-2 left-4 bg-green-500 text-white text-xs px-2 py-1 rounded'>
-                  Recommended ({recommendedCount})
-                </div>
-              )}
-
-              {bike.isPremium && (
-                <div className='absolute -top-2 right-4 bg-purple-500 text-white text-xs px-2 py-1 rounded'>
-                  Premium
-                </div>
-              )}
-
-              {isSelected && (
-                <div className='absolute -top-2 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-1 rounded flex items-center gap-1'>
-                  <CheckCircle className='w-3 h-3' />
-                  {selectedCount}
-                </div>
-              )}
-
-              <div className='flex items-center justify-between mb-3'>
-                <div className='flex items-center'>
-                  <span className='text-2xl mr-3'>{bike.icon}</span>
-                  <div>
-                    <h5 className='font-medium'>{bike.name}</h5>
-                    <p className='text-sm text-gray-600'>{bike.ageRange}</p>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <div className='text-lg font-bold text-green-600'>
-                    ${bike.price}
-                  </div>
-                  <div className='text-xs text-gray-500'>per day</div>
-                </div>
-              </div>
-
-              <p className='text-sm text-gray-600 mb-3'>{bike.description}</p>
-
-              <div className='mb-3'>
-                <div className='text-xs text-gray-500 mb-1'>Features:</div>
-                <div className='flex flex-wrap gap-1'>
-                  {bike.features.map((feature, index) => (
-                    <span
-                      key={index}
-                      className='text-xs bg-gray-100 px-2 py-1 rounded'
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className='flex items-center justify-between'>
-                <span className='text-sm font-medium text-gray-700'>
-                  Quantity:
-                </span>
-                <div className='flex items-center space-x-2'>
-                  <button
-                    type='button'
-                    onClick={() =>
-                      handleBikeSelection(bike.id, selectedCount - 1)
-                    }
-                    disabled={selectedCount === 0}
-                    className='w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 flex items-center justify-center transition'
-                  >
-                    <Minus className='w-4 h-4' />
-                  </button>
-                  <span className='w-8 text-center font-medium'>
-                    {selectedCount}
-                  </span>
-                  <button
-                    type='button'
-                    onClick={() =>
-                      handleBikeSelection(bike.id, selectedCount + 1)
-                    }
-                    className='w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition'
-                  >
-                    <Plus className='w-4 h-4' />
-                  </button>
-                </div>
-              </div>
-
-              {selectedCount > 0 && (
-                <div className='mt-2 text-right'>
-                  <span className='text-sm text-gray-600'>
-                    Subtotal: $
-                    {(bike.price * selectedCount * rentalDays).toFixed(2)}
-                    {rentalDays > 1 && ` (${rentalDays} days)`}
-                  </span>
-                </div>
-              )}
+    return (
+      <div className='bg-white border border-gray-200 rounded-lg p-4 shadow-sm'>
+        <div className='flex items-start justify-between mb-4'>
+          <div className='flex items-center'>
+            {isChild ? (
+              <Baby className='w-5 h-5 text-blue-600 mr-2' />
+            ) : (
+              <User className='w-5 h-5 text-green-600 mr-2' />
+            )}
+            <div>
+              <h4 className='font-medium text-gray-800'>
+                {isChild ? `Child ${index + 1}` : `Adult ${index + 1}`}
+              </h4>
+              <p className='text-sm text-gray-500'>
+                {isChild ? '4-17 years old' : '18+ years old'}
+              </p>
             </div>
-          );
-        })}
-      </div>
+          </div>
 
-      {errors.selectedBikes && (
-        <p className='text-red-500 text-sm font-medium'>
-          {errors.selectedBikes}
-        </p>
-      )}
-    </div>
-  );
+          {canRemove && (
+            <button
+              type='button'
+              onClick={() => removePerson(person.id)}
+              className='text-red-500 hover:text-red-700 p-1'
+              title='Remove person'
+            >
+              <Minus className='w-4 h-4' />
+            </button>
+          )}
+        </div>
+
+        {/* Age selector for children */}
+        {isChild && (
+          <div className='mb-4'>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>
+              Age *
+            </label>
+            <select
+              value={person.age || 8}
+              onChange={(e) =>
+                handleChildAgeChange(person.id, parseInt(e.target.value))
+              }
+              className={`w-full p-2 border ${
+                errors[`person-${index}-age`]
+                  ? 'border-red-500'
+                  : 'border-gray-300'
+              } rounded focus:ring-green-500 focus:border-green-500`}
+            >
+              {Array.from({ length: 14 }, (_, i) => i + 4).map((age) => (
+                <option key={age} value={age}>
+                  {age} years old
+                </option>
+              ))}
+            </select>
+            {errors[`person-${index}-age`] && (
+              <p className='text-red-500 text-xs mt-1'>
+                {errors[`person-${index}-age`]}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Bike selection */}
+        <div>
+          <label className='block text-sm font-medium text-gray-700 mb-2'>
+            Select Bike *
+          </label>
+          <select
+            value={person.selectedBike}
+            onChange={(e) =>
+              updatePerson(person.id, { selectedBike: e.target.value })
+            }
+            className={`w-full p-2 border ${
+              errors[`person-${index}-bike`]
+                ? 'border-red-500'
+                : 'border-gray-300'
+            } rounded focus:ring-green-500 focus:border-green-500`}
+          >
+            <option value=''>Choose a bike...</option>
+            {BIKE_TYPES.filter((bike) => {
+              // Filter bikes based on person type and age
+              if (isChild && person.age) {
+                return person.age >= bike.minAge && person.age <= bike.maxAge;
+              }
+              return !isChild ? bike.id !== 'kids-bike' : true;
+            }).map((bike) => (
+              <option key={bike.id} value={bike.id}>
+                {bike.icon} {bike.name} - ${bike.price}/day
+                {bike.isPremium && ' (Premium)'}
+              </option>
+            ))}
+          </select>
+          {errors[`person-${index}-bike`] && (
+            <p className='text-red-500 text-xs mt-1'>
+              {errors[`person-${index}-bike`]}
+            </p>
+          )}
+        </div>
+
+        {/* Selected bike info */}
+        {selectedBikeData && (
+          <div className='mt-3 p-3 bg-gray-50 rounded-lg'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center'>
+                <span className='text-lg mr-2'>{selectedBikeData.icon}</span>
+                <div>
+                  <p className='font-medium text-sm'>{selectedBikeData.name}</p>
+                  <p className='text-xs text-gray-600'>
+                    {selectedBikeData.ageRange}
+                  </p>
+                </div>
+              </div>
+              <div className='text-right'>
+                <p className='font-bold text-green-600'>
+                  ${selectedBikeData.price}/day
+                </p>
+                {rentalDays > 1 && (
+                  <p className='text-xs text-gray-600'>
+                    Total: ${selectedBikeData.price * rentalDays}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className='mt-2'>
+              <p className='text-xs text-gray-600'>
+                {selectedBikeData.description}
+              </p>
+              <div className='flex flex-wrap gap-1 mt-1'>
+                {selectedBikeData.features.slice(0, 3).map((feature, i) => (
+                  <span
+                    key={i}
+                    className='text-xs bg-gray-200 px-2 py-1 rounded'
+                  >
+                    {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
@@ -713,95 +666,93 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
 
           {/* Participants Section */}
           <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Participants
-            </h3>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <Counter
-                label='Adults (18+)'
-                value={formData.adultCount}
-                onIncrement={adultCounter.increment}
-                onDecrement={adultCounter.decrement}
-                icon={Users}
-                min={1}
-              />
-
-              <Counter
-                label='Children (4-17)'
-                value={formData.childCount}
-                onIncrement={childCounter.increment}
-                onDecrement={childCounter.decrement}
-                icon={Baby}
-              />
-            </div>
-
-            {/* Children Details */}
-            {formData.childCount > 0 && (
-              <div className='space-y-4'>
-                <h4 className='font-medium text-gray-800'>Children Details</h4>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {formData.children.map((child, index) => (
-                    <div key={child.id} className='p-4 bg-gray-50 rounded-lg'>
-                      <div className='flex items-center justify-between mb-2'>
-                        <label className='text-sm font-medium text-gray-700'>
-                          Child {index + 1} Age
-                        </label>
-                        {child.recommendedBike && (
-                          <span className='text-xs bg-green-100 text-green-800 px-2 py-1 rounded'>
-                            {
-                              BIKE_TYPES.find(
-                                (b) => b.id === child.recommendedBike
-                              )?.name
-                            }
-                          </span>
-                        )}
-                      </div>
-                      <select
-                        value={child.age}
-                        onChange={(e) =>
-                          handleChildAgeChange(
-                            child.id,
-                            parseInt(e.target.value)
-                          )
-                        }
-                        className='w-full p-2 border border-gray-300 rounded focus:ring-green-500 focus:border-green-500'
-                      >
-                        {Array.from({ length: 14 }, (_, i) => i + 4).map(
-                          (age) => (
-                            <option key={age} value={age}>
-                              {age} years old
-                            </option>
-                          )
-                        )}
-                      </select>
-                      {errors[`child-${index}-age`] && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors[`child-${index}-age`]}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            <div className='flex items-center justify-between'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex-grow'>
+                Participants & Bike Selection
+              </h3>
+              <div className='text-sm text-gray-600 ml-4'>
+                {totalParticipants}{' '}
+                {totalParticipants === 1 ? 'person' : 'people'}
               </div>
-            )}
-
-            {/* Total participants display */}
-            <div className='p-3 bg-green-50 border border-green-200 rounded-lg'>
-              <p className='text-sm text-green-800'>
-                <strong>Total participants:</strong> {totalBikesNeeded} (
-                {formData.adultCount} adults + {formData.childCount} children)
-              </p>
             </div>
+
+            {/* People Cards */}
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {formData.people.map((person, index) => (
+                <PersonCard key={person.id} person={person} index={index} />
+              ))}
+            </div>
+
+            {/* Add Person Buttons */}
+            <div className='flex flex-wrap gap-4'>
+              <button
+                type='button'
+                onClick={() => addPerson('adult')}
+                className='flex items-center px-4 py-2 border-2 border-dashed border-green-300 text-green-700 rounded-lg hover:border-green-400 hover:bg-green-50 transition'
+              >
+                <Plus className='w-4 h-4 mr-2' />
+                Add Adult
+              </button>
+
+              <button
+                type='button'
+                onClick={() => addPerson('child')}
+                className='flex items-center px-4 py-2 border-2 border-dashed border-blue-300 text-blue-700 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition'
+              >
+                <Plus className='w-4 h-4 mr-2' />
+                Add Child
+              </button>
+            </div>
+
+            {errors.people && (
+              <p className='text-red-500 text-sm font-medium'>
+                {errors.people}
+              </p>
+            )}
           </div>
 
-          {/* Bike Selection Section */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Bike Selection
-            </h3>
-            <BikeSelector />
-          </div>
+          {/* Booking Summary */}
+          {totalParticipants > 0 && (
+            <div className='bg-gray-50 rounded-lg p-4'>
+              <h4 className='font-medium text-gray-800 mb-3'>
+                Booking Summary
+              </h4>
+              <div className='space-y-2 text-sm'>
+                <div className='flex justify-between'>
+                  <span>Adults:</span>
+                  <span>{adultCount}</span>
+                </div>
+                <div className='flex justify-between'>
+                  <span>Children:</span>
+                  <span>{childCount}</span>
+                </div>
+                <div className='border-t pt-2 mt-2'>
+                  <div className='flex justify-between font-medium'>
+                    <span>Total Participants:</span>
+                    <span>{totalParticipants}</span>
+                  </div>
+                </div>
+                {Object.entries(selectedBikes).map(([bikeType, count]) => {
+                  const bike = BIKE_TYPES.find((b) => b.id === bikeType);
+                  if (!bike || count === 0) return null;
+                  return (
+                    <div
+                      key={bikeType}
+                      className='flex justify-between text-xs text-gray-600'
+                    >
+                      <span>
+                        {bike.icon} {bike.name}:
+                      </span>
+                      <span>
+                        {count} × ${bike.price} = $
+                        {bike.price * count * rentalDays}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Safety Information */}
           <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
@@ -851,19 +802,17 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
 
             {/* Price breakdown */}
             <div className='text-xs text-gray-400 mt-2 space-y-1'>
-              {Object.entries(formData.selectedBikes).map(
-                ([bikeType, count]) => {
-                  if (count === 0) return null;
-                  const bike = BIKE_TYPES.find((b) => b.id === bikeType);
-                  if (!bike) return null;
-                  return (
-                    <div key={bikeType}>
-                      {bike.name}: {count} × ${bike.price} × {rentalDays} days =
-                      ${bike.price * count * rentalDays}
-                    </div>
-                  );
-                }
-              )}
+              {Object.entries(selectedBikes).map(([bikeType, count]) => {
+                if (count === 0) return null;
+                const bike = BIKE_TYPES.find((b) => b.id === bikeType);
+                if (!bike) return null;
+                return (
+                  <div key={bikeType}>
+                    {bike.name}: {count} × ${bike.price} × {rentalDays} days = $
+                    {bike.price * count * rentalDays}
+                  </div>
+                );
+              })}
               {formData.deliveryToHotel &&
                 formData.location !== 'Hotel pickup' && (
                   <div>Delivery service: +$10</div>

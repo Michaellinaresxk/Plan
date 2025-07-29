@@ -16,6 +16,7 @@ import {
   Activity,
   Target,
   Dumbbell,
+  Baby,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/client';
@@ -23,9 +24,17 @@ import { useEffect, useState } from 'react';
 
 interface PersonalTrainerFormProps {
   service: Service;
-  onSubmit?: (formData: any) => void; // Made optional for compatibility
+  onSubmit?: (formData: any) => void;
   onCancel: () => void;
 }
+
+// Location options configuration
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+] as const;
 
 const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
   service,
@@ -38,9 +47,10 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
 
   const [formData, setFormData] = useState({
     date: '',
-    timeSlot: '', // 'morning', 'afternoon', or 'evening'
+    timeSlot: '', // 'morning', 'afternoon'
     location: '',
     participantCount: 1,
+    minorsCount: 0, // Simple count of participants under 18
     workoutType: '', // 'strength', 'cardio', 'functional', 'hiit', 'mixed'
     fitnessLevel: '', // 'beginner', 'intermediate', 'advanced'
     hasSpecialNeeds: false,
@@ -48,6 +58,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
     confirmSpecialNeeds: false,
     additionalNotes: '',
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentPrice, setCurrentPrice] = useState(service.price);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,13 +111,11 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
     const { name, value, type, checked } = e.target as HTMLInputElement;
 
     if (type === 'checkbox') {
-      // For checkbox inputs
       setFormData((prev) => ({
         ...prev,
         [name]: checked,
       }));
 
-      // If unchecking hasSpecialNeeds, also reset related fields
       if (name === 'hasSpecialNeeds' && !checked) {
         setFormData((prev) => ({
           ...prev,
@@ -116,14 +125,13 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
         }));
       }
     } else {
-      // For other input types
       setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
 
-    // Clear any errors for this field
+    // Clear errors for this field
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -133,14 +141,39 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
     }
   };
 
-  // Handle participant count changes
-  const updateParticipantCount = (increment: boolean) => {
+  // Handle location selection
+  const handleLocationSelect = (locationId: string) => {
     setFormData((prev) => ({
       ...prev,
-      participantCount: increment
-        ? Math.min(6, prev.participantCount + 1) // Max 6 people for safety
-        : Math.max(1, prev.participantCount - 1),
+      location: locationId,
     }));
+
+    // Clear location error if exists
+    if (errors.location) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.location;
+        return newErrors;
+      });
+    }
+  };
+
+  // Handle participant count changes
+  const updateParticipantCount = (increment: boolean) => {
+    setFormData((prev) => {
+      const newCount = increment
+        ? Math.min(6, prev.participantCount + 1) // Max 6 people for safety
+        : Math.max(1, prev.participantCount - 1);
+
+      // If decreasing participants, ensure minors count doesn't exceed total
+      const adjustedMinorsCount = Math.min(prev.minorsCount, newCount);
+
+      return {
+        ...prev,
+        participantCount: newCount,
+        minorsCount: adjustedMinorsCount,
+      };
+    });
   };
 
   // Validate form before submission
@@ -156,7 +189,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
 
     if (!formData.location) {
       newErrors.location = t('form.errors.required', {
-        fallback: 'Location is required',
+        fallback: 'Please select a location',
       });
     }
 
@@ -178,7 +211,17 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
       });
     }
 
-    // Validate special needs confirmation if applicable
+    // Validate minors count
+    if (formData.minorsCount > formData.participantCount) {
+      newErrors.minorsCount =
+        'Number of minors cannot exceed total participants';
+    }
+
+    if (formData.minorsCount < 0) {
+      newErrors.minorsCount = 'Number of minors cannot be negative';
+    }
+
+    // Validate special needs
     if (formData.hasSpecialNeeds) {
       if (!formData.specialNeedsDetails.trim()) {
         newErrors.specialNeedsDetails = t('form.errors.required', {
@@ -197,7 +240,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission following the same pattern
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -209,29 +252,26 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Create booking date properly
       const selectedDate = new Date(formData.date);
-
-      // Set time based on selected slot
       const bookingStartDate = new Date(selectedDate);
       const bookingEndDate = new Date(selectedDate);
 
       switch (formData.timeSlot) {
         case 'morning':
-          bookingStartDate.setHours(6, 0, 0, 0); // 6:00 AM
-          bookingEndDate.setHours(10, 0, 0, 0); // 10:00 AM
+          bookingStartDate.setHours(7, 0, 0, 0);
+          bookingEndDate.setHours(11, 0, 0, 0);
           break;
         case 'afternoon':
-          bookingStartDate.setHours(12, 0, 0, 0); // 12:00 PM
-          bookingEndDate.setHours(16, 0, 0, 0); // 4:00 PM
-          break;
-        case 'evening':
-          bookingStartDate.setHours(17, 0, 0, 0); // 5:00 PM
-          bookingEndDate.setHours(21, 0, 0, 0); // 9:00 PM
+          bookingStartDate.setHours(13, 0, 0, 0);
+          bookingEndDate.setHours(18, 0, 0, 0);
           break;
       }
 
-      // Create reservation data matching the expected structure
+      // Get selected location name
+      const selectedLocation =
+        LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
+        formData.location;
+
       const reservationData = {
         service: service,
         formData: {
@@ -239,13 +279,14 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
           serviceType: 'personal-trainer',
           totalPrice: currentPrice,
           calculatedPrice: currentPrice,
+          locationName: selectedLocation,
         },
         totalPrice: currentPrice,
         bookingDate: bookingStartDate,
         endDate: bookingEndDate,
         participants: {
-          adults: formData.participantCount,
-          children: 0,
+          adults: formData.participantCount - formData.minorsCount,
+          children: formData.minorsCount,
           total: formData.participantCount,
         },
         selectedItems: [
@@ -262,17 +303,20 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
             workoutType: formData.workoutType,
             fitnessLevel: formData.fitnessLevel,
             specialNeeds: formData.hasSpecialNeeds,
+            location: selectedLocation,
           },
         ],
-        clientInfo: undefined, // Will be filled in the confirmation page
-        // Additional personal trainer-specific data
+        clientInfo: undefined,
         personalTrainerSpecifics: {
           timeSlot: formData.timeSlot,
+          location: formData.location,
+          locationName: selectedLocation,
           workoutType: formData.workoutType,
           fitnessLevel: formData.fitnessLevel,
           hasSpecialNeeds: formData.hasSpecialNeeds,
           specialNeedsDetails: formData.specialNeedsDetails,
           participantCount: formData.participantCount,
+          minorsCount: formData.minorsCount,
           additionalNotes: formData.additionalNotes,
         },
       };
@@ -282,15 +326,12 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
         reservationData
       );
 
-      // Store in context
       setReservationData(reservationData);
 
-      // Call the onSubmit callback if provided (optional)
       if (onSubmit) {
         await onSubmit(reservationData);
       }
 
-      // Navigate to confirmation page
       router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ PersonalTrainerForm - Error submitting form:', error);
@@ -302,7 +343,6 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
     }
   };
 
-  // Determine if service is premium based on package type
   const isPremium = service.packageType?.includes('premium');
 
   return (
@@ -313,7 +353,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
     >
       <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
         <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-          {/* Form Header - Fitness Style */}
+          {/* Form Header */}
           <div
             className={`bg-gradient-to-r ${
               isPremium
@@ -400,7 +440,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                   *
                 </label>
 
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   {/* Morning Option */}
                   <div
                     className={`
@@ -453,7 +493,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                     </div>
                     <p className='text-gray-500 text-sm mt-2 ml-8'>
                       {t('services.personalTrainer.morningTime', {
-                        fallback: '6:00 AM - 10:00 AM',
+                        fallback: '7:00 AM - 11:00 AM',
                       })}
                     </p>
                   </div>
@@ -513,64 +553,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                     </div>
                     <p className='text-gray-500 text-sm mt-2 ml-8'>
                       {t('services.personalTrainer.afternoonTime', {
-                        fallback: '12:00 PM - 4:00 PM',
-                      })}
-                    </p>
-                  </div>
-
-                  {/* Evening Option */}
-                  <div
-                    className={`
-                      border rounded-lg p-4 cursor-pointer transition-all
-                      ${
-                        formData.timeSlot === 'evening'
-                          ? `${
-                              isPremium
-                                ? 'bg-orange-50 border-orange-300'
-                                : 'bg-blue-50 border-blue-300'
-                            } shadow-sm`
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }
-                    `}
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, timeSlot: 'evening' }))
-                    }
-                  >
-                    <div className='flex items-center'>
-                      <div
-                        className={`
-                        w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                        ${
-                          formData.timeSlot === 'evening'
-                            ? `${
-                                isPremium
-                                  ? 'border-orange-500 bg-orange-500'
-                                  : 'border-blue-500 bg-blue-500'
-                              }`
-                            : 'border-gray-300'
-                        }
-                      `}
-                      >
-                        {formData.timeSlot === 'evening' && (
-                          <CheckCircle className='w-4 h-4 text-white' />
-                        )}
-                      </div>
-                      <div className='flex items-center'>
-                        <Sunset
-                          className={`w-5 h-5 mr-2 ${
-                            isPremium ? 'text-orange-500' : 'text-blue-500'
-                          }`}
-                        />
-                        <span className='font-medium'>
-                          {t('services.personalTrainer.evening', {
-                            fallback: 'Evening',
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <p className='text-gray-500 text-sm mt-2 ml-8'>
-                      {t('services.personalTrainer.eveningTime', {
-                        fallback: '5:00 PM - 9:00 PM',
+                        fallback: '1:00 PM - 6:00 PM',
                       })}
                     </p>
                   </div>
@@ -582,125 +565,76 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
               </div>
             </div>
 
-            {/* Location */}
-            <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                <MapPin
-                  className={`w-4 h-4 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-blue-600'
-                  }`}
-                />
-                Location *
-              </label>
-              <input
-                type='text'
-                name='location'
-                value={formData.location}
-                onChange={handleChange}
-                className={`w-full p-3 border ${
-                  errors.location ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-2 ${
-                  isPremium
-                    ? 'focus:ring-orange-500 focus:border-orange-500'
-                    : 'focus:ring-blue-500 focus:border-blue-500'
-                } bg-gray-50`}
-                placeholder='Training location (gym, park, home address, etc.)'
-              />
-              {errors.location && (
-                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
-              )}
-            </div>
-
-            {/* Workout Configuration Section */}
-            <div className='space-y-6'>
+            {/* Location Selection */}
+            <div className='space-y-4'>
               <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Target
+                <MapPin
                   className={`w-5 h-5 mr-2 ${
                     isPremium ? 'text-orange-600' : 'text-blue-600'
                   }`}
                 />
-                {t('services.personalTrainer.workoutConfig', {
-                  fallback: 'Workout Configuration',
+                {t('services.personalTrainer.location', {
+                  fallback: 'Location',
                 })}
               </h3>
 
-              {/* Workout Type */}
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Activity
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
+                  <MapPin
                     className={`w-4 h-4 mr-2 ${
                       isPremium ? 'text-orange-600' : 'text-blue-600'
                     }`}
                   />
-                  {t('services.personalTrainer.workoutType', {
-                    fallback: 'Workout Type',
-                  })}{' '}
-                  *
+                  Select Training Location *
                 </label>
-                <select
-                  name='workoutType'
-                  value={formData.workoutType}
-                  onChange={handleChange}
-                  className={`w-full p-3 border ${
-                    errors.workoutType ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium
-                      ? 'focus:ring-orange-500 focus:border-orange-500'
-                      : 'focus:ring-blue-500 focus:border-blue-500'
-                  } bg-gray-50`}
-                >
-                  <option value=''>Select workout type</option>
-                  <option value='strength'>Strength Training</option>
-                  <option value='cardio'>Cardio Training</option>
-                  <option value='functional'>Functional Training</option>
-                  <option value='hiit'>
-                    HIIT (High Intensity Interval Training)
-                  </option>
-                  <option value='mixed'>Mixed Training</option>
-                </select>
-                {errors.workoutType && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.workoutType}
-                  </p>
-                )}
-              </div>
 
-              {/* Fitness Level */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Target
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-blue-600'
-                    }`}
-                  />
-                  {t('services.personalTrainer.fitnessLevel', {
-                    fallback: 'Fitness Level',
-                  })}{' '}
-                  *
-                </label>
-                <select
-                  name='fitnessLevel'
-                  value={formData.fitnessLevel}
-                  onChange={handleChange}
-                  className={`w-full p-3 border ${
-                    errors.fitnessLevel ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium
-                      ? 'focus:ring-orange-500 focus:border-orange-500'
-                      : 'focus:ring-blue-500 focus:border-blue-500'
-                  } bg-gray-50`}
-                >
-                  <option value=''>Select your fitness level</option>
-                  <option value='beginner'>Beginner - New to fitness</option>
-                  <option value='intermediate'>
-                    Intermediate - Some experience
-                  </option>
-                  <option value='advanced'>Advanced - Very experienced</option>
-                </select>
-                {errors.fitnessLevel && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.fitnessLevel}
-                  </p>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                  {LOCATION_OPTIONS.map((location) => (
+                    <div
+                      key={location.id}
+                      className={`
+                        border rounded-lg p-4 cursor-pointer transition-all
+                        ${
+                          formData.location === location.id
+                            ? `${
+                                isPremium
+                                  ? 'bg-orange-50 border-orange-300'
+                                  : 'bg-blue-50 border-blue-300'
+                              } shadow-sm`
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }
+                      `}
+                      onClick={() => handleLocationSelect(location.id)}
+                    >
+                      <div className='flex items-center'>
+                        <div
+                          className={`
+                          w-5 h-5 rounded-full border flex items-center justify-center mr-3
+                          ${
+                            formData.location === location.id
+                              ? `${
+                                  isPremium
+                                    ? 'border-orange-500 bg-orange-500'
+                                    : 'border-blue-500 bg-blue-500'
+                                }`
+                              : 'border-gray-300'
+                          }
+                        `}
+                        >
+                          {formData.location === location.id && (
+                            <CheckCircle className='w-4 h-4 text-white' />
+                          )}
+                        </div>
+                        <span className='font-medium text-gray-800'>
+                          {location.name}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {errors.location && (
+                  <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
                 )}
               </div>
             </div>
@@ -764,6 +698,49 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                 )}
               </div>
 
+              {/* Minors Count */}
+              <div>
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                  <Baby
+                    className={`w-4 h-4 mr-2 ${
+                      isPremium ? 'text-orange-600' : 'text-blue-600'
+                    }`}
+                  />
+                  Number of participants under 18
+                </label>
+                <input
+                  type='number'
+                  name='minorsCount'
+                  min='0'
+                  max={formData.participantCount}
+                  value={formData.minorsCount}
+                  onChange={handleChange}
+                  className={`w-full max-w-xs p-3 border ${
+                    errors.minorsCount ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-2 ${
+                    isPremium
+                      ? 'focus:ring-orange-500 focus:border-orange-500'
+                      : 'focus:ring-blue-500 focus:border-blue-500'
+                  } bg-gray-50`}
+                  placeholder='0'
+                />
+                {errors.minorsCount && (
+                  <p className='text-red-500 text-xs mt-1'>
+                    {errors.minorsCount}
+                  </p>
+                )}
+
+                {formData.minorsCount > 0 && (
+                  <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200 mt-3'>
+                    <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
+                    <p className='text-xs text-blue-700'>
+                      {formData.minorsCount} participant(s) under 18 detected.
+                      Adult supervision is required during the training session.
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {/* Special Needs Toggle */}
               <div className='mt-4'>
                 <div
@@ -783,7 +760,6 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                     setFormData((prev) => ({
                       ...prev,
                       hasSpecialNeeds: !prev.hasSpecialNeeds,
-                      // Reset related fields if turning off
                       specialNeedsDetails: !prev.hasSpecialNeeds
                         ? prev.specialNeedsDetails
                         : '',
@@ -825,7 +801,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                   />
                 </div>
 
-                {/* Special Needs Details (conditional) */}
+                {/* Special Needs Details */}
                 {formData.hasSpecialNeeds && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
@@ -868,7 +844,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                       </p>
                     )}
 
-                    {/* Double confirmation checkbox */}
+                    {/* Confirmation checkbox */}
                     <div className='mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200'>
                       <div className='flex items-start'>
                         <div className='flex items-center h-5'>
@@ -900,7 +876,6 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                       )}
                     </div>
 
-                    {/* Special needs notice */}
                     <div className='mt-3 flex items-start'>
                       <Info className='h-5 w-5 text-gray-400 mt-0.5 mr-2 flex-shrink-0' />
                       <p className='text-xs text-gray-500'>
@@ -962,7 +937,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
             )}
           </div>
 
-          {/* Form Footer with Price and Actions */}
+          {/* Form Footer */}
           <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
@@ -992,7 +967,11 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                     `${
                       formData.timeSlot.charAt(0).toUpperCase() +
                       formData.timeSlot.slice(1)
-                    } ${formData.workoutType.toUpperCase()} Training`}
+                    } ${formData.workoutType.toUpperCase()} Training at ${
+                      LOCATION_OPTIONS.find(
+                        (loc) => loc.id === formData.location
+                      )?.name || 'Selected Location'
+                    }`}
                 </div>
                 {formData.participantCount > 1 && (
                   <div className='text-blue-400'>
@@ -1012,6 +991,11 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                 )}
                 {formData.hasSpecialNeeds && (
                   <div>Specialized training program: +$20</div>
+                )}
+                {formData.minorsCount > 0 && (
+                  <div className='text-yellow-400'>
+                    {formData.minorsCount} participant(s) under 18
+                  </div>
                 )}
               </div>
             </div>

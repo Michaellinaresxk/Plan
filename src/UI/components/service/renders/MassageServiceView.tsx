@@ -460,8 +460,71 @@ const MassageServiceView = () => {
         </motion.div>
       </section>
 
+      {/* Inspirational Quote Section */}
+      <section className='py-20 px-4 sm:px-6 relative overflow-hidden bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50'>
+        <div className='absolute inset-0 opacity-10'>
+          <div className='absolute top-10 left-10 w-64 h-64 bg-emerald-300 rounded-full blur-3xl'></div>
+          <div className='absolute bottom-10 right-10 w-96 h-96 bg-teal-300 rounded-full blur-3xl'></div>
+        </div>
+
+        <div className='max-w-4xl mx-auto text-center relative z-10'>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className='mb-8'
+          >
+            <div className='text-6xl text-emerald-600 mb-6'>🌸</div>
+            <blockquote className='text-3xl lg:text-4xl font-light text-gray-800 leading-relaxed mb-8 italic'>
+              "Take time to make your soul happy. Your body deserves the gift of
+              healing touch, and your mind craves the peace that only comes from
+              true relaxation."
+            </blockquote>
+            <div className='w-24 h-1 bg-gradient-to-r from-emerald-400 to-teal-400 mx-auto rounded-full'></div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className='grid grid-cols-1 md:grid-cols-3 gap-8 mt-16'
+          >
+            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
+              <div className='text-emerald-600 text-4xl font-bold mb-2'>
+                500+
+              </div>
+              <div className='text-gray-600 font-medium'>Blissful Sessions</div>
+              <div className='text-sm text-gray-500 mt-2'>
+                completed this year
+              </div>
+            </div>
+
+            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
+              <div className='text-emerald-600 text-4xl font-bold mb-2'>
+                98%
+              </div>
+              <div className='text-gray-600 font-medium'>Satisfaction Rate</div>
+              <div className='text-sm text-gray-500 mt-2'>
+                from our valued clients
+              </div>
+            </div>
+
+            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
+              <div className='text-emerald-600 text-4xl font-bold mb-2'>
+                24/7
+              </div>
+              <div className='text-gray-600 font-medium'>Availability</div>
+              <div className='text-sm text-gray-500 mt-2'>
+                for your convenience
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Main Services Content */}
-      <section className='py-20 px-4 sm:px-6 relative'>
+      <section id='massage-services' className='py-20 px-4 sm:px-6 relative'>
         <div className='max-w-7xl mx-auto'>
           <div className='text-center mb-16'>
             <motion.h2
@@ -547,6 +610,130 @@ const MassageServiceView = () => {
               </button>
             </motion.div>
           )}
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className='py-20 px-4 sm:px-6 relative'>
+        <div className='max-w-6xl mx-auto'>
+          <div className='bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-12 relative overflow-hidden shadow-2xl'>
+            <div className='absolute inset-0 opacity-20'>
+              <div className='absolute top-0 left-0 w-full h-full bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")]'></div>
+            </div>
+
+            <div className='relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
+              <div>
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <h3 className='text-4xl lg:text-5xl font-light text-white mb-6 leading-tight'>
+                    Your Journey to
+                    <span className='block text-emerald-200 font-normal'>
+                      Complete Wellness
+                    </span>
+                  </h3>
+
+                  <p className='text-xl text-emerald-100 mb-8 leading-relaxed'>
+                    Escape the stress of daily life and immerse yourself in pure
+                    tranquility. Our expert therapists bring the spa experience
+                    directly to you.
+                  </p>
+
+                  <div className='space-y-4 mb-8'>
+                    <div className='flex items-center gap-4 text-emerald-100'>
+                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
+                        <CheckCircle className='w-5 h-5 text-white' />
+                      </div>
+                      <span>
+                        Certified massage therapists with 5+ years experience
+                      </span>
+                    </div>
+                    <div className='flex items-center gap-4 text-emerald-100'>
+                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
+                        <Heart className='w-5 h-5 text-white' />
+                      </div>
+                      <span>
+                        Premium organic oils and heated massage tables
+                      </span>
+                    </div>
+                    <div className='flex items-center gap-4 text-emerald-100'>
+                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
+                        <Sparkles className='w-5 h-5 text-white' />
+                      </div>
+                      <span>Customized treatments for your unique needs</span>
+                    </div>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() =>
+                      document
+                        .getElementById('massage-services')
+                        .scrollIntoView({ behavior: 'smooth' })
+                    }
+                    className='bg-white text-emerald-600 px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3'
+                  >
+                    <Play className='w-5 h-5' />
+                    Start Your Wellness Journey
+                    <ArrowRight className='w-5 h-5' />
+                  </motion.button>
+                </motion.div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className='relative'
+              >
+                <div className='grid grid-cols-2 gap-6'>
+                  <div className='space-y-6'>
+                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
+                      <div className='text-3xl mb-3'>🧘‍♀️</div>
+                      <h4 className='text-white font-semibold mb-2'>
+                        Mind Balance
+                      </h4>
+                      <p className='text-emerald-100 text-sm'>
+                        Achieve mental clarity and emotional harmony
+                      </p>
+                    </div>
+                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
+                      <div className='text-3xl mb-3'>💆‍♀️</div>
+                      <h4 className='text-white font-semibold mb-2'>
+                        Body Renewal
+                      </h4>
+                      <p className='text-emerald-100 text-sm'>
+                        Release tension and restore vitality
+                      </p>
+                    </div>
+                  </div>
+                  <div className='space-y-6 mt-12'>
+                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
+                      <div className='text-3xl mb-3'>🌿</div>
+                      <h4 className='text-white font-semibold mb-2'>
+                        Natural Healing
+                      </h4>
+                      <p className='text-emerald-100 text-sm'>
+                        Pure organic products for your wellness
+                      </p>
+                    </div>
+                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
+                      <div className='text-3xl mb-3'>🏠</div>
+                      <h4 className='text-white font-semibold mb-2'>
+                        Home Comfort
+                      </h4>
+                      <p className='text-emerald-100 text-sm'>
+                        Luxury spa experience in your space
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 

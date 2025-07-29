@@ -99,7 +99,7 @@ const StandardPackage = () => {
                 variants={fadeInUp}
                 className='text-4xl md:text-6xl font-bold text-white mb-6 leading-tight'
               >
-                Punta Cana Plan
+                Lux Punta Cana
               </motion.h1>
 
               <motion.div
