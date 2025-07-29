@@ -98,7 +98,7 @@ const CATAMARAN_OPTIONS: CatamaranOption[] = [
     capacity: 40,
     hasWaterSlide: false,
     image:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=800',
+      'https://images.pexels.com/photos/4600762/pexels-photo-4600762.jpeg?_gl=1*mwst98*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg1NzMkajU1JGwwJGgw',
     features: [
       'Open Bar with Standard Drinks',
       'Gourmet Buffet Lunch',
@@ -117,7 +117,7 @@ const CATAMARAN_OPTIONS: CatamaranOption[] = [
     capacity: 30,
     hasWaterSlide: true,
     image:
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=800',
+      'https://www.whitesandwatersports.com/assets/images/2020-09-02-11-41-55-IMG0606.JPG',
     features: [
       'All Classic Features Included',
       'Thrilling Water Slide',
@@ -641,54 +641,11 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
                 <Ship className='w-6 h-6 text-blue-600' />
                 {catamaran.name}
               </h4>
-              <div className='flex items-center text-gray-600 text-sm'>
-                <Users className='w-4 h-4 mr-1' />
-                {catamaran.capacity} guests
-              </div>
             </div>
-
-            <p className='text-gray-600 text-sm mb-4 line-clamp-2'>
-              {catamaran.description}
-            </p>
-
-            {/* Key Features */}
-            <div className='space-y-2'>
-              <div className='text-sm font-medium text-gray-700 mb-2'>
-                Key Features:
-              </div>
-              <div className='grid grid-cols-1 gap-1'>
-                {catamaran.features.slice(0, 3).map((feature, index) => (
-                  <div
-                    key={index}
-                    className='flex items-center text-sm text-gray-600'
-                  >
-                    <Check className='w-4 h-4 text-green-500 mr-2 flex-shrink-0' />
-                    {feature}
-                  </div>
-                ))}
-                {catamaran.features.length > 3 && (
-                  <div className='text-sm text-blue-600 font-medium'>
-                    +{catamaran.features.length - 3} more features
-                  </div>
-                )}
-              </div>
+            <div className='flex items-center text-gray-600 text-sm'>
+              <Users className='w-4 h-4 mr-1' />
+              {catamaran.capacity} guests
             </div>
-
-            {/* Special Water Slide Notice */}
-            {catamaran.hasWaterSlide && (
-              <div className='mt-4 p-3 bg-cyan-50 border border-cyan-200 rounded-lg'>
-                <div className='flex items-center text-cyan-800 text-sm'>
-                  <Waves className='w-4 h-4 mr-2 text-cyan-600' />
-                  <span className='font-medium'>
-                    Includes thrilling water slide!
-                  </span>
-                </div>
-                <div className='text-xs text-cyan-700 mt-1'>
-                  Perfect for groups seeking extra excitement and luxury
-                  amenities
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Selection Border Effect */}
