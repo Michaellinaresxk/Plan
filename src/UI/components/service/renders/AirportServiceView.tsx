@@ -82,12 +82,12 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
   // Imágenes para la galería (usar las que estén disponibles o placeholders)
   const galleryImages = extendedDetails?.gallery?.images || [
     {
-      src: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+      src: 'https://www.teletrans.cl/wp-content/uploads/2019/09/taxi-ejecutivo.jpg',
       alt: 'Luxury airport transfer',
       caption: 'Premium private transportation to and from the airport',
     },
     {
-      src: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+      src: 'https://images.pexels.com/photos/13861/IMG_3496bfree.jpg?_gl=1*1xzu124*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM4MDEzNTYkajUwJGwwJGgw',
       alt: 'Modern SUV',
       caption: 'Comfortable, air-conditioned modern vehicles',
     },

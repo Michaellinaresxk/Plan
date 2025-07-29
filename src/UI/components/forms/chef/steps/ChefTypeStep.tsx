@@ -29,7 +29,7 @@ const ChefTypeStep: React.FC<ChefTypeStepProps> = ({
       price: 120,
       description: 'Experiencia auténtica y personalizada',
       imageUrl:
-        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        'https://images.pexels.com/photos/9986228/pexels-photo-9986228.jpeg?_gl=1*17t3j26*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM4MDAyMjIkajU5JGwwJGgw',
       gradient: 'from-orange-500 to-amber-500',
       icon: <Utensils className='w-6 h-6' />,
       highlights: [

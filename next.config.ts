@@ -29,6 +29,8 @@ const nextConfig: NextConfig = {
       'ens3xeax5jd.exactdn.com',
       'integrity-asia.com',
       'prod-images.viravira.co',
+      'mscocina.com',
+      'www.teletrans.cl',
     ],
   },
 };

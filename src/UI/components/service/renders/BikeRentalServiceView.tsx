@@ -627,7 +627,7 @@ const BikeRentalServiceView: React.FC<BikeRentalServiceViewProps> = ({
       >
         <div className='absolute inset-0 opacity-30'>
           <Image
-            src='https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1200'
+            src='https://images.pexels.com/photos/1457018/pexels-photo-1457018.jpeg?_gl=1*9qjvnj*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM4MDA3NzMkajMxJGwwJGgw'
             alt='Bike rental adventure'
             fill
             style={{ objectFit: 'cover' }}

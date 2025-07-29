@@ -19,7 +19,7 @@ export const CHEF_SERVICE_TYPES: ChefServiceType[] = [
     title: 'Standard',
     price: 'From US$120 per day',
     description:
-      "Este servicio esta diseñado para quienes desean disfrutar de la cocina casera, sin complicaciones, pero con mucho sabor. Ofrecemos preparación de comidas prácticas, nutritivas y deliciosas, perfectas para el día a día.",
+      'Este servicio esta diseñado para quienes desean disfrutar de la cocina casera, sin complicaciones, pero con mucho sabor. Ofrecemos preparación de comidas prácticas, nutritivas y deliciosas, perfectas para el día a día.',
     features: [
       'Up to 10 people (prices vary for larger groups)',
       'No set menu - works with your guidance',
@@ -53,8 +53,7 @@ export const CUISINE_TYPES: CuisineType[] = [
     name: 'Traditional Food',
     description:
       "Authentic techniques from nonna's kitchen to modern interpretations",
-    image:
-      '/img/sancocho.jpg',
+    image: '/img/sancocho.jpg',
   },
   {
     id: 'european',
@@ -76,8 +75,7 @@ export const CUISINE_TYPES: CuisineType[] = [
     name: 'Mediterranean',
     description:
       'Sun-kissed flavors celebrating the bounty of the Mediterranean',
-    image:
-      'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?auto=format&fit=crop&q=80&w=800',
+    image: 'https://mscocina.com/wp-content/uploads/2022/12/image.jpeg',
   },
   {
     id: 'mexican',

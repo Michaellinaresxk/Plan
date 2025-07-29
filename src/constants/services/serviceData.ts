@@ -1068,7 +1068,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     category: 'adventure',
     packageType: ['standard'],
     imageUrl:
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?_gl=1*43ul76*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM4MDA1NjIkajU5JGwwJGgw',
     duration: 1,
     bookingDuration: {
       min: 1,

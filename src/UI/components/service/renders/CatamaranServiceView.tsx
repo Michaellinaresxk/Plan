@@ -52,7 +52,7 @@ const catamaranTypes: CatamaranType[] = [
     name: 'Classic Adventure',
     price: 89,
     image:
-      'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=1200',
+      'https://res.cloudinary.com/michaelxk-com/image/upload/v1625794349/nuestra%20flota/lagoon%2042/1_uspfu7.jpg',
     features: [
       'Open Bar',
       'Gourmet Buffet',
@@ -68,7 +68,7 @@ const catamaranTypes: CatamaranType[] = [
     name: 'Premium with Water Slide',
     price: 129,
     image:
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1200',
+      'https://www.whitesandwatersports.com/assets/images/2020-09-02-11-41-55-IMG0606.JPG',
     features: [
       'All Classic Features',
       'Water Slide',
@@ -107,12 +107,12 @@ const HeroSection: React.FC<{
 }> = ({ currentImage, onImageChange, onBookClick }) => {
   const heroImages = [
     {
-      src: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=1600',
+      src: 'https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg?_gl=1*1c89csu*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTkxOTkkajU5JGwwJGgw',
       title: 'Caribbean Paradise',
       subtitle: 'Luxury Catamaran Experience',
     },
     {
-      src: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=1600',
+      src: 'https://images.pexels.com/photos/4321523/pexels-photo-4321523.jpeg?_gl=1*7jzc5f*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTkxOTkkajU5JGwwJGgw',
       title: 'Underwater Adventure',
       subtitle: 'Snorkeling in Crystal Waters',
     },
@@ -320,7 +320,7 @@ const ExperienceGallery: React.FC = () => {
   const experiences = [
     {
       image:
-        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=800',
+        'https://images.pexels.com/photos/4600762/pexels-photo-4600762.jpeg?_gl=1*mwst98*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg1NzMkajU1JGwwJGgw',
       title: 'Crystal Clear Waters',
       description: 'Swim in pristine Caribbean waters',
       icon: Waves,
@@ -334,7 +334,7 @@ const ExperienceGallery: React.FC = () => {
     },
     {
       image:
-        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=800',
+        'https://www.puntacanabestexcursions.com//assets/Uploads/BEBE_CATAMARAN_22.jpeg',
       title: 'Water Slide Fun',
       description: 'Thrilling slides into the ocean',
       icon: Waves,
@@ -348,14 +348,14 @@ const ExperienceGallery: React.FC = () => {
     },
     {
       image:
-        'https://images.unsplash.com/photo-1549144511-f099e773c147?q=80&w=800',
+        'https://images.pexels.com/photos/4319028/pexels-photo-4319028.jpeg?_gl=1*wp3wc8*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5MTYkajUwJGwwJGgw',
       title: 'Beach Exploration',
       description: 'Secluded beaches and hidden coves',
       icon: MapPin,
     },
     {
       image:
-        'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?q=80&w=800',
+        'https://images.pexels.com/photos/5006967/pexels-photo-5006967.jpeg?_gl=1*dlck0v*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5NzgkajUxJGwwJGgw',
       title: 'Sunset Views',
       description: 'Breathtaking Caribbean sunsets',
       icon: Sun,
@@ -620,7 +620,7 @@ const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
         {/* Call to Action */}
         <section className='relative overflow-hidden rounded-3xl h-96 shadow-2xl'>
           <img
-            src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1600'
+            src='https://images.pexels.com/photos/5006967/pexels-photo-5006967.jpeg?_gl=1*dlck0v*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5NzgkajUxJGwwJGgw'
             alt='Sunset catamaran'
             className='w-full h-full object-cover'
           />
