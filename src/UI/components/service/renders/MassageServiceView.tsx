@@ -11,18 +11,7 @@ import {
   Shield,
   Heart,
   CheckCircle,
-  Users,
-  Timer,
-  Zap,
   Sparkles,
-  Plus,
-  X,
-  MapPin,
-  Calendar,
-  Info,
-  Minus,
-  Search,
-  SlidersHorizontal,
   Play,
 } from 'lucide-react';
 import MassageConfigModal from '../massage/MassageConfigModal';

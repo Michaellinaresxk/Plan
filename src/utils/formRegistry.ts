@@ -209,19 +209,18 @@ registerForm({
   }),
 });
 
-// Catamaran Form
-// registerForm({
-//   name: 'CatamaranForm',
-//   component: () => import('@/UI/components/forms/CatamaranForm'),
-//   servicePatterns: ['catamaran'],
-//   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-//     service,
-//     onSubmit:
-//       additionalData?.onSubmit ||
-//       ((data: any) => console.log('Catamaran:', data)),
-//     onCancel,
-//   }),
-// });
+// Luxe Yoga Form
+registerForm({
+  name: 'LuxeYogaServiceForm',
+  component: () => import('@/UI/components/forms/YogaServiceForm'),
+  servicePatterns: ['yoga', 'yoga-session', 'yoga-standard', 'luxe-yoga'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit || ((data: any) => console.log('Yoga:', data)),
+    onCancel,
+  }),
+});
 
 // Chef Form
 registerForm({
@@ -295,7 +294,7 @@ registerForm({
   }),
 });
 
-// Karaoke Form
+// Catamaran Form
 registerForm({
   name: 'private-catamaran',
   component: () => import('@/UI/components/forms/CatamaranForm'),
