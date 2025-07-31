@@ -259,6 +259,7 @@ const CustomPackageCTA = () => {
           </motion.div>
         </motion.div>
       </div>
+
       <div className='w-[90%] md:w-[80%] mx-auto mt-10'>
         <LuxeGallery />
       </div>
