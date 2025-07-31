@@ -67,6 +67,64 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
       'Listen to your body. This is your time. Your space. Your pace.',
   },
 
+  [SERVICE_IDS.GOLF_CART]: {
+    title: 'MOVE FREELY. EXPLORE COMFORTABLY.',
+    description:
+      'Cruise your resort, villa community, or local beach town with our fully charged, comfortable golf carts. Perfect for getting around quickly and easily, our rentals are delivered right to your door—ready to ride.',
+    tagline: 'Your Freedom. Your Pace.',
+    slogan: 'MOVE FREELY. EXPLORE COMFORTABLY.',
+    priceUnit: 'per day',
+    includes: [
+      'Fully charged battery',
+      'Full fuel tank (if applicable)',
+      'Free delivery & pickup service',
+      'Complete safety equipment',
+      '24/7 emergency support hotline',
+      'Quick orientation & safety briefing',
+    ],
+    notIncluded: ['Gratuity (optional, appreciated)'],
+    itinerary: [
+      'We deliver your golf cart to your location',
+      'Quick orientation & safety overview',
+      'You drive & enjoy your surroundings',
+      'We pick it up at your scheduled time',
+    ],
+    timeSlots: ['4-Seater Cart', '6-Seater Cart'],
+    disclaimer:
+      'Drive at your own discretion. Please follow all community or resort rules and respect local driving laws.',
+    details: {
+      recommendedBookingTime: 'Minimum 24 hours in advance',
+      duration: 'Flexible rental periods (1-7 days)',
+      setupRequirements: "Valid driver's license (18+ years old)",
+      customization:
+        'Special delivery locations and additional equipment available',
+    },
+    fullDescription:
+      "Experience the ultimate freedom to explore Punta Cana with our premium golf cart rental service. Choose from comfortable 4-seater carts perfect for couples or small families, or spacious 6-seater models ideal for larger groups. Every cart is delivered fully charged and ready to drive, complete with safety equipment and comprehensive insurance. Our door-to-door service means you can start exploring immediately, whether you're cruising resort grounds, visiting local beaches, or touring villa communities. With 24/7 support and flexible rental periods, we make mobility effortless so you can focus on creating unforgettable memories.",
+    gallery: {
+      title: 'Experience Premium Golf Cart Mobility',
+      images: [
+        {
+          src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop',
+          alt: 'Luxury golf cart at resort',
+          caption: 'Explore resort areas in comfort and style',
+        },
+        {
+          src: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+          alt: 'Family enjoying golf cart tour',
+          caption: 'Perfect for families and groups',
+        },
+        {
+          src: 'https://images.unsplash.com/photo-1612838006830-bf35ed6ba7f6?w=800&h=600&fit=crop',
+          alt: 'Golf cart on beach path',
+          caption: 'Access beautiful beach and coastal areas',
+        },
+      ],
+    },
+    finalMessage:
+      'Enjoy the freedom to explore at your own pace. Drive safely and make unforgettable memories discovering the beauty of Punta Cana with complete peace of mind.',
+  },
+
   // CUSTOM DECORATIONS SERVICE
   [SERVICE_IDS.CUSTOM_DECORATIONS]: {
     title: 'CREATE A MEMORABLE SETTING',
@@ -739,8 +797,8 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
   },
 
   // Add empty objects for remaining services to prevent errors
-  [SERVICE_IDS.GOLF_CART]: {},
-  [SERVICE_IDS.GROCERY]: {},
+
+  // [SERVICE_IDS.GROCERY]: {},
   [SERVICE_IDS.HORSEBACK_RIDING]: {},
   [SERVICE_IDS.DEEP_SEA_FISHING]: {},
   [SERVICE_IDS.PRIVATE_FISHING]: {},

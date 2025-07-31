@@ -201,6 +201,148 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
+  // GOLF CART SERVICE
+  [SERVICE_IDS.GOLF_CART]: {
+    id: SERVICE_IDS.GOLF_CART,
+    titleKey: 'services.golfCart.golfCartRental.tagline',
+    descriptionKey: 'services.golfCart.golfCartRental.description',
+    fullDescriptionKey: 'services.golfCart.golfCartRental.full',
+    basePrice: 45,
+    priceUnit: 'services.priceUnits.perDay',
+    category: 'transportation',
+    packageType: ['standard'],
+    imageUrl:
+      'https://images.pexels.com/photos/9207203/pexels-photo-9207203.jpeg?_gl=1*72ntg3*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM5ODExOTQkbzkkZzEkdDE3NTM5ODEyMzgkajE2JGwwJGgw',
+    duration: 1,
+    bookingDuration: {
+      min: 1,
+      max: 7,
+      unit: 'days',
+    },
+    options: {
+      cartType: {
+        id: 'cartType',
+        nameKey: 'services.golfCart.options.cartType.title',
+        subOptions: {
+          standard4: {
+            id: 'standard4',
+            nameKey: 'services.golfCart.options.cartType.options.standard4',
+            price: 0, // Base price (45)
+            specs: {
+              seats: 4,
+              batteryLife: '8-10 hours',
+              range: '40-50 miles',
+              maxSpeed: '25 mph',
+            },
+          },
+          premium6: {
+            id: 'premium6',
+            nameKey: 'services.golfCart.options.cartType.options.premium6',
+            price: 20, // +20 = 65 total
+            specs: {
+              seats: 6,
+              batteryLife: '8-12 hours',
+              range: '50-60 miles',
+              maxSpeed: '25 mph',
+            },
+          },
+          luxury4: {
+            id: 'luxury4',
+            nameKey: 'services.golfCart.options.cartType.options.luxury4',
+            price: 50, // +50 = 95 total
+            specs: {
+              seats: 4,
+              batteryLife: '10-12 hours',
+              range: '60-70 miles',
+              maxSpeed: '25 mph',
+            },
+          },
+        },
+      },
+      deliveryLocation: {
+        id: 'deliveryLocation',
+        nameKey: 'services.golfCart.options.deliveryLocation.title',
+        subOptions: {
+          puntaCanaResorts: {
+            id: 'puntaCanaResorts',
+            nameKey:
+              'services.golfCart.options.deliveryLocation.options.puntaCanaResorts',
+            price: 0,
+          },
+          capCanaResorts: {
+            id: 'capCanaResorts',
+            nameKey:
+              'services.golfCart.options.deliveryLocation.options.capCanaResorts',
+            price: 0,
+          },
+          bavaroBeach: {
+            id: 'bavaroBeach',
+            nameKey:
+              'services.golfCart.options.deliveryLocation.options.bavaroBeach',
+            price: 0,
+          },
+          privateVilla: {
+            id: 'privateVilla',
+            nameKey:
+              'services.golfCart.options.deliveryLocation.options.privateVilla',
+            price: 15,
+          },
+          otherLocation: {
+            id: 'otherLocation',
+            nameKey:
+              'services.golfCart.options.deliveryLocation.options.otherLocation',
+            price: 25,
+          },
+        },
+      },
+      extras: {
+        id: 'extras',
+        nameKey: 'services.golfCart.options.extras.title',
+        subOptions: {
+          cooler: {
+            id: 'cooler',
+            nameKey: 'services.golfCart.options.extras.options.cooler',
+            price: 10,
+          },
+          gpsNavigation: {
+            id: 'gpsNavigation',
+            nameKey: 'services.golfCart.options.extras.options.gpsNavigation',
+            price: 15,
+          },
+          premiumSound: {
+            id: 'premiumSound',
+            nameKey: 'services.golfCart.options.extras.options.premiumSound',
+            price: 20,
+          },
+          phoneCharger: {
+            id: 'phoneCharger',
+            nameKey: 'services.golfCart.options.extras.options.phoneCharger',
+            price: 5,
+          },
+        },
+      },
+    },
+    additionalInfoKeys: [
+      'services.golfCart.additionalInfo.1',
+      'services.golfCart.additionalInfo.2',
+      'services.golfCart.additionalInfo.3',
+    ],
+    specialRender: 'golfCart',
+    relatedServices: ['yacht-rental', 'catamaran-tour'],
+    tags: ['transportation', 'mobility', 'resort', 'exploration'],
+    availability: {
+      daysOfWeek: [1, 2, 3, 4, 5, 6, 7], // All days
+      hoursOfDay: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17], // 8 AM to 5 PM delivery
+    },
+    metaData: {
+      equipmentProvided: true,
+      languages: 'english,spanish',
+      driverRequirements: '18+,valid_license',
+      insurance: 'included',
+      support: '24/7',
+    },
+  },
+
   // MESSAGE
   [SERVICE_IDS.MASSAGE]: {
     id: SERVICE_IDS.MASSAGE,
