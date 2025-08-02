@@ -51,6 +51,7 @@ import {
   Moon,
   Camera,
 } from 'lucide-react';
+import LuxeYachtForm from '../../forms/LuxeYachtForm';
 
 // Types
 interface YachtSpecification {
@@ -127,7 +128,7 @@ const YACHT_DATA: Yacht[] = [
     price: 2500,
     priceUnit: 'day',
     description:
-      'The Fairline 43 yacht is one of the most popular and valued sports yachts in the yachting industry.',
+      'The Fairline 43 yacht is one of the most popular and valued sports yachts in the yachting industry. This elegant yacht is designed for both socializing and speed. On board this yacht you can take a private tour with a crew to Saona Island, Palmilla Beach or Catalina Island. On the way back you can enjoy the beautiful sunsets that the Dominican Republic has for you.',
     shortDescription: 'High-performance yacht with sleek design',
     mainImage:
       'https://res.cloudinary.com/michaelxk-com/image/upload/v1624139762/galeria/Drone_22_dedjhu.jpg',
@@ -176,7 +177,7 @@ const YACHT_DATA: Yacht[] = [
     price: 5500,
     priceUnit: 'day',
     description:
-      'The motor yacht, Acion Fly 56 is a fine example of Italian design.',
+      'The motor yacht, Aicon Fly  is a fine example of Italian design. It has two meticulously arranged cabins and a double room for children or guests. It also has a crew cabin, 3 bathrooms/showers, a living and dining room and a kitchen. It has air conditioning throughout the boat and its two 800Hp CAT diesel engines give it great power that will take you far to the places you have been dreaming of.',
     shortDescription: 'Ultra-luxury yacht with premium amenities',
     mainImage:
       'https://res.cloudinary.com/michaelxk-com/image/upload/v1624143983/nuestra%20flota/aicon-fly-56/Aicon%20fly%2056.jpg',
@@ -291,12 +292,21 @@ const EXPERIENCES: Experience[] = [
     description:
       "Caribbean's most breathtaking sunsets with champagne service.",
     image:
-      'https://res.cloudinary.com/michaelxk-com/image/upload/v1625505556/nuestra%20flota/fairline/aiconfly_htqnwr.jpg',
+      'https://images.pexels.com/photos/4664670/pexels-photo-4664670.jpeg?_gl=1*16vo5c5*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQwNDYyMDMkbzExJGcxJHQxNzU0MDQ2MzM5JGoyNCRsMCRoMA..',
     duration: '4 hours',
     highlights: ['Private chef', 'Champagne service', 'Couples massage'],
   },
   {
     id: '2',
+    title: 'Island Adventure',
+    description: 'Discover hidden coves and pristine beaches.',
+    image:
+      'https://res.cloudinary.com/michaelxk-com/image/upload/v1624139770/galeria/galeria3_fm9utt.jpg',
+    duration: 'Full day',
+    highlights: ['Multiple destinations', 'Water sports', 'Beach picnic'],
+  },
+  {
+    id: '3',
     title: 'Island Adventure',
     description: 'Discover hidden coves and pristine beaches.',
     image:
@@ -428,15 +438,6 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
                   <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000' />
                   <Calendar className='w-6 h-6' />
                   <span>Explore Collection</span>
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className='border-2 border-white/60 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center space-x-3 backdrop-blur-sm hover:bg-white/10 transition-all duration-300'
-                >
-                  <Play className='w-6 h-6' />
-                  <span>Watch Story</span>
                 </motion.button>
               </motion.div>
 
@@ -686,57 +687,6 @@ const RevolutionaryYachtGrid: React.FC<{
               </motion.button>
             ))}
           </div>
-
-          {/* View Controls */}
-          <div className='flex items-center space-x-4'>
-            <div className='flex bg-gray-100 rounded-2xl p-1'>
-              {[
-                {
-                  mode: 'grid',
-                  icon: (
-                    <div className='grid grid-cols-2 gap-1'>
-                      <div className='w-1 h-1 bg-current rounded-full'></div>
-                      <div className='w-1 h-1 bg-current rounded-full'></div>
-                      <div className='w-1 h-1 bg-current rounded-full'></div>
-                      <div className='w-1 h-1 bg-current rounded-full'></div>
-                    </div>
-                  ),
-                },
-                {
-                  mode: 'list',
-                  icon: (
-                    <div className='space-y-1'>
-                      <div className='h-1 w-4 bg-current rounded'></div>
-                      <div className='h-1 w-4 bg-current rounded'></div>
-                      <div className='h-1 w-4 bg-current rounded'></div>
-                    </div>
-                  ),
-                },
-              ].map((view) => (
-                <motion.button
-                  key={view.mode}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setViewMode(view.mode as any)}
-                  className={`p-3 rounded-xl transition-all duration-300 ${
-                    viewMode === view.mode
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {view.icon}
-                </motion.button>
-              ))}
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className='flex items-center space-x-2 px-4 py-3 bg-white border border-gray-200 rounded-2xl text-gray-700 hover:bg-gray-50 transition-all duration-300'
-            >
-              <Filter className='w-4 h-4' />
-              <span className='hidden sm:inline'>Advanced Filters</span>
-            </motion.button>
-          </div>
         </motion.div>
 
         {/* Yacht Grid */}
@@ -818,24 +768,6 @@ const ModernYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
           </motion.div>
         )}
 
-        {/* Actions */}
-        <div className='absolute top-4 right-4 flex space-x-2'>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className='w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all'
-          >
-            <Heart className='w-5 h-5' />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className='w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all'
-          >
-            <Share2 className='w-5 h-5' />
-          </motion.button>
-        </div>
-
         {/* Rating */}
         <motion.div
           whileHover={{ scale: 1.05 }}
@@ -895,10 +827,6 @@ const ModernYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
             <div className='text-sm text-gray-500'>per {yacht.priceUnit}</div>
           </div>
         </div>
-
-        <p className='text-gray-600 mb-6 line-clamp-2'>
-          {yacht.shortDescription}
-        </p>
 
         {/* Features */}
         <div className='grid grid-cols-2 gap-3 mb-6'>
@@ -1160,37 +1088,6 @@ const ImmersiveExperiences: React.FC = () => {
                   <h3 className='text-2xl font-bold mb-4 group-hover:text-cyan-400 transition-colors'>
                     {experience.title}
                   </h3>
-                  <p className='text-blue-100 mb-6 leading-relaxed'>
-                    {experience.description}
-                  </p>
-
-                  {/* Highlights */}
-                  <div className='space-y-3 mb-8'>
-                    {experience.highlights.map((highlight, idx) => (
-                      <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.2 + idx * 0.1 }}
-                        className='flex items-center space-x-3'
-                      >
-                        <CheckCircle className='w-5 h-5 text-emerald-400 flex-shrink-0' />
-                        <span className='text-blue-100'>{highlight}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* CTA */}
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className='w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-2xl font-bold flex items-center justify-center space-x-3 hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 relative overflow-hidden group'
-                  >
-                    <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000' />
-                    <span>Explore Experience</span>
-                    <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
-                  </motion.button>
                 </div>
               </div>
             </motion.div>
@@ -1447,12 +1344,12 @@ const UltraPremiumContact: React.FC<{ onBookingClick: () => void }> = ({
                   {
                     icon: <Phone className='w-5 h-5' />,
                     label: 'Phone',
-                    value: '+1 (555) 123-YACHT',
+                    value: '+1 (555) 000000',
                   },
                   {
                     icon: <Mail className='w-5 h-5' />,
                     label: 'Email',
-                    value: 'concierge@luxeyacht.com',
+                    value: 'info@luxpuntacana.com',
                   },
                   {
                     icon: <Clock className='w-5 h-5' />,
@@ -1462,7 +1359,7 @@ const UltraPremiumContact: React.FC<{ onBookingClick: () => void }> = ({
                   {
                     icon: <MapPin className='w-5 h-5' />,
                     label: 'Locations',
-                    value: 'Global Coverage',
+                    value: 'Premium Destinations',
                   },
                 ].map((contact, index) => (
                   <motion.div
@@ -1537,7 +1434,7 @@ const YachtModal: React.FC<{
 
   if (showBookingForm) {
     return (
-      <YachtBookingForm
+      <LuxeYachtForm
         yacht={yacht}
         onClose={onClose}
         onBack={() => setShowBookingForm(false)}
@@ -1962,14 +1859,6 @@ const YachtModal: React.FC<{
                 >
                   <Calendar className='w-6 h-6' />
                   <span>Book Experience</span>
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className='px-8 py-4 rounded-2xl text-blue-600 border-2 border-blue-600 font-bold text-lg hover:bg-blue-600 hover:text-white transition-all duration-300 flex items-center space-x-3'
-                >
-                  <Phone className='w-6 h-6' />
-                  <span>Call Concierge</span>
                 </motion.button>
               </div>
             </div>
@@ -2572,11 +2461,11 @@ const YachtBookingForm: React.FC<{
                 <div className='space-y-2 text-sm'>
                   <div className='flex items-center'>
                     <Phone className='w-4 h-4 mr-2 text-blue-600' />
-                    <span>+1 (555) 123-YACHT</span>
+                    <span>+1 (555) 0000000</span>
                   </div>
                   <div className='flex items-center'>
                     <Mail className='w-4 h-4 mr-2 text-blue-600' />
-                    <span>concierge@luxeyacht.com</span>
+                    <span>info@luxpuntacana.com</span>
                   </div>
                 </div>
               </motion.div>
