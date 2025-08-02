@@ -64,7 +64,7 @@ const LuxeYachtForm: React.FC<YachtFormProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentPrice, setCurrentPrice] = useState(service.price);
+  const [currentPrice, setCurrentPrice] = useState(service?.price ?? 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Yacht options based on the data from YachtServiceView
