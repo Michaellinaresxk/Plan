@@ -312,12 +312,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               </p>
 
               {/* Action Buttons - Compact */}
-              <div className='grid grid-cols-2 gap-3'>
+              <div className='grid grid-cols-1 gap-3'>
                 <Link href={`/${servicePath}/${service.id}`}>
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`${sizeConfig.button} flex items-center justify-center bg-black/60 backdrop-blur-md font-semibold text-white rounded-xl transition-all duration-300 border border-amber-500/30`}
+                    className={`${
+                      sizeConfig.button
+                    } flex items-center justify-center font-semibold rounded-xl transition-all duration-300 shadow-lg ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-black'
+                        : 'bg-gradient-to-r from-amber-500 to-orange-500 text-black'
+                    }`}
                   >
                     <span className='flex items-center'>
                       Details
@@ -325,31 +331,6 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     </span>
                   </motion.div>
                 </Link>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setIsModalOpen(true)}
-                  className={`${
-                    sizeConfig.button
-                  } flex items-center justify-center font-semibold rounded-xl transition-all duration-300 shadow-lg ${
-                    isSelected
-                      ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-black'
-                      : 'bg-gradient-to-r from-amber-500 to-orange-500 text-black'
-                  }`}
-                >
-                  {isSelected ? (
-                    <>
-                      <Check size={14} className='mr-1.5' />
-                      <span>Selected</span>
-                    </>
-                  ) : (
-                    <>
-                      <Plus size={14} className='mr-1.5' />
-                      <span>Book</span>
-                    </>
-                  )}
-                </motion.button>
               </div>
             </div>
 
@@ -395,7 +376,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         <div className='relative bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-400'>
           {/* Service Image */}
           <div className={`relative ${sizeConfig.imageHeight} overflow-hidden`}>
-            {/* Standard Badge */}
+            {/* Standard Badge
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -408,7 +389,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   Standard
                 </span>
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Loading State */}
             <motion.div
@@ -494,12 +475,18 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             </p>
 
             {/* Action Buttons */}
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 gap-3'>
               <Link href={`/${servicePath}/${service.id}`}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`${sizeConfig.button} flex items-center justify-center bg-gray-100 font-semibold text-gray-800 rounded-xl transition-all duration-300 border border-gray-200 hover:bg-gray-200`}
+                  className={`${
+                    sizeConfig.button
+                  } flex items-center justify-center font-semibold rounded-xl transition-all duration-300 shadow-md ${
+                    isSelected
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                  }`}
                 >
                   <span className='flex items-center'>
                     Details
@@ -508,7 +495,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 </motion.div>
               </Link>
 
-              <motion.button
+              {/* <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setIsModalOpen(true)}
@@ -531,12 +518,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     <span>Book</span>
                   </>
                 )}
-              </motion.button>
+              </motion.button> */}
             </div>
           </div>
 
           {/* Bottom accent */}
-          <div className='absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent' />
+          {/* <div className='absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent' /> */}
         </div>
       </motion.div>
 
