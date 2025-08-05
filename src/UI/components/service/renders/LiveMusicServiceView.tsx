@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Music,
   Users,
@@ -8,647 +8,720 @@ import {
   ArrowRight,
   CheckCircle,
   Play,
-  Volume2,
   Mic,
   Guitar,
   Piano,
   MapPin,
-  Zap,
-  Settings,
   Heart,
-  Waves,
   Crown,
   Calendar,
-  ArrowLeft,
+  Quote,
+  ChevronLeft,
+  ChevronRight,
+  Volume2,
 } from 'lucide-react';
-import BookingModal from '../../modal/BookingModal';
-import { BookingDate, Service } from '@/constants/formFields';
-import { useBooking } from '@/context/BookingContext';
-import { useTranslation } from '@/lib/i18n/client';
-import { ServiceData, ServiceExtendedDetails } from '@/types/services';
-import { useRouter } from 'next/navigation';
 
-// Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 60 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
+// Types
+interface Service {
+  id: string;
+  name: string;
+  price: number;
+}
 
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } },
-};
-
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
-};
-
-// Professional data structures
-const ENSEMBLE_OPTIONS = [
-  {
-    id: 'soloist-acoustic',
-    name: 'Acoustic Soloist',
-    description: 'Intimate acoustic guitar and vocals for romantic ambiance',
-    musicians: 1,
-    price: 180,
-    duration: '2-3 hours',
-    icon: <Mic className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=800',
-    instruments: ['Acoustic Guitar', 'Vocals'],
-    bestFor: ['Romantic dinners', 'Sunset sessions', 'Intimate gatherings'],
-    luxury: true,
-  },
-  {
-    id: 'soloist-piano',
-    name: 'Piano Virtuoso',
-    description: 'Elegant piano performances for sophisticated events',
-    musicians: 1,
-    price: 220,
-    duration: '2-3 hours',
-    icon: <Piano className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&q=80&w=800',
-    instruments: ['Grand Piano', 'Vocals'],
-    bestFor: ['Cocktail hours', 'Elegant dinners', 'Corporate events'],
-    luxury: true,
-  },
-  {
-    id: 'duo-acoustic',
-    name: 'Acoustic Duo',
-    description:
-      'Perfect harmony with guitar, vocals and complementary instruments',
-    musicians: 2,
-    price: 320,
-    duration: '2-4 hours',
-    icon: <Users className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=800',
-    instruments: ['Guitar & Vocals', 'Cajon/Percussion'],
-    bestFor: ['Wedding ceremonies', 'Private parties', 'Villa events'],
-    luxury: true,
-  },
-  {
-    id: 'trio-jazz',
-    name: 'Jazz Trio',
-    description: 'Sophisticated jazz ensemble for premium entertainment',
-    musicians: 3,
-    price: 480,
-    duration: '3-4 hours',
-    icon: <Music className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1571266028243-d220c9856446?auto=format&fit=crop&q=80&w=800',
-    instruments: ['Piano', 'Bass', 'Vocals'],
-    bestFor: ['Dinner parties', 'Corporate events', 'Luxury gatherings'],
-    featured: true,
-  },
-  {
-    id: 'quartet-premium',
-    name: 'Premium Quartet',
-    description: 'Full band experience with professional sound and lighting',
-    musicians: 4,
-    price: 680,
-    duration: '3-5 hours',
-    icon: <Guitar className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800',
-    instruments: ['Guitar', 'Bass', 'Drums', 'Vocals'],
-    bestFor: ['Large celebrations', 'Dance parties', 'Premium events'],
-    featured: true,
-  },
-  {
-    id: 'quintet-luxury',
-    name: 'Luxury Quintet',
-    description: 'Ultimate musical experience with full production setup',
-    musicians: 5,
-    price: 920,
-    duration: '4-6 hours',
-    icon: <Crown className='w-6 h-6' />,
-    image:
-      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800',
-    instruments: ['Full Band', 'Keys', 'Horns'],
-    bestFor: ['Luxury events', 'Grand celebrations', 'VIP experiences'],
-    premium: true,
-  },
-];
-
-const MUSIC_STYLES = [
-  {
-    id: 'acoustic-chill',
-    name: 'Acoustic & Chill',
-    description: 'Relaxing acoustic covers and original compositions',
-    vibe: 'Relaxing',
-    genres: ['Acoustic Pop', 'Folk', 'Indie'],
-    color: 'from-green-400 to-emerald-600',
-  },
-  {
-    id: 'jazz-lounge',
-    name: 'Jazz & Lounge',
-    description: 'Sophisticated jazz standards and modern interpretations',
-    vibe: 'Sophisticated',
-    genres: ['Jazz Standards', 'Smooth Jazz', 'Bossa Nova'],
-    color: 'from-purple-400 to-indigo-600',
-  },
-  {
-    id: 'latin-tropical',
-    name: 'Latin & Tropical',
-    description: 'Vibrant Latin rhythms and Caribbean influences',
-    vibe: 'Energetic',
-    genres: ['Salsa', 'Reggaeton', 'Bachata'],
-    color: 'from-orange-400 to-red-600',
-  },
-  {
-    id: 'pop-hits',
-    name: 'Pop & Contemporary',
-    description: 'Popular hits and contemporary covers everyone knows',
-    vibe: 'Familiar',
-    genres: ['Top 40', 'Pop Covers', 'Contemporary'],
-    color: 'from-blue-400 to-cyan-600',
-  },
-  {
-    id: 'rock-classics',
-    name: 'Rock & Classics',
-    description: 'Timeless rock anthems and classic favorites',
-    vibe: 'Dynamic',
-    genres: ['Classic Rock', 'Alternative', 'Rock Ballads'],
-    color: 'from-gray-400 to-gray-700',
-  },
-  {
-    id: 'world-fusion',
-    name: 'World & Fusion',
-    description: 'International sounds and cross-cultural musical fusion',
-    vibe: 'Unique',
-    genres: ['World Music', 'Fusion', 'Mediterranean'],
-    color: 'from-amber-400 to-yellow-600',
-  },
-];
+interface ServiceData {
+  metaData?: {
+    sessionDuration?: number;
+  };
+}
 
 interface LiveMusicServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
-  extendedDetails?: ServiceExtendedDetails;
-  primaryColor: string;
 }
 
-const LiveMusicServiceView = ({ service }: LiveMusicServiceViewProps) => {
-  const router = useRouter();
-  const { t } = useTranslation();
-  const { bookService } = useBooking();
+// Constants
+const MUSIC_STYLES = [
+  {
+    id: 'acoustic',
+    title: 'Acoustic Sessions',
+    description: 'Intimate acoustic performances perfect for romantic moments',
+    image:
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=1400',
+    vibe: 'Intimate',
+    price: 'From $280',
+  },
+  {
+    id: 'jazz',
+    title: 'Jazz Ensemble',
+    description: 'Sophisticated jazz performances for elegant gatherings',
+    image:
+      'https://images.unsplash.com/photo-1571266028243-d220c9856446?auto=format&fit=crop&q=80&w=800',
+    vibe: 'Sophisticated',
+    price: 'From $480',
+  },
+  {
+    id: 'classical',
+    title: 'Classical Virtuoso',
+    description: 'Refined classical music for distinguished occasions',
+    image:
+      'https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&q=80&w=800',
+    vibe: 'Elegant',
+    price: 'From $380',
+  },
+  {
+    id: 'contemporary',
+    title: 'Contemporary Hits',
+    description: 'Modern covers and popular songs everyone will love',
+    image:
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800',
+    vibe: 'Dynamic',
+    price: 'From $520',
+  },
+  {
+    id: 'latin',
+    title: 'Latin Rhythms',
+    description: 'Vibrant Latin music to energize your celebration',
+    image:
+      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=800',
+    vibe: 'Energetic',
+    price: 'From $420',
+  },
+  {
+    id: 'world',
+    title: 'World Fusion',
+    description: 'International sounds for a unique musical journey',
+    image:
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2940&auto=format&fit=crop',
+    vibe: 'Unique',
+    price: 'From $450',
+  },
+] as const;
+
+const ENSEMBLE_OPTIONS = [
+  {
+    id: 'soloist',
+    title: 'Solo Performer',
+    description: 'One exceptional musician for intimate settings',
+    musicians: 1,
+    duration: '2-3 hours',
+    price: 280,
+    image:
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=800',
+    perfect: 'Romantic dinners, intimate gatherings',
+  },
+  {
+    id: 'duo',
+    title: 'Musical Duo',
+    description: 'Perfect harmony with two talented musicians',
+    musicians: 2,
+    duration: '2-4 hours',
+    price: 420,
+    image:
+      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=800',
+    perfect: 'Wedding ceremonies, private parties',
+  },
+  {
+    id: 'trio',
+    title: 'Professional Trio',
+    description: 'Rich, full sound with three skilled performers',
+    musicians: 3,
+    duration: '3-4 hours',
+    price: 680,
+    image:
+      'https://images.unsplash.com/photo-1571266028243-d220c9856446?auto=format&fit=crop&q=80&w=800',
+    perfect: 'Dinner parties, corporate events',
+    popular: true,
+  },
+  {
+    id: 'quartet',
+    title: 'Complete Band',
+    description: 'Full band experience with professional production',
+    musicians: 4,
+    duration: '3-5 hours',
+    price: 920,
+    image:
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800',
+    perfect: 'Large celebrations, dance parties',
+    premium: true,
+  },
+] as const;
+
+const SUCCESS_STORIES = [
+  {
+    name: 'Isabella & Marco',
+    occasion: 'Wedding Reception',
+    result: 'Magical evening celebration',
+    quote:
+      'The jazz trio created the perfect atmosphere for our wedding. Every song was beautifully performed, and our guests are still talking about the incredible music.',
+    image:
+      'https://images.unsplash.com/photo-1571266028243-d220c9856446?auto=format&fit=crop&q=80&w=800',
+    couple:
+      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2940&auto=format&fit=crop',
+  },
+  {
+    name: 'David Chen',
+    occasion: 'Corporate Gala',
+    result: 'Unforgettable evening',
+    quote:
+      'The acoustic duo elevated our corporate event to something truly special. Professional, talented, and exactly what we needed for our VIP clients.',
+    image:
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=800',
+    couple:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2940&auto=format&fit=crop',
+  },
+  {
+    name: 'Sophie & James',
+    occasion: 'Anniversary Dinner',
+    result: 'Perfect romantic ambiance',
+    quote:
+      'The solo pianist made our 25th anniversary dinner absolutely perfect. The music was sophisticated yet intimate, exactly what we dreamed of.',
+    image:
+      'https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&q=80&w=800',
+    couple:
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2940&auto=format&fit=crop',
+  },
+] as const;
+
+const WHAT_INCLUDED = [
+  'Professional musicians with international experience',
+  'High-quality sound equipment and setup',
+  'Custom song selection and arrangements',
+  'Professional sound check and testing',
+  'Flexible performance duration',
+  'Complete setup and breakdown service',
+] as const;
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+};
+
+const staggerChildren = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+// Main Component
+const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
+  service,
+  serviceData,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentStory, setCurrentStory] = useState(0);
 
-  const [selectedStyle, setSelectedStyle] = useState('');
-  const [selectedEnsemble, setSelectedEnsemble] = useState('soloist-acoustic');
+  const handleBooking = () => {
+    setIsModalOpen(true);
+    // Implement booking logic
+  };
 
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-    setIsModalOpen(false);
+  const nextStory = () => {
+    setCurrentStory((prev) => (prev + 1) % SUCCESS_STORIES.length);
+  };
+
+  const prevStory = () => {
+    setCurrentStory(
+      (prev) => (prev - 1 + SUCCESS_STORIES.length) % SUCCESS_STORIES.length
+    );
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50'>
+    <div className='min-h-screen bg-zinc-900'>
+      {/* Custom CSS for hiding scrollbar */}
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+
       {/* Hero Section */}
-      <motion.div
-        className='relative overflow-hidden'
-        initial='hidden'
-        animate='visible'
-        variants={fadeInUp}
-      >
-        <div className='relative h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black'>
-          <div className='absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40' />
+      <HeroSection onBookClick={handleBooking} />
 
-          {/* Background Video Placeholder */}
-          <div
-            className='absolute inset-0 bg-cover bg-center opacity-40'
-            style={{
-              backgroundImage:
-                'url(https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=1920)',
-            }}
-          />
+      {/* Music Styles Gallery */}
+      <MusicStylesSection />
 
-          {/* Floating Music Notes */}
-          <motion.div
-            className='absolute top-20 right-20 w-16 h-16 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center'
-            animate={{ y: [-10, 10, -10], rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 8, repeat: Infinity }}
-          >
-            <Music className='w-8 h-8 text-white' />
-          </motion.div>
+      {/* Ensemble Options */}
+      <EnsembleSection />
 
-          <motion.div
-            className='absolute bottom-32 left-16 w-12 h-12 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 flex items-center justify-center'
-            animate={{ y: [10, -10, 10], rotate: [0, -5, 5, 0] }}
-            transition={{ duration: 6, repeat: Infinity, delay: 2 }}
-          >
-            <Waves className='w-6 h-6 text-white' />
-          </motion.div>
+      {/* Success Stories */}
+      <SuccessStoriesSection
+        currentStory={currentStory}
+        onNext={nextStory}
+        onPrev={prevStory}
+      />
 
-          <div className='relative z-10 h-full flex items-center justify-center text-center px-8'>
-            <div className='max-w-6xl space-y-8'>
-              <motion.h1
-                className='text-7xl md:text-8xl lg:text-9xl font-bold text-white leading-tight'
-                variants={fadeInUp}
-              >
-                Live Music
-                <br />
-                <span className='bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent'>
-                  Perfection
-                </span>
-              </motion.h1>
+      {/* What's Included */}
+      <IncludedSection />
 
-              <motion.p
-                className='text-2xl md:text-3xl text-white/80 max-w-4xl mx-auto leading-relaxed'
-                variants={fadeInUp}
-              >
-                Transform your celebration with world-class musicians and
-                unforgettable performances
-              </motion.p>
-
-              <motion.div
-                className='flex flex-col sm:flex-row gap-6 justify-center pt-8'
-                variants={stagger}
-              >
-                <motion.button
-                  onClick={() => setIsModalOpen(true)}
-                  className='group bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
-                  variants={scaleIn}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Play className='w-6 h-6' />
-                  Book Experience
-                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
-                </motion.button>
-              </motion.div>
-
-              {/* Quick Stats */}
-              <motion.div
-                className='flex flex-wrap justify-center gap-8 pt-12 text-white/80'
-                variants={stagger}
-              >
-                <div className='flex items-center bg-white/5 backdrop-blur-sm px-6 py-4 rounded-xl border border-white/10'>
-                  <Users className='w-6 h-6 mr-3' />
-                  <div className='text-left'>
-                    <div className='font-bold text-white'>1-5 Musicians</div>
-                    <div className='text-sm'>Any ensemble size</div>
-                  </div>
-                </div>
-                <div className='flex items-center bg-white/5 backdrop-blur-sm px-6 py-4 rounded-xl border border-white/10'>
-                  <Clock className='w-6 h-6 mr-3' />
-                  <div className='text-left'>
-                    <div className='font-bold text-white'>2-6 Hours</div>
-                    <div className='text-sm'>Flexible duration</div>
-                  </div>
-                </div>
-                <div className='flex items-center bg-white/5 backdrop-blur-sm px-6 py-4 rounded-xl border border-white/10'>
-                  <MapPin className='w-6 h-6 mr-3' />
-                  <div className='text-left'>
-                    <div className='font-bold text-white'>Any Location</div>
-                    <div className='text-sm'>Villa, beach, venue</div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      <div className='max-w-7xl mx-auto space-y-20 py-20'>
-        {/* Ensemble Selection */}
-
-        <motion.div
-          className='px-8'
-          initial='hidden'
-          animate='visible'
-          variants={stagger}
-        >
-          <div className='text-center mb-16'>
-            <motion.h2
-              className='text-6xl font-bold bg-gradient-to-r from-slate-800 to-gray-600 bg-clip-text text-transparent mb-6'
-              variants={fadeInUp}
-            >
-              Choose Your Ensemble
-            </motion.h2>
-            <motion.p
-              className='text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed'
-              variants={fadeInUp}
-            >
-              From intimate acoustic sessions to full luxury productions
-            </motion.p>
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-            {ENSEMBLE_OPTIONS.map((ensemble, index) => (
-              <motion.div
-                key={ensemble.id}
-                className={`relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer group ${
-                  selectedEnsemble === ensemble.id
-                    ? 'ring-4 ring-amber-500 shadow-2xl scale-105'
-                    : ''
-                } ${ensemble.premium ? 'border-2 border-amber-200' : ''}`}
-                onClick={() => setSelectedEnsemble(ensemble.id)}
-                variants={fadeInUp}
-                whileHover={{ y: -8 }}
-              >
-                {/* Premium Badge */}
-                {ensemble.premium && (
-                  <div className='absolute top-4 left-4 z-20 bg-gradient-to-r from-amber-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1'>
-                    <Crown className='w-3 h-3' />
-                    LUXURY
-                  </div>
-                )}
-
-                {/* Featured Badge */}
-                {ensemble.featured && (
-                  <div className='absolute top-4 left-4 z-20 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1'>
-                    <Star className='w-3 h-3' />
-                    POPULAR
-                  </div>
-                )}
-
-                <div className='relative h-64 overflow-hidden'>
-                  <img
-                    src={ensemble.image}
-                    alt={ensemble.name}
-                    className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
-
-                  {/* Ensemble Icon */}
-                  <div className='absolute top-4 right-4'>
-                    <div className='w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 text-white'>
-                      {ensemble.icon}
-                    </div>
-                  </div>
-
-                  {/* Selection Indicator */}
-                  {selectedEnsemble === ensemble.id && (
-                    <motion.div
-                      className='absolute inset-0 bg-amber-500/20 border-4 border-amber-500 rounded-3xl'
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
-
-                  {/* Bottom Info */}
-                  <div className='absolute bottom-4 left-4 right-4 text-white'>
-                    <h3 className='text-xl font-bold mb-1'>{ensemble.name}</h3>
-                    <p className='text-sm text-white/90 mb-2'>
-                      {ensemble.musicians} musician
-                      {ensemble.musicians > 1 ? 's' : ''} • {ensemble.duration}
-                    </p>
-                    <div className='flex items-center justify-between'>
-                      <span className='text-2xl font-bold'>
-                        ${ensemble.price}
-                      </span>
-                      <div className='flex items-center bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full text-xs'>
-                        <Clock className='w-3 h-3 mr-1' />
-                        {ensemble.duration}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='p-6'>
-                  <p className='text-gray-600 mb-4 leading-relaxed'>
-                    {ensemble.description}
-                  </p>
-
-                  <div className='space-y-3'>
-                    <div>
-                      <h5 className='font-bold text-gray-800 text-xs uppercase tracking-wide mb-2'>
-                        Instruments
-                      </h5>
-                      <div className='flex flex-wrap gap-1'>
-                        {ensemble.instruments.map((instrument, idx) => (
-                          <span
-                            key={idx}
-                            className='text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full'
-                          >
-                            {instrument}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h5 className='font-bold text-gray-800 text-xs uppercase tracking-wide mb-2'>
-                        Perfect For
-                      </h5>
-                      <div className='flex flex-wrap gap-1'>
-                        {ensemble.bestFor.slice(0, 2).map((use, idx) => (
-                          <span
-                            key={idx}
-                            className='text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full'
-                          >
-                            {use}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Music Styles */}
-        <motion.div
-          className='px-8'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className=''>
-            <div className='text-center mb-16'>
-              <h2 className='text-5xl font-bold text-gray-800 mb-6'>
-                Musical Styles & Vibes
-              </h2>
-              <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
-                Choose the perfect musical atmosphere for your celebration
-              </p>
-            </div>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-              {MUSIC_STYLES.map((style, index) => (
-                <motion.div
-                  key={style.id}
-                  className={`relative p-8 rounded-2xl cursor-pointer transition-all duration-300 group overflow-hidden ${
-                    selectedStyle === style.id
-                      ? 'ring-4 ring-amber-500 shadow-xl scale-105'
-                      : 'hover:shadow-lg hover:scale-102'
-                  }`}
-                  onClick={() => setSelectedStyle(style.id)}
-                  variants={fadeInUp}
-                  whileHover={{ y: -4 }}
-                >
-                  {/* Gradient Background */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${style.color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}
-                  />
-
-                  <div className='relative z-10'>
-                    <div className='flex items-center justify-between mb-4'>
-                      <h3 className='text-xl font-bold text-gray-800'>
-                        {style.name}
-                      </h3>
-                      <div className='text-sm font-bold bg-gray-100 text-gray-600 px-3 py-1 rounded-full'>
-                        {style.vibe}
-                      </div>
-                    </div>
-
-                    <p className='text-gray-600 mb-4 leading-relaxed'>
-                      {style.description}
-                    </p>
-
-                    <div className='flex flex-wrap gap-2'>
-                      {style.genres.map((genre, idx) => (
-                        <span
-                          key={idx}
-                          className='text-xs bg-white border border-gray-200 text-gray-600 px-2 py-1 rounded'
-                        >
-                          {genre}
-                        </span>
-                      ))}
-                    </div>
-
-                    {selectedStyle === style.id && (
-                      <motion.div
-                        className='absolute top-4 right-4 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center'
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <CheckCircle className='w-4 h-4 text-white' />
-                      </motion.div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Experience Timeline */}
-        <motion.div
-          className='px-8'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='bg-gradient-to-br from-slate-800 to-gray-900 rounded-3xl p-16 text-white'>
-            <div className='text-center mb-16'>
-              <h2 className='text-5xl font-bold mb-6'>
-                The Complete Experience
-              </h2>
-              <p className='text-xl opacity-90 max-w-3xl mx-auto'>
-                From consultation to performance, every detail is carefully
-                crafted
-              </p>
-            </div>
-
-            <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
-              {[
-                {
-                  step: '01',
-                  title: 'Consultation',
-                  desc: 'Discuss your vision and preferences',
-                  icon: <Settings className='w-8 h-8' />,
-                },
-                {
-                  step: '02',
-                  title: 'Customization',
-                  desc: 'Tailor the perfect musical program',
-                  icon: <Heart className='w-8 h-8' />,
-                },
-                {
-                  step: '03',
-                  title: 'Setup',
-                  desc: 'Professional equipment and sound check',
-                  icon: <Zap className='w-8 h-8' />,
-                },
-                {
-                  step: '04',
-                  title: 'Performance',
-                  desc: 'Unforgettable live music experience',
-                  icon: <Music className='w-8 h-8' />,
-                },
-              ].map((step, index) => (
-                <motion.div
-                  key={index}
-                  className='text-center'
-                  variants={fadeInUp}
-                >
-                  <div className='w-20 h-20 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 font-bold text-2xl'>
-                    {step.step}
-                  </div>
-                  <div className='mb-4 text-amber-400'>{step.icon}</div>
-                  <h3 className='text-xl font-bold mb-3'>{step.title}</h3>
-                  <p className='text-white/80 leading-relaxed'>{step.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Final CTA */}
-        <motion.div
-          className='px-8'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='relative overflow-hidden rounded-3xl'>
-            <div className='absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500' />
-
-            <div className='relative z-10 p-20 text-center text-white'>
-              <motion.h2
-                className='text-6xl md:text-7xl font-bold mb-8'
-                variants={fadeInUp}
-              >
-                Ready to Begin?
-              </motion.h2>
-              <motion.p
-                className='text-2xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
-                variants={fadeInUp}
-              >
-                Let's create an unforgettable musical experience that will be
-                remembered for years to come.
-              </motion.p>
-
-              <motion.div
-                className='flex flex-col sm:flex-row gap-6 justify-center items-center'
-                variants={fadeInUp}
-              >
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className='group bg-white text-orange-600 hover:bg-gray-100 px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
-                >
-                  <Calendar className='w-6 h-6' />
-                  Book Your Experience
-                  <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
-                </button>
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-      {/* Booking Modal */}
-      {isModalOpen && (
-        <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleBookingConfirm}
-          service={service}
-        />
-      )}
+      {/* Experience Banner */}
+      <ExperienceBannerSection onBookClick={handleBooking} />
     </div>
   );
 };
+
+// Hero Section
+const HeroSection: React.FC<{
+  onBookClick: () => void;
+}> = ({ onBookClick }) => (
+  <motion.section
+    className='relative h-screen overflow-hidden'
+    initial='hidden'
+    animate='visible'
+    variants={fadeInUp}
+  >
+    {/* Background */}
+    <div className='absolute inset-0'>
+      <img
+        src='https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&q=80&w=1400'
+        alt='Live music performance'
+        className='w-full h-full object-cover'
+      />
+      <div className='absolute inset-0 bg-zinc-900/60'></div>
+    </div>
+
+    {/* Floating Music Elements */}
+    <motion.div
+      className='absolute top-20 right-20 w-16 h-16 bg-amber-500/20 backdrop-blur-sm rounded-full border border-amber-500/30 flex items-center justify-center'
+      animate={{ y: [-10, 10, -10], rotate: [0, 5, -5, 0] }}
+      transition={{ duration: 8, repeat: Infinity }}
+    >
+      <Music className='w-8 h-8 text-amber-400' />
+    </motion.div>
+
+    <motion.div
+      className='absolute bottom-32 left-16 w-12 h-12 bg-amber-500/20 backdrop-blur-sm rounded-full border border-amber-500/30 flex items-center justify-center'
+      animate={{ y: [10, -10, 10] }}
+      transition={{ duration: 6, repeat: Infinity, delay: 2 }}
+    >
+      <Volume2 className='w-6 h-6 text-amber-400' />
+    </motion.div>
+
+    {/* Content */}
+    <div className='relative z-10 h-full flex items-center justify-center text-center px-6'>
+      <div className='max-w-5xl space-y-8'>
+        <motion.div variants={fadeInUp}>
+          <span className='inline-block px-6 py-2 bg-amber-500/20 backdrop-blur-sm rounded-full text-amber-300 text-sm font-medium border border-amber-500/30'>
+            Premium Live Music Experience
+          </span>
+        </motion.div>
+
+        <motion.h1
+          variants={fadeInUp}
+          className='text-6xl md:text-8xl font-light text-white leading-tight'
+        >
+          Live Music
+          <span className='block font-bold text-amber-400'>Perfection</span>
+        </motion.h1>
+
+        <motion.p
+          variants={fadeInUp}
+          className='text-xl md:text-2xl text-zinc-300 font-light max-w-3xl mx-auto leading-relaxed'
+        >
+          Transform your celebration with world-class musicians and
+          unforgettable performances tailored to your vision
+        </motion.p>
+
+        {/* Quick Stats */}
+        <motion.div
+          variants={staggerChildren}
+          className='flex flex-wrap justify-center gap-8 pt-8'
+        >
+          <StatItem icon={Users} value='1-4' label='Musicians' />
+          <StatItem icon={Clock} value='2-5' label='Hours' />
+          <StatItem icon={MapPin} value='Any' label='Location' />
+        </motion.div>
+
+        <motion.button
+          variants={fadeInUp}
+          onClick={onBookClick}
+          className='inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-600 text-zinc-900 px-10 py-4 rounded-full font-semibold text-lg transition-all duration-200 hover:scale-[1.02]'
+        >
+          <Play className='w-5 h-5' />
+          Book Your Experience
+        </motion.button>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Stat Item Component
+const StatItem: React.FC<{
+  icon: React.ComponentType<any>;
+  value: string;
+  label: string;
+}> = ({ icon: Icon, value, label }) => (
+  <motion.div variants={fadeInUp} className='flex items-center gap-3'>
+    <div className='w-10 h-10 bg-amber-500/20 backdrop-blur-sm rounded-lg flex items-center justify-center border border-amber-500/30'>
+      <Icon className='w-5 h-5 text-amber-400' />
+    </div>
+    <div>
+      <p className='font-bold text-white'>{value}</p>
+      <p className='text-sm text-zinc-400'>{label}</p>
+    </div>
+  </motion.div>
+);
+
+// Music Styles Section
+const MusicStylesSection: React.FC = () => (
+  <motion.section
+    className='py-20 px-6 bg-zinc-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-7xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-12 md:mb-16'>
+        <h2 className='text-3xl md:text-4xl lg:text-5xl font-light text-zinc-900 mb-4 md:mb-6'>
+          Musical Experiences
+        </h2>
+        <p className='text-lg md:text-xl text-zinc-600 max-w-2xl mx-auto'>
+          Choose the perfect musical atmosphere for your celebration
+        </p>
+      </motion.div>
+
+      {/* Desktop Grid */}
+      <div className='hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8'>
+        {MUSIC_STYLES.map((style, index) => (
+          <MusicStyleCard key={style.id} style={style} />
+        ))}
+      </div>
+
+      {/* Mobile Horizontal Scroll */}
+      <div className='md:hidden'>
+        <div className='overflow-x-auto scrollbar-hide'>
+          <div
+            className='flex gap-4 pb-4 px-4 scroll-smooth'
+            style={{ width: 'max-content' }}
+          >
+            {MUSIC_STYLES.map((style, index) => (
+              <div key={style.id} className='w-64 flex-shrink-0'>
+                <MusicStyleCard style={style} />
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Scroll indicator */}
+        <div className='flex justify-center mt-4'>
+          <div className='flex gap-2'>
+            {MUSIC_STYLES.map((_, index) => (
+              <div
+                key={index}
+                className='w-2 h-2 bg-zinc-300 rounded-full'
+              ></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Music Style Card
+const MusicStyleCard: React.FC<{
+  style: (typeof MUSIC_STYLES)[0];
+}> = ({ style }) => (
+  <motion.div
+    variants={fadeInUp}
+    className='group relative aspect-[3/4] md:aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer'
+  >
+    <img
+      src={style.image}
+      alt={style.title}
+      className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
+    />
+    <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent'></div>
+
+    {/* Vibe badge */}
+    <div className='absolute top-3 md:top-4 right-3 md:right-4 bg-amber-500/90 text-zinc-900 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium'>
+      {style.vibe}
+    </div>
+
+    {/* Content */}
+    <div className='absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 text-white'>
+      <h3 className='text-xl md:text-2xl font-bold mb-2'>{style.title}</h3>
+      <p className='text-zinc-300 text-xs md:text-sm mb-3 md:mb-4 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 line-clamp-2'>
+        {style.description}
+      </p>
+      <div className='flex items-center justify-between'>
+        <span className='text-amber-400 font-semibold text-sm md:text-base'>
+          {style.price}
+        </span>
+        <ArrowRight className='w-4 md:w-5 h-4 md:h-5 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300' />
+      </div>
+    </div>
+  </motion.div>
+);
+
+// Ensemble Section
+const EnsembleSection: React.FC = () => (
+  <motion.section
+    className='py-20 px-6 bg-zinc-100'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-12 md:mb-16'>
+        <h2 className='text-3xl md:text-4xl lg:text-5xl font-light text-zinc-900 mb-4 md:mb-6'>
+          Choose Your Ensemble
+        </h2>
+        <p className='text-lg md:text-xl text-zinc-600'>
+          From intimate solos to full band experiences
+        </p>
+      </motion.div>
+
+      <div className='grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-8'>
+        {ENSEMBLE_OPTIONS.map((ensemble, index) => (
+          <EnsembleCard key={ensemble.id} ensemble={ensemble} />
+        ))}
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Ensemble Card
+const EnsembleCard: React.FC<{
+  ensemble: (typeof ENSEMBLE_OPTIONS)[0];
+}> = ({ ensemble }) => (
+  <motion.div
+    variants={fadeInUp}
+    className='bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group'
+  >
+    <div className='relative h-48 md:h-64 overflow-hidden'>
+      <img
+        src={ensemble.image}
+        alt={ensemble.title}
+        className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
+      />
+      <div className='absolute inset-0 bg-zinc-900/30'></div>
+
+      {/* Badges */}
+      {ensemble.popular && (
+        <div className='absolute top-2 md:top-4 left-2 md:left-4 bg-blue-500 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium flex items-center gap-1'>
+          <Star className='w-3 h-3' />
+          <span className='hidden sm:inline'>Popular</span>
+        </div>
+      )}
+
+      {ensemble.premium && (
+        <div className='absolute top-2 md:top-4 left-2 md:left-4 bg-amber-500 text-zinc-900 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium flex items-center gap-1'>
+          <Crown className='w-3 h-3' />
+          <span className='hidden sm:inline'>Premium</span>
+        </div>
+      )}
+
+      {/* Price */}
+      <div className='absolute bottom-2 md:bottom-4 right-2 md:right-4 bg-white/90 backdrop-blur-sm text-zinc-900 px-2 md:px-4 py-1 md:py-2 rounded-full font-bold text-sm md:text-base'>
+        ${ensemble.price}
+      </div>
+    </div>
+
+    <div className='p-4 md:p-6'>
+      <div className='flex items-start justify-between mb-3 md:mb-4'>
+        <h3 className='text-lg md:text-xl font-bold text-zinc-900 leading-tight'>
+          {ensemble.title}
+        </h3>
+        <div className='text-xs md:text-sm text-zinc-500 ml-2 flex-shrink-0'>
+          {ensemble.musicians} {ensemble.musicians === 1 ? 'mus.' : 'mus.'}
+        </div>
+      </div>
+
+      <p className='text-zinc-600 mb-3 md:mb-4 text-sm md:text-base leading-relaxed'>
+        {ensemble.description}
+      </p>
+
+      <div className='space-y-2 md:space-y-3'>
+        <div className='flex items-center gap-2 text-xs md:text-sm text-zinc-500'>
+          <Clock className='w-3 md:w-4 h-3 md:h-4' />
+          {ensemble.duration}
+        </div>
+        <div className='text-xs md:text-sm text-zinc-600 leading-relaxed'>
+          <span className='font-medium'>Perfect for:</span>
+          <span className='block sm:hidden mt-1'>{ensemble.perfect}</span>
+          <span className='hidden sm:inline ml-1'>{ensemble.perfect}</span>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+// Success Stories Section
+const SuccessStoriesSection: React.FC<{
+  currentStory: number;
+  onNext: () => void;
+  onPrev: () => void;
+}> = ({ currentStory, onNext, onPrev }) => {
+  const story = SUCCESS_STORIES[currentStory];
+
+  return (
+    <motion.section
+      className='py-20 px-6 bg-zinc-900'
+      initial='hidden'
+      whileInView='visible'
+      viewport={{ once: true }}
+      variants={fadeInUp}
+    >
+      <div className='max-w-6xl mx-auto'>
+        <div className='text-center mb-16'>
+          <h2 className='text-4xl md:text-5xl font-light text-white mb-6'>
+            Unforgettable Moments
+          </h2>
+          <p className='text-xl text-zinc-400'>
+            Real celebrations made magical with live music
+          </p>
+        </div>
+
+        <div className='bg-zinc-800 rounded-3xl overflow-hidden'>
+          <div className='grid lg:grid-cols-2'>
+            {/* Image */}
+            <div className='relative h-96 lg:h-auto'>
+              <img
+                src={story.image}
+                alt={story.occasion}
+                className='w-full h-full object-cover'
+              />
+              <div className='absolute inset-0 bg-zinc-900/40'></div>
+            </div>
+
+            {/* Content */}
+            <div className='p-12 flex flex-col justify-center text-white'>
+              <Quote className='w-12 h-12 text-amber-400 mb-6' />
+              <blockquote className='text-xl leading-relaxed mb-8'>
+                "{story.quote}"
+              </blockquote>
+
+              <div className='flex items-center gap-4 mb-8'>
+                <img
+                  src={story.couple}
+                  alt={story.name}
+                  className='w-12 h-12 rounded-full object-cover'
+                />
+                <div>
+                  <h3 className='font-bold text-lg'>{story.name}</h3>
+                  <p className='text-zinc-400'>{story.occasion}</p>
+                  <p className='text-amber-400 text-sm'>{story.result}</p>
+                </div>
+              </div>
+
+              {/* Navigation */}
+              <div className='flex items-center justify-between'>
+                <div className='flex gap-2'>
+                  {SUCCESS_STORIES.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-3 h-3 rounded-full transition-colors ${
+                        index === currentStory ? 'bg-amber-400' : 'bg-zinc-600'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className='flex gap-2'>
+                  <button
+                    onClick={onPrev}
+                    className='w-10 h-10 bg-zinc-700 hover:bg-zinc-600 rounded-full flex items-center justify-center transition-colors'
+                  >
+                    <ChevronLeft className='w-5 h-5' />
+                  </button>
+                  <button
+                    onClick={onNext}
+                    className='w-10 h-10 bg-zinc-700 hover:bg-zinc-600 rounded-full flex items-center justify-center transition-colors'
+                  >
+                    <ChevronRight className='w-5 h-5' />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.section>
+  );
+};
+
+// What's Included Section
+const IncludedSection: React.FC = () => (
+  <motion.section
+    className='py-20 px-6 bg-zinc-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-4xl mx-auto'>
+      <div className='text-center mb-16'>
+        <h2 className='text-4xl font-light text-zinc-900 mb-6'>
+          Complete Musical Experience
+        </h2>
+        <p className='text-xl text-zinc-600'>
+          Everything included for a flawless performance
+        </p>
+      </div>
+
+      <div className='bg-white rounded-2xl p-8 shadow-sm'>
+        <div className='grid md:grid-cols-2 gap-6'>
+          {WHAT_INCLUDED.map((item, index) => (
+            <div key={index} className='flex items-center gap-4'>
+              <div className='w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0'>
+                <CheckCircle className='w-4 h-4 text-amber-600' />
+              </div>
+              <span className='text-zinc-700'>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Experience Banner Section
+const ExperienceBannerSection: React.FC<{
+  onBookClick: () => void;
+}> = ({ onBookClick }) => (
+  <motion.section
+    className='py-20 px-6 relative overflow-hidden'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='absolute inset-0'>
+      <img
+        src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=800'
+        alt='Live music performance'
+        className='w-full h-full object-cover'
+      />
+      <div className='absolute inset-0 bg-zinc-900/70'></div>
+    </div>
+
+    <div className='relative z-10 max-w-4xl mx-auto text-center text-white'>
+      <h2 className='text-4xl md:text-6xl font-light mb-6'>
+        Music That Moves
+        <span className='block font-bold text-amber-400'>Hearts & Souls</span>
+      </h2>
+      <p className='text-xl mb-8 max-w-2xl mx-auto text-zinc-300 leading-relaxed'>
+        Our musicians don't just play music – they create emotional experiences
+        that become the soundtrack to your most precious memories.
+      </p>
+
+      <button
+        onClick={onBookClick}
+        className='inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-600 text-zinc-900 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-200 hover:scale-[1.02]'
+      >
+        <Heart className='w-5 h-5' />
+        Create Musical Magic
+      </button>
+    </div>
+  </motion.section>
+);
 
 export default LiveMusicServiceView;

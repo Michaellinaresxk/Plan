@@ -41,11 +41,11 @@ export default function PrivacyPolicyPage() {
 
               <h2>1. Introduction</h2>
               <p>
-                At RelaxInn Vacation Homes ("we," "our," or "us"), we respect
-                your privacy and are committed to protecting the personal
-                information you share with us. This Privacy Policy explains how
-                we collect, use, disclose, and safeguard your information when
-                you visit our website or use our services.
+                At Lux Punta Cana ("we," "our," or "us"), we respect your
+                privacy and are committed to protecting the personal information
+                you share with us. This Privacy Policy explains how we collect,
+                use, disclose, and safeguard your information when you visit our
+                website or use our services.
               </p>
 
               <h2>2. Information We Collect</h2>
@@ -55,7 +55,6 @@ export default function PrivacyPolicyPage() {
               </p>
               <ul>
                 <li>Register for an account</li>
-                <li>Book a vacation home or service</li>
                 <li>Contact our customer service</li>
                 <li>Subscribe to our newsletter</li>
                 <li>Participate in surveys or promotions</li>
@@ -162,11 +161,8 @@ export default function PrivacyPolicyPage() {
                 or our data practices, please contact us at:
               </p>
               <p>
-                Email: privacy@relaxinn.com
+                Email: info@luxpuntacana.com
                 <br />
-                Phone: +1 (809) 555-1234
-                <br />
-                Address: Puntacana Resort & Club, Punta Cana, Dominican Republic
               </p>
             </div>
           </motion.div>

@@ -1,690 +1,531 @@
 import React, { useState } from 'react';
-import { useTranslation } from '@/lib/i18n/client';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useBooking } from '@/context/BookingContext';
-import { BookingDate } from '@/types/type';
-import BookingModal from '../../modal/BookingModal';
 import {
-  Palette,
   Heart,
   ArrowRight,
   CheckCircle,
   PartyPopper,
-  Clock,
-  MapPin,
-  AlertTriangle,
   Sparkles,
   Camera,
   Star,
-  Users,
-  Gift,
-  HomeIcon,
   MessageCircle,
+  Gift,
+  Calendar,
+  MapPin,
+  Users,
+  AlertTriangle,
 } from 'lucide-react';
-import {
-  decorationTypes,
-  experienceGallery,
-  fadeIn,
-  slideIn,
-} from '@/constants/customDecoration';
+
+// Types
+interface Service {
+  id: string;
+  name: string;
+  price: number;
+}
+
+interface ServiceData {
+  metaData?: {
+    sessionDuration?: number;
+  };
+}
 
 interface CustomDecorationsServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
-  primaryColor: string;
-  viewContext?: 'standard-view' | 'premium-view';
 }
 
+// Constants
+const DECORATION_GALLERY = [
+  {
+    image:
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80&w=1400',
+    title: 'Romantic Dinner',
+    category: 'Romance',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=1400',
+    title: 'Birthday Party',
+    category: 'Birthday',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=1400',
+    title: 'Pool Celebration',
+    category: 'Pool Party',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=1400',
+    title: 'Garden Party',
+    category: 'Garden',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1400',
+    title: 'Anniversary',
+    category: 'Anniversary',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1520637836862-4d197d17c881?q=80&w=1400',
+    title: 'Proposal Setup',
+    category: 'Proposal',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1566737236500-c8ac43014a8e?q=80&w=1400',
+    title: 'Brunch Setup',
+    category: 'Brunch',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1551218808-94e220e084d2?q=80&w=1400',
+    title: 'Wedding Reception',
+    category: 'Wedding',
+  },
+] as const;
+
+const DECORATION_BANNERS = [
+  {
+    id: 'romantic',
+    title: 'Romantic Moments',
+    subtitle: 'Candlelit elegance for intimate celebrations',
+    image:
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80&w=1400',
+    color: 'from-rose-300/60 to-pink-400/60',
+  },
+  {
+    id: 'birthday',
+    title: 'Birthday Magic',
+    subtitle: 'Vibrant celebrations that create lasting memories',
+    image:
+      'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=1400',
+    color: 'from-indigo-300/60 to-purple-400/60',
+  },
+  {
+    id: 'poolside',
+    title: 'Poolside Paradise',
+    subtitle: 'Transform your pool area into a celebration oasis',
+    image:
+      'https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=1400',
+    color: 'from-teal-300/60 to-cyan-400/60',
+  },
+] as const;
+
+const WHAT_WE_OFFER = [
+  'Complete decoration setup',
+  'Custom theme planning',
+  'Premium materials',
+  'Professional styling',
+  'Full cleanup service',
+] as const;
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+};
+
+const staggerChildren = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+// Main Component
 const CustomDecorationsServiceView: React.FC<
   CustomDecorationsServiceViewProps
-> = ({ service }) => {
-  const { t } = useTranslation();
-  const { bookService } = useBooking();
+> = ({ service, serviceData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDecorationType, setSelectedDecorationType] = useState('');
 
-  const stagger = {
-    visible: { transition: { staggerChildren: 0.1 } },
-  };
-
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-    setIsModalOpen(false);
+  const handleBooking = () => {
+    setIsModalOpen(true);
+    // Implement booking logic
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 via-pink-50 to-purple-50'>
-      <div className='max-w-8xl mx-auto space-y-16 pb-16'>
-        {/* Hero Section */}
-        <motion.div
-          className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12 h-[70vh] sm:h-[75vh] lg:h-[80vh] shadow-2xl'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <Image
-            src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80&w=1400'
-            alt='Custom decorations setup'
-            fill
-            className='object-cover'
-            priority
-          />
+    <div className='min-h-screen bg-stone-50'>
+      {/* Hero Section */}
+      <HeroSection onBookClick={handleBooking} />
 
-          <div className='absolute inset-0 bg-gradient-to-br from-black/60 via-pink-900/40 to-purple-900/60' />
+      {/* Decoration Banners */}
+      <BannersSection onBookClick={handleBooking} />
 
-          {/* Overlay adicional para mejor contraste */}
-          <div className='absolute inset-0 bg-black/10 z-[1]' />
+      {/* Simple Gallery */}
+      <GallerySection />
 
-          {/* Floating elements - Responsive */}
-          <div className='absolute top-4 left-4 sm:top-6 sm:left-6 bg-white/10 backdrop-blur-md rounded-full px-3 py-1 sm:px-4 sm:py-2 border border-white/20 hidden sm:block'>
-            <span className='text-white/90 text-xs sm:text-sm font-medium'>
-              ✨ Villa Decoration Specialists
-            </span>
-          </div>
+      {/* What We Offer */}
+      <OfferSection />
 
-          <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
-            <div className='max-w-5xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
-              <motion.h1
-                className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight bg-gradient-to-r from-white to-pink-200 bg-clip-text text-transparent'
-                variants={fadeIn}
-              >
-                Custom Decorations
-              </motion.h1>
+      {/* Testimonial */}
+      <TestimonialSection />
 
-              <motion.p
-                className='text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/90 font-light'
-                variants={fadeIn}
-              >
-                Transform Your Villa into a Celebration
-              </motion.p>
+      {/* Final CTA */}
+      <FinalCTASection onBookClick={handleBooking} />
 
-              <motion.p
-                className='text-sm sm:text-base lg:text-lg text-white/80 max-w-3xl mx-auto leading-relaxed px-2'
-                variants={fadeIn}
-              >
-                From intimate romantic dinners to vibrant birthday celebrations,
-                we create magical atmospheres that turn your vacation villa into
-                the perfect venue for life's special moments.
-              </motion.p>
-
-              {/* Hero Stats - Responsive */}
-              <motion.div
-                className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 max-w-4xl mx-auto justify-center'
-                variants={stagger}
-                initial='hidden'
-                animate='visible'
-              >
-                {[
-                  {
-                    icon: HomeIcon,
-                    text: 'Villa Specialists',
-                    label: 'Expertise',
-                  },
-                  { icon: Users, text: '500+ Events', label: 'Experience' },
-                  { icon: Star, text: '4.9/5 Rating', label: 'Satisfaction' },
-                ].map((stat, index) => (
-                  <motion.div
-                    key={index}
-                    variants={slideIn}
-                    className='flex items-center bg-white/10 backdrop-blur-md px-3 py-2 sm:px-6 sm:py-3 rounded-xl border border-white/20 min-w-0 flex-1 sm:flex-none'
-                  >
-                    <stat.icon className='w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-pink-300 flex-shrink-0' />
-                    <div className='text-left min-w-0'>
-                      <div className='font-semibold text-white text-sm sm:text-base truncate'>
-                        {stat.text}
-                      </div>
-                      <div className='text-xs text-white/70 truncate'>
-                        {stat.label}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              <div className='pt-4 sm:pt-6 lg:pt-8'>
-                <motion.button
-                  onClick={() => setIsModalOpen(true)}
-                  className='bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-5 rounded-xl lg:rounded-2xl font-bold text-base sm:text-lg lg:text-xl flex items-center gap-2 sm:gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl max-w-xs sm:max-w-none'
-                  variants={slideIn}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Sparkles className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6' />
-                  <span className='whitespace-nowrap'>
-                    Create Your Perfect Setting
-                  </span>
-                </motion.button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Experience Gallery */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='text-center mb-12'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-              Experience Gallery
-            </h2>
-            <p className='text-xl text-gray-600'>
-              See how we transform villas into magical celebration spaces
-            </p>
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-            {experienceGallery.map((image, index) => (
-              <motion.div
-                key={index}
-                className='group relative overflow-hidden rounded-2xl h-80 cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500'
-                variants={slideIn}
-                whileHover={{ y: -10, scale: 1.02 }}
-              >
-                <Image
-                  src={image.src}
-                  alt={image.title}
-                  fill
-                  className='object-cover transition-all duration-700 group-hover:scale-110'
-                />
-                <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300' />
-
-                {/* Category badge */}
-                <div className='absolute top-4 left-4 bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium border border-white/30'>
-                  {image.category}
-                </div>
-
-                <div className='absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
-                  <h3 className='text-2xl font-bold mb-2'>{image.title}</h3>
-                  <p className='text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100'>
-                    {image.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Call to Action Banner 1 - Human Touch */}
-        <motion.div
-          className='relative overflow-hidden rounded-3xl mx-4 h-[60vh] shadow-2xl'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <Image
-            src='https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=1400'
-            alt='Personal decoration service'
-            fill
-            className='object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-pink-900/80 via-purple-900/50 to-black/70' />
-
-          <div className='absolute inset-0 flex items-center text-white p-12'>
-            <div className='max-w-2xl'>
-              <motion.h3
-                className='text-5xl md:text-6xl font-bold mb-6'
-                variants={fadeIn}
-              >
-                Personal Touch,
-                <br />
-                Perfect Moments
-              </motion.h3>
-              <motion.p
-                className='text-xl text-white/90 mb-8 leading-relaxed'
-                variants={fadeIn}
-              >
-                Our team doesn't just set up decorations – we craft experiences.
-                Every detail is personally designed to reflect your vision and
-                create memories that last forever.
-              </motion.p>
-              <motion.button
-                onClick={() => setIsModalOpen(true)}
-                className='bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center gap-3 transition-all duration-300 border border-white/30'
-                variants={slideIn}
-              >
-                <MessageCircle className='w-5 h-5' />
-                Tell Us Your Vision
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Choose From Decoration Types */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='text-center mb-12'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-              Choose Your Style
-            </h2>
-            <p className='text-xl text-gray-600'>
-              Each package includes setup, styling, and cleanup
-            </p>
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-            {decorationTypes.map((decoration, index) => (
-              <motion.div
-                key={decoration.id}
-                className={`group relative overflow-hidden rounded-3xl cursor-pointer transition-all duration-500 hover:scale-105 shadow-lg hover:shadow-2xl ${
-                  selectedDecorationType === decoration.id
-                    ? 'ring-4 ring-purple-500 shadow-2xl scale-105'
-                    : ''
-                }`}
-                onClick={() => setSelectedDecorationType(decoration.id)}
-                variants={slideIn}
-              >
-                <div className='h-64 relative overflow-hidden'>
-                  <Image
-                    src={decoration.image}
-                    alt={decoration.name}
-                    fill
-                    className='object-cover transition-transform duration-700 group-hover:scale-110'
-                  />
-                  <div className='absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300' />
-                </div>
-
-                <div className='bg-white p-6 border-t-4 border-purple-500'>
-                  <div className='flex items-center justify-between mb-4'>
-                    <div className='text-4xl'>{decoration.icon}</div>
-                    <div className='text-right'>
-                      <div className='text-3xl font-bold text-gray-800'>
-                        ${decoration.price}
-                      </div>
-                      <div className='text-sm text-gray-500'>per event</div>
-                    </div>
-                  </div>
-
-                  <h3 className='text-xl font-bold text-gray-800 mb-3'>
-                    {decoration.name}
-                  </h3>
-                  <p className='text-gray-600 leading-relaxed'>
-                    {decoration.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Call to Action Banner 2 - Villa Focus */}
-        <motion.div
-          className='relative overflow-hidden rounded-3xl mx-4 h-[50vh] shadow-2xl'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <Image
-            src='https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=1400'
-            alt='Villa celebration setup'
-            fill
-            className='object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-l from-purple-900/80 via-pink-900/50 to-black/70' />
-
-          <div className='absolute inset-0 flex items-center justify-end text-white p-12'>
-            <div className='max-w-2xl text-right'>
-              <motion.h3
-                className='text-4xl md:text-5xl font-bold mb-4'
-                variants={fadeIn}
-              >
-                Your Villa, Our Artistry
-              </motion.h3>
-              <motion.p
-                className='text-lg text-white/90 mb-6'
-                variants={fadeIn}
-              >
-                We specialize in vacation villa celebrations. Whether it's
-                poolside romance or garden party fun, we know how to make the
-                most of your space.
-              </motion.p>
-              <motion.button
-                onClick={() => setIsModalOpen(true)}
-                className='bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white px-8 py-4 rounded-xl font-semibold flex items-center gap-3 transition-all duration-300 ml-auto'
-                variants={slideIn}
-              >
-                <HomeIcon className='w-5 h-5' />
-                Transform Your Villa
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* What's Included & Process */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-12'>
-            {/* What's Included */}
-            <div className='bg-white rounded-3xl shadow-xl p-10 border border-gray-100'>
-              <h2 className='text-3xl font-bold text-gray-800 mb-8 flex items-center'>
-                <CheckCircle className='w-8 h-8 text-purple-500 mr-4' />
-                What's Included
-              </h2>
-
-              <div className='space-y-6 mb-8'>
-                {[
-                  { icon: MessageCircle, text: 'Personal Design Consultation' },
-                  { icon: Palette, text: 'Custom Color & Theme Planning' },
-                  { icon: CheckCircle, text: 'Complete Setup & Styling' },
-                  { icon: Sparkles, text: 'Premium Decor Materials' },
-                  { icon: Camera, text: 'Professional Lighting Setup' },
-                  { icon: PartyPopper, text: 'Full Cleanup Service' },
-                ].map((item, index) => (
-                  <div key={index} className='flex items-center group'>
-                    <div className='w-12 h-12 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300'>
-                      <item.icon className='w-6 h-6 text-purple-600' />
-                    </div>
-                    <span className='text-lg text-gray-700 font-medium'>
-                      {item.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className='bg-gradient-to-r from-gray-50 to-purple-50 p-6 rounded-xl border border-purple-100'>
-                <h3 className='font-semibold text-gray-800 mb-3 flex items-center'>
-                  <Gift className='w-5 h-5 mr-2 text-purple-500' />
-                  Optional Add-ons:
-                </h3>
-                <p className='text-gray-600'>
-                  • Fresh flowers & premium linens
-                  <br />
-                  • Welcome signs & custom banners
-                  <br />• Cake setup & photography props
-                </p>
-              </div>
-            </div>
-
-            {/* What to Expect */}
-            <div className='bg-white rounded-3xl shadow-xl p-10 border border-gray-100'>
-              <h2 className='text-3xl font-bold text-gray-800 mb-8 flex items-center'>
-                <PartyPopper className='w-8 h-8 text-pink-500 mr-4' />
-                What to Expect
-              </h2>
-
-              <div className='space-y-8'>
-                {[
-                  {
-                    step: '1',
-                    text: 'Vision consultation & space planning',
-                    icon: MessageCircle,
-                    detail: 'We discuss your dream celebration',
-                  },
-                  {
-                    step: '2',
-                    text: 'Professional setup at your villa',
-                    icon: HomeIcon,
-                    detail: '2-3 hours before your event',
-                  },
-                  {
-                    step: '3',
-                    text: 'Perfect atmosphere for your celebration',
-                    icon: Sparkles,
-                    detail: 'Every detail exactly as planned',
-                  },
-                  {
-                    step: '4',
-                    text: 'Complete cleanup & takedown',
-                    icon: CheckCircle,
-                    detail: 'You enjoy, we handle everything else',
-                  },
-                ].map((item, index) => (
-                  <div key={index} className='flex items-start group'>
-                    <div className='w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center mr-6 font-bold flex-shrink-0 group-hover:scale-110 transition-transform duration-300'>
-                      {item.step}
-                    </div>
-                    <div className='flex-1'>
-                      <div className='flex items-center mb-2'>
-                        <item.icon className='w-5 h-5 text-purple-500 mr-3' />
-                        <h3 className='font-semibold text-gray-800'>
-                          {item.text}
-                        </h3>
-                      </div>
-                      <p className='text-gray-600 text-sm'>{item.detail}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Good to Know - Modern Cards */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='text-center mb-12'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-              Good to Know
-            </h2>
-            <p className='text-xl text-gray-600'>
-              Everything you need to plan your perfect celebration
-            </p>
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-            {[
-              {
-                icon: Clock,
-                title: 'Booking Notice',
-                detail: 'Minimum 48 hours advance booking required',
-                color: 'from-purple-500 to-purple-600',
-              },
-              {
-                icon: HomeIcon,
-                title: 'Villa Specialists',
-                detail: 'Expert in vacation rental celebrations',
-                color: 'from-pink-500 to-pink-600',
-              },
-              {
-                icon: Users,
-                title: 'Any Group Size',
-                detail: 'Intimate dinners to large parties',
-                color: 'from-blue-500 to-blue-600',
-              },
-              {
-                icon: MapPin,
-                title: 'Indoor & Outdoor',
-                detail: 'Poolside, garden, or indoor setups',
-                color: 'from-emerald-500 to-emerald-600',
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                className='bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-gray-100'
-                variants={slideIn}
-              >
-                <div
-                  className={`w-14 h-14 bg-gradient-to-r ${item.color} rounded-xl flex items-center justify-center mx-auto mb-4`}
-                >
-                  <item.icon className='w-7 h-7 text-white' />
-                </div>
-                <h3 className='font-bold text-gray-800 mb-2 text-lg'>
-                  {item.title}
-                </h3>
-                <p className='text-gray-600 text-sm leading-relaxed'>
-                  {item.detail}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Testimonial Section */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl p-10 text-center border border-purple-100'>
-            <div className='flex justify-center mb-6'>
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className='w-7 h-7 text-yellow-400 fill-current'
-                />
-              ))}
-            </div>
-            <blockquote className='text-3xl font-medium text-gray-800 mb-6 italic leading-relaxed max-w-4xl mx-auto'>
-              "They transformed our villa into a romantic paradise! Every detail
-              was perfect, from the candlelit pathway to the rose petals. It
-              made our anniversary unforgettable."
-            </blockquote>
-            <cite className='text-xl text-gray-600 font-medium'>
-              - Maria & Carlos, Anniversary Celebration
-            </cite>
-
-            <div className='mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto'>
-              <div className='text-center'>
-                <div className='text-2xl font-bold text-purple-600'>500+</div>
-                <div className='text-gray-600'>Events Created</div>
-              </div>
-              <div className='text-center'>
-                <div className='text-2xl font-bold text-pink-600'>4.9/5</div>
-                <div className='text-gray-600'>Average Rating</div>
-              </div>
-              <div className='text-center'>
-                <div className='text-2xl font-bold text-blue-600'>100%</div>
-                <div className='text-gray-600'>Satisfaction Rate</div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Why Choose Us - Enhanced */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='bg-gradient-to-r from-gray-900 via-purple-900 to-pink-900 rounded-3xl p-12 text-white'>
-            <div className='text-center mb-12'>
-              <h2 className='text-4xl font-bold mb-6'>
-                Why Choose Our Villa Decoration Service?
-              </h2>
-              <p className='text-xl text-white/90 max-w-3xl mx-auto leading-relaxed'>
-                We don't just decorate spaces – we create experiences that make
-                your vacation villa the perfect backdrop for life's most
-                precious moments.
-              </p>
-            </div>
-
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-              {[
-                {
-                  icon: HomeIcon,
-                  title: 'Villa Expertise',
-                  description:
-                    'We specialize in vacation rental spaces and know how to maximize every corner',
-                  gradient: 'from-blue-400 to-cyan-400',
-                },
-                {
-                  icon: Heart,
-                  title: 'Personal Touch',
-                  description:
-                    'Every setup is customized to your style, preferences, and special occasion',
-                  gradient: 'from-pink-400 to-red-400',
-                },
-                {
-                  icon: Sparkles,
-                  title: 'Stress-Free Experience',
-                  description:
-                    'Complete service from consultation to cleanup – you just enjoy the moment',
-                  gradient: 'from-purple-400 to-pink-400',
-                },
-              ].map((feature, index) => (
-                <motion.div
-                  key={index}
-                  className='text-center p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-all duration-300'
-                  variants={slideIn}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <div
-                    className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6`}
-                  >
-                    <feature.icon className='w-8 h-8 text-white' />
-                  </div>
-                  <h3 className='text-xl font-bold mb-4'>{feature.title}</h3>
-                  <p className='text-white/80 leading-relaxed'>
-                    {feature.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Important Notice */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeIn}
-        >
-          <div className='bg-amber-50 border border-amber-200 rounded-2xl p-8'>
-            <div className='flex items-start'>
-              <AlertTriangle className='w-8 h-8 text-amber-600 mr-4 flex-shrink-0 mt-1' />
-              <div>
-                <h3 className='font-bold text-amber-800 mb-3 text-lg'>
-                  Important Information
-                </h3>
-                <div className='text-amber-700 space-y-2'>
-                  <p>
-                    • Please provide accurate villa location and access details
-                    during booking
-                  </p>
-                  <p>
-                    • We recommend booking 48-72 hours in advance for optimal
-                    availability
-                  </p>
-                  <p>
-                    • Weather-dependent outdoor setups include indoor backup
-                    options
-                  </p>
-                  <p>
-                    • Additional charges may apply for locations outside our
-                    standard service area
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Booking Modal */}
-      {isModalOpen && (
-        <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleBookingConfirm}
-          service={service}
-        />
-      )}
+      {/* Notice */}
+      <NoticeSection />
     </div>
   );
 };
+
+// Hero Section - Clean and Minimal
+const HeroSection: React.FC<{
+  onBookClick: () => void;
+}> = ({ onBookClick }) => (
+  <motion.section
+    className='relative h-screen overflow-hidden'
+    initial='hidden'
+    animate='visible'
+    variants={fadeInUp}
+  >
+    {/* Background */}
+    <div className='absolute inset-0'>
+      <img
+        src='https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80&w=1400'
+        alt='Beautiful villa decoration'
+        className='w-full h-full object-cover'
+      />
+      <div className='absolute inset-0 bg-black/40'></div>
+    </div>
+
+    {/* Content */}
+    <div className='relative z-10 h-full flex items-center justify-center text-center px-6'>
+      <div className='max-w-4xl space-y-8'>
+        <motion.div variants={fadeInUp}>
+          <span className='inline-block px-6 py-2 bg-emerald-50/90 backdrop-blur-sm rounded-full text-emerald-800 text-sm font-medium border border-emerald-200/60'>
+            Villa Decoration Specialists
+          </span>
+        </motion.div>
+
+        <motion.h1
+          variants={fadeInUp}
+          className='text-5xl md:text-7xl font-light text-white leading-tight'
+        >
+          Transform Your
+          <span className='block font-bold'>Special Moments</span>
+        </motion.h1>
+
+        <motion.p
+          variants={fadeInUp}
+          className='text-xl md:text-2xl text-white/90 font-light max-w-2xl mx-auto'
+        >
+          We create beautiful atmospheres that turn your villa into the perfect
+          celebration space
+        </motion.p>
+
+        <motion.button
+          variants={fadeInUp}
+          onClick={onBookClick}
+          className='inline-flex items-center gap-3 bg-stone-100 text-stone-800 px-8 py-4 rounded-full font-medium text-lg hover:bg-stone-200 transition-colors duration-200'
+        >
+          <Sparkles className='w-5 h-5' />
+          Create Your Decoration
+        </motion.button>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Decoration Banners Section
+const BannersSection: React.FC<{
+  onBookClick: () => void;
+}> = ({ onBookClick }) => (
+  <motion.section
+    className='py-20 px-6'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-7xl mx-auto space-y-16'>
+      {DECORATION_BANNERS.map((banner, index) => (
+        <BannerCard
+          key={banner.id}
+          banner={banner}
+          reverse={index % 2 === 1}
+          onBookClick={onBookClick}
+        />
+      ))}
+    </div>
+  </motion.section>
+);
+
+// Individual Banner Card
+const BannerCard: React.FC<{
+  banner: (typeof DECORATION_BANNERS)[0];
+  reverse: boolean;
+  onBookClick: () => void;
+}> = ({ banner, reverse, onBookClick }) => (
+  <motion.div
+    variants={fadeInUp}
+    className={`grid lg:grid-cols-2 gap-12 items-center ${
+      reverse ? 'lg:grid-flow-col-dense' : ''
+    }`}
+  >
+    {/* Image */}
+    <div
+      className={`relative h-96 rounded-2xl overflow-hidden ${
+        reverse ? 'lg:col-start-2' : ''
+      }`}
+    >
+      <img
+        src={banner.image}
+        alt={banner.title}
+        className='w-full h-full object-cover'
+      />
+      <div
+        className={`absolute inset-0 bg-gradient-to-r ${banner.color}`}
+      ></div>
+    </div>
+
+    {/* Content */}
+    <div
+      className={`space-y-6 ${reverse ? 'lg:col-start-1 lg:text-right' : ''}`}
+    >
+      <h2 className='text-4xl md:text-5xl font-light text-stone-800'>
+        {banner.title}
+      </h2>
+      <p className='text-xl text-stone-600 leading-relaxed'>
+        {banner.subtitle}
+      </p>
+      <button
+        onClick={onBookClick}
+        className='inline-flex items-center gap-3 bg-stone-700 text-stone-50 px-6 py-3 rounded-full font-medium hover:bg-stone-800 transition-colors duration-200'
+      >
+        View Details
+        <ArrowRight className='w-4 h-4' />
+      </button>
+    </div>
+  </motion.div>
+);
+
+// Simple Gallery Section
+const GallerySection: React.FC = () => (
+  <motion.section
+    className='py-20 px-6 bg-stone-100'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-7xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-16'>
+        <h2 className='text-4xl md:text-5xl font-light text-stone-800 mb-6'>
+          Our Work
+        </h2>
+        <p className='text-xl text-stone-600'>
+          Every celebration tells a story
+        </p>
+      </motion.div>
+
+      {/* Desktop Grid */}
+      <div className='hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6'>
+        {DECORATION_GALLERY.map((item, index) => (
+          <GalleryItem key={index} item={item} />
+        ))}
+      </div>
+
+      {/* Mobile Horizontal Scroll */}
+      <div className='md:hidden'>
+        <div className='flex gap-4 overflow-x-auto pb-4 scroll-smooth'>
+          <div className='flex gap-4 min-w-max'>
+            {DECORATION_GALLERY.map((item, index) => (
+              <div key={index} className='w-64 flex-shrink-0'>
+                <GalleryItem item={item} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Gallery Item
+const GalleryItem: React.FC<{
+  item: (typeof DECORATION_GALLERY)[0];
+}> = ({ item }) => (
+  <motion.div
+    variants={fadeInUp}
+    className='group relative aspect-[4/5] rounded-xl overflow-hidden cursor-pointer'
+  >
+    <img
+      src={item.image}
+      alt={item.title}
+      className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
+    />
+    <div className='absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300'></div>
+
+    {/* Category badge */}
+    <div className='absolute top-4 left-4 bg-stone-50/95 backdrop-blur-sm text-stone-700 px-3 py-1 rounded-full text-sm font-medium'>
+      {item.category}
+    </div>
+
+    {/* Title on hover */}
+    <div className='absolute bottom-6 left-6 right-6'>
+      <h3 className='text-white font-medium text-lg opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300'>
+        {item.title}
+      </h3>
+    </div>
+  </motion.div>
+);
+
+// What We Offer Section
+const OfferSection: React.FC = () => (
+  <motion.section
+    className='py-20 px-6'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-4xl mx-auto'>
+      <div className='bg-stone-50 rounded-3xl p-12 shadow-sm border border-stone-200'>
+        <div className='text-center mb-12'>
+          <h2 className='text-3xl font-light text-stone-800 mb-4'>
+            What We Provide
+          </h2>
+          <p className='text-stone-600'>
+            Everything you need for a perfect celebration
+          </p>
+        </div>
+
+        <div className='grid md:grid-cols-2 gap-8'>
+          <div className='space-y-6'>
+            {WHAT_WE_OFFER.map((item, index) => (
+              <div key={index} className='flex items-center gap-4'>
+                <div className='w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center'>
+                  <CheckCircle className='w-5 h-5 text-emerald-600' />
+                </div>
+                <span className='text-stone-700'>{item}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className='space-y-6'>
+            <div className='flex items-start gap-4'>
+              <Calendar className='w-6 h-6 text-stone-400 mt-1' />
+              <div>
+                <h3 className='font-medium text-stone-800 mb-1'>Booking</h3>
+                <p className='text-sm text-stone-600'>
+                  48 hours advance notice recommended
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-start gap-4'>
+              <MapPin className='w-6 h-6 text-stone-400 mt-1' />
+              <div>
+                <h3 className='font-medium text-stone-800 mb-1'>Location</h3>
+                <p className='text-sm text-stone-600'>
+                  Any villa, indoor or outdoor
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-start gap-4'>
+              <Users className='w-6 h-6 text-stone-400 mt-1' />
+              <div>
+                <h3 className='font-medium text-stone-800 mb-1'>Group Size</h3>
+                <p className='text-sm text-stone-600'>
+                  Intimate to large celebrations
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Simple Testimonial
+const TestimonialSection: React.FC = () => (
+  <motion.section
+    className='py-20 px-6 bg-slate-700'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-4xl mx-auto text-center text-stone-100'>
+      <div className='flex justify-center mb-8'>
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} className='w-6 h-6 text-amber-300 fill-current' />
+        ))}
+      </div>
+
+      <blockquote className='text-2xl md:text-3xl font-light leading-relaxed mb-8'>
+        "They transformed our villa into something magical. Every detail was
+        perfect, and our anniversary became truly unforgettable."
+      </blockquote>
+
+      <cite className='text-stone-300'>
+        — Emma & David, Anniversary Celebration
+      </cite>
+    </div>
+  </motion.section>
+);
+
+// Final CTA
+const FinalCTASection: React.FC<{
+  onBookClick: () => void;
+}> = ({ onBookClick }) => (
+  <motion.section
+    className='py-20 px-6 bg-stone-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-4xl mx-auto text-center'>
+      <h2 className='text-4xl md:text-5xl font-light text-stone-800 mb-6'>
+        Let's Create Something
+        <span className='block font-bold'>Beautiful Together</span>
+      </h2>
+
+      <p className='text-xl text-stone-600 mb-12 max-w-2xl mx-auto'>
+        Every celebration deserves to be special. Let us help you create the
+        perfect atmosphere for your memorable moments.
+      </p>
+
+      <button
+        onClick={onBookClick}
+        className='inline-flex items-center gap-3 bg-slate-700 text-stone-50 px-10 py-4 rounded-full font-medium text-lg hover:bg-slate-800 transition-colors duration-200'
+      >
+        <MessageCircle className='w-5 h-5' />
+        Plan My Decoration
+      </button>
+    </div>
+  </motion.section>
+);
+
+// Notice Section
+const NoticeSection: React.FC = () => (
+  <motion.section
+    className='py-12 px-6 bg-orange-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-4xl mx-auto'>
+      <div className='flex gap-4'>
+        <AlertTriangle className='w-5 h-5 text-orange-500 flex-shrink-0 mt-1' />
+        <div className='text-sm text-orange-700'>
+          <p className='font-medium mb-1'>Please note:</p>
+          <p>
+            Booking 48-72 hours in advance recommended. Weather-dependent setups
+            include backup options.
+          </p>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
 
 export default CustomDecorationsServiceView;
