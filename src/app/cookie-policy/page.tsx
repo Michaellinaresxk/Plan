@@ -206,11 +206,8 @@ export default function CookiePolicyPage() {
                 Cookie Policy, please contact us at:
               </p>
               <p>
-                Email: privacy@relaxinn.com
+                Email: info@luxpuntacana.com
                 <br />
-                Phone: +1 (809) 555-1234
-                <br />
-                Address: Puntacana Resort & Club, Punta Cana, Dominican Republic
               </p>
             </div>
           </motion.div>
