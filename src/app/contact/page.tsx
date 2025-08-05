@@ -171,7 +171,7 @@ const ContactPage = () => {
         <section className='py-20 bg-gray-50'>
           <div className='container mx-auto px-6'>
             <div className='max-w-7xl mx-auto'>
-              <div className='grid md:grid-cols-12 gap-12'>
+              <div className='grid md:grid-cols-1 gap-12'>
                 {/* Contact Form */}
                 <motion.div
                   className='md:col-span-7 bg-white rounded-2xl shadow-xl overflow-hidden'

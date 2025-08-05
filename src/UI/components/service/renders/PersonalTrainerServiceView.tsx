@@ -1,701 +1,656 @@
 import React, { useState } from 'react';
-import { useTranslation } from '@/lib/i18n/client';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useBooking } from '@/context/BookingContext';
-import { BookingDate } from '@/types/type';
-import BookingModal from '../../modal/BookingModal';
 import {
-  Dumbbell,
-  MapPin,
-  Zap,
   Clock,
   Star,
-  ArrowRight,
+  MapPin,
   Target,
   Award,
-  Heart,
-  CheckCircle,
-  Play,
   Users,
-  Shirt,
+  CheckCircle,
+  ArrowRight,
+  Play,
   Calendar,
+  Shirt,
+  Heart,
   AlertTriangle,
-  X,
-  Gift,
+  Quote,
+  Camera,
+  Instagram,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
+
+// Types
+interface Service {
+  id: string;
+  name: string;
+  price: number;
+}
+
+interface ServiceData {
+  metaData?: {
+    sessionDuration?: number;
+  };
+}
 
 interface PersonalTrainerServiceViewProps {
   service: Service;
   serviceData?: ServiceData;
-  primaryColor: string;
-  viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Constants for better maintainability
-const TRAINING_TYPES = [
+// Constants
+const TRAINING_SPECIALTIES = [
   {
     id: 'strength',
-    name: 'Strength Training',
-    icon: '💪',
-    color: 'from-red-500 to-orange-500',
-    description: 'Build muscle and power',
+    title: 'Strength & Conditioning',
+    description: 'Build lean muscle and increase functional strength',
+    focus: 'Muscle Building',
+    image:
+      'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=2940&auto=format&fit=crop',
   },
   {
     id: 'hiit',
-    name: 'HIIT Training',
-    icon: '⚡',
-    color: 'from-yellow-500 to-red-500',
-    description: 'High-intensity fat burning',
+    title: 'HIIT & Cardio',
+    description: 'High-intensity workouts for fat loss and endurance',
+    focus: 'Fat Loss',
+    image:
+      'https://images.unsplash.com/photo-1549476464-37392f717541?q=80&w=2787&auto=format&fit=crop',
   },
   {
     id: 'functional',
-    name: 'Functional Fitness',
-    icon: '🤸‍♀️',
-    color: 'from-green-500 to-teal-500',
-    description: 'Real-world movement patterns',
+    title: 'Functional Movement',
+    description: 'Improve mobility and everyday movement patterns',
+    focus: 'Mobility',
+    image:
+      'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?q=80&w=2787&auto=format&fit=crop',
   },
   {
-    id: 'flexibility',
-    name: 'Flexibility & Mobility',
-    icon: '🧘‍♀️',
-    color: 'from-blue-500 to-purple-500',
-    description: 'Improve range of motion',
-  },
-  {
-    id: 'prenatal',
-    name: 'Pre/Postnatal Fitness',
-    icon: '🤱',
-    color: 'from-pink-500 to-rose-500',
-    description: 'Safe training for expecting mothers',
-  },
-  {
-    id: 'cardio-kickboxing',
-    name: 'Cardio Kickboxing',
-    icon: '🥊',
-    color: 'from-orange-500 to-red-600',
-    description: 'High-energy combat workout',
+    id: 'wellness',
+    title: 'Wellness & Recovery',
+    description: 'Holistic approach to fitness and well-being',
+    focus: 'Recovery',
+    image:
+      'https://images.unsplash.com/photo-1506629905607-4d0ee439d067?q=80&w=2940&auto=format&fit=crop',
   },
 ] as const;
 
-const BENEFITS = [
+const SUCCESS_STORIES = [
+  {
+    name: 'James Chen',
+    age: 28,
+    result: 'Gained 12kg muscle mass',
+    quote:
+      'The personalized approach made all the difference. Every workout was perfectly tailored to my goals.',
+    before:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2787&auto=format&fit=crop',
+    after:
+      'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=2940&auto=format&fit=crop',
+  },
+  {
+    name: 'Sarah Kim',
+    age: 42,
+    result: 'Improved strength by 150%',
+    quote:
+      "At 42, I'm in the best shape of my life. The training sessions were challenging but so rewarding.",
+    before:
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2940&auto=format&fit=crop',
+    after:
+      'https://images.unsplash.com/photo-1549476464-37392f717541?q=80&w=2787&auto=format&fit=crop',
+  },
+] as const;
+
+const TRAINING_GALLERY = [
+  {
+    image:
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop',
+    caption: 'One-on-one strength training',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1549476464-37392f717541?q=80&w=2787&auto=format&fit=crop',
+    caption: 'High-intensity cardio sessions',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=2940&auto=format&fit=crop',
+    caption: 'Functional movement training',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?q=80&w=2787&auto=format&fit=crop',
+    caption: 'Outdoor training sessions',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1506629905607-4d0ee439d067?q=80&w=2940&auto=format&fit=crop',
+    caption: 'Recovery and flexibility work',
+  },
+  {
+    image:
+      'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=2940&auto=format&fit=crop',
+    caption: 'Beach training sessions',
+  },
+] as const;
+
+const KEY_BENEFITS = [
   {
     icon: Target,
-    title: 'Personalized Plan',
-    description: 'Customized workout designed for your goals',
+    title: 'Personalized Programs',
+    description:
+      'Custom workouts designed specifically for your goals and fitness level',
   },
   {
     icon: Award,
-    title: 'Certified Trainers',
-    description: 'International certifications and expertise',
-  },
-  {
-    icon: Heart,
-    title: 'All Fitness Levels',
-    description: 'From beginner to advanced athletes',
+    title: 'Certified Expertise',
+    description: 'Internationally certified trainers with proven track records',
   },
   {
     icon: MapPin,
-    title: 'Your Location',
-    description: 'Villa, beach, or resort gym',
+    title: 'Your Space, Your Pace',
+    description: 'Train anywhere - villa, beach, gym, or outdoor locations',
+  },
+  {
+    icon: Users,
+    title: 'All Levels Welcome',
+    description: 'From complete beginners to advanced athletes',
   },
 ] as const;
 
-const WHATS_INCLUDED = [
-  'Certified Personal Trainer',
-  'Customized Workout Plan',
-  'All Necessary Equipment',
-  'Post-Workout Recovery Tips',
+const SESSION_INCLUDES = [
+  'Certified personal trainer',
+  'Custom workout plan',
+  'Professional equipment',
+  'Progress tracking',
+  'Nutrition guidance',
+  'Recovery techniques',
 ] as const;
-
-const WHAT_TO_EXPECT_STEPS = [
-  {
-    step: 1,
-    title: 'Trainer arrives & sets up equipment',
-    description: 'Professional setup at your chosen location',
-  },
-  {
-    step: 2,
-    title: 'Warm-up and goal discussion',
-    description: 'Assessment and personalized planning',
-  },
-  {
-    step: 3,
-    title: 'Personalized training session',
-    description: 'Focused workout tailored to your needs',
-  },
-  {
-    step: 4,
-    title: 'Cool-down and recovery guidance',
-    description: 'Proper stretching and recovery tips',
-  },
-] as const;
-
-const GOOD_TO_KNOW_INFO = {
-  whatToWear: 'Comfortable athletic attire & supportive shoes',
-  agePolicy: 'Participants must be 16+ (under 16 with adult supervision)',
-  adaptability:
-    'Sessions can be modified for injuries, prenatal/postnatal needs, or mobility restrictions',
-  startEndTime: 'According to your booking schedule',
-  notIncluded: 'Gratuity (optional, appreciated)',
-} as const;
 
 // Animation variants
-const ANIMATION_VARIANTS = {
-  fadeIn: {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
-  },
-  slideIn: {
-    hidden: { opacity: 0, x: -30 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
-  },
-  stagger: {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
-  },
-} as const;
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
 
+const staggerChildren = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+// Main Component
 const PersonalTrainerServiceView: React.FC<PersonalTrainerServiceViewProps> = ({
   service,
   serviceData,
 }) => {
-  const { t } = useTranslation();
-  const { bookService } = useBooking();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTrainingType, setSelectedTrainingType] = useState('');
-
+  const [currentStory, setCurrentStory] = useState(0);
   const sessionDuration = serviceData?.metaData?.sessionDuration || 60;
 
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-    setIsModalOpen(false);
+  const handleBooking = () => {
+    setIsModalOpen(true);
+    // Implement booking logic
   };
 
-  const handleTrainingTypeSelect = (typeId: string) => {
-    setSelectedTrainingType((prev) => (prev === typeId ? '' : typeId));
+  const nextStory = () => {
+    setCurrentStory((prev) => (prev + 1) % SUCCESS_STORIES.length);
+  };
+
+  const prevStory = () => {
+    setCurrentStory(
+      (prev) => (prev - 1 + SUCCESS_STORIES.length) % SUCCESS_STORIES.length
+    );
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'>
-      <div className='max-w-8xl mx-auto space-y-16 pb-16'>
-        {/* Hero Section */}
-        <HeroSection
-          sessionDuration={sessionDuration}
-          onBookClick={() => setIsModalOpen(true)}
-        />
+    <div className='min-h-screen bg-white'>
+      {/* Hero Section */}
+      <HeroSection
+        sessionDuration={sessionDuration}
+        onBookClick={handleBooking}
+      />
 
-        {/* Benefits Section */}
-        <BenefitsSection />
+      {/* Success Stories */}
+      <SuccessStoriesSection
+        currentStory={currentStory}
+        onNext={nextStory}
+        onPrev={prevStory}
+      />
 
-        {/* What's Included Section */}
-        <WhatsIncludedSection />
+      {/* Training Specialties */}
+      <SpecialtiesSection />
 
-        {/* Training Types Section */}
-        <TrainingTypesSection
-          selectedType={selectedTrainingType}
-          onTypeSelect={handleTrainingTypeSelect}
-        />
+      {/* Human Banner CTA */}
+      <HumanBannerSection onBookClick={handleBooking} />
 
-        {/* What to Expect Section */}
-        <WhatToExpectSection />
+      {/* What's Included */}
+      <IncludedSection />
 
-        {/* Good to Know Section */}
-        <GoodToKnowSection />
+      {/* Benefits Grid */}
+      <BenefitsSection />
 
-        {/* Call to Action */}
-        <CallToActionSection
-          service={service}
-          onBookClick={() => setIsModalOpen(true)}
-        />
-
-        {/* Testimonial */}
-        <TestimonialSection />
-
-        {/* Health Disclaimer */}
-        <HealthDisclaimerSection />
-      </div>
-
-      {/* Booking Modal */}
-      {isModalOpen && (
-        <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleBookingConfirm}
-          service={service}
-        />
-      )}
+      {/* Disclaimer */}
+      <DisclaimerSection />
     </div>
   );
 };
 
-// Hero Section Component
+// Hero Section
 const HeroSection: React.FC<{
   sessionDuration: number;
   onBookClick: () => void;
 }> = ({ sessionDuration, onBookClick }) => (
-  <motion.div
-    className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
+  <motion.section
+    className='relative pt-20 pb-32 px-6 overflow-hidden'
     initial='hidden'
     animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
+    variants={fadeInUp}
   >
-    <div className='relative h-[70vh] sm:h-[75vh] lg:h-[80vh] bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900'>
+    {/* Background with overlay */}
+    <div className='absolute inset-0 z-0'>
       <img
-        src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-        alt='Personal training session'
-        className='absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60'
+        src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop'
+        alt='Personal training background'
+        className='w-full h-full object-cover'
       />
+      <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30'></div>
+    </div>
 
-      {/* Overlay adicional para mejor contraste */}
-      <div className='absolute inset-0 bg-black/20 z-[1]' />
-      <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
-
-      <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
-        <div className='max-w-4xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
-          <motion.div
-            className='inline-flex items-center bg-white/10 backdrop-blur-sm px-3 py-1 sm:px-4 sm:py-2 rounded-full border border-white/20'
-            variants={ANIMATION_VARIANTS.slideIn}
-          >
-            <Dumbbell className='w-4 h-4 sm:w-5 sm:h-5 text-white mr-2' />
-            <span className='text-white font-medium text-sm sm:text-base'>
-              Your Strength. Your Progress.
+    <div className='relative z-10 max-w-6xl mx-auto'>
+      <div className='grid lg:grid-cols-2 gap-16 items-center'>
+        {/* Content */}
+        <div className='space-y-8 text-white'>
+          <motion.div variants={fadeInUp}>
+            <span className='inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium'>
+              <Award className='w-4 h-4 mr-2' />
+              Transforming Lives Daily
             </span>
           </motion.div>
 
-          <motion.h1
-            className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight'
-            variants={ANIMATION_VARIANTS.fadeIn}
-          >
-            Personal Training
-          </motion.h1>
-
-          <motion.p
-            className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 max-w-3xl mx-auto leading-relaxed px-2'
-            variants={ANIMATION_VARIANTS.fadeIn}
-          >
-            Transform your fitness with one-on-one sessions tailored to your
-            goals, anywhere you want to train.
-          </motion.p>
-
-          <motion.div
-            className='flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-8 max-w-4xl mx-auto justify-center'
-            variants={ANIMATION_VARIANTS.slideIn}
-          >
-            <div className='flex-1 sm:flex-none'>
-              <StatChip icon={Clock} text={`${sessionDuration} Minutes`} />
-            </div>
-            <div className='flex-1 sm:flex-none'>
-              <StatChip icon={Star} text='5.0 Rating' iconFill />
-            </div>
-            <div className='flex-1 sm:flex-none'>
-              <StatChip icon={MapPin} text='Any Location' />
-            </div>
+          <motion.div variants={fadeInUp} className='space-y-6'>
+            <h1 className='text-5xl lg:text-6xl font-bold leading-tight'>
+              Your Fitness Journey
+              <span className='block text-blue-400'>Starts Here</span>
+            </h1>
+            <p className='text-xl leading-relaxed max-w-lg opacity-90'>
+              Real people. Real results. Real transformation. Join our community
+              of over 500 successful clients who've achieved their fitness
+              dreams.
+            </p>
           </motion.div>
 
-          <div className='pt-4 sm:pt-6 lg:pt-8'>
-            <motion.button
+          {/* Stats */}
+          <motion.div
+            variants={staggerChildren}
+            className='flex flex-wrap gap-6'
+          >
+            <StatItem
+              icon={Clock}
+              value={`${sessionDuration}min`}
+              label='Session'
+            />
+            <StatItem icon={Star} value='4.9' label='Rating' />
+            <StatItem icon={Users} value='500+' label='Success Stories' />
+          </motion.div>
+
+          {/* CTA */}
+          <motion.div variants={fadeInUp} className='pt-4'>
+            <button
               onClick={onBookClick}
-              className='bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-5 rounded-xl lg:rounded-2xl font-bold text-base sm:text-lg lg:text-xl flex items-center gap-2 sm:gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl max-w-xs sm:max-w-none'
-              variants={ANIMATION_VARIANTS.slideIn}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className='group inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-[1.02] shadow-xl'
             >
-              <Play className='w-5 h-5 sm:w-6 sm:h-6' fill='currentColor' />
-              <span className='whitespace-nowrap'>
-                Start Your Transformation
-              </span>
-            </motion.button>
-          </div>
+              <Play className='w-5 h-5' />
+              Begin Your Transformation
+              <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
+            </button>
+          </motion.div>
         </div>
       </div>
     </div>
-  </motion.div>
+  </motion.section>
 );
 
-// Stat Chip Component
-const StatChip: React.FC<{
+// Stat Item Component
+const StatItem: React.FC<{
   icon: React.ComponentType<any>;
-  text: string;
-  iconFill?: boolean;
-}> = ({ icon: Icon, text, iconFill }) => (
-  <div className='flex items-center bg-white/10 backdrop-blur-sm px-4 py-3 rounded-xl'>
-    <Icon
-      className={`w-5 h-5 ${iconFill ? 'text-yellow-400' : 'text-white'} mr-2`}
-      fill={iconFill ? 'currentColor' : 'none'}
-    />
-    <span className='text-white font-medium'>{text}</span>
-  </div>
-);
-
-// Benefits Section Component
-const BenefitsSection: React.FC = () => (
-  <motion.div
-    className='px-4'
-    initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.stagger}
-  >
-    <div className='text-center mb-12'>
-      <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-        Why Choose Personal Training?
-      </h2>
-      <p className='text-xl text-gray-600 max-w-2xl mx-auto'>
-        Get the results you want with expert guidance and personalized attention
-      </p>
+  value: string;
+  label: string;
+}> = ({ icon: Icon, value, label }) => (
+  <motion.div variants={fadeInUp} className='flex items-center gap-3'>
+    <div className='w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center'>
+      <Icon className='w-5 h-5 text-white' />
     </div>
-
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-      {BENEFITS.map((benefit, index) => (
-        <BenefitCard key={index} benefit={benefit} />
-      ))}
+    <div>
+      <p className='font-bold text-white'>{value}</p>
+      <p className='text-sm text-white/80'>{label}</p>
     </div>
   </motion.div>
 );
 
-// Benefit Card Component
+// Benefits Section
+const BenefitsSection: React.FC = () => (
+  <motion.section
+    className='py-24 px-6 bg-gray-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-16'>
+        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+          Why Our Clients Choose Us
+        </h2>
+        <p className='text-xl text-gray-600 max-w-2xl mx-auto'>
+          Experience the difference of individualized attention and expert
+          guidance
+        </p>
+      </motion.div>
+
+      <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
+        {KEY_BENEFITS.map((benefit, index) => (
+          <BenefitCard key={index} benefit={benefit} />
+        ))}
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Benefit Card
 const BenefitCard: React.FC<{
-  benefit: (typeof BENEFITS)[0];
+  benefit: (typeof KEY_BENEFITS)[0];
 }> = ({ benefit }) => (
   <motion.div
-    className='group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2'
-    variants={ANIMATION_VARIANTS.fadeIn}
+    variants={fadeInUp}
+    className='bg-white p-8 rounded-xl hover:shadow-lg transition-shadow'
   >
-    <div className='w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300'>
-      <benefit.icon className='w-8 h-8 text-white' />
+    <div className='w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6'>
+      <benefit.icon className='w-6 h-6 text-blue-600' />
     </div>
-    <h3 className='text-xl font-bold text-gray-800 mb-3'>{benefit.title}</h3>
+    <h3 className='text-lg font-semibold text-gray-900 mb-3'>
+      {benefit.title}
+    </h3>
     <p className='text-gray-600'>{benefit.description}</p>
   </motion.div>
 );
 
-// What's Included Section Component
-const WhatsIncludedSection: React.FC = () => (
-  <motion.div
-    className='px-4'
-    initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
-  >
-    <div className='bg-white rounded-3xl shadow-2xl overflow-hidden'>
-      <div className='bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white text-center'>
-        <h2 className='text-3xl font-bold mb-4'>
-          Everything You Need Included
-        </h2>
-        <p className='text-xl opacity-90'>
-          Professional service from start to finish
-        </p>
-      </div>
+// Success Stories Section
+const SuccessStoriesSection: React.FC<{
+  currentStory: number;
+  onNext: () => void;
+  onPrev: () => void;
+}> = ({ currentStory, onNext, onPrev }) => {
+  const story = SUCCESS_STORIES[currentStory];
 
-      <div className='p-8'>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-          <div className='space-y-6'>
-            {WHATS_INCLUDED.map((item, index) => (
-              <IncludedItem key={index} item={item} />
-            ))}
+  return (
+    <motion.section
+      className='py-24 px-6'
+      initial='hidden'
+      whileInView='visible'
+      viewport={{ once: true }}
+      variants={fadeInUp}
+    >
+      <div className='max-w-6xl mx-auto'>
+        <div className='text-center mb-16'>
+          <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+            Real People, Real Results
+          </h2>
+          <p className='text-xl text-gray-600'>
+            See the incredible transformations our clients have achieved
+          </p>
+        </div>
 
-            {/* Not Included Section */}
-            <div className='mt-8 pt-6 border-t border-gray-200'>
-              <h4 className='font-bold text-gray-800 mb-4 flex items-center'>
-                <X className='w-5 h-5 text-red-500 mr-2' />
-                Not Included
-              </h4>
-              <div className='flex items-center'>
-                <div className='w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-4'>
-                  <Gift className='w-5 h-5 text-red-600' />
+        <div className='bg-white rounded-3xl shadow-xl overflow-hidden'>
+          <div className='grid lg:grid-cols-2'>
+            {/* Before/After Images */}
+            <div className='relative'>
+              <div className='grid grid-cols-2 h-full'>
+                <div className='relative'>
+                  <img
+                    src={story.before}
+                    alt={`${story.name} before`}
+                    className='w-full h-full object-cover'
+                  />
+                  <div className='absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold'>
+                    Before
+                  </div>
                 </div>
-                <span className='text-gray-600'>
-                  {GOOD_TO_KNOW_INFO.notIncluded}
-                </span>
+                <div className='relative'>
+                  <img
+                    src={story.after}
+                    alt={`${story.name} after`}
+                    className='w-full h-full object-cover'
+                  />
+                  <div className='absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold'>
+                    After
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Story Content */}
+            <div className='p-12 flex flex-col justify-center'>
+              <Quote className='w-12 h-12 text-blue-600 mb-6' />
+              <blockquote className='text-xl text-gray-700 mb-8 leading-relaxed'>
+                "{story.quote}"
+              </blockquote>
+
+              <div className='mb-8'>
+                <h3 className='text-2xl font-bold text-gray-900'>
+                  {story.name}
+                </h3>
+                <p className='text-gray-600'>Age {story.age}</p>
+                <p className='text-blue-600 font-semibold text-lg mt-2'>
+                  {story.result}
+                </p>
+              </div>
+
+              {/* Navigation */}
+              <div className='flex items-center justify-between'>
+                <div className='flex gap-2'>
+                  {SUCCESS_STORIES.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-3 h-3 rounded-full transition-colors ${
+                        index === currentStory ? 'bg-blue-600' : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className='flex gap-2'>
+                  <button
+                    onClick={onPrev}
+                    className='w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors'
+                  >
+                    <ChevronLeft className='w-5 h-5' />
+                  </button>
+                  <button
+                    onClick={onNext}
+                    className='w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors'
+                  >
+                    <ChevronRight className='w-5 h-5' />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-
-          <div className='relative h-64 rounded-2xl overflow-hidden'>
-            <Image
-              src='https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=600'
-              alt='Professional training equipment'
-              fill
-              className='object-cover'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end'>
-              <p className='text-white p-6 font-medium'>
-                Professional equipment sanitized for each session
-              </p>
-            </div>
-          </div>
         </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.section>
+  );
+};
 
-// Included Item Component
-const IncludedItem: React.FC<{ item: string }> = ({ item }) => (
-  <div className='flex items-center'>
-    <div className='w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4'>
-      <CheckCircle className='w-5 h-5 text-green-600' />
-    </div>
-    <span className='text-lg text-gray-700 font-medium'>{item}</span>
-  </div>
-);
-
-// Training Types Section Component
-const TrainingTypesSection: React.FC<{
-  selectedType: string;
-  onTypeSelect: (typeId: string) => void;
-}> = ({ selectedType, onTypeSelect }) => (
-  <motion.div
-    className='px-4'
+// Specialties Section
+const SpecialtiesSection: React.FC = () => (
+  <motion.section
+    className='py-24 px-6 bg-gray-50'
     initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
   >
-    <div className='text-center mb-12'>
-      <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-        Choose Your Training Style
-      </h2>
-      <p className='text-xl text-gray-600'>
-        Select the workout type that matches your fitness goals
-      </p>
-    </div>
-
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-      {TRAINING_TYPES.map((type, index) => (
-        <TrainingTypeCard
-          key={type.id}
-          type={type}
-          isSelected={selectedType === type.id}
-          onSelect={() => onTypeSelect(type.id)}
-        />
-      ))}
-    </div>
-  </motion.div>
-);
-
-// Training Type Card Component
-const TrainingTypeCard: React.FC<{
-  type: (typeof TRAINING_TYPES)[0];
-  isSelected: boolean;
-  onSelect: () => void;
-}> = ({ type, isSelected, onSelect }) => (
-  <motion.div
-    className={`relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-105 ${
-      isSelected ? 'ring-4 ring-indigo-500 shadow-2xl' : 'shadow-lg'
-    }`}
-    onClick={onSelect}
-    variants={ANIMATION_VARIANTS.slideIn}
-    whileHover={{ y: -5 }}
-  >
-    <div
-      className={`h-48 bg-gradient-to-br ${type.color} p-6 text-white relative overflow-hidden`}
-    >
-      <div className='absolute inset-0 opacity-10'>
-        <div className='absolute top-4 right-4 text-6xl'>{type.icon}</div>
-      </div>
-
-      <div className='relative z-10 h-full flex flex-col justify-between'>
-        <div className='text-4xl mb-2'>{type.icon}</div>
-        <div>
-          <h3 className='text-lg font-bold mb-2'>{type.name}</h3>
-          <p className='text-sm opacity-90'>{type.description}</p>
-        </div>
-      </div>
-
-      <div className='absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity duration-300' />
-    </div>
-  </motion.div>
-);
-
-// What to Expect Section Component
-const WhatToExpectSection: React.FC = () => (
-  <motion.div
-    className='px-4'
-    initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
-  >
-    <div className='bg-white rounded-3xl shadow-2xl p-8'>
-      <div className='text-center mb-12'>
-        <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-          What to Expect
+    <div className='max-w-6xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-16'>
+        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+          Training Specialties
         </h2>
         <p className='text-xl text-gray-600'>
-          Your personalized training experience step by step
+          Choose the approach that aligns with your fitness goals
+        </p>
+      </motion.div>
+
+      <div className='grid md:grid-cols-2 gap-8'>
+        {TRAINING_SPECIALTIES.map((specialty, index) => (
+          <SpecialtyCard key={specialty.id} specialty={specialty} />
+        ))}
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Specialty Card
+const SpecialtyCard: React.FC<{
+  specialty: (typeof TRAINING_SPECIALTIES)[0];
+}> = ({ specialty }) => (
+  <motion.div
+    variants={fadeInUp}
+    className='group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer'
+  >
+    <div className='relative h-48 overflow-hidden'>
+      <img
+        src={specialty.image}
+        alt={specialty.title}
+        className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-300'
+      />
+      <div className='absolute inset-0 bg-black/40'></div>
+      <div className='absolute top-4 right-4'>
+        <span className='px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-full'>
+          {specialty.focus}
+        </span>
+      </div>
+    </div>
+
+    <div className='p-6'>
+      <h3 className='text-xl font-semibold text-gray-900 mb-2'>
+        {specialty.title}
+      </h3>
+      <p className='text-gray-600 mb-4'>{specialty.description}</p>
+      <div className='flex items-center text-blue-600 font-medium'>
+        Learn more
+        <ArrowRight className='w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform' />
+      </div>
+    </div>
+  </motion.div>
+);
+
+// What's Included Section
+const IncludedSection: React.FC = () => (
+  <motion.section
+    className='py-24 px-6'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-4xl mx-auto'>
+      <div className='text-center mb-16'>
+        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+          What's Included
+        </h2>
+        <p className='text-xl text-gray-600'>
+          Everything you need for a complete training experience
         </p>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-        {WHAT_TO_EXPECT_STEPS.map((step, index) => (
-          <ExpectationStep key={step.step} step={step} />
-        ))}
+      <div className='bg-white rounded-2xl p-8 shadow-lg'>
+        <div className='grid md:grid-cols-2 gap-6'>
+          {SESSION_INCLUDES.map((item, index) => (
+            <div key={index} className='flex items-center gap-4'>
+              <div className='w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0'>
+                <CheckCircle className='w-4 h-4 text-green-600' />
+              </div>
+              <span className='text-gray-700'>{item}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  </motion.div>
+  </motion.section>
 );
 
-// Expectation Step Component
-const ExpectationStep: React.FC<{
-  step: (typeof WHAT_TO_EXPECT_STEPS)[0];
-}> = ({ step }) => (
-  <div className='text-center'>
-    <div className='w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4'>
-      <span className='text-2xl font-bold text-white'>{step.step}</span>
-    </div>
-    <h3 className='text-lg font-bold text-gray-800 mb-2'>{step.title}</h3>
-    <p className='text-gray-600 text-sm'>{step.description}</p>
-  </div>
-);
-
-// Good to Know Section Component
-const GoodToKnowSection: React.FC = () => (
-  <motion.div
-    className='px-4'
-    initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
-  >
-    <div className='bg-white rounded-3xl shadow-2xl p-8'>
-      <h2 className='text-3xl font-bold text-gray-800 mb-8 text-center'>
-        Good to Know
-      </h2>
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-        <GoodToKnowItem
-          icon={Calendar}
-          title='Start & End Time'
-          description={GOOD_TO_KNOW_INFO.startEndTime}
-        />
-        <GoodToKnowItem
-          icon={Shirt}
-          title='What to Wear'
-          description={GOOD_TO_KNOW_INFO.whatToWear}
-        />
-        <GoodToKnowItem
-          icon={Users}
-          title='Age Policy'
-          description={GOOD_TO_KNOW_INFO.agePolicy}
-        />
-        <GoodToKnowItem
-          icon={Heart}
-          title='Adaptability'
-          description={GOOD_TO_KNOW_INFO.adaptability}
-        />
-      </div>
-    </div>
-  </motion.div>
-);
-
-// Good to Know Item Component
-const GoodToKnowItem: React.FC<{
-  icon: React.ComponentType<any>;
-  title: string;
-  description: string;
-}> = ({ icon: Icon, title, description }) => (
-  <div className='flex items-start space-x-4 p-4 bg-gray-50 rounded-2xl'>
-    <div className='w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0'>
-      <Icon className='w-6 h-6 text-indigo-600' />
-    </div>
-    <div>
-      <h3 className='font-bold text-gray-800 mb-1'>{title}</h3>
-      <p className='text-gray-600 text-sm'>{description}</p>
-    </div>
-  </div>
-);
-
-// Call to Action Section Component
-const CallToActionSection: React.FC<{
-  service: Service;
+// Human Banner Section
+const HumanBannerSection: React.FC<{
   onBookClick: () => void;
-}> = ({ service, onBookClick }) => (
-  <motion.div
-    className='px-4'
+}> = ({ onBookClick }) => (
+  <motion.section
+    className='py-24 px-6 relative overflow-hidden'
     initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
   >
-    <div className='relative overflow-hidden rounded-3xl'>
-      <div className='bg-gradient-to-r from-gray-900 via-indigo-900 to-purple-900 p-12 text-center'>
-        <div className='max-w-3xl mx-auto'>
-          <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
-            Ready to Start Your Fitness Journey?
-          </h2>
-          <p className='text-xl text-white/90 mb-8'>
-            Book your personalized training session today and take the first
-            step towards achieving your fitness goals with expert guidance.
-          </p>
+    <div className='absolute inset-0 z-0'>
+      <img
+        src='https://images.unsplash.com/photo-1549476464-37392f717541?q=80&w=2787&auto=format&fit=crop'
+        alt='Training motivation'
+        className='w-full h-full object-cover'
+      />
+      <div className='absolute inset-0 bg-black/60'></div>
+    </div>
 
-          <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-            <button
-              onClick={onBookClick}
-              className='bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600 text-white px-10 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
-            >
-              Book Your Session
-              <ArrowRight className='w-6 h-6' />
-            </button>
-          </div>
-        </div>
+    <div className='relative z-10 max-w-4xl mx-auto text-center text-white'>
+      <h2 className='text-4xl md:text-5xl font-bold mb-6'>
+        Your Transformation Starts with
+        <span className='block text-blue-400'>One Decision</span>
+      </h2>
+      <p className='text-xl mb-8 max-w-2xl mx-auto opacity-90'>
+        Join hundreds of people who decided to invest in themselves. Your future
+        self will thank you for taking this step today.
+      </p>
+
+      <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+        <button
+          onClick={onBookClick}
+          className='bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-[1.02] shadow-xl'
+        >
+          Start My Journey Today
+        </button>
+        <p className='text-sm opacity-75'>
+          👥 Join 500+ successful transformations
+        </p>
       </div>
     </div>
-  </motion.div>
+  </motion.section>
 );
 
-// Testimonial Section Component
-const TestimonialSection: React.FC = () => (
-  <motion.div
-    className='px-4'
+// Disclaimer Section
+const DisclaimerSection: React.FC = () => (
+  <motion.section
+    className='py-12 px-6 bg-amber-50'
     initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
   >
-    <div className='bg-gradient-to-r from-blue-50 to-indigo-100 rounded-3xl p-8 text-center'>
-      <div className='flex justify-center mb-4'>
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} className='w-6 h-6 text-yellow-400 fill-current' />
-        ))}
-      </div>
-      <blockquote className='text-2xl font-medium text-gray-800 mb-4 italic'>
-        "Best investment in my health! The trainer was amazing and I felt
-        stronger after just one session."
-      </blockquote>
-      <cite className='text-lg text-gray-600 font-medium'>
-        - Sarah M., Satisfied Client
-      </cite>
-    </div>
-  </motion.div>
-);
-
-// Health Disclaimer Section Component
-const HealthDisclaimerSection: React.FC = () => (
-  <motion.div
-    className='px-4'
-    initial='hidden'
-    animate='visible'
-    variants={ANIMATION_VARIANTS.fadeIn}
-  >
-    <div className='bg-amber-50 border border-amber-200 rounded-2xl p-6'>
-      <div className='flex items-start'>
-        <AlertTriangle className='w-6 h-6 text-amber-600 mr-3 flex-shrink-0 mt-1' />
+    <div className='max-w-4xl mx-auto'>
+      <div className='flex gap-4'>
+        <AlertTriangle className='w-6 h-6 text-amber-600 flex-shrink-0 mt-1' />
         <div>
-          <h3 className='font-bold text-amber-800 mb-2'>
-            Health & Safety First
+          <h3 className='font-semibold text-amber-900 mb-2'>
+            Important Notice
           </h3>
-          <p className='text-amber-700'>
-            For your safety, please consult your physician before beginning any
-            new fitness program. Our certified trainers will adapt sessions to
-            your fitness level and any physical limitations. Participation is at
-            your own discretion.
+          <p className='text-amber-800 text-sm'>
+            Please consult with your physician before starting any new fitness
+            program. Our certified trainers will adapt sessions to your fitness
+            level and any physical limitations.
           </p>
         </div>
       </div>
     </div>
-  </motion.div>
+  </motion.section>
 );
 
 export default PersonalTrainerServiceView;

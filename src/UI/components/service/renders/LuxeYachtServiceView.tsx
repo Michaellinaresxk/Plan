@@ -426,7 +426,7 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
                 transition={{ delay: 1.3, duration: 0.8 }}
                 className='flex flex-col sm:flex-row gap-4 mb-12'
               >
-                <motion.button
+                {/* <motion.button
                   whileHover={{
                     scale: 1.05,
                     boxShadow: '0 20px 40px rgba(6, 182, 212, 0.3)',
@@ -438,7 +438,7 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
                   <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000' />
                   <Calendar className='w-6 h-6' />
                   <span>Explore Collection</span>
-                </motion.button>
+                </motion.button> */}
               </motion.div>
 
               {/* Stats */}
