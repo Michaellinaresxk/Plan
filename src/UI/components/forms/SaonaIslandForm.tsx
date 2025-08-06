@@ -11,11 +11,7 @@ import {
   Clock,
   AlertTriangle,
   Info,
-  CreditCard,
   Waves,
-  Ship,
-  Sun,
-  Shield,
   Star,
 } from 'lucide-react';
 

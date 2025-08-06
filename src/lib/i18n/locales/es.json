@@ -212,7 +212,7 @@
         "full": "Disfruta de una noche llena de música y diversión con nuestro servicio de karaoke. Canta tus canciones favoritas y crea recuerdos inolvidables con amigos y familiares en un ambiente animado. ¡Canta, ríe y haz de cada momento una fiesta! Reserva tu sesión de karaoke hoy y vive la diversión al máximo."
       },
       "liveMusic": {
-        "name": "Entretenimiento con Música en Vivo",
+        "name": "Live Music",
         "short": "Músicos locales actuando en tu evento",
         "full": "Dale un toque especial a tu celebración con entretenimiento de música en vivo. Desde ritmos caribeños hasta clásicos internacionales, contamos con talentosos músicos que crearán el ambiente perfecto para tu evento. Reserva hoy y haz que la música transforme tu noche en una experiencia inolvidable.",
         "transformYourEvent": "Transforma Tu Evento",
@@ -544,19 +544,19 @@
   "about": {
     "aboutChip": "Nuestra Historia",
     "title": "Sobre Lux Punta Cana",
-    "subTitle": "Descubra la historia detrás de nuestras exclusivas casas vacacionales y nuestro compromiso con experiencias de lujo en Punta Cana.",
-    "card1": "Años de Experiencia",
-    "card2": "Propiedades Exclusivas",
-    "card3": "Clientes Satisfechos",
-    "card4": "Servicios Premium",
+    "subTitle": "Nos aseguramos de que su estancia esté llena de auténtico confort, experiencias auténticas y recuerdos que atesorará de verdad.",
+    "card1": "Años Creando Experiencias Memorables",
+    "card2": "Viajeros Atendidos con Excelencia",
+    "card3": "Servicios VIP a tu Disposición",
+    "card4": "Enfoque Personalizado",
     "from": "Desde",
-    "stars": "Creando experiencias de lujo excepcionales en Punta Cana desde nuestros inicios.",
+    "stars": "Creando experiencias excepcionales en Punta Cana desde nuestros inicios.",
     "ourHistory": {
       "aboutChip": "Nuestra Historia",
-      "title": "Una Trayectoria de Excelencia en Turismo de Lujo",
-      "p1": "Lux Punta Cana nació en 2010 con una visión clara: ofrecer experiencias vacacionales de lujo que combinen la privacidad de un hogar con los servicios de un resort de cinco estrellas.",
-      "p2": "Fundada por un grupo de entusiastas del turismo dominicano, nuestra empresa comenzó con apenas tres propiedades en la zona de Punta Cana. A lo largo de los años, hemos crecido hasta gestionar más de 25 exclusivas residencias vacacionales en las áreas más prestigiosas de República Dominicana.",
-      "p3": "Lo que nos distingue no es solo la calidad de nuestras propiedades, sino nuestro enfoque en el servicio personalizado. Creemos que cada huésped merece una experiencia única, adaptada a sus preferencias particulares."
+      "title": "Una Trayectoria de Excelencia en Servicios de Lujo",
+      "p1": "En Lux Punta Cana redefinimos el significado del lujo y la exclusividad en el paraíso caribeño. Nuestro compromiso es crear experiencias a la medida donde cada detalle se diseña para superar expectativas y convertir su estadía en un recuerdo inolvidable.",
+      "p2": "Desde traslados privados hasta servicios personalizados con chefs de alto nivel, bienestar integral y entretenimiento selecto, ofrecemos una gama exclusiva que eleva su viaje al más alto estándar.",
+      "p3": "Nuestra pasión es hacer que cada momento en Punta Cana sea extraordinario combinando sofisticación, confort y autenticidad para quienes buscan vivir la mejor experiencia."
     },
     "difference": {
       "differentChip": "Nuestra Diferencia",

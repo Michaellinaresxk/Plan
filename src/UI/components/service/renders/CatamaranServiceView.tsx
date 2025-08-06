@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Ship,
   Users,
   Clock,
   Utensils,
-  Camera,
   ArrowRight,
-  Star,
   Check,
   ChevronRight,
   ChevronLeft,

@@ -23,6 +23,7 @@ export const SERVICE_IDS = {
   ADVENTURE_EXCURSIONS: 'adventure-excursions',
   LIVE_MUSIC: 'live-music',
   MASSAGE: 'standard-massage',
+  ATV_RIDE_EXCURSION: 'atv-excursions',
 
   // Premium services
   LUXE_GOLF_CART: 'luxe-golf-cart',

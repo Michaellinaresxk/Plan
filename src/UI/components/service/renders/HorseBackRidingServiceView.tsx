@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '@/lib/i18n/client';
+import { useBooking } from '@/context/BookingContext';
+import { Service } from '@/types/type';
+import { ServiceData } from '@/types/services';
+import { BookingDate } from '@/types/type';
+import BookingModal from '../../modal/BookingModal';
 import {
   ChevronRight,
   MapPin,
@@ -6,13 +12,55 @@ import {
   Shield,
   Star,
   Check,
-  DollarSign,
   ArrowRight,
-  Play,
   X,
   Sparkles,
   Heart,
+  Users,
+  Baby,
+  Mountain,
+  Sun,
+  Waves,
+  Calendar,
+  Play,
 } from 'lucide-react';
+
+interface HorseBackRidingServiceViewProps {
+  service: Service;
+  serviceData?: ServiceData;
+  primaryColor: string;
+  viewContext?: 'standard-view' | 'premium-view';
+}
+
+// Location options matching the form
+const LOCATION_OPTIONS = [
+  {
+    id: 'punta-cana-resorts',
+    name: 'Punta Cana Resorts',
+    description: 'Resort area pickup available',
+  },
+  {
+    id: 'cap-cana',
+    name: 'Cap Cana',
+    description: 'Exclusive marina and luxury hotels',
+  },
+  { id: 'bavaro', name: 'Bavaro', description: 'Popular beach destination' },
+  {
+    id: 'punta-village',
+    name: 'Punta Village',
+    description: 'Local community area',
+  },
+  {
+    id: 'uvero-alto',
+    name: 'Uvero Alto',
+    description: 'Northern resort corridor',
+  },
+  {
+    id: 'macao-beach',
+    name: 'Macao Beach Area',
+    description: 'Near the riding location',
+  },
+];
 
 // Modern Hero Section with Parallax - Simplified
 const HeroSection = ({ onBookClick }) => {
@@ -37,12 +85,12 @@ const HeroSection = ({ onBookClick }) => {
           className='w-full h-full object-cover'
         />
         {/* Darker overlay for better contrast */}
-        <div className='absolute inset-0 bg-black/60' />
+        <div className='absolute inset-0 bg-black/40' />
         <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70' />
       </div>
 
-      {/* Simplified Content */}
-      <div className='relative z-10 h-full flex flex-col justify-center px-4 md:px-8'>
+      {/* Content */}
+      <div className='relative z-10 h-full flex flex-col justify-end px-4 md:px-8 pb-30'>
         <div className='max-w-4xl mx-auto w-full'>
           {/* Main Title - Cleaner and more impactful */}
           <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 text-white'>
@@ -64,6 +112,10 @@ const HeroSection = ({ onBookClick }) => {
               onClick={onBookClick}
               className='group bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all transform hover:scale-105 shadow-2xl inline-flex items-center justify-center gap-2'
             >
+              <Play
+                className='w-5 h-5 group-hover:translate-x-1 transition-transform'
+                fill='currentColor'
+              />
               Book Your Adventure
               <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
             </button>
@@ -78,6 +130,10 @@ const HeroSection = ({ onBookClick }) => {
             <div className='flex items-center gap-2'>
               <Clock className='w-4 h-4' />
               <span>2 Hours</span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <Users className='w-4 h-4' />
+              <span>All Levels</span>
             </div>
           </div>
         </div>
@@ -170,7 +226,7 @@ const PhotoGallery = () => {
 };
 
 // Special Banner Section
-const SpecialBanner = () => {
+const SpecialBanner = ({ onBookClick }) => {
   return (
     <section className='relative py-32 overflow-hidden'>
       {/* Background Image with Parallax Effect */}
@@ -219,8 +275,11 @@ const SpecialBanner = () => {
             </div>
           </div>
 
-          <button className='bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'>
-            Book Now & Save 15%
+          <button
+            onClick={onBookClick}
+            className='bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
+          >
+            Book Now
           </button>
         </div>
       </div>
@@ -392,7 +451,7 @@ const ReviewsSection = () => {
 };
 
 // Adventure Banner Section
-const AdventureBanner = () => {
+const AdventureBanner = ({ onBookClick }) => {
   return (
     <section className='relative py-24 overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50'>
       <div className='max-w-6xl mx-auto px-4'>
@@ -466,7 +525,10 @@ const AdventureBanner = () => {
               </div>
             </div>
 
-            <button className='mt-8 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105'>
+            <button
+              onClick={onBookClick}
+              className='mt-8 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105'
+            >
               Reserve Your Spot Today
             </button>
           </div>
@@ -500,17 +562,63 @@ const AdventureBanner = () => {
 };
 
 // Main Component
-const HorseBackRidingServiceView = () => {
+const HorseBackRidingServiceView: React.FC<HorseBackRidingServiceViewProps> = ({
+  service,
+  serviceData,
+  viewContext,
+}) => {
+  const { t } = useTranslation();
+  const { bookService } = useBooking();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState('');
+
+  const handleBookingConfirm = (
+    service: Service,
+    dates: BookingDate,
+    guests: number
+  ) => {
+    bookService(service, dates, guests);
+    setIsModalOpen(false);
+  };
+
+  const handleBookNow = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleLocationSelect = (locationId: string) => {
+    setSelectedLocation(selectedLocation === locationId ? '' : locationId);
+  };
+
   return (
     <div className='min-h-screen bg-white'>
-      <HeroSection onBookClick={() => console.log('Book clicked')} />
+      <HeroSection onBookClick={handleBookNow} />
       <PhotoGallery />
       <QuickInfoSection />
       <IncludesSection />
-      <SpecialBanner />
-      <AdventureBanner />
+      <SpecialBanner onBookClick={handleBookNow} />
+      <AdventureBanner onBookClick={handleBookNow} />
       <TrustBadges />
       <ReviewsSection />
+
+      {/* Floating Action Button */}
+      <div className='fixed bottom-8 right-8 z-50'>
+        <button
+          onClick={handleBookNow}
+          className='group bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white p-4 rounded-full shadow-2xl hover:shadow-amber-500/25 transition-all duration-300 hover:scale-110'
+        >
+          <Mountain className='w-6 h-6 group-hover:scale-110 transition-transform' />
+        </button>
+      </div>
+
+      {/* Booking Modal */}
+      {isModalOpen && (
+        <BookingModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleBookingConfirm}
+          service={service}
+        />
+      )}
     </div>
   );
 };

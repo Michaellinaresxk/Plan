@@ -1088,6 +1088,56 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
   },
 
+  [SERVICE_IDS.ATV_RIDE_EXCURSION]: {
+    priceUnit: 'per group',
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
+    includes: [
+      'Private catamaran with water slide',
+      'Private round-trip transportation from your villa',
+      'Snorkeling equipment',
+      'Ice, water, and soft drinks',
+      'Tropical fruits',
+      'Nachos with salsa',
+    ],
+    openBarOptions: [
+      'Mojito',
+      'Cuba Libre',
+      'Rum Punch',
+      'Piña Colada',
+      'Gin & Tonic',
+      'Vodka with cranberry',
+    ],
+    places: [
+      'Snorkeling area',
+      'Natural sandbanks (Natural Pools)',
+      'View of the dolphin habitat from the boat',
+    ],
+    timeSlots: [
+      '8:30 AM – 11:30 AM',
+      '11:30 AM – 2:30 PM',
+      '2:30 PM – 5:30 PM',
+    ],
+  },
+
   // Add empty objects for remaining services to prevent errors
 
   // [SERVICE_IDS.GROCERY]: {},
