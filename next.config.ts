@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
       'prod-images.viravira.co',
       'mscocina.com',
       'www.teletrans.cl',
+      'puntacanaexcursions.online',
     ],
   },
 };

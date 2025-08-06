@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   MapPin,
   Users,
@@ -17,18 +16,23 @@ import {
   Sun,
   Fish,
   Waves,
-  TreePine,
   Anchor,
   AlertCircle,
   Heart,
   Award,
   Shield,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Palmtree,
+  Compass,
+  Sparkles,
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import BookingModal from '../../modal/BookingModal';
+import { BookingDate, Service } from '@/constants/formFields';
+import { useTranslation } from '@/lib/i18n/client';
 import { useBooking } from '@/context/BookingContext';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import { BookingDate } from '@/types/type';
-import BookingModal from '@/UI/components/modal/BookingModal';
 
 // Types
 interface TourPackage {
@@ -37,120 +41,63 @@ interface TourPackage {
   price: number;
   duration: string;
   includes: string[];
-  highlights: string[];
   maxGuests: number;
-  recommended: boolean;
 }
 
-interface SaonaIslandTourServiceViewProps {
-  service: Service;
-  serviceData?: ServiceData;
-  primaryColor: string;
+interface GalleryImage {
+  id: number;
+  src: string;
+  alt: string;
+  title: string;
 }
 
-// Mock data for tour packages
-const tourPackages: TourPackage[] = [
-  {
-    id: 'classic',
-    name: 'Classic Saona Island',
-    price: 75,
-    duration: '8 hours',
-    includes: [
-      'Round-trip transportation',
-      'Speed boat ride',
-      'Buffet lunch',
-      'Natural pool stop',
-      'Professional guide',
-    ],
-    highlights: [
-      'Saona Island beach time',
-      'Natural swimming pool',
-      'Local lunch experience',
-      'Starfish sighting',
-    ],
-    maxGuests: 50,
-    recommended: false,
-  },
-  {
-    id: 'premium',
-    name: 'Premium Saona Experience',
-    price: 120,
-    duration: '9 hours',
-    includes: [
-      'All Classic features',
-      'Premium catamaran',
-      'Open bar',
-      'Snorkeling equipment',
-      'Professional photography',
-      'VIP beach setup',
-    ],
-    highlights: [
-      'Luxury catamaran transport',
-      'Premium beach service',
-      'Professional photos included',
-      'Unlimited drinks',
-      'Snorkeling adventure',
-    ],
-    maxGuests: 30,
-    recommended: true,
-  },
-];
-
-// Gallery images for masonry layout
-const galleryImages = [
+// Simple gallery data
+const galleryImages: GalleryImage[] = [
   {
     id: 1,
-    src: 'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=800',
-    alt: 'Saona Island Beach',
-    title: 'Paradise Beach',
-    size: 'large',
+    src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island.png',
+    alt: 'Playa Isla Saona',
+    title: 'Playa de Arena Blanca',
   },
   {
     id: 2,
-    src: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=600',
-    alt: 'Natural Pool',
-    title: 'Natural Swimming Pool',
-    size: 'medium',
+    src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/09/playa-isla-saona-scaled.jpg',
+    alt: 'Piscina Natural',
+    title: 'Piscina Natural',
   },
   {
     id: 3,
-    src: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?q=80&w=600',
-    alt: 'Starfish',
-    title: 'Starfish Encounter',
-    size: 'medium',
+    src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/09/saona.png',
+    alt: 'Estrellas de Mar',
+    title: 'Estrellas de Mar',
   },
   {
     id: 4,
-    src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=800',
-    alt: 'Catamaran',
-    title: 'Luxury Transportation',
-    size: 'large',
-  },
-  {
-    id: 5,
-    src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=600',
-    alt: 'Local Cuisine',
-    title: 'Dominican Flavors',
-    size: 'small',
-  },
-  {
-    id: 6,
-    src: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=600',
-    alt: 'Snorkeling',
-    title: 'Underwater Adventure',
-    size: 'medium',
-  },
-  {
-    id: 7,
-    src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=600',
-    alt: 'Beach Relaxation',
-    title: 'Pure Relaxation',
-    size: 'small',
+    src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/09/saona-island-2-scaled.jpg',
+    alt: 'Lancha',
+    title: 'Transporte Marítimo',
   },
 ];
 
-// Video Hero Component
-const VideoHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
+// Single standard tour package
+const tourPackage: TourPackage = {
+  id: 'classic',
+  name: 'Excursión Isla Saona',
+  price: 75,
+  duration: '8 horas',
+  includes: [
+    'Transporte desde tu hotel',
+    'Paseo en lancha rápida',
+    'Almuerzo buffet típico',
+    'Parada en piscina natural',
+    'Guía local experimentado',
+    'Tiempo libre en la playa',
+  ],
+  maxGuests: 50,
+};
+
+// Simple Video Hero
+const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -159,7 +106,6 @@ const VideoHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
     const video = videoRef.current;
     if (video) {
       video.play().catch(() => {
-        // Auto-play failed, which is fine
         setIsPlaying(false);
       });
     }
@@ -186,7 +132,7 @@ const VideoHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
   };
 
   return (
-    <div className='relative h-screen overflow-hidden'>
+    <div className='relative h-screen w-full overflow-hidden'>
       {/* Video Background */}
       <video
         ref={videoRef}
@@ -194,25 +140,19 @@ const VideoHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
         loop
         muted={isMuted}
         playsInline
-        poster='https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=1920'
+        poster='https://images.unsplash.com/photo-1665581341138-78fd42914c6a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
       >
         <source
           src='https://cdn.coverr.co/videos/coverr-tropical-beach-aerial-view-8662/1080p.mp4'
           type='video/mp4'
         />
-        {/* Fallback for browsers that don't support video */}
-        <img
-          src='https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=1920'
-          alt='Saona Island'
-          className='w-full h-full object-cover'
-        />
       </video>
 
-      {/* Video Controls */}
-      <div className='absolute top-6 right-6 flex gap-2'>
+      {/* Simple Video Controls */}
+      <div className='absolute top-4 right-4 flex gap-2'>
         <button
           onClick={togglePlay}
-          className='w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 border border-white/20 text-white'
+          className='w-10 h-10 bg-black/30 rounded-lg flex items-center justify-center hover:bg-black/50 transition-colors text-white'
         >
           {isPlaying ? (
             <Pause className='w-5 h-5' />
@@ -222,7 +162,7 @@ const VideoHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
         </button>
         <button
           onClick={toggleMute}
-          className='w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 border border-white/20 text-white'
+          className='w-10 h-10 bg-black/30 rounded-lg flex items-center justify-center hover:bg-black/50 transition-colors text-white'
         >
           {isMuted ? (
             <VolumeX className='w-5 h-5' />
@@ -232,415 +172,488 @@ const VideoHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
         </button>
       </div>
 
-      {/* Gradient Overlay */}
-      <div className='absolute inset-0 bg-gradient-to-br from-slate-900/50 via-blue-900/30 to-emerald-900/40' />
+      {/* Natural Overlay */}
+      <div className='absolute inset-0 bg-black/30' />
 
-      {/* Hero Content */}
-      <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
-        <div className='max-w-5xl'>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8'
-          >
-            <MapPin className='w-5 h-5 mr-3 text-emerald-300' />
-            <span className='font-semibold text-lg'>Dominican Paradise</span>
-          </motion.div>
+      {/* Hero Content - Natural and Simple */}
+      <div className='absolute inset-0 flex items-center justify-center text-center text-white p-4'>
+        <div className='w-full max-w-4xl'>
+          {/* Simple Location Badge */}
+          <div className='inline-flex items-center bg-white/20 px-4 py-2 rounded-full mb-6'>
+            <MapPin className='w-4 h-4 mr-2' />
+            <span className='font-medium'>República Dominicana</span>
+          </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className='text-6xl md:text-7xl font-bold mb-6 leading-tight'
-          >
-            Saona Island
-          </motion.h1>
+          {/* Natural Title - Appropriate Size */}
+          <h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight'>
+            Isla Saona
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            className='text-2xl md:text-3xl text-white/90 mb-4 font-light'
-          >
-            Caribbean Paradise Experience
-          </motion.p>
+          {/* Simple Subtitle */}
+          <p className='text-lg sm:text-xl md:text-2xl text-white/90 mb-4 font-light'>
+            Excursión de Un Día
+          </p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-            className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
-          >
-            Discover the most beautiful island in the Caribbean. Crystal clear
-            waters, white sand beaches, and unforgettable memories await you in
-            this tropical paradise.
-          </motion.p>
+          {/* Natural Description */}
+          <p className='text-sm sm:text-base md:text-lg text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed'>
+            Disfruta de un día completo en una de las islas más hermosas del
+            Caribe. Playa, naturaleza y cultura dominicana en una sola
+            excursión.
+          </p>
 
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.1, duration: 0.8 }}
+          {/* Simple CTA */}
+          <button
             onClick={onBookClick}
-            className='bg-gradient-to-r from-emerald-600 to-blue-500 hover:from-emerald-700 hover:to-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className='bg-cyan-600 hover:bg-cyan-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg flex items-center gap-3 mx-auto transition-all duration-300 shadow-lg'
           >
-            Explore Paradise
-            <ArrowRight className='w-6 h-6' />
-          </motion.button>
+            <Anchor className='w-5 h-5' />
+            Ver Excursión
+            <ArrowRight className='w-5 h-5' />
+          </button>
+
+          {/* Simple trust indicators */}
+          <div className='flex flex-wrap justify-center items-center gap-4 mt-6 text-white/70 text-sm'>
+            <div className='flex items-center gap-1'>
+              <Star className='w-4 h-4 text-yellow-400 fill-current' />
+              <span>4.8/5</span>
+            </div>
+            <span>•</span>
+            <span>Más de 1,000 excursionistas</span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-// Masonry Gallery Component
-const MasonryGallery: React.FC = () => {
+// Simple Gallery Component
+const SimpleGallery: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
-  const getSizeClasses = (size: string) => {
-    switch (size) {
-      case 'large':
-        return 'md:col-span-2 md:row-span-2 h-96';
-      case 'medium':
-        return 'md:col-span-1 md:row-span-2 h-64';
-      case 'small':
-        return 'md:col-span-1 md:row-span-1 h-48';
-      default:
-        return 'md:col-span-1 md:row-span-1 h-48';
+  const nextImage = () => {
+    if (selectedImage !== null) {
+      setSelectedImage((selectedImage + 1) % galleryImages.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedImage !== null) {
+      setSelectedImage(
+        (selectedImage - 1 + galleryImages.length) % galleryImages.length
+      );
     }
   };
 
   return (
-    <section className='bg-white rounded-3xl p-10 shadow-xl'>
-      <div className='text-center mb-12'>
-        <h2 className='text-4xl font-bold text-slate-800 mb-4'>
-          Experience Gallery
+    <section className='w-full  rounded-lg p-4 sm:p-6 '>
+      {/* Simple Header */}
+      <div className='text-center mb-6'>
+        <h2 className='text-2xl sm:text-3xl font-bold text-slate-800 mb-2'>
+          Conoce la Isla
         </h2>
-        <p className='text-xl text-slate-600'>
-          See the beauty that awaits you at Saona Island
-        </p>
+        <p className='text-slate-600'>Un vistazo a lo que vas a descubrir</p>
       </div>
 
-      {/* Masonry Grid */}
-      <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-min'>
+      {/* Simple Grid - 3 columns max */}
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
         {galleryImages.map((image, index) => (
-          <motion.div
+          <div
             key={image.id}
-            className={`group relative overflow-hidden rounded-2xl cursor-pointer shadow-lg ${getSizeClasses(
-              image.size
-            )}`}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.6 }}
-            whileHover={{ scale: 1.02 }}
+            className='group relative overflow-hidden rounded-lg cursor-pointer shadow-sm hover:shadow-md transition-all duration-300 aspect-square'
             onClick={() => setSelectedImage(index)}
           >
             <img
               src={image.src}
               alt={image.alt}
-              className='w-full h-full object-cover transition-all duration-500 group-hover:scale-110'
+              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
             />
 
-            {/* Overlay */}
-            <div className='absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300' />
+            {/* Simple overlay */}
+            <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
 
-            {/* Content */}
-            <div className='absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
-              <h3 className='font-bold text-lg'>{image.title}</h3>
+            {/* Simple content */}
+            <div className='absolute bottom-0 left-0 right-0 p-2 sm:p-3 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
+              <h3 className='font-medium text-sm'>{image.title}</h3>
             </div>
-
-            {/* Camera icon */}
-            <div className='absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-              <Camera className='w-5 h-5 text-white' />
-            </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {selectedImage !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className='fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4'
+      {/* Simple Lightbox */}
+      {selectedImage !== null && (
+        <div className='fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4'>
+          <button
             onClick={() => setSelectedImage(null)}
+            className='absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors text-white'
           >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className='relative max-w-4xl max-h-[80vh] w-full'
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={galleryImages[selectedImage].src}
-                alt={galleryImages[selectedImage].alt}
-                className='w-full h-full object-contain rounded-2xl'
-              />
-              <button
-                onClick={() => setSelectedImage(null)}
-                className='absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 text-white'
-              >
-                ×
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <X className='w-5 h-5' />
+          </button>
+
+          <button
+            onClick={prevImage}
+            className='absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors text-white'
+          >
+            <ChevronLeft className='w-5 h-5' />
+          </button>
+
+          <button
+            onClick={nextImage}
+            className='absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center hover:bg-white/30 transition-colors text-white'
+          >
+            <ChevronRight className='w-5 h-5' />
+          </button>
+
+          <div className='relative max-w-4xl max-h-[80vh] w-full'>
+            <img
+              src={galleryImages[selectedImage].src}
+              alt={galleryImages[selectedImage].alt}
+              className='w-full h-full object-contain rounded-lg'
+            />
+
+            <div className='absolute bottom-0 left-0 right-0 bg-black/60 p-4 rounded-b-lg'>
+              <h3 className='text-lg font-semibold text-white'>
+                {galleryImages[selectedImage].title}
+              </h3>
+            </div>
+          </div>
+
+          <div className='absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/20 px-3 py-1 rounded-full text-white text-sm'>
+            {selectedImage + 1} / {galleryImages.length}
+          </div>
+        </div>
+      )}
     </section>
   );
 };
 
-// Features Section Component
-const FeaturesSection: React.FC = () => {
-  const features = [
+// Island Features - Natural Focus
+const IslandExperience: React.FC = () => {
+  const experiences = [
     {
-      icon: Shield,
-      title: 'Safety First',
-      description: 'Professional crew and safety equipment for peace of mind',
-      color: 'text-blue-600 bg-blue-100',
+      icon: Waves,
+      title: 'Piscina Natural',
+      description:
+        'Aguas cristalinas de medio metro de profundidad con estrellas de mar',
     },
     {
-      icon: Award,
-      title: 'Award Winning',
+      icon: Fish,
+      title: 'Vida Marina',
       description:
-        'Recognized as the best island tour experience in the region',
-      color: 'text-amber-600 bg-amber-100',
+        'Observa peces tropicales y estrellas de mar en su hábitat natural',
     },
     {
-      icon: Heart,
-      title: 'Eco-Friendly',
+      icon: Utensils,
+      title: 'Comida Criolla',
       description:
-        'Sustainable tourism that protects our beautiful environment',
-      color: 'text-emerald-600 bg-emerald-100',
+        'Almuerzo buffet con platos típicos dominicanos preparados localmente',
+    },
+    {
+      icon: Palmtree,
+      title: 'Playa Virgen',
+      description: 'Kilómetros de playa de arena blanca rodeada de palmeras',
     },
   ];
 
   return (
-    <section className='bg-slate-50 rounded-3xl p-10'>
-      <div className='text-center mb-12'>
-        <h2 className='text-4xl font-bold text-slate-800 mb-4'>
-          Why Choose Our Tour?
+    <section className='w-full'>
+      <div className='text-center mb-8'>
+        <h2 className='text-2xl sm:text-3xl font-bold text-slate-800 mb-3'>
+          Qué Vas a Vivir
         </h2>
-        <p className='text-xl text-slate-600'>
-          Experience the difference with our premium service
+        <p className='text-slate-600'>
+          Una excursión auténtica por la naturaleza caribeña
         </p>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-        {features.map((feature, index) => (
-          <motion.div
-            key={index}
-            className='text-center'
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2, duration: 0.6 }}
-          >
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
+        {experiences.map((exp, index) => {
+          const Icon = exp.icon;
+          return (
             <div
-              className={`w-16 h-16 rounded-2xl ${feature.color} flex items-center justify-center mx-auto mb-6`}
+              key={index}
+              className='bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300'
             >
-              <feature.icon className='w-8 h-8' />
+              <div className='w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4'>
+                <Icon className='w-6 h-6 text-teal-600' />
+              </div>
+              <h3 className='text-lg font-semibold text-slate-800 mb-2'>
+                {exp.title}
+              </h3>
+              <p className='text-slate-600 text-sm leading-relaxed'>
+                {exp.description}
+              </p>
             </div>
-            <h3 className='text-xl font-bold text-slate-800 mb-3'>
-              {feature.title}
-            </h3>
-            <p className='text-slate-600 leading-relaxed'>
-              {feature.description}
-            </p>
-          </motion.div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
 };
 
-// Main Component
-const SaonaIslandTourServiceView: React.FC<SaonaIslandTourServiceViewProps> = ({
-  service,
-  serviceData,
-}) => {
-  const { bookService } = useBooking();
-  const [selectedPackage, setSelectedPackage] = useState<string>('premium');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// Practical Information
+const TourInformation: React.FC = () => {
+  return (
+    <section className='w-full bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6'>
+      <div className='flex items-start gap-4'>
+        <div className='w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0'>
+          <AlertCircle className='w-5 h-5 text-blue-600' />
+        </div>
+        <div className='flex-1'>
+          <h3 className='font-semibold text-blue-800 mb-3 text-lg'>
+            Información Práctica
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-3 text-blue-700 text-sm'>
+            <div className='space-y-2'>
+              <p>• Recogida en hoteles: 7:00 AM - 8:30 AM</p>
+              <p>• Regreso aproximado: 5:00 PM</p>
+              <p>• Incluye almuerzo y bebidas</p>
+            </div>
+            <div className='space-y-2'>
+              <p>• Llevar: protector solar, toalla, cámara</p>
+              <p>• Ropa cómoda y traje de baño</p>
+              <p>• Actividad apta para toda la familia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
-  const selectedPackageData = tourPackages.find(
-    (pkg) => pkg.id === selectedPackage
+// Special Banner Section
+const SpecialBanner = ({ onBookClick }) => {
+  return (
+    <section className='relative py-32 overflow-hidden'>
+      {/* Background Image with Parallax Effect */}
+      <div className='absolute inset-0'>
+        <img
+          src='https://puntacanaexcursions.online/wp-content/uploads/2024/09/saona-sky-scaled.jpg'
+          alt='Horseback riding experience'
+          className='w-full h-full object-cover'
+        />
+        <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent' />
+      </div>
+
+      {/* Content */}
+      <div className='relative z-10 max-w-6xl mx-auto px-4'>
+        <div className='max-w-2xl'>
+          <div className='inline-flex items-center gap-2 bg-cyan-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-amber-400/30'>
+            <Sparkles className='w-4 h-4 text-cyan-400' />
+            <span className='text-cyan-200 text-sm font-medium'>
+              Limited Time Offer
+            </span>
+          </div>
+
+          <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
+            Create Memories That
+            <span className='block text-cyan-400'>Last a Lifetime</span>
+          </h2>
+
+          <p className='text-lg text-white/90 mb-8'>
+            Join over 800+ happy riders who've experienced the magic of Macao
+            Beach on horseback. Our gentle horses and expert guides ensure a
+            safe, unforgettable adventure for riders of all levels.
+          </p>
+
+          <div className='flex flex-wrap gap-6 mb-8'>
+            <div className='flex items-center gap-2 text-white'>
+              <Heart className='w-5 h-5 text-red-400' />
+              <span>Family Friendly</span>
+            </div>
+            <div className='flex items-center gap-2 text-white'>
+              <Shield className='w-5 h-5 text-green-400' />
+              <span>100% Safe</span>
+            </div>
+            <div className='flex items-center gap-2 text-white'>
+              <Star className='w-5 h-5 text-amber-400' />
+              <span>Top Rated</span>
+            </div>
+          </div>
+
+          <button
+            onClick={onBookClick}
+            className='bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
+          >
+            Book Now
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Decoration Banners Section
+const BannersSection: React.FC<{
+  onBookClick: () => void;
+}> = ({ onBookClick }) => {
+  // Animation variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+  };
+  const staggerChildren = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 },
+    },
+  };
+  const DECORATION_BANNERS = [
+    {
+      id: 'romantic',
+      title: 'Romantic Moments',
+      subtitle: 'Candlelit elegance for intimate celebrations',
+      image:
+        'https://puntacanaexcursions.online/wp-content/uploads/2024/09/saaoaaa.jpeg',
+      color: 'from-rose-300/60 to-pink-400/60',
+    },
+    {
+      id: 'birthday',
+      title: 'Birthday Magic',
+      subtitle: 'Vibrant celebrations that create lasting memories',
+      image:
+        'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island-scaled.jpg',
+      color: 'from-indigo-300/60 to-purple-400/60',
+    },
+    {
+      id: 'poolside',
+      title: 'Poolside Paradise',
+      subtitle: 'Transform your pool area into a celebration oasis',
+      image:
+        'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island-puj.png',
+      color: 'from-teal-300/60 to-cyan-400/60',
+    },
+  ] as const;
+
+  // Individual Banner Card
+  const BannerCard: React.FC<{
+    banner: (typeof DECORATION_BANNERS)[0];
+    reverse: boolean;
+    onBookClick: () => void;
+  }> = ({ banner, reverse, onBookClick }) => (
+    <motion.div
+      // variants={fadeInUp}
+      className={`grid lg:grid-cols-2 gap-12 items-center ${
+        reverse ? 'lg:grid-flow-col-dense' : ''
+      }`}
+    >
+      {/* Image */}
+      <div
+        className={`relative h-96 rounded-2xl overflow-hidden ${
+          reverse ? 'lg:col-start-2' : ''
+        }`}
+      >
+        <img
+          src={banner.image}
+          alt={banner.title}
+          className='w-full h-full object-cover'
+        />
+        {/* <div
+          className={`absolute inset-0 bg-gradient-to-r ${banner.color}`}
+        ></div> */}
+      </div>
+
+      {/* Content */}
+      <div
+        className={`space-y-6 ${reverse ? 'lg:col-start-1 lg:text-right' : ''}`}
+      >
+        <h2 className='text-4xl md:text-5xl font-light text-stone-800'>
+          {banner.title}
+        </h2>
+        <p className='text-xl text-stone-600 leading-relaxed'>
+          {banner.subtitle}
+        </p>
+        <button
+          onClick={onBookClick}
+          className='inline-flex items-center gap-3 bg-cyan-500 text-stone-50 px-6 py-3 rounded-full font-medium hover:bg-stone-800 transition-colors duration-200'
+        >
+          View Details
+          <ArrowRight className='w-4 h-4' />
+        </button>
+      </div>
+    </motion.div>
   );
 
+  return (
+    <motion.section
+      className='py-20 px-6'
+      initial='hidden'
+      whileInView='visible'
+      viewport={{ once: true }}
+      variants={staggerChildren}
+    >
+      <div className='max-w-7xl mx-auto space-y-16'>
+        {DECORATION_BANNERS.map((banner, index) => (
+          <BannerCard
+            key={banner.id}
+            banner={banner}
+            reverse={index % 2 === 1}
+            onBookClick={onBookClick}
+          />
+        ))}
+      </div>
+    </motion.section>
+  );
+};
+
+// Main Component - Natural Island Excursion
+const SaonaIslandTourServiceView: React.FC = ({ service }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
+  const { bookService } = useBooking();
   const handleBookNow = () => {
     setIsModalOpen(true);
   };
 
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-    setIsModalOpen(false);
-  };
+  const handleBooking = useCallback(
+    async (service: Service, dates: BookingDate, guests: number) => {
+      try {
+        setIsLoading(true);
+        await bookService(service, dates, guests);
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error('Booking failed:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [bookService]
+  );
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50'>
-      {/* Video Hero Section */}
-      <VideoHero onBookClick={handleBookNow} />
+    <div className='min-h-screen w-full bg-slate-50'>
+      {/* Island Hero Section */}
+      <IslandHero onBookClick={handleBookNow} />
 
-      {/* Content sections */}
-      <div className='max-w-7xl mx-auto px-6 py-16 space-y-16'>
-        {/* Masonry Gallery */}
-        <MasonryGallery />
-        {/* Selected Package Details */}
-        {selectedPackageData && (
-          <motion.section
-            layout
-            className='bg-gradient-to-r from-emerald-600 to-blue-500 rounded-3xl p-10 text-white shadow-2xl'
-          >
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-              <div>
-                <h3 className='text-3xl font-bold mb-6'>
-                  {selectedPackageData.name}
-                </h3>
-                <p className='text-xl text-emerald-100 mb-8 leading-relaxed'>
-                  {selectedPackageData.id === 'premium'
-                    ? "Experience Saona Island in ultimate luxury. Enjoy premium transportation, VIP beach service, professional photography, and unlimited refreshments while exploring one of the Caribbean's most beautiful destinations."
-                    : 'Discover the natural beauty of Saona Island with our classic tour package. Perfect for families and groups looking for an authentic Caribbean island experience at an excellent value.'}
-                </p>
+      {/* Main content - Full width responsive */}
+      <div className='w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12  mx-auto'>
+        {/* Compact Gallery */}
+        <SimpleGallery />
+        {/* Island Experience */}
+        <IslandExperience />
+        <BannersSection
+          onBookClick={function (): void {
+            throw new Error('Function not implemented.');
+          }}
+        />
+        <SpecialBanner onBookClick={undefined} />
 
-                <div className='flex items-center gap-8 mb-8'>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>
-                      ${selectedPackageData.price}
-                    </div>
-                    <div className='text-emerald-200'>per person</div>
-                  </div>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>
-                      {selectedPackageData.maxGuests}
-                    </div>
-                    <div className='text-emerald-200'>max guests</div>
-                  </div>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>
-                      {selectedPackageData.duration}
-                    </div>
-                    <div className='text-emerald-200'>duration</div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleBookNow}
-                  className='bg-white text-emerald-600 hover:bg-emerald-50 px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-lg'
-                >
-                  <Calendar className='w-5 h-5' />
-                  Book This Experience
-                </button>
-              </div>
-
-              <div className='relative h-96 rounded-2xl overflow-hidden shadow-2xl'>
-                <img
-                  src='https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=800'
-                  alt={selectedPackageData.name}
-                  className='w-full h-full object-cover'
-                />
-              </div>
-            </div>
-          </motion.section>
-        )}
-
-        {/* Features Section */}
-        <FeaturesSection />
-
-        {/* Call to Action */}
-        <section className='relative overflow-hidden rounded-3xl h-96 shadow-2xl'>
-          <img
-            src='https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?q=80&w=1920'
-            alt='Saona Island paradise'
-            className='w-full h-full object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-slate-900/80 to-emerald-900/60' />
-
-          <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
-            <div className='max-w-3xl'>
-              <motion.h2
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                className='text-5xl font-bold mb-6'
-              >
-                Ready for Paradise?
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className='text-xl text-white/90 mb-8'
-              >
-                Book your Saona Island adventure today and discover why millions
-                choose this Caribbean paradise. Limited availability!
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
-                className='flex flex-col sm:flex-row gap-4 justify-center items-center'
-              >
-                <button
-                  onClick={handleBookNow}
-                  className='bg-gradient-to-r from-emerald-600 to-blue-500 hover:from-emerald-700 hover:to-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 transition-all duration-300 hover:scale-105 shadow-2xl'
-                >
-                  <Anchor className='w-6 h-6' />
-                  Book Now
-                </button>
-                <div className='text-white/80 text-sm'>
-                  Free cancellation • Instant confirmation • Best price
-                  guarantee
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Important Notice */}
-        <motion.div
-          className='bg-blue-50 border-l-4 border-blue-400 rounded-2xl p-8'
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className='flex items-start'>
-            <div className='w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mr-4 flex-shrink-0'>
-              <AlertCircle className='w-5 h-5 text-blue-600' />
-            </div>
-            <div>
-              <h3 className='font-bold text-blue-800 mb-3 text-lg'>
-                Important Information
-              </h3>
-              <div className='text-blue-700 leading-relaxed space-y-2'>
-                <p>
-                  • Tours are weather dependent and may be rescheduled for
-                  safety
-                </p>
-                <p>• Pickup times vary by hotel location (6:30 AM - 8:30 AM)</p>
-                <p>• Bring sunscreen, towel, and comfortable swimwear</p>
-                <p>• Life jackets provided for all water activities</p>
-                <p>• Full refund available for weather cancellations</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {/* Practical Information */}
+        <TourInformation />
       </div>
 
       {/* Booking Modal */}
-      {isModalOpen && (
-        <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleBookingConfirm}
-          service={service}
-        />
-      )}
+      <AnimatePresence>
+        {isModalOpen && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBooking}
+            service={service}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -59,7 +59,7 @@ const AboutPage = () => {
             <div className='grid grid-cols-2 md:grid-cols-4 -mt-24 relative z-20'>
               {/* Stat Card 1 */}
               <motion.div
-                className='bg-white shadow-xl rounded-xl p-8 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
+                className='bg-white shadow-xl mt-5 rounded-xl p-8 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -70,36 +70,38 @@ const AboutPage = () => {
 
               {/* Stat Card 2 */}
               <motion.div
-                className='bg-white shadow-xl rounded-xl p-8 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
+                className='bg-white shadow-xl mt-5 rounded-xl p-8 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <div className='font-bold text-4xl text-blue-600 mb-2'>25+</div>
+                <div className='font-bold text-4xl text-blue-600 mb-2'>
+                  500+
+                </div>
                 <p className='text-gray-600'>{t('about.card2')}</p>
               </motion.div>
 
               {/* Stat Card 3 */}
               <motion.div
-                className='bg-white shadow-xl rounded-xl p-8 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
+                className='bg-white shadow-xl rounded-xl p-8 mt-5 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <div className='font-bold text-4xl text-blue-600 mb-2'>
-                  1000+
-                </div>
+                <div className='font-bold text-4xl text-blue-600 mb-2'>20+</div>
                 <p className='text-gray-600'>{t('about.card3')}</p>
               </motion.div>
 
               {/* Stat Card 4 */}
               <motion.div
-                className='bg-white shadow-xl rounded-xl p-8 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
+                className='bg-white shadow-xl rounded-xl p-8 mt-5 text-center mx-2 hover:shadow-2xl transition-shadow duration-300'
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <div className='font-bold text-4xl text-blue-600 mb-2'>30+</div>
+                <div className='font-bold text-4xl text-blue-600 mb-2'>
+                  100%
+                </div>
                 <p className='text-gray-600'>{t('about.card4')}</p>
               </motion.div>
             </div>

@@ -20,7 +20,7 @@ const Footer = () => {
         <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
           {/* Company Info */}
           <div className='md:col-span-1'>
-            <h3 className='text-xl font-bold mb-4'>Punta Cana Plan</h3>
+            <h3 className='text-xl font-bold mb-4'>Lux Punta Cana</h3>
             <p className='text-gray-400 mb-6'>{t('common.footer.slogan')}</p>
             <div className='flex space-x-4'>
               <a
@@ -122,12 +122,12 @@ const Footer = () => {
             >
               Privacy Policy
             </Link>
-            <Link
+            {/* <Link
               href='/terms-of-services'
               className='text-gray-500 hover:text-white text-sm transition-colors'
             >
               Terms of Service
-            </Link>
+            </Link> */}
             <Link
               href='/cookie-policy'
               className='text-gray-500 hover:text-white text-sm transition-colors'

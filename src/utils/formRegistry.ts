@@ -76,17 +76,17 @@ export const getAllRegisteredForms = (): FormRegistration[] => {
 // ===================================
 
 // Grocery Form
-registerForm({
-  name: 'GroceryForm',
-  component: () => import('@/UI/components/forms/GroceryForm'),
-  servicePatterns: ['grocery-shopping', 'luxe-grocery', 'grocery', 'groceries'],
-  requiresItems: true,
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    selectedItems: selectedItems || [],
-    onCancel,
-  }),
-});
+// registerForm({
+//   name: 'GroceryForm',
+//   component: () => import('@/UI/components/forms/GroceryForm'),
+//   servicePatterns: ['grocery-shopping', 'luxe-grocery', 'grocery', 'groceries'],
+//   requiresItems: true,
+//   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+//     service,
+//     selectedItems: selectedItems || [],
+//     onCancel,
+//   }),
+// });
 
 // Airport Transfer Form
 registerForm({
@@ -104,6 +104,19 @@ registerForm({
     onSubmit:
       additionalData?.onSubmit ||
       ((data: any) => console.log('Airport transfer:', data)),
+    onCancel,
+  }),
+});
+
+// HorseBack Riding Form
+registerForm({
+  name: 'HorseBackRidingForm',
+  component: () => import('@/UI/components/forms/HorseBackRidingForm'),
+  servicePatterns: ['tours'],
+  requiresItems: true,
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    selectedItems: selectedItems || [],
     onCancel,
   }),
 });
@@ -248,6 +261,21 @@ registerForm({
   servicePatterns: ['*'], // Catch-all
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,
+    onCancel,
+  }),
+});
+
+// AtvRideForm Form
+registerForm({
+  name: 'AtvRideForm',
+  component: () => import('@/UI/components/forms/AtvRideForm'),
+  // servicePatterns: ['atv-excursions'],
+  servicePatterns: ['tours'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit ||
+      ((data: any) => console.log('AtvRideForm Tour:', data)),
     onCancel,
   }),
 });

@@ -25,6 +25,7 @@ const SERVICE_CATEGORY_MAP: Record<ServiceId, ServiceCategory> = {
   [SERVICE_IDS.SAONA_TOUR]: 'tours',
   [SERVICE_IDS.ADVENTURE_EXCURSIONS]: 'tours',
   [SERVICE_IDS.HORSEBACK_RIDING]: 'tours',
+  [SERVICE_IDS.ATV_RIDE_EXCURSION]: 'tours',
 
   // Transportation
   [SERVICE_IDS.AIRPORT_TRANSFER]: 'transportation',

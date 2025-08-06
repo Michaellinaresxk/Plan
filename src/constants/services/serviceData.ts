@@ -1685,6 +1685,110 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
+  // BIKE_RENTALS SERVICE
+  [SERVICE_IDS.ATV_RIDE_EXCURSION]: {
+    id: SERVICE_IDS.ATV_RIDE_EXCURSION,
+    titleKey: 'services.standard.bikeRental.name',
+    descriptionKey: 'services.standard.bikeRental.short',
+    fullDescriptionKey: 'services.standard.bikeRental.full',
+    basePrice: 25,
+    priceUnit: 'services.priceUnits.perDay',
+    category: 'tours',
+    packageType: ['standard'],
+    imageUrl:
+      'https://puntacanaexcursions.online/wp-content/uploads/2024/09/WhatsApp-Image-2022-04-07-at-11.59.38-AM-scaled.jpeg',
+    duration: 2,
+    bookingDuration: {
+      min: 2,
+      max: 7,
+      unit: 'days',
+    },
+    options: {
+      bikeType: {
+        id: 'bikeType',
+        nameKey: 'services.bikeRental.options.bikeType.title',
+        subOptions: {
+          beachCruiser: {
+            id: 'beachCruiser',
+            nameKey:
+              'services.bikeRental.options.bikeType.options.beachCruiser',
+            price: 0,
+          },
+          cityBike: {
+            id: 'cityBike',
+            nameKey: 'services.bikeRental.options.bikeType.options.cityBike',
+            price: 5,
+          },
+          mountainBike: {
+            id: 'mountainBike',
+            nameKey:
+              'services.bikeRental.options.bikeType.options.mountainBike',
+            price: 10,
+          },
+          eBike: {
+            id: 'eBike',
+            nameKey: 'services.bikeRental.options.bikeType.options.eBike',
+            price: 20,
+          },
+        },
+      },
+      rentalDuration: {
+        id: 'rentalDuration',
+        nameKey: 'services.bikeRental.options.rentalDuration.title',
+        subOptions: {
+          halfDay: {
+            id: 'halfDay',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.halfDay',
+            price: -10,
+          },
+          fullDay: {
+            id: 'fullDay',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.fullDay',
+            price: 0,
+          },
+          twoDays: {
+            id: 'twoDays',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.twoDays',
+            price: 20,
+          },
+          weekly: {
+            id: 'weekly',
+            nameKey:
+              'services.bikeRental.options.rentalDuration.options.weekly',
+            price: 100,
+          },
+        },
+      },
+    },
+    additionalInfoKeys: [
+      'services.bikeRental.additionalInfo.1',
+      'services.bikeRental.additionalInfo.2',
+      'services.bikeRental.additionalInfo.3',
+    ],
+    specialRender: 'bikeRental',
+    relatedServices: [],
+    tags: ['adventure', 'exploration', 'outdoor', 'cycling'],
+    availability: {
+      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
+      hoursOfDay: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    },
+    metaData: {
+      deliveryIncluded: true,
+      pickupIncluded: true,
+      helmetIncluded: true,
+      lockIncluded: true,
+      support24h: true,
+      deliveryZone: 'Punta Cana area',
+      childrenBikesAvailable: true,
+      maintenanceStandard: 'highest',
+      languages: 'english,spanish',
+      disclaimer: 'services.bikeRental.disclaimer',
+    },
+  },
+
   // Add more services as needed
 };
 
