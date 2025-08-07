@@ -181,7 +181,7 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
           {/* Simple Location Badge */}
           <div className='inline-flex items-center bg-white/20 px-4 py-2 rounded-full mb-6'>
             <MapPin className='w-4 h-4 mr-2' />
-            <span className='font-medium'>República Dominicana</span>
+            <span className='font-medium'>Saona Tour</span>
           </div>
 
           {/* Natural Title - Appropriate Size */}

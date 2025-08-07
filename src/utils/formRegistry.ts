@@ -284,7 +284,7 @@ registerForm({
 registerForm({
   name: 'SaonaIslandForm',
   component: () => import('@/UI/components/forms/SaonaIslandForm'),
-  servicePatterns: ['saona-island-tour'],
+  servicePatterns: ['tours'],
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,
     onSubmit:
