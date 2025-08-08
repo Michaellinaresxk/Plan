@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Clock,
   Star,
@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import BookingModal from '../../modal/BookingModal';
 
 // Types
 interface Service {
@@ -233,6 +234,18 @@ const PersonalTrainerServiceView: React.FC<PersonalTrainerServiceViewProps> = ({
 
       {/* Disclaimer */}
       <DisclaimerSection />
+
+      {/* Booking Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBooking}
+            service={service}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

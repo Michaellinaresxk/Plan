@@ -80,25 +80,9 @@ export const useServiceForm = ({
       errors.push('no_form_configuration');
     }
 
-    // Validar items para grocery
-    if (
-      formRegistration?.requiresItems &&
-      (!selectedItems || selectedItems.length === 0)
-    ) {
-      errors.push('missing_required_items');
-    }
-
     // Validar servicio
     if (!service || !service.id) {
       errors.push('invalid_service');
-    }
-
-    // Warnings para casos comunes
-    if (
-      service.id.includes('grocery') &&
-      (!selectedItems || selectedItems.length === 0)
-    ) {
-      warnings.push('grocery_service_without_items');
     }
 
     if (!additionalData?.onSubmit && formRegistration?.name !== 'GroceryForm') {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { useRouter } from 'next/navigation';
 import { useReservation } from '@/context/BookingContext';
@@ -18,6 +18,14 @@ import {
 } from 'lucide-react';
 import { BIKE_TYPES, BikeFormProps, FormErrors } from '@/constants/bike/bike';
 
+// ✅ Location options configuration - same as other forms
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+] as const;
+
 interface Person {
   id: string;
   type: 'adult' | 'child';
@@ -26,12 +34,14 @@ interface Person {
   name?: string;
 }
 
+// ✅ Updated FormData interface with location area separation
 interface FormData {
   startDate: string;
   endDate: string;
   endTime: string;
   startTime: string;
-  location: string;
+  locationArea: string; // ✅ New field for area selection by ID
+  location: string; // ✅ Exact delivery address
   people: Person[];
   needsHelmet: boolean;
   needsLock: boolean;
@@ -44,13 +54,14 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
   const router = useRouter();
   const { setReservationData } = useReservation();
 
-  // Form state
+  // ✅ Updated form state with location area separation
   const [formData, setFormData] = useState<FormData>({
     startDate: '',
     endDate: '',
     endTime: '',
     startTime: '09:00',
-    location: '',
+    locationArea: '', // ✅ New field for area ID
+    location: '', // ✅ Exact delivery address
     people: [
       { id: 'adult-1', type: 'adult', selectedBike: 'cityBike' },
       { id: 'adult-2', type: 'adult', selectedBike: 'cityBike' },
@@ -63,6 +74,32 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ✅ Helper to update form fields - optimized like other forms
+  const updateFormField = useCallback((field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Clear error when field is updated
+    setErrors((prev) => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
+
+  // ✅ Handle location area selection - same logic as other forms
+  const handleLocationAreaSelect = useCallback(
+    (locationAreaId: string) => {
+      updateFormField('locationArea', locationAreaId);
+    },
+    [updateFormField]
+  );
 
   // Calculate rental days
   const rentalDays = useMemo(() => {
@@ -146,14 +183,19 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     return suitableBike?.id || 'kids-bike';
   };
 
-  // Form validation
+  // ✅ Updated form validation to include location area
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
     // Required fields
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
     if (!formData.endDate) newErrors.endDate = 'End date is required';
-    if (!formData.location) newErrors.location = 'Location is required';
+
+    // ✅ Updated: Validate both location area and exact address
+    if (!formData.locationArea)
+      newErrors.locationArea = 'Please select a delivery area';
+    if (!formData.location)
+      newErrors.location = 'Exact delivery address is required';
 
     // Date validations
     if (formData.startDate && formData.endDate) {
@@ -194,7 +236,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
     return newErrors;
   };
 
-  // Handle form submission
+  // ✅ Updated handle form submission with location area details
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -229,6 +271,11 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
         `${formData.endDate}T${formData.endTime}`
       );
 
+      // ✅ Get selected location area name
+      const selectedLocationArea = LOCATION_OPTIONS.find(
+        (loc) => loc.id === formData.locationArea
+      );
+
       // Create service data with fallback
       const serviceData = service || {
         id: 'bike-rental',
@@ -237,7 +284,7 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
         type: 'bike-rental',
       };
 
-      // Create reservation data with properly formatted people info
+      // ✅ Updated reservation data with location area details
       const reservationData = {
         service: serviceData,
         formData: {
@@ -245,7 +292,9 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
           serviceType: 'bike-rental',
           totalPrice: calculatePrice,
           rentalDays,
-          selectedBikes, // Convert people bikes to bike summary
+          selectedBikes,
+          // ✅ Add location area name for display
+          locationAreaName: selectedLocationArea?.name || formData.locationArea,
           // Format people for payment display
           peopleDetails: formData.people.map((person) => {
             const bike = BIKE_TYPES.find((b) => b.id === person.selectedBike);
@@ -294,9 +343,22 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
             };
           }),
         clientInfo: undefined,
+        // ✅ Add bike rental specific data with location details
+        bikeRentalSpecifics: {
+          locationArea: formData.locationArea,
+          locationAreaName: selectedLocationArea?.name || formData.locationArea,
+          exactDeliveryAddress: formData.location,
+          rentalDays: rentalDays,
+          deliveryToHotel: formData.deliveryToHotel,
+          needsHelmet: formData.needsHelmet,
+          needsLock: formData.needsLock,
+          bikeBreakdown: selectedBikes,
+          specialRequests: formData.specialRequests,
+        },
       };
 
       console.log('🚴 BikeForm - Reservation data created:', reservationData);
+      console.log('📍 Selected location area:', selectedLocationArea);
 
       setReservationData(reservationData);
 
@@ -316,26 +378,19 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
   };
 
   // Generic input handler
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    const checked = 'checked' in e.target ? e.target.checked : false;
+  const handleInputChange = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
+    ) => {
+      const { name, value, type } = e.target;
+      const checked = 'checked' in e.target ? e.target.checked : false;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
-  };
+      updateFormField(name, type === 'checkbox' ? checked : value);
+    },
+    [updateFormField]
+  );
 
   // Add person (adult or child)
   const addPerson = (type: 'adult' | 'child') => {
@@ -643,25 +698,104 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
             )}
           </div>
 
-          {/* Location */}
-          <div>
-            <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-              <MapPin className='w-4 h-4 mr-2 text-green-700' />
-              Location *
-            </label>
-            <input
-              type='text'
-              name='location'
-              value={formData.location}
-              onChange={handleInputChange}
-              className={`w-full p-3 border ${
-                errors.location ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:ring-green-500 focus:border-green-500`}
-              placeholder='Please provide the complete address where the personal will bring your bike.'
-            />
-            {errors.location && (
-              <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
-            )}
+          {/* ✅ Updated Location Section - Using card selection like other forms */}
+          <div className='space-y-6'>
+            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
+              Delivery Information
+            </h3>
+
+            {/* Location Area Selector */}
+            <div className='bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm'>
+              <label className='flex items-center text-sm font-medium text-green-800 mb-4'>
+                <MapPin className='w-5 h-5 mr-2 text-green-600' />
+                Select your delivery area *
+              </label>
+
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                {LOCATION_OPTIONS.map((locationOption) => (
+                  <div
+                    key={locationOption.id}
+                    className={`
+                      border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                      ${
+                        formData.locationArea === locationOption.id
+                          ? 'border-green-500 bg-white shadow-lg ring-2 ring-green-200'
+                          : 'border-green-200 bg-white hover:border-green-300 hover:bg-green-25'
+                      }
+                    `}
+                    onClick={() => handleLocationAreaSelect(locationOption.id)}
+                  >
+                    <div className='flex items-center'>
+                      <div
+                        className={`
+                          w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                          ${
+                            formData.locationArea === locationOption.id
+                              ? 'border-green-500 bg-green-500'
+                              : 'border-green-300'
+                          }
+                        `}
+                      >
+                        {formData.locationArea === locationOption.id && (
+                          <CheckCircle className='w-4 h-4 text-white' />
+                        )}
+                      </div>
+                      <div className='flex items-center'>
+                        <MapPin className='w-4 h-4 mr-2 text-green-500' />
+                        <span className='font-medium text-green-900 text-sm'>
+                          {locationOption.name}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {errors.locationArea && (
+                <p className='text-red-500 text-xs mt-3 flex items-center'>
+                  <AlertTriangle className='w-3 h-3 mr-1' />
+                  {errors.locationArea}
+                </p>
+              )}
+
+              {/* Display selected location area */}
+              {formData.locationArea && (
+                <div className='mt-4 p-3 bg-green-100 rounded-lg border border-green-200'>
+                  <p className='text-sm text-green-800 flex items-center'>
+                    <CheckCircle className='w-4 h-4 mr-2 text-green-600' />
+                    Selected delivery area:{' '}
+                    <span className='font-medium ml-1'>
+                      {
+                        LOCATION_OPTIONS.find(
+                          (loc) => loc.id === formData.locationArea
+                        )?.name
+                      }
+                    </span>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Exact Delivery Address */}
+            <div>
+              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                <MapPin className='w-4 h-4 mr-2 text-green-700' />
+                Exact Delivery Address *
+              </label>
+              <textarea
+                name='location'
+                value={formData.location}
+                onChange={(e) => updateFormField('location', e.target.value)}
+                rows={3}
+                className={`w-full p-3 border ${
+                  errors.location ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg focus:ring-green-500 focus:border-green-500 resize-none`}
+                placeholder='Please provide the complete address where our team will deliver your bikes (hotel name, villa number, street, etc.)'
+              />
+              {errors.location && (
+                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+              )}
+            </div>
           </div>
 
           {/* Participants Section */}
@@ -750,6 +884,19 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                     </div>
                   );
                 })}
+                {/* ✅ Display selected location area in summary */}
+                {formData.locationArea && (
+                  <div className='flex justify-between text-xs text-green-600 pt-2 border-t'>
+                    <span>Delivery area:</span>
+                    <span>
+                      {
+                        LOCATION_OPTIONS.find(
+                          (loc) => loc.id === formData.locationArea
+                        )?.name
+                      }
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -817,6 +964,17 @@ const BikeForm: React.FC<BikeFormProps> = ({ service, onSubmit, onCancel }) => {
                 formData.location !== 'Hotel pickup' && (
                   <div>Delivery service: +$10</div>
                 )}
+              {/* ✅ Display selected location area in price breakdown */}
+              {formData.locationArea && (
+                <div className='text-green-400'>
+                  Delivery to:{' '}
+                  {
+                    LOCATION_OPTIONS.find(
+                      (loc) => loc.id === formData.locationArea
+                    )?.name
+                  }
+                </div>
+              )}
               <div className='text-green-400'>Helmets & locks: Free!</div>
             </div>
           </div>

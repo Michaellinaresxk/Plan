@@ -32,8 +32,6 @@ const LOCATION_OPTIONS = [
   { id: 'cap-cana', name: 'Cap Cana' },
   { id: 'bavaro', name: 'Bavaro' },
   { id: 'punta-village', name: 'Punta Village' },
-  { id: 'uvero-alto', name: 'Uvero Alto' },
-  { id: 'macao', name: 'Macao' },
 ] as const;
 
 const BabysitterForm: React.FC<BabysitterFormProps> = ({

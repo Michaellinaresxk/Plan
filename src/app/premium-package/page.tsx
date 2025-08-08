@@ -186,12 +186,12 @@ const PremiumPackageContent = () => {
               variants={fadeInUp}
               className='flex flex-col sm:flex-row gap-6 justify-center'
             >
-              <Link href='/custom-package'>
+              {/* <Link href='/custom-package'>
                 <button className='group px-10 py-5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-bold rounded-2xl transition-all duration-300 flex items-center shadow-2xl shadow-amber-500/30 text-lg transform hover:scale-105'>
                   Explore Custom Package
                   <ChevronRight className='ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform' />
                 </button>
-              </Link>
+              </Link> */}
 
               <Link href='/standard-package'>
                 <button className='group px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-amber-400/30 hover:border-amber-400/50 hover:bg-amber-400/10 text-amber-300 font-bold rounded-2xl transition-all duration-300 flex items-center text-lg'>
@@ -928,12 +928,12 @@ const PremiumPackageContent = () => {
               </p>
 
               <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                <Link href='/custom-package'>
+                {/* <Link href='/custom-package'>
                   <button className='group px-10 py-5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-bold rounded-2xl transition-all duration-300 shadow-2xl shadow-amber-500/30 text-lg transform hover:scale-105'>
                     Customize Your Package
                     <ArrowRight className='ml-2 h-6 w-6 inline group-hover:translate-x-1 transition-transform' />
                   </button>
-                </Link>
+                </Link> */}
                 <Link href='/contact'>
                   <button className='group px-10 py-5 bg-gradient-to-r from-amber-400/20 to-yellow-400/20 backdrop-blur-sm border-2 border-amber-400 hover:border-amber-300 hover:bg-amber-400/30 text-amber-300 font-bold rounded-2xl transition-all duration-300 text-lg transform hover:scale-105'>
                     Contact Concierge

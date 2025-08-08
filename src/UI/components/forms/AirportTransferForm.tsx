@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import {
@@ -29,6 +29,14 @@ import {
   validateAirlineWithTerminal,
 } from '@/constants/airlines';
 
+// ✅ Location options configuration - same as BabysitterForm
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+] as const;
+
 // Types and Interfaces
 interface FormData {
   date: string;
@@ -42,19 +50,16 @@ interface FormData {
   returnFlightNumber: string;
   departureTime: string;
   departureTerminal: string;
-  pickupTime: string; // New field for round trip pickup time
+  pickupTime: string;
   passengerCount: number;
   kidsCount: number;
   kidsAges: number[];
   needsCarSeat: boolean;
   carSeatCount: number;
   vehicleType: string;
-  location: string;
+  locationArea: string; // ✅ New field for location area ID
+  location: string; // ✅ Exact address field
   pickupName: string;
-}
-
-interface FormErrors {
-  [key: string]: string;
 }
 
 interface FormErrors {
@@ -159,11 +164,7 @@ const formatFlightNumber = (
   airlineCode: string
 ): string => {
   if (!airlineCode || !flightNumber) return flightNumber;
-
-  // Remove existing prefix if present
   const cleanNumber = flightNumber.replace(/^[A-Z]{1,3}/i, '');
-
-  // Add airline code prefix
   return `${airlineCode}${cleanNumber}`;
 };
 
@@ -172,9 +173,7 @@ const validateFlightNumber = (
   airlineCode: string
 ): boolean => {
   if (!flightNumber) return false;
-  if (!airlineCode) return true; // If no airline selected, any format is acceptable
-
-  // Check if flight number starts with the correct airline code
+  if (!airlineCode) return true;
   return flightNumber.toUpperCase().startsWith(airlineCode.toUpperCase());
 };
 
@@ -255,18 +254,12 @@ const FlightNumberInput: React.FC<{
     let formattedValue = inputValue;
 
     if (airlineCode) {
-      // Si intentan borrar el código de aerolínea, prevenirlo
       if (inputValue.length < airlineCode.length) {
         formattedValue = airlineCode;
-      }
-      // Si no empieza con el código correcto, arreglarlo
-      else if (!inputValue.startsWith(airlineCode)) {
-        // CLAVE: Extraer SOLO los números/letras después de cualquier prefijo existente
+      } else if (!inputValue.startsWith(airlineCode)) {
         const numbersOnly = inputValue.replace(/^[A-Z]+/i, '');
         formattedValue = `${airlineCode}${numbersOnly}`;
-      }
-      // Si ya empieza correctamente, dejar escribir libremente
-      else {
+      } else {
         formattedValue = inputValue;
       }
     }
@@ -283,7 +276,6 @@ const FlightNumberInput: React.FC<{
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    // If empty and airline is selected, pre-fill with airline code
     if (!value && airlineCode) {
       const syntheticEvent = {
         target: {
@@ -385,7 +377,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   const { setReservationData } = useReservation();
   const { isSameDay, hasMinimum24Hours } = useFormValidation();
 
-  // Form state
+  // ✅ Updated form state with location area ID
   const [formData, setFormData] = useState<FormData>({
     date: '',
     airline: '',
@@ -398,18 +390,45 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     returnFlightNumber: '',
     departureTime: '',
     departureTerminal: '',
-    pickupTime: '', // New field
+    pickupTime: '',
     passengerCount: 2,
     kidsCount: 0,
     kidsAges: [],
     needsCarSeat: false,
     carSeatCount: 0,
     vehicleType: 'suv',
-    location: '',
+    locationArea: '', // ✅ New field for area selection
+    location: '', // ✅ Exact address field
     pickupName: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // ✅ Helper to update form fields - optimized like BabysitterForm
+  const updateFormField = useCallback((field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Clear error when field is updated
+    setErrors((prev) => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
+
+  // ✅ Handle location area selection - same logic as BabysitterForm
+  const handleLocationAreaSelect = useCallback(
+    (locationAreaId: string) => {
+      updateFormField('locationArea', locationAreaId);
+    },
+    [updateFormField]
+  );
 
   // Calculate total passengers
   const totalPassengers = useMemo(
@@ -433,7 +452,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     }
   }, [totalPassengers, formData.vehicleType]);
 
-  // Enhanced form validation
+  // ✅ Updated validation to include location area
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -443,7 +462,8 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
       { field: 'airline', message: 'Airline is required' },
       { field: 'flightNumber', message: 'Flight number is required' },
       { field: 'arrivalTime', message: 'Scheduled arrival time is required' },
-      { field: 'location', message: 'Location is required' },
+      { field: 'locationArea', message: 'Please select a location area' }, // ✅ New validation
+      { field: 'location', message: 'Exact destination address is required' },
     ];
 
     // Round trip validations
@@ -517,6 +537,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     return newErrors;
   };
 
+  // ✅ Updated submit handler to include location area name
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -531,12 +552,19 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     try {
       const totalPrice = calculatePrice;
 
+      // ✅ Get selected location area name
+      const selectedLocationArea = LOCATION_OPTIONS.find(
+        (loc) => loc.id === formData.locationArea
+      );
+
       const reservationData = {
         service,
         totalPrice,
         formData: {
           ...formData,
           serviceType: 'airport-transfers',
+          // ✅ Add location area name for display
+          locationAreaName: selectedLocationArea?.name || formData.locationArea,
           terminalInfo: {
             arrival: {
               airline: formData.airline,
@@ -556,12 +584,24 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
         },
         bookingDate: new Date(`${formData.date}T${formData.arrivalTime}`),
         clientInfo: undefined,
+        // ✅ Add airport transfer specific data with location details
+        airportTransferSpecifics: {
+          locationArea: formData.locationArea,
+          locationAreaName: selectedLocationArea?.name || formData.locationArea,
+          exactDestination: formData.location,
+          vehicleType: formData.vehicleType,
+          totalPassengers: totalPassengers,
+          carSeats: formData.carSeatCount,
+          isRoundTrip: formData.isRoundTrip,
+          pickupInstructions: generatePickupInstructions(formData),
+        },
       };
 
       console.log(
         '🛩️ Enhanced Airport transfer - Reservation data:',
         reservationData
       );
+      console.log('📍 Selected location area:', selectedLocationArea);
       console.log('💰 Total Price included:', totalPrice);
 
       setReservationData(reservationData);
@@ -579,58 +619,57 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   };
 
   // Enhanced input handler with terminal auto-update
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target;
-    const checked = 'checked' in e.target ? e.target.checked : false;
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value, type } = e.target;
+      const checked = 'checked' in e.target ? e.target.checked : false;
 
-    setFormData((prev) => {
-      const newData = {
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value,
-      };
+      setFormData((prev) => {
+        const newData = {
+          ...prev,
+          [name]: type === 'checkbox' ? checked : value,
+        };
 
-      // AUTO-UPDATE TERMINAL INFO WHEN AIRLINE CHANGES
-      if (name === 'airline') {
-        const terminalInfo = getAirlineInfo(value);
-        newData.arrivalTerminal = terminalInfo?.terminal || '';
+        // AUTO-UPDATE TERMINAL INFO WHEN AIRLINE CHANGES
+        if (name === 'airline') {
+          const terminalInfo = getAirlineInfo(value);
+          newData.arrivalTerminal = terminalInfo?.terminal || '';
 
-        // Auto-format existing flight number with new airline code
-        if (newData.flightNumber && terminalInfo?.code) {
-          newData.flightNumber = formatFlightNumber(
-            newData.flightNumber,
-            terminalInfo.code
-          );
+          if (newData.flightNumber && terminalInfo?.code) {
+            newData.flightNumber = formatFlightNumber(
+              newData.flightNumber,
+              terminalInfo.code
+            );
+          }
         }
+
+        if (name === 'returnAirline') {
+          const terminalInfo = getAirlineInfo(value);
+          newData.departureTerminal = terminalInfo?.terminal || '';
+
+          if (newData.returnFlightNumber && terminalInfo?.code) {
+            newData.returnFlightNumber = formatFlightNumber(
+              newData.returnFlightNumber,
+              terminalInfo.code
+            );
+          }
+        }
+
+        return newData;
+      });
+
+      // Clear car seat count if checkbox is unchecked
+      if (name === 'needsCarSeat' && !checked) {
+        setFormData((prev) => ({ ...prev, carSeatCount: 0 }));
       }
 
-      if (name === 'returnAirline') {
-        const terminalInfo = getAirlineInfo(value);
-        newData.departureTerminal = terminalInfo?.terminal || '';
-
-        // Auto-format existing return flight number with new airline code
-        if (newData.returnFlightNumber && terminalInfo?.code) {
-          newData.returnFlightNumber = formatFlightNumber(
-            newData.returnFlightNumber,
-            terminalInfo.code
-          );
-        }
+      // Clear error when user starts typing
+      if (errors[name]) {
+        setErrors((prev) => ({ ...prev, [name]: '' }));
       }
-
-      return newData;
-    });
-
-    // Clear car seat count if checkbox is unchecked
-    if (name === 'needsCarSeat' && !checked) {
-      setFormData((prev) => ({ ...prev, carSeatCount: 0 }));
-    }
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-  };
+    },
+    [errors]
+  );
 
   // Counter handlers
   const createCounterHandler = (field: keyof FormData, min = 0, max = 20) => ({
@@ -872,7 +911,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                       )}
                     </div>
 
-                    {/* NEW: Pickup Time for Round Trip */}
+                    {/* Pickup Time for Round Trip */}
                     <div className='md:col-span-2'>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Clock className='w-4 h-4 mr-2 text-blue-700' />
@@ -987,46 +1026,125 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
             </div>
           </div>
 
-          {/* Location */}
-          <div>
-            <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-              <MapPin className='w-4 h-4 mr-2 text-blue-700' />
-              Location *
-            </label>
-            <input
-              type='text'
-              name='location'
-              value={formData.location}
-              onChange={handleInputChange}
-              className={`w-full p-3 border ${
-                errors.location ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-              placeholder='Please provide the complete address where the transportation will drop you off.'
-            />
-            {errors.location && (
-              <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
-            )}
-          </div>
+          {/* ✅ Updated Location Section - Using card selection like BabysitterForm */}
+          <div className='space-y-6'>
+            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
+              Destination Information
+            </h3>
 
-          {/* Pickup name / alias */}
-          <div>
-            <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-              <Plane className='w-4 h-4 mr-2 text-blue-700' />
-              Pickup Name / Alias (optional)
-            </label>
-            <input
-              type='text'
-              name='pickupName'
-              value={formData.pickupName || ''}
-              onChange={handleInputChange}
-              placeholder='Pickup Name'
-              className={`w-full p-3 border ${
-                errors.pickupName ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-            />
-            {errors.pickupName && (
-              <p className='text-red-500 text-xs mt-1'>{errors.pickupName}</p>
-            )}
+            {/* Location Area Selector */}
+            <div className='bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm'>
+              <label className='flex items-center text-sm font-medium text-blue-800 mb-4'>
+                <MapPin className='w-5 h-5 mr-2 text-blue-600' />
+                Select your destination area *
+              </label>
+
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                {LOCATION_OPTIONS.map((locationOption) => (
+                  <div
+                    key={locationOption.id}
+                    className={`
+                      border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                      ${
+                        formData.locationArea === locationOption.id
+                          ? 'border-blue-500 bg-white shadow-lg ring-2 ring-blue-200'
+                          : 'border-blue-200 bg-white hover:border-blue-300 hover:bg-blue-25'
+                      }
+                    `}
+                    onClick={() => handleLocationAreaSelect(locationOption.id)}
+                  >
+                    <div className='flex items-center'>
+                      <div
+                        className={`
+                          w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                          ${
+                            formData.locationArea === locationOption.id
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-blue-300'
+                          }
+                        `}
+                      >
+                        {formData.locationArea === locationOption.id && (
+                          <CheckCircle className='w-4 h-4 text-white' />
+                        )}
+                      </div>
+                      <div className='flex items-center'>
+                        <MapPin className='w-4 h-4 mr-2 text-blue-500' />
+                        <span className='font-medium text-blue-900 text-sm'>
+                          {locationOption.name}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {errors.locationArea && (
+                <p className='text-red-500 text-xs mt-3 flex items-center'>
+                  <AlertTriangle className='w-3 h-3 mr-1' />
+                  {errors.locationArea}
+                </p>
+              )}
+
+              {/* Display selected location area */}
+              {formData.locationArea && (
+                <div className='mt-4 p-3 bg-blue-100 rounded-lg border border-blue-200'>
+                  <p className='text-sm text-blue-800 flex items-center'>
+                    <CheckCircle className='w-4 h-4 mr-2 text-blue-600' />
+                    Selected area:{' '}
+                    <span className='font-medium ml-1'>
+                      {
+                        LOCATION_OPTIONS.find(
+                          (loc) => loc.id === formData.locationArea
+                        )?.name
+                      }
+                    </span>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Exact Destination Address */}
+            <div>
+              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                <MapPin className='w-4 h-4 mr-2 text-blue-700' />
+                Exact Destination Address *
+              </label>
+              <textarea
+                name='location'
+                value={formData.location}
+                onChange={(e) => updateFormField('location', e.target.value)}
+                rows={3}
+                className={`w-full p-3 border ${
+                  errors.location ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50 resize-none`}
+                placeholder='Please provide the complete address where the transportation will drop you off (hotel name, villa number, street, etc.)'
+              />
+              {errors.location && (
+                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+              )}
+            </div>
+
+            {/* Pickup name / alias */}
+            <div>
+              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                <Plane className='w-4 h-4 mr-2 text-blue-700' />
+                Pickup Name / Alias (optional)
+              </label>
+              <input
+                type='text'
+                name='pickupName'
+                value={formData.pickupName || ''}
+                onChange={handleInputChange}
+                placeholder='Pickup Name'
+                className={`w-full p-3 border ${
+                  errors.pickupName ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
+              />
+              {errors.pickupName && (
+                <p className='text-red-500 text-xs mt-1'>{errors.pickupName}</p>
+              )}
+            </div>
           </div>
 
           {/* Price Summary */}
@@ -1060,6 +1178,19 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                 <div className='flex justify-between'>
                   <span>Car seats ({formData.carSeatCount}):</span>
                   <span>+${formData.carSeatCount * 25}</span>
+                </div>
+              )}
+              {/* ✅ Display selected location area in price breakdown */}
+              {formData.locationArea && (
+                <div className='flex justify-between text-blue-600'>
+                  <span>Destination area:</span>
+                  <span>
+                    {
+                      LOCATION_OPTIONS.find(
+                        (loc) => loc.id === formData.locationArea
+                      )?.name
+                    }
+                  </span>
                 </div>
               )}
               <div className='border-t pt-2 font-bold flex justify-between'>

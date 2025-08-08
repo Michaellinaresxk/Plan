@@ -8,113 +8,113 @@ import { ServiceCategory } from './serviceCategories';
  */
 export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   // CHEF SERVICE
-  [SERVICE_IDS.CHEF]: {
-    id: SERVICE_IDS.CHEF,
-    titleKey: 'services.standard.privateChef.name',
-    descriptionKey: 'services.standard.privateChef.description',
-    fullDescriptionKey: 'services.standard.privateChef.full',
-    basePrice: 120,
-    priceUnit: 'services.priceUnits.perDay',
-    category: 'food-drinks',
-    packageType: ['standard'],
-    imageUrl:
-      'https://plus.unsplash.com/premium_photo-1661288474987-1e90159ff2ca?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 3,
-    isPopular: true,
-    bookingDuration: {
-      min: 1,
-      max: 14,
-      unit: 'days',
-    },
-    options: {
-      chefType: {
-        id: 'chefType',
-        nameKey: 'services.chef.options.chefType.title',
-        subOptions: {
-          regular: {
-            id: 'regular',
-            nameKey: 'services.chef.options.chefType.options.regular',
-            price: 0, // Base price $120
-            descriptionKey:
-              'services.chef.options.chefType.options.regularDescription',
-          },
-          professional: {
-            id: 'professional',
-            nameKey: 'services.chef.options.chefType.options.professional',
-            price: 55, // $175 total
-            descriptionKey:
-              'services.chef.options.chefType.options.professionalDescription',
-          },
-        },
-      },
-      guestCount: {
-        id: 'guestCount',
-        nameKey: 'services.chef.options.guestCount.title',
-        subOptions: {
-          small: {
-            id: 'small',
-            nameKey: 'services.chef.options.guestCount.options.small',
-            price: 0,
-            capacityInfo: {
-              min: 1,
-              max: 10,
-            },
-          },
-          medium: {
-            id: 'medium',
-            nameKey: 'services.chef.options.guestCount.options.medium',
-            price: 30,
-            capacityInfo: {
-              min: 11,
-              max: 15,
-            },
-          },
-          large: {
-            id: 'large',
-            nameKey: 'services.chef.options.guestCount.options.large',
-            price: 60,
-            capacityInfo: {
-              min: 16,
-              max: 20,
-            },
-          },
-        },
-      },
-    },
-    includes: [
-      'services.chef.includes.1',
-      'services.chef.includes.2',
-      'services.chef.includes.3',
-      'services.chef.includes.4',
-      'services.chef.includes.5',
-    ],
-    notIncluded: ['services.chef.notIncluded.1', 'services.chef.notIncluded.2'],
-    additionalInfoKeys: [
-      'services.chef.additionalInfo.1',
-      'services.chef.additionalInfo.2',
-    ],
-    relatedServices: [SERVICE_IDS.GROCERY],
-    tags: ['culinary', 'dining', 'personal chef'],
-    metaData: {
-      regularChefDescription:
-        "Regular cooks are individuals who cook well and offer their services at an affordable price. They don't work exclusively as chefs, nor do they actively promote themselves as such. They do not offer a set menu and usually work with guidance or requests from the guests.",
-      professionalChefDescription:
-        'A professional chef has formal culinary training and works full-time in the culinary field. They typically offer a curated menu, maintain high presentation standards, and have experience in handling special dietary needs or preferences.',
-      requiresConsultation: true,
-      cuisineTypes: [
-        'Dominican Traditional',
-        'International',
-        'Mediterranean',
-        'Asian Fusion',
-        'Seafood Specialist',
-        'Vegetarian/Vegan Options',
-      ],
-      dietaryAccommodations:
-        'We accommodate allergies, intolerances, and preferences with advance notice',
-      maxPeople: 20,
-      needsGroceries: true,
-    },
-  },
+  // [SERVICE_IDS.CHEF]: {
+  //   id: SERVICE_IDS.CHEF,
+  //   titleKey: 'services.standard.privateChef.name',
+  //   descriptionKey: 'services.standard.privateChef.description',
+  //   fullDescriptionKey: 'services.standard.privateChef.full',
+  //   basePrice: 120,
+  //   priceUnit: 'services.priceUnits.perDay',
+  //   category: 'food-drinks',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://plus.unsplash.com/premium_photo-1661288474987-1e90159ff2ca?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   duration: 3,
+  //   isPopular: true,
+  //   bookingDuration: {
+  //     min: 1,
+  //     max: 14,
+  //     unit: 'days',
+  //   },
+  //   options: {
+  //     chefType: {
+  //       id: 'chefType',
+  //       nameKey: 'services.chef.options.chefType.title',
+  //       subOptions: {
+  //         regular: {
+  //           id: 'regular',
+  //           nameKey: 'services.chef.options.chefType.options.regular',
+  //           price: 0, // Base price $120
+  //           descriptionKey:
+  //             'services.chef.options.chefType.options.regularDescription',
+  //         },
+  //         professional: {
+  //           id: 'professional',
+  //           nameKey: 'services.chef.options.chefType.options.professional',
+  //           price: 55, // $175 total
+  //           descriptionKey:
+  //             'services.chef.options.chefType.options.professionalDescription',
+  //         },
+  //       },
+  //     },
+  //     guestCount: {
+  //       id: 'guestCount',
+  //       nameKey: 'services.chef.options.guestCount.title',
+  //       subOptions: {
+  //         small: {
+  //           id: 'small',
+  //           nameKey: 'services.chef.options.guestCount.options.small',
+  //           price: 0,
+  //           capacityInfo: {
+  //             min: 1,
+  //             max: 10,
+  //           },
+  //         },
+  //         medium: {
+  //           id: 'medium',
+  //           nameKey: 'services.chef.options.guestCount.options.medium',
+  //           price: 30,
+  //           capacityInfo: {
+  //             min: 11,
+  //             max: 15,
+  //           },
+  //         },
+  //         large: {
+  //           id: 'large',
+  //           nameKey: 'services.chef.options.guestCount.options.large',
+  //           price: 60,
+  //           capacityInfo: {
+  //             min: 16,
+  //             max: 20,
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   includes: [
+  //     'services.chef.includes.1',
+  //     'services.chef.includes.2',
+  //     'services.chef.includes.3',
+  //     'services.chef.includes.4',
+  //     'services.chef.includes.5',
+  //   ],
+  //   notIncluded: ['services.chef.notIncluded.1', 'services.chef.notIncluded.2'],
+  //   additionalInfoKeys: [
+  //     'services.chef.additionalInfo.1',
+  //     'services.chef.additionalInfo.2',
+  //   ],
+  //   relatedServices: [SERVICE_IDS.GROCERY],
+  //   tags: ['culinary', 'dining', 'personal chef'],
+  //   metaData: {
+  //     regularChefDescription:
+  //       "Regular cooks are individuals who cook well and offer their services at an affordable price. They don't work exclusively as chefs, nor do they actively promote themselves as such. They do not offer a set menu and usually work with guidance or requests from the guests.",
+  //     professionalChefDescription:
+  //       'A professional chef has formal culinary training and works full-time in the culinary field. They typically offer a curated menu, maintain high presentation standards, and have experience in handling special dietary needs or preferences.',
+  //     requiresConsultation: true,
+  //     cuisineTypes: [
+  //       'Dominican Traditional',
+  //       'International',
+  //       'Mediterranean',
+  //       'Asian Fusion',
+  //       'Seafood Specialist',
+  //       'Vegetarian/Vegan Options',
+  //     ],
+  //     dietaryAccommodations:
+  //       'We accommodate allergies, intolerances, and preferences with advance notice',
+  //     maxPeople: 20,
+  //     needsGroceries: true,
+  //   },
+  // },
 
   // YOGA SERVICE
   [SERVICE_IDS.YOGA]: {
@@ -875,28 +875,6 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
-  // [SERVICE_IDS.GROCERY]: {
-  //   id: SERVICE_IDS.GROCERY,
-  //   titleKey: 'services.standard.groceryShopping.name',
-  //   descriptionKey: 'services.standard.groceryShopping.description',
-  //   fullDescriptionKey: 'services.standard.groceryShopping.full',
-  //   basePrice: 50, // Adjust as needed
-  //   priceUnit: 'services.priceUnits.perService',
-  //   category: 'leisure',
-  //   packageType: ['standard'],
-  //   imageUrl:
-  //     'https://plus.unsplash.com/premium_photo-1661381001052-2f5327899acd?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //   duration: 0,
-  //   specialRender: 'grocery', // Indicates special rendering is needed
-  //   isPopular: false,
-  //   // Add other standard service properties as needed
-  //   tags: ['convenience', 'food', 'shopping'],
-  //   metaData: {
-  //     deliveryTime: '24-48 hours',
-  //     minimumOrder: '$50',
-  //   },
-  // },
-
   // BABYSITTER SERVICE
   [SERVICE_IDS.BABYSITTER]: {
     id: SERVICE_IDS.BABYSITTER,
@@ -1200,108 +1178,108 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   },
 
   // BIKE_RENTALS SERVICE
-  [SERVICE_IDS.BIKE_RENTALS]: {
-    id: SERVICE_IDS.BIKE_RENTALS,
-    titleKey: 'services.standard.bikeRental.name',
-    descriptionKey: 'services.standard.bikeRental.short',
-    fullDescriptionKey: 'services.standard.bikeRental.full',
-    basePrice: 25,
-    priceUnit: 'services.priceUnits.perDay',
-    category: 'adventure',
-    packageType: ['standard'],
-    imageUrl:
-      'https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?_gl=1*43ul76*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM4MDA1NjIkajU5JGwwJGgw',
-    duration: 1,
-    bookingDuration: {
-      min: 1,
-      max: 7,
-      unit: 'days',
-    },
-    options: {
-      bikeType: {
-        id: 'bikeType',
-        nameKey: 'services.bikeRental.options.bikeType.title',
-        subOptions: {
-          beachCruiser: {
-            id: 'beachCruiser',
-            nameKey:
-              'services.bikeRental.options.bikeType.options.beachCruiser',
-            price: 0,
-          },
-          cityBike: {
-            id: 'cityBike',
-            nameKey: 'services.bikeRental.options.bikeType.options.cityBike',
-            price: 5,
-          },
-          mountainBike: {
-            id: 'mountainBike',
-            nameKey:
-              'services.bikeRental.options.bikeType.options.mountainBike',
-            price: 10,
-          },
-          eBike: {
-            id: 'eBike',
-            nameKey: 'services.bikeRental.options.bikeType.options.eBike',
-            price: 20,
-          },
-        },
-      },
-      rentalDuration: {
-        id: 'rentalDuration',
-        nameKey: 'services.bikeRental.options.rentalDuration.title',
-        subOptions: {
-          halfDay: {
-            id: 'halfDay',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.halfDay',
-            price: -10,
-          },
-          fullDay: {
-            id: 'fullDay',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.fullDay',
-            price: 0,
-          },
-          twoDays: {
-            id: 'twoDays',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.twoDays',
-            price: 20,
-          },
-          weekly: {
-            id: 'weekly',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.weekly',
-            price: 100,
-          },
-        },
-      },
-    },
-    additionalInfoKeys: [
-      'services.bikeRental.additionalInfo.1',
-      'services.bikeRental.additionalInfo.2',
-      'services.bikeRental.additionalInfo.3',
-    ],
-    specialRender: 'bikeRental',
-    relatedServices: [],
-    tags: ['adventure', 'exploration', 'outdoor', 'cycling'],
-    availability: {
-      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
-      hoursOfDay: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-    },
-    metaData: {
-      deliveryIncluded: true,
-      pickupIncluded: true,
-      helmetIncluded: true,
-      lockIncluded: true,
-      support24h: true,
-      deliveryZone: 'Punta Cana area',
-      childrenBikesAvailable: true,
-      maintenanceStandard: 'highest',
-      languages: 'english,spanish',
-      disclaimer: 'services.bikeRental.disclaimer',
-    },
-  },
+  // [SERVICE_IDS.BIKE_RENTALS]: {
+  //   id: SERVICE_IDS.BIKE_RENTALS,
+  //   titleKey: 'services.standard.bikeRental.name',
+  //   descriptionKey: 'services.standard.bikeRental.short',
+  //   fullDescriptionKey: 'services.standard.bikeRental.full',
+  //   basePrice: 25,
+  //   priceUnit: 'services.priceUnits.perDay',
+  //   category: 'adventure',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?_gl=1*43ul76*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM4MDA1NjIkajU5JGwwJGgw',
+  //   duration: 1,
+  //   bookingDuration: {
+  //     min: 1,
+  //     max: 7,
+  //     unit: 'days',
+  //   },
+  //   options: {
+  //     bikeType: {
+  //       id: 'bikeType',
+  //       nameKey: 'services.bikeRental.options.bikeType.title',
+  //       subOptions: {
+  //         beachCruiser: {
+  //           id: 'beachCruiser',
+  //           nameKey:
+  //             'services.bikeRental.options.bikeType.options.beachCruiser',
+  //           price: 0,
+  //         },
+  //         cityBike: {
+  //           id: 'cityBike',
+  //           nameKey: 'services.bikeRental.options.bikeType.options.cityBike',
+  //           price: 5,
+  //         },
+  //         mountainBike: {
+  //           id: 'mountainBike',
+  //           nameKey:
+  //             'services.bikeRental.options.bikeType.options.mountainBike',
+  //           price: 10,
+  //         },
+  //         eBike: {
+  //           id: 'eBike',
+  //           nameKey: 'services.bikeRental.options.bikeType.options.eBike',
+  //           price: 20,
+  //         },
+  //       },
+  //     },
+  //     rentalDuration: {
+  //       id: 'rentalDuration',
+  //       nameKey: 'services.bikeRental.options.rentalDuration.title',
+  //       subOptions: {
+  //         halfDay: {
+  //           id: 'halfDay',
+  //           nameKey:
+  //             'services.bikeRental.options.rentalDuration.options.halfDay',
+  //           price: -10,
+  //         },
+  //         fullDay: {
+  //           id: 'fullDay',
+  //           nameKey:
+  //             'services.bikeRental.options.rentalDuration.options.fullDay',
+  //           price: 0,
+  //         },
+  //         twoDays: {
+  //           id: 'twoDays',
+  //           nameKey:
+  //             'services.bikeRental.options.rentalDuration.options.twoDays',
+  //           price: 20,
+  //         },
+  //         weekly: {
+  //           id: 'weekly',
+  //           nameKey:
+  //             'services.bikeRental.options.rentalDuration.options.weekly',
+  //           price: 100,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   additionalInfoKeys: [
+  //     'services.bikeRental.additionalInfo.1',
+  //     'services.bikeRental.additionalInfo.2',
+  //     'services.bikeRental.additionalInfo.3',
+  //   ],
+  //   specialRender: 'bikeRental',
+  //   relatedServices: [],
+  //   tags: ['adventure', 'exploration', 'outdoor', 'cycling'],
+  //   availability: {
+  //     daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
+  //     hoursOfDay: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+  //   },
+  //   metaData: {
+  //     deliveryIncluded: true,
+  //     pickupIncluded: true,
+  //     helmetIncluded: true,
+  //     lockIncluded: true,
+  //     support24h: true,
+  //     deliveryZone: 'Punta Cana area',
+  //     childrenBikesAvailable: true,
+  //     maintenanceStandard: 'highest',
+  //     languages: 'english,spanish',
+  //     disclaimer: 'services.bikeRental.disclaimer',
+  //   },
+  // },
 
   // Premium services section
   // LUXE YACHT
@@ -1698,11 +1676,6 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     imageUrl:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg',
     duration: 2,
-    bookingDuration: {
-      min: 2,
-      max: 7,
-      unit: 'days',
-    },
     options: {
       bikeType: {
         id: 'bikeType',

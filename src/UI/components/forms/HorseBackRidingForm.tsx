@@ -39,26 +39,6 @@ const LOCATION_OPTIONS = [
   { id: 'macao-beach', name: 'Macao Beach Area' },
 ] as const;
 
-// Experience levels
-const EXPERIENCE_LEVELS = [
-  {
-    id: 'beginner',
-    name: 'First Time Rider',
-    description: 'Never ridden before',
-  },
-  { id: 'novice', name: 'Beginner', description: 'Limited experience' },
-  {
-    id: 'intermediate',
-    name: 'Some Experience',
-    description: 'Comfortable with basics',
-  },
-  {
-    id: 'advanced',
-    name: 'Experienced Rider',
-    description: 'Confident and skilled',
-  },
-] as const;
-
 // Package options
 const PACKAGE_OPTIONS = [
   {
@@ -93,7 +73,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     participantCount: 2,
     minorsCount: 0,
     packageType: 'classic-beach', // 'classic-beach', 'sunset-premium'
-    experienceLevel: 'beginner',
     hasSpecialNeeds: false,
     specialNeedsDetails: '',
     confirmSpecialNeeds: false,
@@ -103,27 +82,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentPrice, setCurrentPrice] = useState(service.price);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Calculate price based on selections
-  useEffect(() => {
-    const selectedPackage = PACKAGE_OPTIONS.find(
-      (pkg) => pkg.id === formData.packageType
-    );
-    const basePrice = selectedPackage?.price || service.price;
-
-    // Simple pricing: base price per participant
-    const totalPrice = basePrice * formData.participantCount;
-
-    // Additional fee for special needs accommodations
-    const specialNeedsFee = formData.hasSpecialNeeds ? 25 : 0;
-
-    setCurrentPrice(totalPrice + specialNeedsFee);
-  }, [
-    formData.participantCount,
-    formData.packageType,
-    formData.hasSpecialNeeds,
-    service.price,
-  ]);
 
   // Handle input changes
   const handleChange = (
@@ -220,10 +178,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
       newErrors.packageType = 'Please select a package';
     }
 
-    if (!formData.experienceLevel) {
-      newErrors.experienceLevel = 'Please select experience level';
-    }
-
     // Validate minors count
     if (formData.minorsCount > formData.participantCount) {
       newErrors.minorsCount =
@@ -293,11 +247,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
         LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
         formData.location;
 
-      // Get selected package
-      const selectedPackage = PACKAGE_OPTIONS.find(
-        (pkg) => pkg.id === formData.packageType
-      );
-
       const reservationData = {
         service: service,
         formData: {
@@ -306,7 +255,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           totalPrice: currentPrice,
           calculatedPrice: currentPrice,
           locationName: selectedLocation,
-          packageDetails: selectedPackage,
         },
         totalPrice: currentPrice,
         bookingDate: bookingStartDate,
@@ -319,13 +267,11 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
         selectedItems: [
           {
             id: `horseback-${formData.packageType}`,
-            name: selectedPackage?.name || 'Horseback Riding Adventure',
             quantity: 1,
             price: currentPrice,
             totalPrice: currentPrice,
             timeSlot: formData.timeSlot,
             packageType: formData.packageType,
-            experienceLevel: formData.experienceLevel,
             location: selectedLocation,
           },
         ],
@@ -335,8 +281,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           location: formData.location,
           locationName: selectedLocation,
           packageType: formData.packageType,
-          packageName: selectedPackage?.name,
-          experienceLevel: formData.experienceLevel,
           hasSpecialNeeds: formData.hasSpecialNeeds,
           specialNeedsDetails: formData.specialNeedsDetails,
           participantCount: formData.participantCount,
@@ -404,83 +348,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
           {/* Form Body */}
           <div className='p-8 space-y-8'>
-            {/* Package Selection */}
-            <div className='space-y-6'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Sparkles
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-amber-600'
-                  }`}
-                />
-                Choose Your Package
-              </h3>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                {PACKAGE_OPTIONS.map((pkg) => (
-                  <div
-                    key={pkg.id}
-                    className={`
-                      border rounded-lg p-4 cursor-pointer transition-all
-                      ${
-                        formData.packageType === pkg.id
-                          ? `${
-                              isPremium
-                                ? 'bg-orange-50 border-orange-300'
-                                : 'bg-amber-50 border-amber-300'
-                            } shadow-sm`
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }
-                    `}
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, packageType: pkg.id }))
-                    }
-                  >
-                    <div className='flex items-center justify-between mb-2'>
-                      <div className='flex items-center'>
-                        <div
-                          className={`
-                          w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                          ${
-                            formData.packageType === pkg.id
-                              ? `${
-                                  isPremium
-                                    ? 'border-orange-500 bg-orange-500'
-                                    : 'border-amber-500 bg-amber-500'
-                                }`
-                              : 'border-gray-300'
-                          }
-                        `}
-                        >
-                          {formData.packageType === pkg.id && (
-                            <CheckCircle className='w-4 h-4 text-white' />
-                          )}
-                        </div>
-                        <span className='font-bold text-gray-800'>
-                          {pkg.name}
-                        </span>
-                      </div>
-                      <span className='text-xl font-bold text-gray-800'>
-                        ${pkg.price}
-                      </span>
-                    </div>
-                    <p className='text-gray-600 text-sm ml-8'>
-                      {pkg.description}
-                    </p>
-                    <div className='flex items-center text-gray-500 text-sm mt-1 ml-8'>
-                      <Clock className='w-4 h-4 mr-1' />
-                      {pkg.duration}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {errors.packageType && (
-                <p className='text-red-500 text-xs mt-1'>
-                  {errors.packageType}
-                </p>
-              )}
-            </div>
-
             {/* Date and Time Section */}
             <div className='space-y-6'>
               <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
@@ -656,11 +523,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                       setFormData((prev) => ({ ...prev, timeSlot: 'sunset' }))
                     }
                   >
-                    {formData.packageType === 'sunset-premium' && (
-                      <div className='absolute top-1 right-1 bg-orange-500 text-white px-2 py-1 rounded text-xs font-bold'>
-                        PREMIUM
-                      </div>
-                    )}
                     <div className='flex items-center'>
                       <div
                         className={`
@@ -880,90 +742,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                       Adult supervision is required. Minimum age is 6 years.
                     </p>
                   </div>
-                )}
-              </div>
-            </div>
-
-            {/* Experience Level Section */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Star
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-amber-600'
-                  }`}
-                />
-                Riding Experience
-              </h3>
-
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                  <Star
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-amber-600'
-                    }`}
-                  />
-                  What's your riding experience? *
-                </label>
-
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-                  {EXPERIENCE_LEVELS.map((level) => (
-                    <div
-                      key={level.id}
-                      className={`
-                        border rounded-lg p-4 cursor-pointer transition-all
-                        ${
-                          formData.experienceLevel === level.id
-                            ? `${
-                                isPremium
-                                  ? 'bg-orange-50 border-orange-300'
-                                  : 'bg-amber-50 border-amber-300'
-                              } shadow-sm`
-                            : 'border-gray-200 hover:bg-gray-50'
-                        }
-                      `}
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          experienceLevel: level.id,
-                        }))
-                      }
-                    >
-                      <div className='flex items-start'>
-                        <div
-                          className={`
-                          w-5 h-5 rounded-full border flex items-center justify-center mr-3 mt-0.5
-                          ${
-                            formData.experienceLevel === level.id
-                              ? `${
-                                  isPremium
-                                    ? 'border-orange-500 bg-orange-500'
-                                    : 'border-amber-500 bg-amber-500'
-                                }`
-                              : 'border-gray-300'
-                          }
-                        `}
-                        >
-                          {formData.experienceLevel === level.id && (
-                            <CheckCircle className='w-4 h-4 text-white' />
-                          )}
-                        </div>
-                        <div>
-                          <span className='font-medium text-gray-800'>
-                            {level.name}
-                          </span>
-                          <p className='text-sm text-gray-600 mt-1'>
-                            {level.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {errors.experienceLevel && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.experienceLevel}
-                  </p>
                 )}
               </div>
             </div>

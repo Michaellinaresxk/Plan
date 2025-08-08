@@ -26,7 +26,9 @@ const VEHICLE_TYPES = {
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
     description: 'Single rider adventure',
     features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
-    price: '$89',
+    price: 89,
+    duration: '3 hours',
+    maxParticipants: 1,
   },
   BUGGY: {
     id: 'buggy',
@@ -35,7 +37,9 @@ const VEHICLE_TYPES = {
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754597118/9_m5fya0.jpg',
     description: 'Shared adventure for couples',
     features: ['2-person capacity', 'Side by side', 'Great for couples'],
-    price: '$129',
+    price: 129,
+    duration: '3 hours',
+    maxParticipants: 2,
   },
   POLARIS: {
     id: 'polaris',
@@ -44,7 +48,9 @@ const VEHICLE_TYPES = {
       'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
     description: 'Premium off-road experience',
     features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
-    price: '$159',
+    price: 159,
+    duration: '3 hours',
+    maxParticipants: 2,
   },
 };
 
@@ -74,7 +80,7 @@ const VehicleSelection = ({ onVehicleSelect }) => {
             <div
               key={vehicle.id}
               className='group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer'
-              onClick={() => onVehicleSelect(vehicle.id.toUpperCase())}
+              onClick={() => onVehicleSelect(vehicle)}
             >
               {/* Vehicle Image */}
               <div className='relative h-48 overflow-hidden'>
@@ -83,9 +89,9 @@ const VehicleSelection = ({ onVehicleSelect }) => {
                   alt={vehicle.name}
                   className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
                 />
-                {/* <div className='absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-semibold'>
-                  {vehicle.price}
-                </div> */}
+                <div className='absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-semibold'>
+                  ${vehicle.price}
+                </div>
                 <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent group-hover:from-black/40 transition-all duration-300' />
               </div>
 
@@ -94,6 +100,30 @@ const VehicleSelection = ({ onVehicleSelect }) => {
                 <h3 className='text-xl font-bold text-gray-800 mb-2'>
                   {vehicle.name}
                 </h3>
+                <p className='text-gray-600 mb-4'>{vehicle.description}</p>
+
+                <div className='space-y-2 mb-4'>
+                  {vehicle.features.map((feature, idx) => (
+                    <div
+                      key={idx}
+                      className='flex items-center text-sm text-gray-600'
+                    >
+                      <Check className='w-4 h-4 text-green-500 mr-2' />
+                      {feature}
+                    </div>
+                  ))}
+                </div>
+
+                <div className='flex items-center justify-between text-sm text-gray-500'>
+                  <span className='flex items-center'>
+                    <Clock className='w-4 h-4 mr-1' />
+                    {vehicle.duration}
+                  </span>
+                  <span className='flex items-center'>
+                    <Users className='w-4 h-4 mr-1' />
+                    Max {vehicle.maxParticipants}
+                  </span>
+                </div>
               </div>
             </div>
           ))}
@@ -122,22 +152,11 @@ const VehicleSelection = ({ onVehicleSelect }) => {
 };
 
 // Updated Hero Section for ATV Adventures
-const HeroSection = ({ onBookClick }) => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
+const HeroSection = ({ onBookNow }) => {
   return (
     <div className='relative h-screen min-h-[600px] md:min-h-[700px] overflow-hidden'>
       {/* Parallax Background */}
-      <div
-        className='absolute inset-0'
-        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
-      >
+      <div className='absolute inset-0'>
         <img
           src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg'
           alt='ATV adventures in tropical paradise'
@@ -170,7 +189,7 @@ const HeroSection = ({ onBookClick }) => {
 
           <div className='flex flex-col sm:flex-row gap-4 mb-8'>
             <button
-              onClick={onBookClick}
+              onClick={onBookNow}
               className='group bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all transform hover:scale-105 shadow-2xl inline-flex items-center justify-center gap-2'
             >
               Start Your Adventure
@@ -345,8 +364,8 @@ const QuickInfoSection = () => {
   );
 };
 
-// Updated Special Banner
-const SpecialBanner = () => {
+// Updated Special Banner - Recibe onBookNow como prop
+const SpecialBanner = ({ onBookNow }) => {
   return (
     <section className='relative py-32 overflow-hidden'>
       <div className='absolute inset-0'>
@@ -394,7 +413,10 @@ const SpecialBanner = () => {
             </div>
           </div>
 
-          <button className='bg-gradient-to-r from-amber-500 to-green-500 hover:from-amber-600 hover:to-green-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'>
+          <button
+            onClick={onBookNow}
+            className='bg-gradient-to-r from-amber-500 to-green-500 hover:from-amber-600 hover:to-green-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
+          >
             Book Your ATV Adventure
           </button>
         </div>
@@ -597,50 +619,53 @@ const ReviewsSection = () => {
   );
 };
 
-// Main Component with State Management
+// Main Component with State Management - IGUAL QUE YOGA
 const AtvRideServiceView = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { bookService } = useBooking();
 
-  // Manejar confirmación de reserva
+  const service = {
+    id: 'atv-adventure',
+    name: 'ATV Adventure',
+    type: 'ATV_EXPERIENCE',
+    description: 'Tropical paradise off-road adventure',
+    duration: '3 hours',
+    price: selectedVehicle?.price || 89, // Precio dinámico basado en vehículo seleccionado
+    included: [
+      'Round-trip transportation',
+      'Safety equipment',
+      'Expert guide',
+      'Photos',
+    ],
+    packageType: selectedVehicle?.id === 'polaris' ? 'premium' : 'standard',
+    vehicleType: selectedVehicle?.id || 'atv',
+    maxParticipants: selectedVehicle?.maxParticipants || 2,
+  };
+
   const handleBookingConfirm = (
-    bookingService: Service,
+    service: Service,
     dates: BookingDate,
     guests: number
   ) => {
-    bookService(bookingService, dates, guests);
+    bookService(service, dates, guests);
     setIsModalOpen(false);
   };
 
-  // Handle vehicle selection and open booking modal
-  const handleVehicleSelect = (vehicleType) => {
-    setSelectedVehicle(vehicleType);
-    setIsBookingModalOpen(true);
+  // Función para abrir el modal - IGUAL QUE YOGA
+  const handleBookNow = () => {
+    setIsModalOpen(true);
   };
 
-  // Handle booking button click from hero
-  const handleBookClick = () => {
-    // Scroll to vehicle selection
-    const vehicleSection = document.querySelector(
-      '[data-section="vehicle-selection"]'
-    );
-    if (vehicleSection) {
-      vehicleSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  // Close modal and reset state
-  const handleCloseModal = () => {
-    setIsBookingModalOpen(false);
-    setSelectedVehicle(null);
+  // Handle vehicle selection - ACTUALIZADO
+  const handleVehicleSelect = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setIsModalOpen(true);
   };
 
   return (
     <div className='min-h-screen bg-white'>
-      <HeroSection onBookClick={handleBookClick} />
+      <HeroSection onBookNow={handleBookNow} />
       <QuickInfoSection />
 
       {/* Vehicle Selection Section */}
@@ -650,18 +675,25 @@ const AtvRideServiceView = () => {
 
       <PhotoGallery />
       <IncludesSection />
-      <SpecialBanner />
+
+      {/* CORREGIDO: Pasar handleBookNow como prop */}
+      <SpecialBanner onBookNow={handleBookNow} />
+
       <AdventureBanner />
       <ReviewsSection />
 
-      {/* Booking Modal */}
+      {/* Booking Modal - IGUAL QUE YOGA */}
       <AnimatePresence>
         {isModalOpen && (
           <BookingModal
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedVehicle(null);
+            }}
             onConfirm={handleBookingConfirm}
             service={service}
+            selectedVehicle={selectedVehicle}
           />
         )}
       </AnimatePresence>

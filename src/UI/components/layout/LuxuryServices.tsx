@@ -155,17 +155,18 @@ const ServicesOverview = () => {
           </div>
 
           <h2 className='text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent leading-tight'>
-            Servicios de Lujo Exclusivos
+            Servicios Exclusivos
           </h2>
 
           <p className='text-xl md:text-2xl text-slate-700 leading-relaxed font-light'>
-            En Lux Punta Cana, transformamos cada momento en una experiencia
-            extraordinaria. Desde aventuras en yates privados hasta cenas
-            exclusivas en la playa, nuestro equipo especializado diseña
-            experiencias únicas que superan toda expectativa.
+            En Lux Punta Cana entendemos que los momentos más valiosos no se
+            improvisan… Se diseñan con intención. Por eso nuestros servicios,
+            desde recogidas en SUV, travesías en Yates privados hasta cenas
+            gourmet, no solo crean experiencias, sino recuerdos que perduran.
+            Porque el verdadero lujo no necesita mostrar exceso.
             <span className='text-blue-600 font-medium'>
               {' '}
-              Porque el lujo verdadero está en los detalles.
+              Solo necesita tocar el alma.
             </span>
           </p>
 
