@@ -1094,7 +1094,7 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
       title: 'Experience the Beauty of Catamaran Sailing',
       images: [
         {
-          src: '/images/services/catamaran-1.jpg',
+          src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg',
           alt: 'Catamaran sailing in crystal clear waters',
           caption: 'Sail through turquoise waters of Punta Cana',
         },

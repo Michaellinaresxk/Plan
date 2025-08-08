@@ -108,24 +108,7 @@ const HeroSection: React.FC<{
       title: 'Caribbean Paradise',
       subtitle: 'Luxury Catamaran Experience',
     },
-    {
-      src: 'https://images.pexels.com/photos/4321523/pexels-photo-4321523.jpeg?_gl=1*7jzc5f*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTkxOTkkajU5JGwwJGgw',
-      title: 'Underwater Adventure',
-      subtitle: 'Snorkeling in Crystal Waters',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1600',
-      title: 'Premium Experience',
-      subtitle: 'Gourmet Dining & Water Slides',
-    },
   ];
-
-  const navigateImage = (direction: number) => {
-    const newIndex = currentImage + direction;
-    if (newIndex < 0) return onImageChange(heroImages.length - 1);
-    if (newIndex >= heroImages.length) return onImageChange(0);
-    onImageChange(newIndex);
-  };
 
   return (
     <div className='relative h-screen overflow-hidden'>
@@ -148,21 +131,6 @@ const HeroSection: React.FC<{
 
       {/* Modern gradient overlay */}
       <div className='absolute inset-0 bg-gradient-to-br from-slate-900/60 via-blue-900/40 to-cyan-900/60' />
-
-      {/* Navigation buttons */}
-      <button
-        onClick={() => navigateImage(-1)}
-        className='absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 border border-white/20 text-white'
-      >
-        <ChevronLeft className='w-6 h-6' />
-      </button>
-
-      <button
-        onClick={() => navigateImage(1)}
-        className='absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 border border-white/20 text-white'
-      >
-        <ChevronRight className='w-6 h-6' />
-      </button>
 
       {/* Image indicators */}
       <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2'>

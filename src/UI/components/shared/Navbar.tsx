@@ -19,8 +19,8 @@ const Navbar = () => {
 
   const menuItems = [
     { text: t('common.nav.home'), href: '/' },
-    { text: t('common.nav.packages'), href: '/#packages' },
-    { text: t('common.nav.custom-package'), href: '/custom-package' },
+    { text: t('common.nav.standard'), href: '/standard-package' },
+    { text: t('common.nav.premium'), href: '/premium-package' },
     { text: t('common.nav.contact'), href: '/contact' },
     { text: t('common.nav.about'), href: '/about' },
   ];

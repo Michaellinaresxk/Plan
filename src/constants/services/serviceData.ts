@@ -1696,7 +1696,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     category: 'tours',
     packageType: ['standard'],
     imageUrl:
-      'https://puntacanaexcursions.online/wp-content/uploads/2024/09/WhatsApp-Image-2022-04-07-at-11.59.38-AM-scaled.jpeg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg',
     duration: 2,
     bookingDuration: {
       min: 2,

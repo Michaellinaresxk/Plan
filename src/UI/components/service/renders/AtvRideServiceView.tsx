@@ -6,17 +6,11 @@ import {
   Shield,
   Star,
   Check,
-  DollarSign,
   ArrowRight,
-  Play,
   X,
   Sparkles,
   Heart,
   Users,
-  Calendar,
-  Phone,
-  Mail,
-  User,
 } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import BookingModal from '../../modal/BookingModal';
@@ -29,7 +23,7 @@ const VEHICLE_TYPES = {
     id: 'atv',
     name: 'ATV Quad',
     image:
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
     description: 'Single rider adventure',
     features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
     price: '$89',
@@ -38,7 +32,7 @@ const VEHICLE_TYPES = {
     id: 'buggy',
     name: 'Dune Buggy',
     image:
-      'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=400&h=300&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754597118/9_m5fya0.jpg',
     description: 'Shared adventure for couples',
     features: ['2-person capacity', 'Side by side', 'Great for couples'],
     price: '$129',
@@ -100,26 +94,6 @@ const VehicleSelection = ({ onVehicleSelect }) => {
                 <h3 className='text-xl font-bold text-gray-800 mb-2'>
                   {vehicle.name}
                 </h3>
-                <p className='text-gray-600 mb-4'>{vehicle.description}</p>
-
-                {/* Features */}
-                <div className='space-y-2 mb-6'>
-                  {vehicle.features.map((feature, idx) => (
-                    <div
-                      key={idx}
-                      className='flex items-center gap-2 text-sm text-gray-700'
-                    >
-                      <Check className='w-4 h-4 text-green-500' />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* CTA Button */}
-                <button className='w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-lg transition-all group-hover:bg-amber-600 flex items-center justify-center gap-2'>
-                  Select {vehicle.name}
-                  <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-                </button>
               </div>
             </div>
           ))}
@@ -165,7 +139,7 @@ const HeroSection = ({ onBookClick }) => {
         style={{ transform: `translateY(${scrollY * 0.3}px)` }}
       >
         <img
-          src='https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=1200&h=800&fit=crop'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg'
           alt='ATV adventures in tropical paradise'
           className='w-full h-full object-cover'
         />
@@ -173,7 +147,7 @@ const HeroSection = ({ onBookClick }) => {
         <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70' />
       </div>
 
-      <div className='relative z-10 h-full flex flex-col justify-end px-4 md:px-8 pb-32'>
+      <div className='relative z-10 h-full flex flex-col justify-end px-4 md:px-8 pb-10'>
         <div className='max-w-4xl mx-auto w-full'>
           <div className='inline-flex items-center gap-2 bg-green-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-green-400/30'>
             <Sparkles className='w-4 h-4 text-green-400' />
@@ -220,10 +194,6 @@ const HeroSection = ({ onBookClick }) => {
           </div>
         </div>
       </div>
-
-      <div className='absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/50 animate-bounce'>
-        <ChevronRight className='w-6 h-6 rotate-90' />
-      </div>
     </div>
   );
 };
@@ -234,27 +204,27 @@ const PhotoGallery = () => {
 
   const photos = [
     {
-      src: 'https://images.unsplash.com/photo-1626668893632-6f3a4466d22f?w=600&h=400&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595136/6_xkqjqa.jpg',
       alt: 'ATV jungle adventure',
       caption: 'Explore lush jungle trails',
     },
     {
-      src: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=400&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595137/5_qkapnv.jpg',
       alt: 'Beach ATV riding',
       caption: 'Race along pristine beaches',
     },
     {
-      src: 'https://images.unsplash.com/photo-1507018047619-4d1c6a17d6e8?w=600&h=400&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595138/3_xanwzg.jpg',
       alt: 'Tropical cenote',
       caption: 'Discover hidden cenotes',
     },
     {
-      src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754596293/4_enh3k1.jpg',
       alt: 'ATV sunset',
       caption: 'Sunset adventures',
     },
     {
-      src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
       alt: 'Tropical landscape',
       caption: 'Breathtaking landscapes',
     },
@@ -381,7 +351,7 @@ const SpecialBanner = () => {
     <section className='relative py-32 overflow-hidden'>
       <div className='absolute inset-0'>
         <img
-          src='https://images.unsplash.com/photo-1551524164-687a55dd1126?w=1200&h=800&fit=crop'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754596123/8_y6xwml.jpg'
           alt='ATV adventure through tropical paradise'
           className='w-full h-full object-cover'
         />
@@ -531,7 +501,7 @@ const AdventureBanner = () => {
           <div className='relative'>
             <div className='rounded-2xl overflow-hidden shadow-2xl'>
               <img
-                src='https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=500&h=400&fit=crop'
+                src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg'
                 alt='ATV adventure group'
                 className='w-full h-[400px] object-cover'
               />

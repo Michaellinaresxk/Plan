@@ -121,18 +121,6 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
       caption: 'Satisfied customers arrive stress-free',
       category: 'customers',
     },
-    {
-      src: 'https://images.unsplash.com/photo-1514064019862-23e2a332a6a6?q=80&w=2127',
-      alt: 'City skyline',
-      caption: 'Enjoy the journey to your destination',
-      category: 'destination',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069',
-      alt: 'Luggage handling',
-      caption: 'We take care of your luggage',
-      category: 'service',
-    },
   ];
 
   // Detalles adicionales
