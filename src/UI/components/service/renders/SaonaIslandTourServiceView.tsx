@@ -563,13 +563,6 @@ const BannersSection: React.FC<{
         <p className='text-xl text-stone-600 leading-relaxed'>
           {banner.subtitle}
         </p>
-        <button
-          onClick={onBookClick}
-          className='inline-flex items-center gap-3 bg-cyan-500 text-stone-50 px-6 py-3 rounded-full font-medium hover:bg-stone-800 transition-colors duration-200'
-        >
-          View Details
-          <ArrowRight className='w-4 h-4' />
-        </button>
       </div>
     </motion.div>
   );
@@ -632,12 +625,8 @@ const SaonaIslandTourServiceView: React.FC = ({ service }) => {
         <SimpleGallery />
         {/* Island Experience */}
         <IslandExperience />
-        <BannersSection
-          onBookClick={function (): void {
-            throw new Error('Function not implemented.');
-          }}
-        />
-        <SpecialBanner onBookClick={undefined} />
+        <BannersSection onBookClick={handleBookNow} />
+        <SpecialBanner onBookClick={handleBookNow} />
 
         {/* Practical Information */}
         <TourInformation />

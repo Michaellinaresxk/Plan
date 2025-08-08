@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { useRouter } from 'next/navigation';
 import { useReservation } from '@/context/BookingContext';
@@ -13,6 +13,7 @@ import {
   Info,
   Waves,
   Star,
+  CheckCircle,
 } from 'lucide-react';
 
 // Types for better type safety
@@ -25,7 +26,7 @@ interface ChildInfo {
 interface FormData {
   // Tour details
   tourDate: string;
-  location: string;
+  location: string; // ✅ Now stores location ID instead of free text
 
   // Participants
   adultCount: number;
@@ -44,39 +45,25 @@ interface SaonaIslandFormProps {
   service: Service;
   onSubmit?: (
     formData: FormData & { totalPrice: number; pickupTime: string }
-  ) => void; // Made optional for compatibility
+  ) => void;
   onCancel: () => void;
 }
 
+// ✅ Location options configuration - same as BabysitterForm
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+] as const;
+
 // Age restrictions and pricing configuration
 const AGE_CONFIG = {
-  FREE_AGE_LIMIT: 5, // Children 5 and under are free
-  CHILD_PRICE_LIMIT: 12, // Children 6-12 have reduced price
-  ADULT_PRICE: 85, // Adult price
-  CHILD_PRICE: 60, // Child price (6-12 years)
-  FREE_PRICE: 0, // Free for children 5 and under
-};
-
-// Tour information
-const TOUR_INFO = {
-  PICKUP_TIME: '7:30 AM',
-  DURATION: '8-9 hours',
-  INCLUDES: [
-    'Round-trip transportation',
-    'Catamaran ride',
-    'Natural pool swimming',
-    'Beach time at Saona Island',
-    'Buffet lunch',
-    'Open bar (local drinks)',
-    'Snorkeling equipment',
-    'Life jackets',
-  ],
-  RESTRICTIONS: [
-    'Not recommended for pregnant women',
-    'Not suitable for people with mobility issues',
-    'Minimum age: No restrictions (babies welcome)',
-    'Children must be supervised at all times',
-  ],
+  FREE_AGE_LIMIT: 5,
+  CHILD_PRICE_LIMIT: 12,
+  ADULT_PRICE: 85,
+  CHILD_PRICE: 60,
+  FREE_PRICE: 0,
 };
 
 const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
@@ -88,10 +75,32 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   const router = useRouter();
   const { setReservationData } = useReservation();
 
-  // Form state
+  // Tour information
+  const TOUR_INFO = {
+    PICKUP_TIME: '7:30 AM',
+    DURATION: '8-9 hours',
+    INCLUDES: [
+      'Round-trip transportation',
+      'Catamaran ride',
+      'Natural pool swimming',
+      'Beach time at Saona Island',
+      'Buffet lunch',
+      'Open bar (local drinks)',
+      'Snorkeling equipment',
+      'Life jackets',
+    ],
+    RESTRICTIONS: [
+      'Not recommended for pregnant women',
+      'Not suitable for people with mobility issues',
+      'Minimum age: No restrictions (babies welcome)',
+      'Children must be supervised at all times',
+    ],
+  };
+
+  // ✅ Fixed: Form state with proper initial values
   const [formData, setFormData] = useState<FormData>({
     tourDate: '',
-    location: '',
+    location: '', // ✅ Fixed: Now properly initialized as empty string
     adultCount: 2,
     childCount: 0,
     children: [],
@@ -100,6 +109,32 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ✅ Helper to update form fields - optimized like BabysitterForm
+  const updateFormField = useCallback((field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Clear error when field is updated
+    setErrors((prev) => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
+
+  // ✅ Handle location selection - same logic as BabysitterForm
+  const handleLocationSelect = useCallback(
+    (locationId: string) => {
+      updateFormField('location', locationId);
+    },
+    [updateFormField]
+  );
 
   // Calculate total participants
   const totalParticipants = useMemo(() => {
@@ -112,7 +147,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     const newChildCount = formData.childCount;
 
     if (newChildCount > currentChildrenCount) {
-      // Add new children
       const newChildren = [...formData.children];
       for (let i = currentChildrenCount; i < newChildCount; i++) {
         const defaultAge = 8;
@@ -124,7 +158,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       }
       setFormData((prev) => ({ ...prev, children: newChildren }));
     } else if (newChildCount < currentChildrenCount) {
-      // Remove children
       setFormData((prev) => ({
         ...prev,
         children: prev.children.slice(0, newChildCount),
@@ -146,15 +179,10 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   // Calculate total price
   const calculatePrice = useMemo(() => {
     let total = 0;
-
-    // Adults price
     total += formData.adultCount * AGE_CONFIG.ADULT_PRICE;
-
-    // Children price based on age
     formData.children.forEach((child) => {
       total += calculateChildPrice(child.age);
     });
-
     return total;
   }, [formData.adultCount, formData.children]);
 
@@ -175,7 +203,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     return hours >= 24;
   };
 
-  // Form validation
+  // ✅ Updated validation to check location ID like BabysitterForm
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -184,8 +212,9 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       newErrors.tourDate = 'Tour date is required';
     }
 
+    // ✅ Updated: Validate location ID instead of free text
     if (!formData.location) {
-      newErrors.location = 'Pickup location is required';
+      newErrors.location = 'Please select a pickup location';
     }
 
     // Date validations
@@ -212,7 +241,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     return newErrors;
   };
 
-  // FIXED: Handle form submission following BikeForm pattern
+  // ✅ Updated submit handler to include location name like BabysitterForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -227,7 +256,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Same day booking confirmation
       if (isSameDay(formData.tourDate)) {
         if (
           !window.confirm(
@@ -239,18 +267,17 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
         }
       }
 
-      // Create booking date properly
       const selectedDate = new Date(formData.tourDate);
-
-      // Set pickup time (7:30 AM)
       const bookingStartDate = new Date(selectedDate);
       bookingStartDate.setHours(7, 30, 0, 0);
-
-      // Set return time (approximately 6:30 PM - 9 hours tour)
       const bookingEndDate = new Date(selectedDate);
       bookingEndDate.setHours(18, 30, 0, 0);
 
-      // FIXED: Create reservation data matching BikeForm structure
+      // ✅ Get selected location name like BabysitterForm
+      const selectedLocation = LOCATION_OPTIONS.find(
+        (loc) => loc.id === formData.location
+      );
+
       const reservationData = {
         service: service,
         formData: {
@@ -258,6 +285,8 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           serviceType: 'saona-island',
           totalPrice: calculatePrice,
           pickupTime: TOUR_INFO.PICKUP_TIME,
+          // ✅ Add location name for display
+          locationName: selectedLocation?.name || formData.location,
         },
         totalPrice: calculatePrice,
         bookingDate: bookingStartDate,
@@ -278,8 +307,8 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             duration: TOUR_INFO.DURATION,
           },
         ],
-        clientInfo: undefined, // Will be filled in the confirmation page
-        // Additional Saona-specific data
+        clientInfo: undefined,
+        // ✅ Updated with location details
         saonaSpecifics: {
           pickupTime: TOUR_INFO.PICKUP_TIME,
           duration: TOUR_INFO.DURATION,
@@ -289,15 +318,17 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           specialRequests: formData.specialRequests,
           includes: TOUR_INFO.INCLUDES,
           restrictions: TOUR_INFO.RESTRICTIONS,
+          // ✅ Add location details like BabysitterForm
+          location: formData.location,
+          locationName: selectedLocation?.name || formData.location,
         },
       };
 
       console.log('🏝️ SaonaForm - Reservation data created:', reservationData);
+      console.log('📍 Selected location:', selectedLocation);
 
-      // Store in context (like BikeForm)
       setReservationData(reservationData);
 
-      // Call the onSubmit callback if provided (optional)
       if (onSubmit) {
         await onSubmit({
           ...formData,
@@ -306,7 +337,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
         });
       }
 
-      // Navigate to confirmation page (like BikeForm)
       router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ SaonaForm - Error submitting form:', error);
@@ -319,26 +349,17 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   };
 
   // Generic input handler
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
-  };
+  const handleInputChange = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
+    ) => {
+      const { name, value } = e.target;
+      updateFormField(name, value);
+    },
+    [updateFormField]
+  );
 
   // Counter handlers
   const createCounterHandler = (field: keyof FormData, min = 0, max = 20) => ({
@@ -415,44 +436,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     </div>
   );
 
-  // // Age restrictions component
-  // const AgeRestrictionsSection = () => (
-  //   <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-  //     <div className='flex items-start'>
-  //       <Info className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
-  //       <div>
-  //         <h4 className='font-medium text-blue-800 mb-2'>
-  //           Age & Pricing Information
-  //         </h4>
-  //         <div className='text-sm text-blue-700 space-y-2'>
-  //           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-  //             <div className='bg-white p-3 rounded border border-blue-100'>
-  //               <div className='font-medium text-green-600'>
-  //                 Ages 0-{AGE_CONFIG.FREE_AGE_LIMIT}
-  //               </div>
-  //               <div className='text-xs'>FREE</div>
-  //               <div className='text-xs text-gray-600'>No charge</div>
-  //             </div>
-  //             <div className='bg-white p-3 rounded border border-blue-100'>
-  //               <div className='font-medium text-orange-600'>
-  //                 Ages {AGE_CONFIG.FREE_AGE_LIMIT + 1}-
-  //                 {AGE_CONFIG.CHILD_PRICE_LIMIT}
-  //               </div>
-  //               <div className='text-xs'>${AGE_CONFIG.CHILD_PRICE}</div>
-  //               <div className='text-xs text-gray-600'>Child price</div>
-  //             </div>
-  //             <div className='bg-white p-3 rounded border border-blue-100'>
-  //               <div className='font-medium text-blue-600'>Ages 13+</div>
-  //               <div className='text-xs'>${AGE_CONFIG.ADULT_PRICE}</div>
-  //               <div className='text-xs text-gray-600'>Adult price</div>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
-
   // Tour restrictions component
   const TourRestrictionsSection = () => (
     <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
@@ -499,7 +482,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             </h3>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              {/* Tour Date */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar className='w-4 h-4 mr-2 text-blue-700' />
@@ -520,7 +502,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                 )}
               </div>
 
-              {/* Pickup Time Display */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Clock className='w-4 h-4 mr-2 text-blue-700' />
@@ -559,30 +540,80 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             )}
           </div>
 
-          {/* Location Section */}
+          {/* ✅ Updated Location Section - Using card selection like BabysitterForm */}
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
               Pickup Location
             </h3>
 
-            {/* Location */}
-            <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                <MapPin className='w-4 h-4 mr-2 text-blue-700' />
-                Location *
+            <div className='bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm'>
+              <label className='flex items-center text-sm font-medium text-blue-800 mb-4'>
+                <MapPin className='w-5 h-5 mr-2 text-blue-600' />
+                Select your pickup location *
               </label>
-              <input
-                type='text'
-                name='location'
-                value={formData.location}
-                onChange={handleInputChange}
-                className={`w-full p-3 border ${
-                  errors.location ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-                placeholder='Please provide the complete address where the transport will pick you up.'
-              />
+
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                {LOCATION_OPTIONS.map((location) => (
+                  <div
+                    key={location.id}
+                    className={`
+                      border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                      ${
+                        formData.location === location.id
+                          ? 'border-blue-500 bg-white shadow-lg ring-2 ring-blue-200'
+                          : 'border-blue-200 bg-white hover:border-blue-300 hover:bg-blue-25'
+                      }
+                    `}
+                    onClick={() => handleLocationSelect(location.id)}
+                  >
+                    <div className='flex items-center'>
+                      <div
+                        className={`
+                          w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                          ${
+                            formData.location === location.id
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-blue-300'
+                          }
+                        `}
+                      >
+                        {formData.location === location.id && (
+                          <CheckCircle className='w-4 h-4 text-white' />
+                        )}
+                      </div>
+                      <div className='flex items-center'>
+                        <MapPin className='w-4 h-4 mr-2 text-blue-500' />
+                        <span className='font-medium text-blue-900 text-sm'>
+                          {location.name}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {errors.location && (
-                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+                <p className='text-red-500 text-xs mt-3 flex items-center'>
+                  <AlertTriangle className='w-3 h-3 mr-1' />
+                  {errors.location}
+                </p>
+              )}
+
+              {/* Display selected location */}
+              {formData.location && (
+                <div className='mt-4 p-3 bg-blue-100 rounded-lg border border-blue-200'>
+                  <p className='text-sm text-blue-800 flex items-center'>
+                    <CheckCircle className='w-4 h-4 mr-2 text-blue-600' />
+                    Selected pickup location:{' '}
+                    <span className='font-medium ml-1'>
+                      {
+                        LOCATION_OPTIONS.find(
+                          (loc) => loc.id === formData.location
+                        )?.name
+                      }
+                    </span>
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -685,14 +716,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             </div>
           </div>
 
-          {/* Age Restrictions Section */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Age Restrictions & Pricing
-            </h3>
-            {/* <AgeRestrictionsSection /> */}
-          </div>
-
           {/* What's Included Section */}
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
@@ -774,6 +797,16 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                   </div>
                 );
               })}
+              {/* ✅ Display selected location in price breakdown */}
+              {formData.location && (
+                <div className='text-blue-400'>
+                  Pickup from:{' '}
+                  {
+                    LOCATION_OPTIONS.find((loc) => loc.id === formData.location)
+                      ?.name
+                  }
+                </div>
+              )}
               <div className='text-blue-400'>
                 Includes: Transportation, catamaran, lunch, open bar & equipment
               </div>

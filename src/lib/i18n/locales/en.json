@@ -346,11 +346,6 @@
           "durationRequired": "Please select a duration",
           "specificSongsRequired": "Please specify your song preferences"
         }
-      },
-      "groceryShopping": {
-        "name": "Grocery Shopping",
-        "short": "We shop for groceries and deliver to your accommodation",
-        "full": "Forget the lines and wasted time. With our grocery shopping service, we stock your kitchen with everything you need before or during your stay. Fresh, local, and imported products delivered straight to your accommodation. Place your order today and enjoy more of your vacation."
       }
     },
     "premium": {
@@ -670,22 +665,5 @@
     "tab2": "Premium Services",
     "tab3": "Testimonials",
     "tab4": "FAQ"
-  },
-  "grocery": {
-    "features": {
-      "title": "About Our Shopping Service",
-      "convenience": {
-        "title": "Convenience",
-        "description": "We’ll stock your kitchen before arrival or during your stay so you can focus on enjoying your vacation."
-      },
-      "quality": {
-        "title": "Quality Products",
-        "description": "We select the freshest local products and top-quality imported items for your complete satisfaction."
-      },
-      "selection": {
-        "title": "Premium Selection",
-        "description": "From daily essentials to premium wines and liquors, we offer a wide selection to meet all your needs."
-      }
-    }
   }
 }

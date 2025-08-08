@@ -9,7 +9,6 @@ export const SERVICE_IDS = {
   AIRPORT_TRANSFER: 'airport-transfers',
   YOGA: 'yoga-standard',
   PERSONAL_TRAINER: 'personal-training',
-  // GROCERY: 'grocery-shopping',
   KARAOKE: 'karaoke',
   BIKE_RENTALS: 'bike-rentals',
   BABYSITTER: 'babysitter',

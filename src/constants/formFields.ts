@@ -103,18 +103,6 @@ export interface BookingModalProps {
 
 // Service mapping configuration with better organization
 export const SERVICE_FORM_CONFIG = {
-  // Grocery Services
-  'grocery-shopping': {
-    component: GroceryForm,
-    requiredProps: ['selectedItems'],
-    type: 'grocery',
-  },
-  'luxe-grocery': {
-    component: GroceryForm,
-    requiredProps: ['selectedItems'],
-    type: 'grocery',
-  },
-
   // Transportation Services
   'airport-transfers': {
     component: AirportTransferForm,

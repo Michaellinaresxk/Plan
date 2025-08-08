@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Music,
   Users,
@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Volume2,
 } from 'lucide-react';
+import BookingModal from '../../modal/BookingModal';
 
 // Types
 interface Service {
@@ -262,6 +263,18 @@ const LiveMusicServiceView: React.FC<LiveMusicServiceViewProps> = ({
 
       {/* Experience Banner */}
       <ExperienceBannerSection onBookClick={handleBooking} />
+
+      {/* Booking Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBooking}
+            service={service}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

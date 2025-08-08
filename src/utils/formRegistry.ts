@@ -75,19 +75,6 @@ export const getAllRegisteredForms = (): FormRegistration[] => {
 // AUTO-REGISTRO DE FORMULARIOS
 // ===================================
 
-// Grocery Form
-// registerForm({
-//   name: 'GroceryForm',
-//   component: () => import('@/UI/components/forms/GroceryForm'),
-//   servicePatterns: ['grocery-shopping', 'luxe-grocery', 'grocery', 'groceries'],
-//   requiresItems: true,
-//   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-//     service,
-//     selectedItems: selectedItems || [],
-//     onCancel,
-//   }),
-// });
-
 // Airport Transfer Form
 registerForm({
   name: 'AirportTransferForm',
@@ -112,7 +99,7 @@ registerForm({
 registerForm({
   name: 'HorseBackRidingForm',
   component: () => import('@/UI/components/forms/HorseBackRidingForm'),
-  servicePatterns: ['tours'],
+  servicePatterns: ['horseback-riding'],
   requiresItems: true,
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,
@@ -259,7 +246,7 @@ registerForm({
   name: 'DefaultServiceForm',
   component: () => import('@/UI/components/forms/DefaultServiceForm'),
   servicePatterns: ['*'], // Catch-all
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+  propsMapper: (service, onCancel) => ({
     service,
     onCancel,
   }),
@@ -269,9 +256,8 @@ registerForm({
 registerForm({
   name: 'AtvRideForm',
   component: () => import('@/UI/components/forms/AtvRideForm'),
-  // servicePatterns: ['atv-excursions'],
-  servicePatterns: ['tours'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+  servicePatterns: ['atv-excursions'],
+  propsMapper: (service, additionalData, onCancel) => ({
     service,
     onSubmit:
       additionalData?.onSubmit ||
@@ -284,7 +270,7 @@ registerForm({
 registerForm({
   name: 'SaonaIslandForm',
   component: () => import('@/UI/components/forms/SaonaIslandForm'),
-  servicePatterns: ['tours'],
+  servicePatterns: ['saona-island-tour'],
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,
     onSubmit:

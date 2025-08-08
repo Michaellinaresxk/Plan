@@ -90,7 +90,6 @@ const StandardPackageContent = () => {
 
   const tabs = [
     { id: 'overview', label: t('standardPage.tab1'), icon: Calendar },
-    { id: 'services', label: t('standardPage.tab2'), icon: CheckCircle },
     { id: 'testimonials', label: t('standardPage.tab3'), icon: Users },
     { id: 'faq', label: t('standardPage.tab4'), icon: MapPin },
   ];
@@ -123,7 +122,7 @@ const StandardPackageContent = () => {
             initial='hidden'
             animate='visible'
             variants={staggerContainer}
-            className='max-w-4xl mx-auto text-center'
+            className='max-w-4xl mx-auto'
           >
             <motion.div
               variants={fadeInUp}
@@ -163,14 +162,14 @@ const StandardPackageContent = () => {
 
             <motion.p
               variants={fadeInUp}
-              className='text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-3xl mx-auto'
+              className='text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-3xl '
             >
               {t('standardPage.subTitle')}
             </motion.p>
 
             <motion.div
               variants={fadeInUp}
-              className='flex flex-col sm:flex-row gap-6 justify-center'
+              className='flex flex-col sm:flex-row gap-6'
             >
               <Link href='/premium-package'>
                 <button className='group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center shadow-2xl shadow-blue-500/25 transform hover:scale-105 hover:shadow-blue-500/40'>
@@ -179,12 +178,12 @@ const StandardPackageContent = () => {
                 </button>
               </Link>
 
-              <Link href='/custom-package'>
+              {/* <Link href='/custom-package'>
                 <button className='group px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 hover:border-white/50 hover:bg-white/20 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center'>
                   {t('standardPage.btn2')}
                   <ArrowRight className='ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform' />
                 </button>
-              </Link>
+              </Link> */}
             </motion.div>
           </motion.div>
         </div>
@@ -278,193 +277,6 @@ const StandardPackageContent = () => {
                 />
               </div>
             )}
-          </motion.section>
-        )}
-
-        {activeTab === 'services' && (
-          <motion.section
-            key='services'
-            initial='hidden'
-            animate='visible'
-            exit='hidden'
-            variants={fadeIn}
-            className='py-20 bg-gradient-to-b from-gray-50 to-white'
-          >
-            <div className='container mx-auto px-6'>
-              <div className='max-w-6xl mx-auto'>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className='text-center mb-16'
-                >
-                  <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
-                    {t('standardPage.services.title')}
-                  </h2>
-                  <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
-                    {t('standardPage.services.subtitle')}
-                  </p>
-                </motion.div>
-
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16'>
-                  {/* Airport Transfers */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className='group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200'
-                  >
-                    <div className='relative h-64 overflow-hidden'>
-                      <Image
-                        src='/images/services/airport-transfers.jpg'
-                        alt='Airport Transfers'
-                        fill
-                        className='object-cover group-hover:scale-110 transition-transform duration-700'
-                      />
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent'></div>
-                      <div className='absolute top-4 right-4'>
-                        <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-lg'>
-                          <CheckCircle className='w-3 h-3 mr-1' />
-                          Included
-                        </span>
-                      </div>
-                    </div>
-                    <div className='p-8'>
-                      <h3 className='text-2xl font-bold text-gray-900 mb-4'>
-                        Airport Transfers
-                      </h3>
-                      <p className='text-gray-700 mb-6 leading-relaxed'>
-                        Start and end your vacation with hassle-free
-                        transportation between Punta Cana International Airport
-                        and your accommodation. Our comfortable, air-conditioned
-                        vehicles and professional drivers ensure a smooth
-                        journey.
-                      </p>
-                      <div className='flex items-center text-blue-600 font-medium'>
-                        <Clock className='h-5 w-5 mr-2' />
-                        <span>30-45 minutes each way</span>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Golf Cart Rentals */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className='group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200'
-                  >
-                    <div className='relative h-64 overflow-hidden'>
-                      <Image
-                        src='/images/services/golf-cart-rentals.jpg'
-                        alt='Golf Cart Rentals'
-                        fill
-                        className='object-cover group-hover:scale-110 transition-transform duration-700'
-                      />
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent'></div>
-                      <div className='absolute top-4 right-4'>
-                        <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-lg'>
-                          <CheckCircle className='w-3 h-3 mr-1' />
-                          Included
-                        </span>
-                      </div>
-                    </div>
-                    <div className='p-8'>
-                      <h3 className='text-2xl font-bold text-gray-900 mb-4'>
-                        Golf Cart Rentals
-                      </h3>
-                      <p className='text-gray-700 mb-6 leading-relaxed'>
-                        Enjoy the freedom to explore your resort and nearby
-                        areas with a convenient golf cart rental. Perfect for
-                        short trips to the beach, restaurants, or just taking in
-                        the beautiful surroundings at your own pace.
-                      </p>
-                      <div className='flex items-center text-blue-600 font-medium'>
-                        <Clock className='h-5 w-5 mr-2' />
-                        <span>24-hour rental periods</span>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Catamaran Trips */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className='group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200'
-                  >
-                    <div className='relative h-64 overflow-hidden'>
-                      <Image
-                        src='/images/services/catamaran-trips.jpg'
-                        alt='Catamaran Trips'
-                        fill
-                        className='object-cover group-hover:scale-110 transition-transform duration-700'
-                      />
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent'></div>
-                      <div className='absolute top-4 right-4'>
-                        <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-lg'>
-                          <CheckCircle className='w-3 h-3 mr-1' />
-                          Included
-                        </span>
-                      </div>
-                    </div>
-                    <div className='p-8'>
-                      <h3 className='text-2xl font-bold text-gray-900 mb-4'>
-                        Catamaran Trips
-                      </h3>
-                      <p className='text-gray-700 mb-6 leading-relaxed'>
-                        Sail along the stunning coastline on a spacious
-                        catamaran. These trips include snorkeling opportunities,
-                        visits to natural swimming pools, and time to relax on
-                        the boat with refreshments and beautiful views.
-                      </p>
-                      <div className='flex items-center text-blue-600 font-medium'>
-                        <Clock className='h-5 w-5 mr-2' />
-                        <span>4 hours per trip</span>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  {/* Private Chef Service */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className='group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-blue-200'
-                  >
-                    <div className='relative h-64 overflow-hidden'>
-                      <Image
-                        src='/images/services/private-chef.jpg'
-                        alt='Private Chef Service'
-                        fill
-                        className='object-cover group-hover:scale-110 transition-transform duration-700'
-                      />
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent'></div>
-                      <div className='absolute top-4 right-4'>
-                        <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-lg'>
-                          <CheckCircle className='w-3 h-3 mr-1' />
-                          Included
-                        </span>
-                      </div>
-                    </div>
-                    <div className='p-8'>
-                      <h3 className='text-2xl font-bold text-gray-900 mb-4'>
-                        Private Chef Service
-                      </h3>
-                      <p className='text-gray-700 mb-6 leading-relaxed'>
-                        Experience authentic Dominican cuisine and international
-                        dishes prepared in your accommodation by a skilled chef.
-                        Enjoy a personalized dining experience with fresh, local
-                        ingredients tailored to your preferences.
-                      </p>
-                      <div className='flex items-center text-blue-600 font-medium'>
-                        <Clock className='h-5 w-5 mr-2' />
-                        <span>One 3-hour culinary experience</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </div>
           </motion.section>
         )}
 
@@ -742,12 +554,12 @@ const StandardPackageContent = () => {
               </p>
 
               <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                <Link href='/custom-package'>
+                {/* <Link href='/custom-package'>
                   <button className='group px-10 py-5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-2xl transition-all duration-300 shadow-2xl shadow-blue-500/25 text-lg transform hover:scale-105'>
                     {t('standardPage.standardPageCTA.btn1')}
                     <ArrowRight className='ml-2 h-6 w-6 inline group-hover:translate-x-1 transition-transform' />
                   </button>
-                </Link>
+                </Link> */}
 
                 <Link href='/premium-package'>
                   <button className='group px-10 py-5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-2xl shadow-amber-500/25 text-lg transform hover:scale-105'>

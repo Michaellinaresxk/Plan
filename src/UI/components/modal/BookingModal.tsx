@@ -17,14 +17,11 @@ interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   service: Service;
-  selectedItems?: GroceryItem[]; // For grocery shopping
   additionalData?: any; // For other service-specific data
 }
 
 /**
  * UPDATED BookingModal - Enhanced Reservation Flow
- *
- * This modal now properly handles selected items (for grocery shopping)
  * and additional data for different service types.
  */
 const BookingModal: React.FC<BookingModalProps> = ({
@@ -46,19 +43,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   // Format the title based on service type and premium status
   const getModalTitle = () => {
-    if (service.id === 'grocery-shopping' || service.id === 'luxe-grocery') {
-      const itemCount = selectedItems?.length || 0;
-      return isPremium
-        ? t('bookingModal.premiumGroceryTitle', {
-            count: itemCount,
-            fallback: `Premium Grocery Delivery (${itemCount} items)`,
-          })
-        : t('bookingModal.groceryTitle', {
-            count: itemCount,
-            fallback: `Grocery Shopping Service (${itemCount} items)`,
-          });
-    }
-
     return isPremium
       ? t('bookingModal.premiumTitle', {
           service: service.name,

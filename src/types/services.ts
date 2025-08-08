@@ -57,13 +57,7 @@ export interface ServiceData {
       maxLength?: number;
     };
   }[];
-  specialRender?:
-    | 'yoga'
-    | 'karaoke'
-    | 'special'
-    | 'grocery'
-    | 'airport'
-    | 'babysitter'; // Identificador para renders especiales
+  specialRender?: 'yoga' | 'karaoke' | 'special' | 'airport' | 'babysitter'; // Identificador para renders especiales
   relatedServices?: string[]; // IDs de servicios relacionados
   tags?: string[]; // Etiquetas para categorización
   availability?: {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { useRouter } from 'next/navigation';
 import { useReservation } from '@/context/BookingContext';
@@ -20,6 +20,7 @@ import {
   Cake,
   Star,
   CreditCard,
+  CheckCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ColorPicker from '../shared/ColorPicker';
@@ -31,9 +32,17 @@ interface CustomDecorationFormProps {
     dates: BookingDate,
     guests: number,
     formData: Record<string, any>
-  ) => void; // Made optional for compatibility
+  ) => void;
   onClose: () => void;
 }
+
+// ✅ Location options configuration - same as BabysitterForm
+const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Punta Village' },
+] as const;
 
 const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
   service,
@@ -44,10 +53,10 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
   const router = useRouter();
   const { setReservationData } = useReservation();
 
-  // Form state
+  // ✅ Updated form state with location ID
   const [date, setDate] = useState<Date | null>(getMinimumDate());
   const [time, setTime] = useState<string>('12:00');
-  const [location, setLocation] = useState<string>('');
+  const [location, setLocation] = useState<string>(''); // ✅ Now stores location ID
   const [exactAddress, setExactAddress] = useState<string>('');
   const [occasion, setOccasion] = useState<string>('');
   const [customOccasion, setCustomOccasion] = useState<string>('');
@@ -122,6 +131,33 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     return minDate.toISOString().split('T')[0];
   }
 
+  // ✅ Helper to update form fields - optimized like BabysitterForm
+  const updateFormField = useCallback((field: string, value: any) => {
+    if (field === 'location') {
+      setLocation(value);
+    } else if (field === 'exactAddress') {
+      setExactAddress(value);
+    }
+
+    // Clear error when field is updated
+    setErrors((prev) => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
+
+  // ✅ Handle location selection - same logic as BabysitterForm
+  const handleLocationSelect = useCallback(
+    (locationId: string) => {
+      updateFormField('location', locationId);
+    },
+    [updateFormField]
+  );
+
   // Check date is valid
   useEffect(() => {
     if (date) {
@@ -176,7 +212,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     setColors(updatedColors);
   };
 
-  // Form validation - FIXED: Improved validation
+  // ✅ Updated validation to include location ID
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -211,6 +247,13 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
       });
     }
 
+    // ✅ Updated: Validate location ID instead of free text
+    if (!location) {
+      newErrors.location = t('forms.errors.locationRequired', {
+        fallback: 'Please select a location',
+      });
+    }
+
     if (!exactAddress.trim()) {
       newErrors.exactAddress = t('forms.errors.addressRequired', {
         fallback: 'Exact address is required',
@@ -223,10 +266,8 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
 
   // Calculate base price for decoration service
   const calculatePrice = () => {
-    // Base price for decoration service (could be from service.price or default)
     const basePrice = service.price || 200;
 
-    // Additional pricing based on occasion complexity
     const occasionMultipliers: Record<string, number> = {
       birthday: 1.0,
       anniversary: 1.2,
@@ -242,7 +283,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
     return Math.round(totalPrice);
   };
 
-  // FIXED: Handle form submission following BikeForm pattern
+  // ✅ Updated submit handler to include location name
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -255,18 +296,20 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
 
     try {
       const dateObj = date ? new Date(date) : new Date();
-
-      // Create booking date with specific time
       const bookingStartDate = new Date(dateObj);
       const [hours, minutes] = time.split(':');
       bookingStartDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-      // Decoration service typically takes 2-4 hours for setup
       const bookingEndDate = new Date(bookingStartDate);
       bookingEndDate.setHours(bookingStartDate.getHours() + 3);
 
       const finalOccasion = occasion === 'other' ? customOccasion : occasion;
       const totalPrice = calculatePrice();
+
+      // ✅ Get selected location name
+      const selectedLocation = LOCATION_OPTIONS.find(
+        (loc) => loc.id === location
+      );
 
       const bookingDate: BookingDate = {
         startDate: bookingStartDate,
@@ -277,7 +320,8 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
         date: dateObj,
         time,
         occasion: finalOccasion,
-        locationType: location,
+        location: location, // Location ID
+        locationName: selectedLocation?.name || location, // Location name for display
         exactAddress,
         colors,
         notes,
@@ -286,7 +330,6 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
         totalPrice,
       };
 
-      // FIXED: Create reservation data matching BikeForm structure
       const reservationData = {
         service: service,
         formData: formData,
@@ -309,11 +352,13 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
             colors: colors,
           },
         ],
-        clientInfo: undefined, // Will be filled in the confirmation page
-        // Additional decoration-specific data
+        clientInfo: undefined,
+        // ✅ Updated decoration-specific data with location details
         decorationSpecifics: {
           occasion: finalOccasion,
           colors: colors,
+          location: location,
+          locationName: selectedLocation?.name || location,
           exactAddress: exactAddress,
           notes: notes,
           referenceImage: referenceImage ? referenceImage.name : null,
@@ -326,16 +371,14 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
         '🎨 CustomDecorationForm - Reservation data created:',
         reservationData
       );
+      console.log('📍 Selected location:', selectedLocation);
 
-      // Store in context (like BikeForm)
       setReservationData(reservationData);
 
-      // Call the onBookService callback if provided (optional)
       if (onBookService) {
         await onBookService(service, bookingDate, 1, formData);
       }
 
-      // Navigate to confirmation page (like BikeForm)
       router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ CustomDecorationForm - Error submitting form:', error);
@@ -397,8 +440,8 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
               <h3 className='font-semibold text-blue-900 mb-2'>Service Area</h3>
               <p className='text-blue-700'>
                 Our decoration services are available throughout the Punta Cana
-                area. Please provide your exact address for our team to deliver
-                the best service.
+                area. Please select your location and provide the exact address
+                for our team to deliver the best service.
               </p>
             </div>
           </div>
@@ -565,7 +608,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                 </AnimatePresence>
               </motion.div>
 
-              {/* Location */}
+              {/* ✅ Updated Location Selection - Using card selection like BabysitterForm */}
               <motion.div
                 className='bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/40'
                 variants={fadeInUp}
@@ -575,6 +618,78 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                   Where is your event?
                 </h2>
 
+                {/* Location Selector */}
+                <div className='mb-6'>
+                  <label className='flex items-center text-sm font-medium text-purple-800 mb-4'>
+                    <MapPin className='w-5 h-5 mr-2 text-purple-600' />
+                    Select your area *
+                  </label>
+
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    {LOCATION_OPTIONS.map((locationOption) => (
+                      <div
+                        key={locationOption.id}
+                        className={`
+                          border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                          ${
+                            location === locationOption.id
+                              ? 'border-purple-500 bg-white shadow-lg ring-2 ring-purple-200'
+                              : 'border-purple-200 bg-white hover:border-purple-300 hover:bg-purple-25'
+                          }
+                        `}
+                        onClick={() => handleLocationSelect(locationOption.id)}
+                      >
+                        <div className='flex items-center'>
+                          <div
+                            className={`
+                              w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                              ${
+                                location === locationOption.id
+                                  ? 'border-purple-500 bg-purple-500'
+                                  : 'border-purple-300'
+                              }
+                            `}
+                          >
+                            {location === locationOption.id && (
+                              <CheckCircle className='w-4 h-4 text-white' />
+                            )}
+                          </div>
+                          <div className='flex items-center'>
+                            <MapPin className='w-4 h-4 mr-2 text-purple-500' />
+                            <span className='font-medium text-purple-900 text-sm'>
+                              {locationOption.name}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {errors.location && (
+                    <p className='text-red-500 text-xs mt-3 flex items-center'>
+                      <AlertCircle className='w-3 h-3 mr-1' />
+                      {errors.location}
+                    </p>
+                  )}
+
+                  {/* Display selected location */}
+                  {location && (
+                    <div className='mt-4 p-3 bg-purple-100 rounded-lg border border-purple-200'>
+                      <p className='text-sm text-purple-800 flex items-center'>
+                        <CheckCircle className='w-4 h-4 mr-2 text-purple-600' />
+                        Selected area:{' '}
+                        <span className='font-medium ml-1'>
+                          {
+                            LOCATION_OPTIONS.find((loc) => loc.id === location)
+                              ?.name
+                          }
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Exact Address */}
                 <div>
                   <label className='block text-gray-700 font-medium mb-3'>
                     Exact Address <span className='text-red-500'>*</span>
@@ -583,7 +698,9 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                     <MapPin className='absolute left-4 top-4 text-gray-400 w-5 h-5' />
                     <textarea
                       value={exactAddress}
-                      onChange={(e) => setExactAddress(e.target.value)}
+                      onChange={(e) =>
+                        updateFormField('exactAddress', e.target.value)
+                      }
                       rows={4}
                       placeholder='Full address (hotel name, villa number, street, etc.)'
                       className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 resize-none ${
@@ -773,6 +890,17 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                       {occasion === 'romantic' && (
                         <div>+ Intimate atmosphere</div>
                       )}
+                    </div>
+                  )}
+
+                  {/* ✅ Display selected location in price breakdown */}
+                  {location && (
+                    <div className='text-sm opacity-75 pt-2 border-t border-white/20'>
+                      Service location:{' '}
+                      {
+                        LOCATION_OPTIONS.find((loc) => loc.id === location)
+                          ?.name
+                      }
                     </div>
                   )}
 

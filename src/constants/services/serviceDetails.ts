@@ -1140,7 +1140,6 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
 
   // Add empty objects for remaining services to prevent errors
 
-  // [SERVICE_IDS.GROCERY]: {},
   [SERVICE_IDS.DEEP_SEA_FISHING]: {},
   [SERVICE_IDS.PRIVATE_FISHING]: {},
   [SERVICE_IDS.ADVENTURE_EXCURSIONS]: {},

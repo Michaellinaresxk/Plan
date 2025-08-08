@@ -4,17 +4,8 @@ import { useTranslation } from '@/lib/i18n/client';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { findFormForService } from '@/utils/formRegistry';
 
-interface GroceryItem {
-  id: string;
-  name: string;
-  category: string;
-  subcategory?: string;
-  translationKey?: string;
-}
-
 interface ServiceFormFactoryProps {
   service: Service;
-  selectedItems?: GroceryItem[];
   additionalData?: any;
   onCancel: () => void;
 }
@@ -31,7 +22,6 @@ interface ServiceFormFactoryProps {
  */
 const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
   service,
-  selectedItems = [],
   additionalData = {},
   onCancel,
 }) => {
@@ -45,75 +35,18 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
       console.warn(
         `⚠️ No form found for service: ${service.id}, using default`
       );
-      return findFormForService('*'); // Default fallback
+      return findFormForService('*');
     }
 
     console.log(`✅ Form found for ${service.id}: ${registration.name}`);
     return registration;
   }, [service.id]);
 
-  // 2. Validar requisitos
-  const validation = useMemo(() => {
-    if (!formConfig) {
-      return { isValid: false, error: 'no_form_config' };
-    }
-
-    if (
-      formConfig.requiresItems &&
-      (!selectedItems || selectedItems.length === 0)
-    ) {
-      return { isValid: false, error: 'items_required' };
-    }
-
-    return { isValid: true, error: null };
-  }, [formConfig, selectedItems]);
-
   // 3. Preparar props
   const formProps = useMemo(() => {
     if (!formConfig) return {};
-    return formConfig.propsMapper(
-      service,
-      selectedItems,
-      additionalData,
-      onCancel
-    );
-  }, [formConfig, service, selectedItems, additionalData, onCancel]);
-
-  // Manejar errores de validación
-  if (!validation.isValid) {
-    const isGroceryError = validation.error === 'items_required';
-
-    return (
-      <div className='p-6 text-center'>
-        <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4'>
-          <AlertCircle className='w-8 h-8 text-amber-600' />
-        </div>
-        <h3 className='text-lg font-medium text-gray-900 mb-2'>
-          {isGroceryError
-            ? t('serviceForm.noItemsSelected', {
-                fallback: 'No Items Selected',
-              })
-            : t('serviceForm.configError', { fallback: 'Configuration Error' })}
-        </h3>
-        <p className='text-gray-600 mb-4'>
-          {isGroceryError
-            ? t('serviceForm.pleaseSelectItems', {
-                fallback:
-                  'Please select items from the grocery list before proceeding.',
-              })
-            : t('serviceForm.configErrorMessage', {
-                fallback: 'Form configuration not found for this service.',
-              })}
-        </p>
-        <button
-          onClick={onCancel}
-          className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
-        >
-          {t('common.goBack', { fallback: 'Go Back' })}
-        </button>
-      </div>
-    );
-  }
+    return formConfig.propsMapper(service, additionalData, onCancel);
+  }, [formConfig, service, additionalData, onCancel]);
 
   // 4. Renderizar formulario
   return (
