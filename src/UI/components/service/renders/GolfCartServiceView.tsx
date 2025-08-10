@@ -1,40 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Car,
   Users,
-  Clock,
   Battery,
-  MapPin,
   Star,
-  Shield,
   CheckCircle,
   Phone,
   Calendar,
   ArrowRight,
   X,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
+  MapPin,
+  Clock,
+  Shield,
+  Award,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
   Zap,
   Navigation,
-  CreditCard,
-  AlertCircle,
-  Fuel,
-  Award,
   Heart,
-  Camera,
-  Route,
-  Sun,
-  Anchor,
-  Crown,
 } from 'lucide-react';
+import BookingModal from '../../modal/BookingModal';
+import { BookingDate, Service } from '@/constants/formFields';
 import { useBooking } from '@/context/BookingContext';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import { BookingDate } from '@/types/type';
-import BookingModal from '@/UI/components/modal/BookingModal';
 
 // Types
 interface GolfCartOption {
@@ -43,23 +32,15 @@ interface GolfCartOption {
   spanishName: string;
   seats: number;
   price: number;
-  priceUnit: 'day' | 'hour';
   description: string;
   spanishDescription: string;
   image: string;
   features: string[];
   spanishFeatures: string[];
   isPopular: boolean;
-  gradient: string;
+  detailImages: string[];
 }
 
-interface GolfCartRentalServiceViewProps {
-  service: Service;
-  serviceData?: ServiceData;
-  primaryColor: string;
-}
-
-// Real data based on your PDF
 const GOLF_CART_OPTIONS: GolfCartOption[] = [
   {
     id: '4-seater',
@@ -67,13 +48,17 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     spanishName: 'Carrito de 4 Plazas',
     seats: 4,
     price: 45,
-    priceUnit: 'day',
     description:
       'Perfect for couples or small families. Compact and efficient for resort exploration.',
     spanishDescription:
       'Perfecto para parejas o familias pequeñas. Compacto y eficiente para explorar el resort.',
     image:
-      'https://images.unsplash.com/photo-1551058622-5d7b4f0c6e6a?w=800&h=600&fit=crop',
+      'https://images.pexels.com/photos/9207174/pexels-photo-9207174.jpeg?_gl=1*1gvkela*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5ODY0JGoyMSRsMCRoMA..',
+    detailImages: [
+      'https://images.pexels.com/photos/9207175/pexels-photo-9207175.jpeg?_gl=1*1fk3hn7*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5OTY2JGo1OSRsMCRoMA..',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+    ],
     features: [
       'Fully charged battery',
       'Free delivery & pickup',
@@ -89,7 +74,6 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
       'Orientación rápida',
     ],
     isPopular: false,
-    gradient: 'from-blue-600 to-cyan-600',
   },
   {
     id: '6-seater',
@@ -97,13 +81,17 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     spanishName: 'Carrito de 6 Plazas',
     seats: 6,
     price: 65,
-    priceUnit: 'day',
     description:
       'Ideal for larger groups and families. More space and comfort for extended exploration.',
     spanishDescription:
       'Ideal para grupos grandes y familias. Más espacio y comodidad para exploración extendida.',
     image:
+      'https://images.pexels.com/photos/9207175/pexels-photo-9207175.jpeg?_gl=1*1fk3hn7*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5OTY2JGo1OSRsMCRoMA..',
+    detailImages: [
       'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1551058622-5d7b4f0c6e6a?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+    ],
     features: [
       'Fully charged battery',
       'Free delivery & pickup',
@@ -121,219 +109,272 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
       'Espacio extra de almacenamiento',
     ],
     isPopular: true,
-    gradient: 'from-emerald-600 to-teal-600',
   },
 ];
 
-// Video Hero Component
-const VideoHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [language, setLanguage] = useState<'en' | 'es'>('en');
+const GALLERY_IMAGES = [
+  {
+    id: 1,
+    src: 'https://images.pexels.com/photos/9207175/pexels-photo-9207175.jpeg?_gl=1*1fk3hn7*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5OTY2JGo1OSRsMCRoMA..',
+    alt: 'Golf cart on tropical beach',
+    title: 'Beach Adventures',
+  },
+  {
+    id: 2,
+    src: 'https://images.unsplash.com/photo-1551058622-5d7b4f0c6e6a?w=1200&h=800&fit=crop',
+    alt: 'Resort exploration',
+    title: 'Resort Exploration',
+  },
+  {
+    id: 3,
+    src: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=800&fit=crop',
+    alt: 'Family fun',
+    title: 'Family Adventures',
+  },
+  {
+    id: 4,
+    src: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=1200&h=800&fit=crop',
+    alt: 'Sunset rides',
+    title: 'Sunset Rides',
+  },
+];
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch(() => {
-        setIsPlaying(false);
-      });
-    }
-  }, []);
-
-  const togglePlay = () => {
-    const video = videoRef.current;
-    if (video) {
-      if (isPlaying) {
-        video.pause();
-      } else {
-        video.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.muted = !video.muted;
-      setIsMuted(video.muted);
-    }
-  };
+// Hero Section
+const HeroSection = ({ onExploreClick }) => {
+  const [language, setLanguage] = useState('en');
 
   const content = {
     en: {
-      badge: 'PREMIUM MOBILITY',
-      title: 'Move Freely',
-      subtitle: 'Explore Comfortably',
+      badge: 'LUXURY MOBILITY',
+      title: 'Explore Paradise',
+      subtitle: 'Your Way',
       description:
-        'Cruise your resort, villa community, or local beach town with our fully charged, comfortable golf carts. Perfect for getting around quickly and easily.',
-      cta: 'Explore Options',
-      stats: [
-        { number: '2', label: 'Cart Options' },
-        { number: '24/7', label: 'Support' },
-        { number: 'Free', label: 'Delivery' },
-      ],
+        "Experience the ultimate freedom with our premium golf carts. Perfect for exploring Punta Cana's beautiful resorts, beaches, and hidden gems.",
+      cta: 'Explore Our Fleet',
+      features: ['Free Delivery', '24/7 Support', 'Luxury Experience'],
     },
     es: {
-      badge: 'MOVILIDAD PREMIUM',
-      title: 'Muévete Libremente',
-      subtitle: 'Explora con Comodidad',
+      badge: 'MOVILIDAD DE LUJO',
+      title: 'Explora el Paraíso',
+      subtitle: 'A Tu Manera',
       description:
-        'Recorre tu resort, comunidad o zona de playa con nuestros carritos de golf cómodos y completamente cargados. Perfectos para moverte fácil y rápidamente.',
-      cta: 'Explorar Opciones',
-      stats: [
-        { number: '2', label: 'Opciones' },
-        { number: '24/7', label: 'Soporte' },
-        { number: 'Gratis', label: 'Entrega' },
-      ],
+        'Experimenta la libertad total con nuestros carritos premium. Perfectos para explorar los hermosos resorts de Punta Cana, playas y joyas escondidas.',
+      cta: 'Explorar Nuestra Flota',
+      features: ['Entrega Gratis', 'Soporte 24/7', 'Experiencia de Lujo'],
     },
   };
 
   const currentContent = content[language];
 
   return (
-    <div className='relative h-screen overflow-hidden'>
-      {/* Video Background */}
-      <video
-        ref={videoRef}
-        className='absolute inset-0 w-full h-full object-cover'
-        loop
-        muted={isMuted}
-        playsInline
-        poster='https://images.pexels.com/photos/9207203/pexels-photo-9207203.jpeg?_gl=1*u4cath*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQyMjU5NDckbzE0JGcxJHQxNzU0MjI2MDMxJGo0OCRsMCRoMA..'
-      >
-        <source
-          src='https://cdn.coverr.co/videos/coverr-golf-cart-on-tropical-resort-4563/1080p.mp4'
-          type='video/mp4'
-        />
+    <div className='relative min-h-screen overflow-hidden bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50'>
+      {/* Background Image */}
+      <div className='absolute inset-0'>
         <img
-          src='https://images.pexels.com/photos/9207176/pexels-photo-9207176.jpeg?_gl=1*1b9egi*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQyMjU5NDckbzE0JGcxJHQxNzU0MjI1OTcwJGozNyRsMCRoMA..'
-          alt='Golf cart rental'
-          className='w-full h-full object-cover'
+          src='https://images.pexels.com/photos/9207198/pexels-photo-9207198.jpeg?_gl=1*1qg0m6r*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5NDgxJGoyNyRsMCRoMA..'
+          alt='Golf cart paradise'
+          className='w-full h-full object-cover opacity-20'
         />
-      </video>
-
-      {/* Video Controls */}
-      <div className='absolute top-6 right-6 flex gap-2 z-20'>
-        <button
-          onClick={togglePlay}
-          className='w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 border border-white/20 text-white'
-        >
-          {isPlaying ? (
-            <Pause className='w-5 h-5' />
-          ) : (
-            <Play className='w-5 h-5' />
-          )}
-        </button>
-        <button
-          onClick={toggleMute}
-          className='w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 border border-white/20 text-white'
-        >
-          {isMuted ? (
-            <VolumeX className='w-5 h-5' />
-          ) : (
-            <Volume2 className='w-5 h-5' />
-          )}
-        </button>
+        <div className='absolute inset-0 bg-gradient-to-br from-teal-900/20 via-transparent to-blue-900/20' />
       </div>
 
-      {/* Gradient Overlay */}
-      <div className='absolute inset-0 bg-gradient-to-br from-slate-900/60 via-blue-900/40 to-cyan-900/60' />
-
-      {/* Hero Content */}
-      <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
-        <div className='max-w-5xl'>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8'
-          >
-            <Car className='w-5 h-5 mr-3 text-cyan-300' />
-            <span className='font-semibold text-lg'>
-              {currentContent.badge}
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className='text-6xl md:text-7xl font-bold mb-6 leading-tight'
-          >
-            {currentContent.title}
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            className='text-2xl md:text-3xl text-white/90 mb-4 font-light'
-          >
-            {currentContent.subtitle}
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-            className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
-          >
-            {currentContent.description}
-          </motion.p>
-
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.1, duration: 0.8 }}
-            onClick={onBookClick}
-            className='bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {currentContent.cta}
-            <ArrowRight className='w-6 h-6' />
-          </motion.button>
-
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.4, duration: 0.8 }}
-            className='grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto'
-          >
-            {currentContent.stats.map((stat, index) => (
+      {/* Content */}
+      <div className='relative z-10 flex flex-col justify-center min-h-screen px-6 lg:px-8'>
+        <div className='max-w-7xl mx-auto w-full'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className='text-center lg:text-left'
+            >
+              {/* Badge */}
               <motion.div
-                key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.6 + index * 0.1 }}
-                className='text-center'
+                transition={{ delay: 0.2 }}
+                className='inline-flex items-center bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium text-teal-700 mb-6 shadow-sm'
               >
-                <div className='text-3xl font-bold text-cyan-400'>
-                  {stat.number}
-                </div>
-                <div className='text-sm text-gray-300 uppercase tracking-wider'>
-                  {stat.label}
-                </div>
+                <Car className='w-4 h-4 mr-2' />
+                {currentContent.badge}
               </motion.div>
-            ))}
-          </motion.div>
+
+              {/* Title */}
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className='text-5xl lg:text-7xl font-light text-slate-800 mb-4'
+              >
+                {currentContent.title}
+                <br />
+                <span className='font-bold text-teal-600'>
+                  {currentContent.subtitle}
+                </span>
+              </motion.h1>
+
+              {/* Description */}
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className='text-lg text-slate-600 mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed'
+              >
+                {currentContent.description}
+              </motion.p>
+
+              {/* CTA Button */}
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8 }}
+                onClick={onExploreClick}
+                className='group bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white px-8 py-4 rounded-2xl font-medium text-lg flex items-center gap-3 mx-auto lg:mx-0 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl'
+              >
+                {currentContent.cta}
+                <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
+              </motion.button>
+
+              {/* Features */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1 }}
+                className='flex flex-wrap justify-center lg:justify-start gap-6 mt-8'
+              >
+                {currentContent.features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className='flex items-center gap-2 text-sm text-slate-600'
+                  >
+                    <CheckCircle className='w-4 h-4 text-teal-500' />
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            {/* Right Content - Floating Cart */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className='relative hidden lg:block'
+            >
+              <div className='relative'>
+                <motion.div
+                  animate={{
+                    y: [-10, 10, -10],
+                    rotate: [0, 2, 0, -2, 0],
+                  }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                  className='bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl'
+                >
+                  <img
+                    src='https://images.pexels.com/photos/9207198/pexels-photo-9207198.jpeg?_gl=1*1qg0m6r*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5NDgxJGoyNyRsMCRoMA..'
+                    alt='Premium golf cart'
+                    className='w-full h-64 object-cover rounded-2xl'
+                  />
+                  <div className='mt-6'>
+                    <div className='flex items-center justify-between mb-4'>
+                      <h3 className='text-xl font-bold text-slate-800'>
+                        Premium 6-Seater
+                      </h3>
+                      <div className='flex items-center gap-1 text-amber-500'>
+                        <Star className='w-4 h-4 fill-current' />
+                        <Star className='w-4 h-4 fill-current' />
+                        <Star className='w-4 h-4 fill-current' />
+                        <Star className='w-4 h-4 fill-current' />
+                        <Star className='w-4 h-4 fill-current' />
+                      </div>
+                    </div>
+                    <div className='flex items-center justify-between'>
+                      <span className='text-2xl font-bold text-teal-600'>
+                        $65/day
+                      </span>
+                      <div className='flex items-center gap-2 text-sm text-slate-600'>
+                        <Users className='w-4 h-4' />
+                        <span>6 seats</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-// Golf Cart Option Card
-const GolfCartCard: React.FC<{
-  cart: GolfCartOption;
-  isSelected: boolean;
-  onSelect: () => void;
-  language: 'en' | 'es';
-}> = ({ cart, isSelected, onSelect, language }) => {
-  const [isHovered, setIsHovered] = useState(false);
+// Simple Cart Card
+const CartCard = ({ cart, onClick, language }) => {
+  const displayName = language === 'es' ? cart.spanishName : cart.name;
+
+  return (
+    <motion.div
+      whileHover={{ y: -8, scale: 1.02 }}
+      className='group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer'
+      onClick={onClick}
+    >
+      {/* Popular Badge */}
+      {cart.isPopular && (
+        <div className='absolute top-4 left-4 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold z-10'>
+          {language === 'es' ? 'Popular' : 'Popular'}
+        </div>
+      )}
+
+      {/* Image */}
+      <div className='relative h-64 overflow-hidden'>
+        <motion.img
+          src={cart.image}
+          alt={displayName}
+          className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
+        />
+        <div className='absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent' />
+
+        {/* Hover Overlay */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          className='absolute inset-0 bg-teal-600/20 flex items-center justify-center'
+        >
+          <div className='bg-white/90 backdrop-blur-sm rounded-full p-3'>
+            <ArrowRight className='w-6 h-6 text-teal-600' />
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Content */}
+      <div className='p-6'>
+        <h3 className='text-xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition-colors'>
+          {displayName}
+        </h3>
+        <div className='flex items-center justify-between'>
+          <span className='text-2xl font-bold text-teal-600'>
+            ${cart.price}/day
+          </span>
+          <div className='flex items-center gap-2 text-slate-600'>
+            <Users className='w-4 h-4' />
+            <span className='text-sm'>{cart.seats} seats</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// SIDEBAR COMPONENT - NEW
+const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  if (!cart) return null;
 
   const displayName = language === 'es' ? cart.spanishName : cart.name;
   const displayDescription =
@@ -341,391 +382,313 @@ const GolfCartCard: React.FC<{
   const displayFeatures =
     language === 'es' ? cart.spanishFeatures : cart.features;
 
+  const content = {
+    en: {
+      features: 'Features',
+      bookNow: 'Book Now',
+    },
+    es: {
+      features: 'Características',
+      bookNow: 'Reservar',
+    },
+  };
+
+  const currentContent = content[language];
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % cart.detailImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + cart.detailImages.length) % cart.detailImages.length
+    );
+  };
+
   return (
-    <motion.div
-      whileHover={{ y: -8, scale: 1.02 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className={`group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 overflow-hidden cursor-pointer border-2 ${
-        isSelected
-          ? 'border-blue-500 ring-4 ring-blue-500/20'
-          : 'border-gray-100'
-      }`}
-      onClick={onSelect}
-    >
-      {/* Popular Badge */}
-      {cart.isPopular && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className='absolute top-4 left-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center space-x-2 z-10'
-        >
-          <Crown className='w-4 h-4' />
-          <span>{language === 'es' ? 'Más Popular' : 'Most Popular'}</span>
-        </motion.div>
-      )}
-
-      {/* Image Container */}
-      <div className='relative h-72 overflow-hidden'>
-        <motion.img
-          src={cart.image}
-          alt={displayName}
-          className='w-full h-full object-cover'
-          animate={{ scale: isHovered ? 1.1 : 1 }}
-          transition={{ duration: 0.7 }}
-        />
-        <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent' />
-
-        {/* Quick Stats Overlay */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
-          transition={{ duration: 0.3 }}
-          className='absolute bottom-4 left-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 text-white border border-white/20'
-        >
-          <div className='flex items-center gap-4'>
-            <div className='flex items-center gap-2'>
-              <Users className='w-4 h-4' />
-              <span className='text-sm font-medium'>
-                {cart.seats} {language === 'es' ? 'asientos' : 'seats'}
-              </span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Battery className='w-4 h-4' />
-              <span className='text-sm font-medium'>
-                {language === 'es' ? 'Cargado' : 'Charged'}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Selection Indicator */}
-        {isSelected && (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className='absolute top-4 right-4 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className='fixed inset-0 bg-black/50 backdrop-blur-sm z-40'
+            onClick={onClose}
+          />
+
+          {/* Sidebar */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className='fixed right-0 top-0 h-full w-full max-w-lg bg-white shadow-2xl z-50 overflow-y-auto'
           >
-            <CheckCircle className='w-5 h-5 text-white' />
-          </motion.div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className='p-6'>
-        <div className='flex justify-between items-start mb-4'>
-          <div>
-            <h3 className='text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors'>
-              {displayName}
-            </h3>
-            <p className='text-gray-500 text-sm font-medium'>
-              {cart.seats} {language === 'es' ? 'pasajeros' : 'passengers'} •{' '}
-              {language === 'es' ? 'Eléctrico' : 'Electric'}
-            </p>
-          </div>
-          <div className='text-right'>
-            <div className='text-3xl font-bold text-gray-900'>
-              ${cart.price}
-            </div>
-            <div className='text-sm text-gray-500'>
-              {language === 'es' ? 'por día' : 'per day'}
-            </div>
-          </div>
-        </div>
-
-        <p className='text-gray-600 mb-6'>{displayDescription}</p>
-
-        {/* Features */}
-        <div className='space-y-3 mb-6'>
-          {displayFeatures.slice(0, 4).map((feature, index) => (
-            <div
-              key={index}
-              className='flex items-center gap-3 text-sm text-gray-600'
-            >
-              <div className='w-5 h-5 bg-green-100 rounded-full flex items-center justify-center'>
-                <CheckCircle className='w-3 h-3 text-green-600' />
-              </div>
-              <span>{feature}</span>
-            </div>
-          ))}
-          {displayFeatures.length > 4 && (
-            <div className='text-sm text-blue-600 font-medium'>
-              +{displayFeatures.length - 4}{' '}
-              {language === 'es' ? 'más características' : 'more features'}
-            </div>
-          )}
-        </div>
-
-        {/* CTA Button */}
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-3 ${
-            isSelected
-              ? `bg-gradient-to-r ${cart.gradient} text-white shadow-lg`
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          <span>
-            {isSelected
-              ? language === 'es'
-                ? 'Seleccionado'
-                : 'Selected'
-              : language === 'es'
-              ? 'Seleccionar'
-              : 'Select'}
-          </span>
-          {!isSelected && <ArrowRight className='w-5 h-5' />}
-        </motion.button>
-      </div>
-    </motion.div>
-  );
-};
-
-// Process Section
-const ProcessSection: React.FC<{ language: 'en' | 'es' }> = ({ language }) => {
-  const content = {
-    en: {
-      title: 'How It Works',
-      subtitle: 'Simple process, maximum convenience',
-      steps: [
-        {
-          number: '01',
-          title: 'We Deliver',
-          description: 'Your golf cart delivered to your location',
-          icon: <Car className='w-8 h-8' />,
-        },
-        {
-          number: '02',
-          title: 'Quick Orientation',
-          description: 'Safety overview and driving instructions',
-          icon: <Shield className='w-8 h-8' />,
-        },
-        {
-          number: '03',
-          title: 'Explore & Enjoy',
-          description: 'Drive and explore your surroundings freely',
-          icon: <Route className='w-8 h-8' />,
-        },
-        {
-          number: '04',
-          title: 'We Pick Up',
-          description: 'Scheduled pickup at your convenience',
-          icon: <Clock className='w-8 h-8' />,
-        },
-      ],
-    },
-    es: {
-      title: 'Cómo Funciona',
-      subtitle: 'Proceso simple, máxima conveniencia',
-      steps: [
-        {
-          number: '01',
-          title: 'Entregamos',
-          description: 'Tu carrito entregado en tu ubicación',
-          icon: <Car className='w-8 h-8' />,
-        },
-        {
-          number: '02',
-          title: 'Orientación Rápida',
-          description: 'Consejos de seguridad e instrucciones',
-          icon: <Shield className='w-8 h-8' />,
-        },
-        {
-          number: '03',
-          title: 'Explora y Disfruta',
-          description: 'Conduce y explora libremente',
-          icon: <Route className='w-8 h-8' />,
-        },
-        {
-          number: '04',
-          title: 'Recogemos',
-          description: 'Recogida programada cuando gustes',
-          icon: <Clock className='w-8 h-8' />,
-        },
-      ],
-    },
-  };
-
-  const currentContent = content[language];
-
-  return (
-    <section className='py-20 bg-gradient-to-br from-blue-50 to-cyan-50'>
-      <div className='max-w-7xl mx-auto px-6'>
-        <div className='text-center mb-16'>
-          <h2 className='text-4xl font-bold text-gray-900 mb-4'>
-            {currentContent.title}
-          </h2>
-          <p className='text-xl text-gray-600'>{currentContent.subtitle}</p>
-        </div>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-          {currentContent.steps.map((step, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.2, duration: 0.6 }}
-              className='text-center'
-            >
-              <div className='relative mb-6'>
-                <div className='w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center mx-auto mb-4 text-blue-600'>
-                  {step.icon}
-                </div>
-                <div className='absolute -top-2 -right-2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold'>
-                  {step.number}
-                </div>
-              </div>
-              <h3 className='text-xl font-bold text-gray-900 mb-2'>
-                {step.title}
-              </h3>
-              <p className='text-gray-600'>{step.description}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Info Section
-const InfoSection: React.FC<{ language: 'en' | 'es' }> = ({ language }) => {
-  const content = {
-    en: {
-      title: 'Good to Know',
-      requirements: {
-        title: 'Driver Requirements',
-        items: [
-          'Must be 18+ years old',
-          "Valid driver's license required",
-          'Basic driving experience recommended',
-        ],
-      },
-      rental: {
-        title: 'Rental Duration',
-        items: [
-          'Flexible based on your itinerary',
-          'Daily, weekly rates available',
-          'Extended rentals welcome',
-        ],
-      },
-      safety: {
-        title: 'Safety First',
-        items: [
-          'Drive responsibly at all times',
-          'Follow resort and local rules',
-          'Speed limit compliance required',
-        ],
-      },
-      delivery: {
-        title: 'Delivery Zone',
-        items: [
-          'Available throughout Punta Cana',
-          'Resort and villa deliveries',
-          'Beach town coverage',
-        ],
-      },
-    },
-    es: {
-      title: 'Información Útil',
-      requirements: {
-        title: 'Requisitos para Conducir',
-        items: [
-          'Mayor de 18 años',
-          'Licencia de conducir válida',
-          'Experiencia básica recomendada',
-        ],
-      },
-      rental: {
-        title: 'Duración del Alquiler',
-        items: [
-          'Flexible según tu itinerario',
-          'Tarifas diarias y semanales',
-          'Alquileres extendidos bienvenidos',
-        ],
-      },
-      safety: {
-        title: 'Seguridad Primero',
-        items: [
-          'Conduce responsablemente',
-          'Sigue las reglas del resort',
-          'Cumple los límites de velocidad',
-        ],
-      },
-      delivery: {
-        title: 'Zona de Entrega',
-        items: [
-          'Disponible en toda Punta Cana',
-          'Entregas en resorts y villas',
-          'Cobertura en pueblos costeros',
-        ],
-      },
-    },
-  };
-
-  const currentContent = content[language];
-
-  return (
-    <section className='py-20 bg-white'>
-      <div className='max-w-7xl mx-auto px-6'>
-        <div className='text-center mb-16'>
-          <h2 className='text-4xl font-bold text-gray-900 mb-4'>
-            {currentContent.title}
-          </h2>
-        </div>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-          {Object.values(currentContent)
-            .slice(1)
-            .map((section, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className='bg-gray-50 rounded-2xl p-6'
+            {/* Header */}
+            <div className='sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between'>
+              <h2 className='text-2xl font-bold text-gray-900'>
+                {displayName}
+              </h2>
+              <button
+                onClick={onClose}
+                className='p-2 hover:bg-gray-100 rounded-full transition-colors'
               >
-                <h3 className='text-lg font-bold text-gray-900 mb-4'>
-                  {section.title}
-                </h3>
-                <ul className='space-y-3'>
-                  {section.items.map((item, itemIndex) => (
-                    <li
-                      key={itemIndex}
-                      className='flex items-start gap-3 text-sm text-gray-600'
-                    >
-                      <CheckCircle className='w-4 h-4 text-green-500 mt-0.5 flex-shrink-0' />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-        </div>
+                <X className='w-6 h-6' />
+              </button>
+            </div>
 
-        {/* Disclaimer */}
+            {/* Image Gallery */}
+            <div className='relative h-64'>
+              <img
+                src={cart.detailImages[currentImageIndex]}
+                alt={displayName}
+                className='w-full h-full object-cover'
+              />
+
+              {/* Navigation */}
+              {cart.detailImages.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className='absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white transition-colors'
+                  >
+                    <ChevronLeft className='w-5 h-5' />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className='absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white transition-colors'
+                  >
+                    <ChevronRight className='w-5 h-5' />
+                  </button>
+                </>
+              )}
+
+              {/* Image Indicators */}
+              <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2'>
+                {cart.detailImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className='p-6 space-y-6'>
+              {/* Price & Info */}
+              <div className='flex items-center justify-between'>
+                <span className='text-3xl font-bold text-teal-600'>
+                  ${cart.price}/day
+                </span>
+                <div className='flex items-center gap-2 text-gray-600'>
+                  <Users className='w-5 h-5' />
+                  <span>{cart.seats} seats</span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className='text-gray-600 leading-relaxed'>
+                {displayDescription}
+              </p>
+
+              {/* Features */}
+              <div>
+                <h3 className='font-bold text-gray-900 mb-3'>
+                  {currentContent.features}
+                </h3>
+                <div className='space-y-2'>
+                  {displayFeatures.map((feature, index) => (
+                    <div key={index} className='flex items-center gap-3'>
+                      <CheckCircle className='w-4 h-4 text-teal-500 flex-shrink-0' />
+                      <span className='text-sm text-gray-600'>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Book Now Button */}
+              <button
+                onClick={onBookNow}
+                className='w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-4 px-8 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg'
+              >
+                {currentContent.bookNow}
+              </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// Gallery Section
+const GallerySection = ({ language }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const content = {
+    en: {
+      title: 'Experience Paradise',
+      subtitle: 'Where luxury meets adventure',
+    },
+    es: {
+      title: 'Experimenta el Paraíso',
+      subtitle: 'Donde el lujo se encuentra con la aventura',
+    },
+  };
+
+  const currentContent = content[language];
+
+  return (
+    <section className='py-20 bg-gradient-to-br from-slate-50 to-teal-50'>
+      <div className='max-w-7xl mx-auto px-6'>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className='mt-16 bg-amber-50 border-l-4 border-amber-400 rounded-2xl p-6'
+          className='text-center mb-16'
         >
-          <div className='flex items-start'>
-            <AlertCircle className='w-6 h-6 text-amber-600 mr-3 mt-1 flex-shrink-0' />
-            <div>
-              <h3 className='font-bold text-amber-800 mb-2'>
-                {language === 'es'
-                  ? 'Descargo de Responsabilidad'
-                  : 'Disclaimer'}
-              </h3>
-              <p className='text-amber-700 text-sm'>
-                {language === 'es'
-                  ? 'Conduce bajo tu propia responsabilidad. Sigue las reglas del resort o comunidad y respeta las normas de tránsito locales.'
-                  : 'Drive at your own discretion. Please follow all community or resort rules and respect local driving laws.'}
-              </p>
-            </div>
+          <h2 className='text-4xl lg:text-5xl font-light text-slate-800 mb-4'>
+            {currentContent.title}
+          </h2>
+          <p className='text-xl text-slate-600'>{currentContent.subtitle}</p>
+        </motion.div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+          {GALLERY_IMAGES.map((image, index) => (
+            <motion.div
+              key={image.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+              className='group relative cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300'
+              onClick={() => setSelectedImage(index)}
+            >
+              <div className='aspect-square overflow-hidden'>
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
+                />
+              </div>
+              <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+              <div className='absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                <h3 className='font-bold'>{image.title}</h3>
+              </div>
+              <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                <div className='bg-white/20 backdrop-blur-sm rounded-full p-3'>
+                  <Camera className='w-6 h-6 text-white' />
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Gallery Modal */}
+        <AnimatePresence>
+          {selectedImage !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className='fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'
+              onClick={() => setSelectedImage(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+                className='relative max-w-4xl w-full'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={GALLERY_IMAGES[selectedImage].src}
+                  alt={GALLERY_IMAGES[selectedImage].alt}
+                  className='w-full h-auto rounded-2xl'
+                />
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className='absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/30 transition-colors'
+                >
+                  <X className='w-6 h-6' />
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+};
+
+// CTA Banner
+const CTABanner = ({ language, onGetStartedClick }) => {
+  const content = {
+    en: {
+      title: 'Ready for Your Adventure?',
+      subtitle: 'Book your luxury golf cart experience today',
+      cta: 'Get Started',
+      features: ['Free Delivery', 'Premium Service', '24/7 Support'],
+    },
+    es: {
+      title: '¿Listo para tu Aventura?',
+      subtitle: 'Reserva tu experiencia de lujo en carrito de golf hoy',
+      cta: 'Comenzar',
+      features: ['Entrega Gratis', 'Servicio Premium', 'Soporte 24/7'],
+    },
+  };
+
+  const currentContent = content[language];
+
+  return (
+    <section className='relative py-20 overflow-hidden'>
+      <div className='absolute inset-0'>
+        <img
+          src='https://images.pexels.com/photos/9207174/pexels-photo-9207174.jpeg?_gl=1*1gvkela*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5ODY0JGoyMSRsMCRoMA..'
+          alt='Sunset golf cart'
+          className='w-full h-full object-cover'
+        />
+        <div className='absolute inset-0 bg-gradient-to-r from-teal-900/80 via-cyan-900/60 to-blue-900/80' />
+      </div>
+
+      <div className='relative z-10 max-w-7xl mx-auto px-6 text-center text-white'>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <h2 className='text-4xl lg:text-5xl font-light mb-6'>
+            {currentContent.title}
+          </h2>
+          <p className='text-xl mb-8 max-w-2xl mx-auto opacity-90'>
+            {currentContent.subtitle}
+          </p>
+
+          <button
+            onClick={onGetStartedClick}
+            className='group bg-white text-slate-800 hover:bg-slate-100 px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-xl'
+          >
+            {currentContent.cta}
+            <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
+          </button>
+
+          <div className='flex flex-wrap justify-center gap-8 mt-12'>
+            {currentContent.features.map((feature, index) => (
+              <div
+                key={index}
+                className='flex items-center gap-2 text-white/80'
+              >
+                <CheckCircle className='w-5 h-5 text-cyan-300' />
+                <span>{feature}</span>
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -733,253 +696,161 @@ const InfoSection: React.FC<{ language: 'en' | 'es' }> = ({ language }) => {
   );
 };
 
-// Main Component
-const GolfCartRentalServiceView: React.FC<GolfCartRentalServiceViewProps> = ({
-  service,
-  serviceData,
-}) => {
+// MAIN COMPONENT - UPDATED WITH SIDEBAR APPROACH
+const GolfCartServiceView = () => {
+  const [language, setLanguage] = useState('en');
+  const [selectedCart, setSelectedCart] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // ← SIDEBAR STATE
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { bookService } = useBooking();
-  const [selectedCart, setSelectedCart] = useState<string>('6-seater');
-  const [language, setLanguage] = useState<'en' | 'es'>('en');
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const selectedCartData = GOLF_CART_OPTIONS.find(
-    (cart) => cart.id === selectedCart
-  );
-
-  const handleBookNow = () => {
-    setIsModalOpen(true);
+  // ← DYNAMIC SERVICE OBJECT with preselected cart
+  const getServiceForCart = (cart) => {
+    return {
+      id: 'golf-cart-rental',
+      name: 'Golf Cart Rental',
+      type: 'transportation',
+      packageType: cart?.seats === 6 ? 'premium' : 'standard',
+      description: 'Premium golf cart rental service for resort exploration',
+      category: 'mobility',
+      duration: 'flexible',
+      // ← PASS SELECTED CART INFO TO FORM (MAKES FORM HIDE CART SELECTION)
+      selectedCartInfo: cart
+        ? {
+            id: cart.id,
+            name: cart.name,
+            spanishName: cart.spanishName,
+            seats: cart.seats,
+            price: cart.price,
+            features: cart.features,
+            spanishFeatures: cart.spanishFeatures,
+            description: cart.description,
+            spanishDescription: cart.spanishDescription,
+          }
+        : null,
+    };
   };
 
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-    setIsModalOpen(false);
+  const handleExploreClick = () => {
+    const cartSection = document.getElementById('cart-selection');
+    cartSection?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleGetStartedClick = () => {
+    const cartSection = document.getElementById('cart-selection');
+    cartSection?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // ← UPDATED: Opens sidebar instead of modal
+  const handleCartClick = (cart) => {
+    setSelectedCart(cart);
+    setIsSidebarOpen(true);
+  };
+
+  // ← NEW: Close sidebar and open booking modal with preselected cart
+  const handleBookNow = () => {
+    setIsSidebarOpen(false); // Close sidebar
+    setIsBookingModalOpen(true); // Open booking modal
+  };
+
+  const handleBookingConfirm = (service, dates, guests) => {
+    console.log('Booking confirmed:', {
+      service,
+      dates,
+      guests,
+      cart: selectedCart,
+    });
+    setIsBookingModalOpen(false);
+    setSelectedCart(null);
   };
 
   const content = {
     en: {
-      sectionTitle: 'Choose Your Golf Cart',
-      sectionSubtitle: 'Select the perfect option for your group',
-      ctaTitle: 'Ready to Explore?',
-      ctaDescription:
-        'Book your golf cart today and start exploring Punta Cana with complete freedom and comfort.',
-      ctaButton: 'Book Now',
-      ctaFeatures: 'Free delivery • 24/7 support • Fully charged',
+      fleetTitle: 'Our Luxury Fleet',
+      fleetSubtitle: 'Choose your perfect ride',
     },
     es: {
-      sectionTitle: 'Elige Tu Carrito de Golf',
-      sectionSubtitle: 'Selecciona la opción perfecta para tu grupo',
-      ctaTitle: '¿Listo para Explorar?',
-      ctaDescription:
-        'Reserva tu carrito de golf hoy y comienza a explorar Punta Cana con total libertad y comodidad.',
-      ctaButton: 'Reservar Ahora',
-      ctaFeatures: 'Entrega gratis • Soporte 24/7 • Completamente cargado',
+      fleetTitle: 'Nuestra Flota de Lujo',
+      fleetSubtitle: 'Elige tu viaje perfecto',
     },
   };
 
   const currentContent = content[language];
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'>
-      {/* Video Hero Section */}
-      <VideoHero onBookClick={handleBookNow} />
+    <div className='min-h-screen bg-white'>
+      {/* Hero Section */}
+      <HeroSection onExploreClick={handleExploreClick} />
 
-      {/* Language Toggle for Sections */}
-      <div className='sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-200'>
-        <div className='max-w-7xl mx-auto px-6 py-4'>
-          <div className='flex justify-center'>
-            <div className='flex bg-gray-100 rounded-full p-1'>
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  language === 'en'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                English
-              </button>
-              <button
-                onClick={() => setLanguage('es')}
-                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  language === 'es'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                Español
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content sections */}
-      <div className='max-w-7xl mx-auto px-6 py-16 space-y-20'>
-        {/* Golf Cart Selection */}
-        <section className='bg-white rounded-3xl p-10 shadow-xl'>
-          <div className='text-center mb-12'>
-            <h2 className='text-4xl font-bold text-slate-800 mb-4'>
-              {currentContent.sectionTitle}
+      {/* Cart Selection */}
+      <section id='cart-selection' className='py-20 bg-white'>
+        <div className='max-w-7xl mx-auto px-6'>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className='text-center mb-16'
+          >
+            <h2 className='text-4xl lg:text-5xl font-light text-slate-800 mb-4'>
+              {currentContent.fleetTitle}
             </h2>
             <p className='text-xl text-slate-600'>
-              {currentContent.sectionSubtitle}
+              {currentContent.fleetSubtitle}
             </p>
-          </div>
+          </motion.div>
 
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-            {GOLF_CART_OPTIONS.map((cart) => (
-              <GolfCartCard
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto'>
+            {GOLF_CART_OPTIONS.map((cart, index) => (
+              <motion.div
                 key={cart.id}
-                cart={cart}
-                isSelected={selectedCart === cart.id}
-                onSelect={() => setSelectedCart(cart.id)}
-                language={language}
-              />
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <CartCard
+                  cart={cart}
+                  onClick={() => handleCartClick(cart)} // ← OPENS SIDEBAR
+                  language={language}
+                />
+              </motion.div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Selected Cart Details */}
-        {selectedCartData && (
-          <motion.section
-            layout
-            className={`bg-gradient-to-r ${selectedCartData.gradient} rounded-3xl p-10 text-white shadow-2xl`}
-          >
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-              <div>
-                <h3 className='text-3xl font-bold mb-6'>
-                  {language === 'es'
-                    ? selectedCartData.spanishName
-                    : selectedCartData.name}
-                </h3>
-                <p className='text-xl text-white/90 mb-8 leading-relaxed'>
-                  {language === 'es'
-                    ? selectedCartData.spanishDescription
-                    : selectedCartData.description}
-                </p>
+      {/* Gallery Section */}
+      <GallerySection language={language} />
 
-                <div className='flex items-center gap-8 mb-8'>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>
-                      ${selectedCartData.price}
-                    </div>
-                    <div className='text-white/70'>
-                      {language === 'es' ? 'por día' : 'per day'}
-                    </div>
-                  </div>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>
-                      {selectedCartData.seats}
-                    </div>
-                    <div className='text-white/70'>
-                      {language === 'es' ? 'asientos' : 'seats'}
-                    </div>
-                  </div>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>24/7</div>
-                    <div className='text-white/70'>
-                      {language === 'es' ? 'soporte' : 'support'}
-                    </div>
-                  </div>
-                </div>
+      {/* CTA Banner */}
+      <CTABanner
+        language={language}
+        onGetStartedClick={handleGetStartedClick}
+      />
 
-                <button
-                  onClick={handleBookNow}
-                  className='bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-lg'
-                >
-                  <Calendar className='w-5 h-5' />
-                  {language === 'es' ? 'Reservar Ahora' : 'Book Now'}
-                </button>
-              </div>
+      {/* SIDEBAR - SHOWS CART DETAILS */}
+      <CartDetailsSidebar
+        cart={selectedCart}
+        isOpen={isSidebarOpen}
+        onClose={() => {
+          setIsSidebarOpen(false);
+          setSelectedCart(null);
+        }}
+        language={language}
+        onBookNow={handleBookNow}
+      />
 
-              <div className='relative h-96 rounded-2xl overflow-hidden shadow-2xl'>
-                <img
-                  src={selectedCartData.image}
-                  alt={
-                    language === 'es'
-                      ? selectedCartData.spanishName
-                      : selectedCartData.name
-                  }
-                  className='w-full h-full object-cover'
-                />
-              </div>
-            </div>
-          </motion.section>
-        )}
-
-        {/* Process Section */}
-        <ProcessSection language={language} />
-
-        {/* Info Section */}
-        <InfoSection language={language} />
-
-        {/* Call to Action */}
-        <section className='relative overflow-hidden rounded-3xl h-96 shadow-2xl'>
-          <img
-            src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1920'
-            alt='Golf cart adventure'
-            className='w-full h-full object-cover'
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-slate-900/80 to-blue-900/60' />
-
-          <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
-            <div className='max-w-3xl'>
-              <motion.h2
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className='text-5xl font-bold mb-6'
-              >
-                {currentContent.ctaTitle}
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className='text-xl text-white/90 mb-8'
-              >
-                {currentContent.ctaDescription}
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4 }}
-                className='flex flex-col sm:flex-row gap-4 justify-center items-center'
-              >
-                <button
-                  onClick={handleBookNow}
-                  className='bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 transition-all duration-300 hover:scale-105 shadow-2xl'
-                >
-                  <Car className='w-6 h-6' />
-                  {currentContent.ctaButton}
-                </button>
-                <div className='text-white/80 text-sm'>
-                  {currentContent.ctaFeatures}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* Booking Modal */}
-      {isModalOpen && (
+      {/* BOOKING MODAL - ONLY ONE MODAL NOW, WITH PRESELECTED CART */}
+      {isBookingModalOpen && (
         <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
           onConfirm={handleBookingConfirm}
-          service={service}
+          service={getServiceForCart(selectedCart)} // ← PASSES CART INFO TO FORM
         />
       )}
     </div>
   );
 };
 
-export default GolfCartRentalServiceView;
+export default GolfCartServiceView;
