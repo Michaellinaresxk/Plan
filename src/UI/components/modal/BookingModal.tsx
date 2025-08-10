@@ -5,25 +5,13 @@ import { motion } from 'framer-motion';
 import LuxuryModal from './LuxuryModal';
 import ServiceFormFactory from '../forms/ServiceFormFactory';
 
-interface GroceryItem {
-  id: string;
-  name: string;
-  category: string;
-  subcategory?: string;
-  translationKey?: string;
-}
-
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   service: Service;
-  additionalData?: any; // For other service-specific data
+  additionalData?: any;
 }
 
-/**
- * UPDATED BookingModal - Enhanced Reservation Flow
- * and additional data for different service types.
- */
 const BookingModal: React.FC<BookingModalProps> = ({
   isOpen,
   onClose,
@@ -38,31 +26,17 @@ const BookingModal: React.FC<BookingModalProps> = ({
   console.log('🏨 BookingModal selectedItems:', selectedItems);
   console.log('🏨 BookingModal additionalData:', additionalData);
 
-  // Check if service is premium
-  const isPremium = service.packageType.includes('premium');
-
-  // Format the title based on service type and premium status
+  // ✅ TÍTULO UNIFICADO PARA TODOS LOS SERVICIOS
   const getModalTitle = () => {
-    return isPremium
-      ? t('bookingModal.premiumTitle', {
-          service: service.name,
-          fallback: `Premium ${service.name}`,
-        })
-      : t('bookingModal.title', {
-          service: service.name,
-          fallback: `Book ${service.name}`,
-        });
+    return t('bookingModal.title', {
+      service: service.name,
+      fallback: `Book ${service.name}`,
+    });
   };
 
   return (
-    <LuxuryModal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={getModalTitle()}
-      isPremium={isPremium}
-    >
+    <LuxuryModal isOpen={isOpen} onClose={onClose} title={getModalTitle()}>
       <div className='py-2'>
-        {/* The Service Form - This handles navigation automatically */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

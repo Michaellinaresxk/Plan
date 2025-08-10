@@ -209,6 +209,19 @@ registerForm({
   }),
 });
 
+// Golf Cart Form
+registerForm({
+  name: 'GolfCartForm',
+  component: () => import('@/UI/components/forms/GolfCartForm'),
+  servicePatterns: ['golf-cart-rentals'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit || ((data: any) => console.log('Yoga:', data)),
+    onCancel,
+  }),
+});
+
 // Luxe Yoga Form
 registerForm({
   name: 'LuxeYogaServiceForm',

@@ -244,7 +244,7 @@ const ChefServiceView: React.FC<ChefServiceViewProps> = ({
   const [selectedServiceType, setSelectedServiceType] = useState('');
 
   // Derived state
-  const isPremium = service.packageType.includes('premium');
+  const isPremium = false;
   const maxPeople = serviceData?.metaData?.maxPeople || 10;
 
   // Event handlers
