@@ -31,10 +31,10 @@ interface HorseBackRidingFormProps {
 
 // Location options configuration - simplified
 const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'punta-cana-resorts', name: 'Puntacana Resorts' },
   { id: 'cap-cana', name: 'Cap Cana' },
   { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'punta-village', name: 'Puntacana Village' },
   { id: 'uvero-alto', name: 'Uvero Alto' },
   { id: 'macao-beach', name: 'Macao Beach Area' },
 ] as const;

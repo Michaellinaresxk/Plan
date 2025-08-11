@@ -47,7 +47,7 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     name: '4-Seater Cart',
     spanishName: 'Carrito de 4 Plazas',
     seats: 4,
-    price: 45,
+    price: 60,
     description:
       'Perfect for couples or small families. Compact and efficient for resort exploration.',
     spanishDescription:
@@ -60,17 +60,13 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
     ],
     features: [
-      'Fully charged battery',
       'Free delivery & pickup',
       '24/7 support included',
-      'Safety equipment',
       'Quick orientation',
     ],
     spanishFeatures: [
-      'Batería completamente cargada',
       'Entrega y recogida gratis',
       'Soporte 24/7 incluido',
-      'Equipo de seguridad',
       'Orientación rápida',
     ],
     isPopular: false,
@@ -80,7 +76,7 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     name: '6-Seater Cart',
     spanishName: 'Carrito de 6 Plazas',
     seats: 6,
-    price: 65,
+    price: 80,
     description:
       'Ideal for larger groups and families. More space and comfort for extended exploration.',
     spanishDescription:
@@ -559,7 +555,7 @@ const GallerySection = ({ language }) => {
           <p className='text-xl text-slate-600'>{currentContent.subtitle}</p>
         </motion.div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+        <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
           {GALLERY_IMAGES.map((image, index) => (
             <motion.div
               key={image.id}
@@ -580,11 +576,13 @@ const GallerySection = ({ language }) => {
               </div>
               <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
               <div className='absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                <h3 className='font-bold'>{image.title}</h3>
+                <h3 className='font-bold text-sm md:text-base'>
+                  {image.title}
+                </h3>
               </div>
               <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                <div className='bg-white/20 backdrop-blur-sm rounded-full p-3'>
-                  <Camera className='w-6 h-6 text-white' />
+                <div className='bg-white/20 backdrop-blur-sm rounded-full p-2 md:p-3'>
+                  <Camera className='w-4 h-4 md:w-6 md:h-6 text-white' />
                 </div>
               </div>
             </motion.div>
