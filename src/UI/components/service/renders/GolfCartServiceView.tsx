@@ -20,6 +20,9 @@ import {
   Zap,
   Navigation,
   Heart,
+  Quote,
+  AlertTriangle,
+  FileText,
 } from 'lucide-react';
 import BookingModal from '../../modal/BookingModal';
 import { BookingDate, Service } from '@/constants/formFields';
@@ -291,7 +294,7 @@ const HeroSection = ({ onExploreClick }) => {
                     </div>
                     <div className='flex items-center justify-between'>
                       <span className='text-2xl font-bold text-teal-600'>
-                        $65/day
+                        $80/night
                       </span>
                       <div className='flex items-center gap-2 text-sm text-slate-600'>
                         <Users className='w-4 h-4' />
@@ -354,7 +357,7 @@ const CartCard = ({ cart, onClick, language }) => {
         </h3>
         <div className='flex items-center justify-between'>
           <span className='text-2xl font-bold text-teal-600'>
-            ${cart.price}/day
+            ${cart.price}/night
           </span>
           <div className='flex items-center gap-2 text-slate-600'>
             <Users className='w-4 h-4' />
@@ -369,6 +372,8 @@ const CartCard = ({ cart, onClick, language }) => {
 // SIDEBAR COMPONENT - NEW
 const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   if (!cart) return null;
 
@@ -391,14 +396,37 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
 
   const currentContent = content[language];
 
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % cart.detailImages.length);
+  // Swipe detection
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
   };
 
-  const prevImage = () => {
-    setCurrentImageIndex(
-      (prev) => (prev - 1 + cart.detailImages.length) % cart.detailImages.length
-    );
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Swipe left - next image
+      setCurrentImageIndex((prev) => (prev + 1) % cart.detailImages.length);
+    }
+
+    if (isRightSwipe) {
+      // Swipe right - previous image
+      setCurrentImageIndex(
+        (prev) =>
+          (prev - 1 + cart.detailImages.length) % cart.detailImages.length
+      );
+    }
   };
 
   return (
@@ -435,40 +463,45 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
               </button>
             </div>
 
-            {/* Image Gallery */}
-            <div className='relative h-64'>
-              <img
+            {/* Swipeable Image Gallery */}
+            <div
+              className='relative h-64 overflow-hidden cursor-grab active:cursor-grabbing'
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+            >
+              <motion.img
+                key={currentImageIndex}
                 src={cart.detailImages[currentImageIndex]}
                 alt={displayName}
-                className='w-full h-full object-cover'
+                className='w-full h-full object-cover select-none'
+                initial={{ x: 100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -100, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                draggable={false}
               />
 
-              {/* Navigation */}
-              {cart.detailImages.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className='absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white transition-colors'
-                  >
-                    <ChevronLeft className='w-5 h-5' />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className='absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white transition-colors'
-                  >
-                    <ChevronRight className='w-5 h-5' />
-                  </button>
-                </>
-              )}
+              {/* Swipe Indicator */}
+              <div className='absolute top-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2'>
+                <span>👈 Swipe 👉</span>
+              </div>
 
-              {/* Image Indicators */}
+              {/* Image Counter */}
+              <div className='absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-medium'>
+                {currentImageIndex + 1} / {cart.detailImages.length}
+              </div>
+
+              {/* Image Indicators - Clickable */}
               <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2'>
                 {cart.detailImages.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      index === currentImageIndex
+                        ? 'bg-white shadow-lg scale-125'
+                        : 'bg-white/50 hover:bg-white/80'
                     }`}
                   />
                 ))}
@@ -480,7 +513,7 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
               {/* Price & Info */}
               <div className='flex items-center justify-between'>
                 <span className='text-3xl font-bold text-teal-600'>
-                  ${cart.price}/day
+                  ${cart.price}/night
                 </span>
                 <div className='flex items-center gap-2 text-gray-600'>
                   <Users className='w-5 h-5' />
@@ -775,6 +808,15 @@ const GolfCartServiceView = () => {
 
   const currentContent = content[language];
 
+  const RENTAL_REQUIREMENTS = [
+    "Must be 18+ years old with a valid driver's license",
+    'Basic driving experience recommended',
+    'Drive responsibly and follow resort/community rules',
+    'Respect local driving laws and speed limits',
+    'Children must be supervised at all times while in cart',
+    'Available throughout Puntacana area',
+  ];
+
   return (
     <div className='min-h-screen bg-white'>
       {/* Hero Section */}
@@ -825,6 +867,67 @@ const GolfCartServiceView = () => {
         language={language}
         onGetStartedClick={handleGetStartedClick}
       />
+
+      {/* Mindfulness Quote Banner */}
+      <motion.div
+        className='px-4 mt-10 mb-10'
+        initial='hidden'
+        animate='visible'
+      >
+        <div className='rounded-3xl p-12 text-center relative overflow-hidden'>
+          <motion.div
+            className='absolute '
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 2, delay: 0.5 }}
+          />
+
+          <Quote className='w-12 h-12 text-emerald-500 mx-auto mb-6' />
+          <blockquote className='text-3xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
+            "Success in this game depends less on strength of body than strength
+            of mind and character."
+          </blockquote>
+          <cite className='text-xl text-emerald-600 font-medium'>
+            - Arnold Palmer
+          </cite>
+        </div>
+      </motion.div>
+
+      {/* Requirements List */}
+      <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mt-10 mb-10 '>
+        <div className='flex items-start'>
+          <FileText className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
+          <div>
+            <h4 className='font-medium text-blue-800 mb-2'>
+              Driver Requirements
+            </h4>
+            <ul className='text-sm text-blue-700 space-y-1'>
+              {RENTAL_REQUIREMENTS.map((requirement, index) => (
+                <li key={index}>• {requirement}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
+        <div className='flex items-start'>
+          <AlertTriangle className='w-5 h-5 text-amber-600 mr-3 flex-shrink-0 mt-0.5' />
+          <div>
+            <h4 className='font-medium text-amber-800 mb-2'>
+              Important Disclaimer
+            </h4>
+            <p className='text-sm text-amber-700'>
+              <strong>Drive at your own discretion.</strong> Please follow all
+              community or resort rules and respect local driving laws. You are
+              responsible for the safe operation of the vehicle during the
+              rental period. Our carts are more than transportation—they're
+              freedom on wheels.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* SIDEBAR - SHOWS CART DETAILS */}
       <CartDetailsSidebar

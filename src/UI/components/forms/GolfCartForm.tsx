@@ -20,6 +20,9 @@ import {
   CheckCircle,
   Phone,
   CreditCard,
+  Plus,
+  Minus,
+  ShoppingCart,
 } from 'lucide-react';
 
 // Types for better type safety
@@ -35,9 +38,14 @@ interface GolfCartOption {
   spanishDescription: string;
 }
 
+// Updated interface to handle multiple cart selections
+interface CartSelection {
+  [cartId: string]: number; // cartId -> quantity
+}
+
 interface FormData {
-  // Cart selection
-  selectedCart: string;
+  // Cart selection with quantities
+  selectedCarts: CartSelection;
 
   // Rental period
   startDate: string;
@@ -65,8 +73,13 @@ interface GolfCartFormProps {
   onSubmit?: (
     formData: FormData & {
       totalPrice: number;
-      cartDetails: GolfCartOption;
+      selectedCartsDetails: Array<{
+        cart: GolfCartOption;
+        quantity: number;
+        subtotal: number;
+      }>;
       rentalDays: number;
+      totalCarts: number;
     }
   ) => void;
   onCancel: () => void;
@@ -79,15 +92,12 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     name: '4-Seater Cart',
     spanishName: 'Carrito de 4 Plazas',
     seats: 4,
-    basePrice: 45,
+    basePrice: 60,
     image:
       'https://images.unsplash.com/photo-1551058622-5d7b4f0c6e6a?w=800&h=600&fit=crop',
     features: [
-      'Fully charged battery',
-      'Full fuel tank (if applicable)',
       'Free delivery & pickup',
       '24/7 support included',
-      'Safety equipment provided',
       'Quick orientation included',
     ],
     description:
@@ -100,17 +110,13 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     name: '6-Seater Cart',
     spanishName: 'Carrito de 6 Plazas',
     seats: 6,
-    basePrice: 65,
+    basePrice: 80,
     image:
       'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
     features: [
-      'Fully charged battery',
-      'Full fuel tank (if applicable)',
       'Free delivery & pickup',
       '24/7 support included',
-      'Safety equipment provided',
       'Quick orientation included',
-      'Extra storage space',
     ],
     description:
       'Ideal for larger groups and families. More space and comfort for extended exploration.',
@@ -141,10 +147,10 @@ const RENTAL_REQUIREMENTS = [
 ];
 
 const WHAT_TO_EXPECT = [
-  'We deliver your golf cart to your location',
-  'Quick orientation & safety overview',
+  'We deliver your golf cart(s) to your location',
+  'Quick orientation & safety overview for each cart',
   'You drive & enjoy your surroundings',
-  'We pick it up at your scheduled time',
+  'We pick them up at your scheduled time',
 ];
 
 const INCLUDED_FEATURES = [
@@ -165,9 +171,28 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const router = useRouter();
   const { setReservationData } = useReservation();
 
+  // Initialize cart selections
+  const initializeCartSelections = (): CartSelection => {
+    const initialSelection: CartSelection = {};
+
+    // Initialize with pre-selected cart if available
+    if (service?.selectedCartInfo?.id) {
+      initialSelection[service.selectedCartInfo.id] = 1;
+    }
+
+    // Initialize all cart types with 0
+    GOLF_CART_OPTIONS.forEach((cart) => {
+      if (!initialSelection[cart.id]) {
+        initialSelection[cart.id] = 0;
+      }
+    });
+
+    return initialSelection;
+  };
+
   // Form state
   const [formData, setFormData] = useState<FormData>({
-    selectedCart: service?.selectedCartInfo?.id || '4-seater', // ← PRESELECT FROM SERVICE
+    selectedCarts: initializeCartSelections(),
     startDate: '',
     startTime: '09:00',
     endDate: '',
@@ -183,26 +208,38 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ← UPDATE SELECTED CART IF SERVICE CHANGES
+  // Update selected cart if service changes
   useEffect(() => {
     if (
       service?.selectedCartInfo?.id &&
-      service.selectedCartInfo.id !== formData.selectedCart
+      formData.selectedCarts[service.selectedCartInfo.id] === 0
     ) {
       setFormData((prev) => ({
         ...prev,
-        selectedCart: service.selectedCartInfo.id,
+        selectedCarts: {
+          ...prev.selectedCarts,
+          [service.selectedCartInfo.id]: 1,
+        },
       }));
     }
   }, [service?.selectedCartInfo?.id]);
 
-  // Get selected cart details
-  const selectedCartData = useMemo(() => {
-    return (
-      GOLF_CART_OPTIONS.find((cart) => cart.id === formData.selectedCart) ||
-      GOLF_CART_OPTIONS[0]
+  // Get selected carts with details
+  const selectedCartsDetails = useMemo(() => {
+    return GOLF_CART_OPTIONS.map((cart) => ({
+      cart,
+      quantity: formData.selectedCarts[cart.id] || 0,
+      subtotal: (formData.selectedCarts[cart.id] || 0) * cart.basePrice,
+    })).filter((item) => item.quantity > 0);
+  }, [formData.selectedCarts]);
+
+  // Calculate total carts
+  const totalCarts = useMemo(() => {
+    return Object.values(formData.selectedCarts).reduce(
+      (sum, quantity) => sum + quantity,
+      0
     );
-  }, [formData.selectedCart]);
+  }, [formData.selectedCarts]);
 
   // Calculate rental days
   const rentalDays = useMemo(() => {
@@ -217,9 +254,35 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   }, [formData.startDate, formData.endDate]);
 
   // Calculate total price
-  const calculatePrice = useMemo(() => {
-    return selectedCartData.basePrice * rentalDays;
-  }, [selectedCartData.basePrice, rentalDays]);
+  const calculateTotalPrice = useMemo(() => {
+    const baseTotal = selectedCartsDetails.reduce(
+      (sum, item) => sum + item.subtotal,
+      0
+    );
+    return baseTotal * rentalDays;
+  }, [selectedCartsDetails, rentalDays]);
+
+  // Handle cart quantity change
+  const handleCartQuantityChange = (cartId: string, newQuantity: number) => {
+    const clampedQuantity = Math.max(0, Math.min(10, newQuantity)); // Limit to 0-10 carts
+
+    setFormData((prev) => ({
+      ...prev,
+      selectedCarts: {
+        ...prev.selectedCarts,
+        [cartId]: clampedQuantity,
+      },
+    }));
+
+    // Clear cart selection error if user selects any cart
+    if (clampedQuantity > 0 && errors.selectedCarts) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.selectedCarts;
+        return newErrors;
+      });
+    }
+  };
 
   // Date validation helpers
   const isSameDay = (dateString: string): boolean => {
@@ -249,11 +312,12 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
-    // Required fields
-    if (!formData.selectedCart) {
-      newErrors.selectedCart = 'Please select a golf cart option';
+    // Cart selection validation
+    if (totalCarts === 0) {
+      newErrors.selectedCarts = 'Please select at least one golf cart';
     }
 
+    // Required fields
     if (!formData.startDate) {
       newErrors.startDate = 'Start date is required';
     }
@@ -343,17 +407,28 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
       const [endHours, endMinutes] = formData.endTime.split(':').map(Number);
       endDate.setHours(endHours, endMinutes, 0, 0);
 
+      // Create selected items for reservation
+      const selectedItems = selectedCartsDetails.map((item) => ({
+        id: `golf-cart-${item.cart.id}`,
+        name: `${item.cart.name} (x${item.quantity})`,
+        quantity: item.quantity,
+        price: item.cart.basePrice,
+        totalPrice: item.subtotal * rentalDays,
+        duration: `${rentalDays} night${rentalDays > 1 ? 's' : ''}`,
+      }));
+
       // Create reservation data
       const reservationData = {
         service: service,
         formData: {
           ...formData,
           serviceType: 'golf-cart-rental',
-          totalPrice: calculatePrice,
-          cartDetails: selectedCartData,
+          totalPrice: calculateTotalPrice,
+          selectedCartsDetails,
           rentalDays: rentalDays,
+          totalCarts,
         },
-        totalPrice: calculatePrice,
+        totalPrice: calculateTotalPrice,
         bookingDate: startDate,
         endDate: endDate,
         participants: {
@@ -361,23 +436,13 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           children: 0,
           total: 1,
         },
-        selectedItems: [
-          {
-            id: `golf-cart-${formData.selectedCart}`,
-            name: selectedCartData.name,
-            quantity: 1,
-            price: selectedCartData.basePrice,
-            totalPrice: calculatePrice,
-            duration: `${rentalDays} day${rentalDays > 1 ? 's' : ''}`,
-          },
-        ],
+        selectedItems,
         clientInfo: undefined,
         // Golf cart specific data
         golfCartSpecifics: {
-          cartType: formData.selectedCart,
-          cartName: selectedCartData.name,
-          seats: selectedCartData.seats,
-          basePrice: selectedCartData.basePrice,
+          selectedCarts: formData.selectedCarts,
+          selectedCartsDetails,
+          totalCarts,
           rentalDays: rentalDays,
           startDate: formData.startDate,
           startTime: formData.startTime,
@@ -386,7 +451,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           deliveryLocation: formData.deliveryLocation,
           specificAddress: formData.specificAddress,
           specialRequests: formData.specialRequests,
-          features: selectedCartData.features,
           requirements: RENTAL_REQUIREMENTS,
           included: INCLUDED_FEATURES,
           notIncluded: NOT_INCLUDED,
@@ -409,9 +473,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
       if (onSubmit) {
         await onSubmit({
           ...formData,
-          totalPrice: calculatePrice,
-          cartDetails: selectedCartData,
+          totalPrice: calculateTotalPrice,
+          selectedCartsDetails,
           rentalDays: rentalDays,
+          totalCarts,
         });
       }
 
@@ -474,73 +539,164 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
     }
   };
 
+  // Quantity Input Component
+  const QuantityInput: React.FC<{
+    cartId: string;
+    currentQuantity: number;
+    maxQuantity?: number;
+  }> = ({ cartId, currentQuantity, maxQuantity = 10 }) => (
+    <div className='flex items-center space-x-2'>
+      <button
+        type='button'
+        onClick={() => handleCartQuantityChange(cartId, currentQuantity - 1)}
+        disabled={currentQuantity === 0}
+        className='w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+      >
+        <Minus className='w-4 h-4 text-gray-600' />
+      </button>
+
+      <input
+        type='number'
+        min='0'
+        max={maxQuantity}
+        value={currentQuantity}
+        onChange={(e) =>
+          handleCartQuantityChange(cartId, parseInt(e.target.value) || 0)
+        }
+        className='w-16 text-center py-1 border border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500'
+      />
+
+      <button
+        type='button'
+        onClick={() => handleCartQuantityChange(cartId, currentQuantity + 1)}
+        disabled={currentQuantity >= maxQuantity}
+        className='w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+      >
+        <Plus className='w-4 h-4 text-gray-600' />
+      </button>
+    </div>
+  );
+
   // Golf Cart Selection Component
   const GolfCartSelection = () => (
-    <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-      {GOLF_CART_OPTIONS.map((cart) => (
-        <div
-          key={cart.id}
-          className={`relative border-2 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 ${
-            formData.selectedCart === cart.id
-              ? 'border-blue-500 shadow-2xl ring-4 ring-blue-200'
-              : 'border-gray-200 hover:border-gray-300 hover:shadow-xl'
-          }`}
-          onClick={() =>
-            setFormData((prev) => ({
-              ...prev,
-              selectedCart: cart.id,
-            }))
-          }
-        >
-          {/* Cart Image */}
-          <div className='relative h-48 overflow-hidden'>
-            <img
-              src={cart.image}
-              alt={cart.name}
-              className='w-full h-full object-cover transition-transform duration-300 hover:scale-105'
-            />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />
+    <div className='space-y-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+        {GOLF_CART_OPTIONS.map((cart) => {
+          const quantity = formData.selectedCarts[cart.id] || 0;
+          const isSelected = quantity > 0;
 
-            {/* Selection Indicator */}
-            <div className='absolute top-4 left-4'>
-              <input
-                type='radio'
-                name='selectedCart'
-                value={cart.id}
-                checked={formData.selectedCart === cart.id}
-                onChange={handleInputChange}
-                className='w-5 h-5 text-blue-600 bg-white border-2 border-gray-300 focus:ring-blue-500'
-              />
+          return (
+            <div
+              key={cart.id}
+              className={`relative border-2 rounded-2xl overflow-hidden transition-all duration-300 ${
+                isSelected
+                  ? 'border-blue-500 shadow-2xl ring-4 ring-blue-200'
+                  : 'border-gray-200 hover:border-gray-300 hover:shadow-xl'
+              }`}
+            >
+              {/* Cart Image */}
+              <div className='relative h-48 overflow-hidden'>
+                <img
+                  src={cart.image}
+                  alt={cart.name}
+                  className='w-full h-full object-cover transition-transform duration-300 hover:scale-105'
+                />
+                <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />
+
+                {/* Quantity Badge */}
+                {isSelected && (
+                  <div className='absolute top-4 left-4 bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold'>
+                    {quantity}
+                  </div>
+                )}
+
+                {/* Price Overlay */}
+                <div className='absolute bottom-4 left-4 text-white'>
+                  <div className='text-2xl font-bold'>${cart.basePrice}</div>
+                  <div className='text-sm opacity-90'>per night</div>
+                </div>
+              </div>
+
+              {/* Cart Info */}
+              <div className='p-6'>
+                <div className='flex items-center justify-between mb-3'>
+                  <h4 className='text-xl font-bold text-gray-800 flex items-center gap-2'>
+                    <Car className='w-6 h-6 text-blue-600' />
+                    {cart.name}
+                  </h4>
+                </div>
+
+                <div className='flex items-center text-gray-600 text-sm mb-3'>
+                  <Users className='w-4 h-4 mr-1' />
+                  {cart.seats} seats • Electric/Gas
+                </div>
+
+                <p className='text-gray-600 text-sm mb-4'>{cart.description}</p>
+
+                {/* Quantity Controls */}
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium text-gray-700'>
+                    Quantity:
+                  </span>
+                  <QuantityInput cartId={cart.id} currentQuantity={quantity} />
+                </div>
+
+                {/* Subtotal */}
+                {isSelected && (
+                  <div className='mt-3 pt-3 border-t border-gray-200'>
+                    <div className='flex justify-between items-center text-sm'>
+                      <span className='text-gray-600'>Subtotal:</span>
+                      <span className='font-bold text-gray-800'>
+                        ${cart.basePrice * quantity}/night
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
+          );
+        })}
+      </div>
 
-            {/* Price Overlay */}
-            <div className='absolute bottom-4 left-4 text-white'>
-              <div className='text-2xl font-bold'>${cart.basePrice}</div>
-              <div className='text-sm opacity-90'>per night</div>
+      {/* Selection Summary */}
+      {totalCarts > 0 && (
+        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+          <h4 className='font-medium text-blue-800 mb-2 flex items-center'>
+            <ShoppingCart className='w-4 h-4 mr-2' />
+            Cart Selection Summary
+          </h4>
+          <div className='space-y-2'>
+            {selectedCartsDetails.map((item) => (
+              <div
+                key={item.cart.id}
+                className='flex justify-between items-center text-sm text-blue-700'
+              >
+                <span>
+                  {item.quantity}x {item.cart.name}
+                </span>
+                <span>${item.subtotal}/night</span>
+              </div>
+            ))}
+            <div className='pt-2 border-t border-blue-300 flex justify-between items-center font-medium text-blue-800'>
+              <span>
+                Total: {totalCarts} cart{totalCarts > 1 ? 's' : ''}
+              </span>
+              <span>
+                $
+                {selectedCartsDetails.reduce(
+                  (sum, item) => sum + item.subtotal,
+                  0
+                )}
+                /night
+              </span>
             </div>
           </div>
-
-          {/* Cart Info */}
-          <div className='p-6'>
-            <div className='flex items-center justify-between mb-3'>
-              <h4 className='text-xl font-bold text-gray-800 flex items-center gap-2'>
-                <Car className='w-6 h-6 text-blue-600' />
-                {cart.name}
-              </h4>
-            </div>
-            <div className='flex items-center text-gray-600 text-sm mb-3'>
-              <Users className='w-4 h-4 mr-1' />
-              {cart.seats} seats • Electric/Gas
-            </div>
-            <p className='text-gray-600 text-sm'>{cart.description}</p>
-          </div>
-
-          {/* Selection Border Effect */}
-          {formData.selectedCart === cart.id && (
-            <div className='absolute inset-0 border-2 border-blue-500 rounded-2xl pointer-events-none'></div>
-          )}
         </div>
-      ))}
+      )}
+
+      {errors.selectedCarts && (
+        <p className='text-red-500 text-sm'>{errors.selectedCarts}</p>
+      )}
     </div>
   );
 
@@ -694,12 +850,9 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           {/* Golf Cart Selection */}
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Choose Your Golf Cart
+              Choose Your Golf Carts
             </h3>
             <GolfCartSelection />
-            {errors.selectedCart && (
-              <p className='text-red-500 text-sm'>{errors.selectedCart}</p>
-            )}
           </div>
 
           {/* Rental Period */}
@@ -764,14 +917,26 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
             </div>
 
             {/* Rental Duration Display */}
-            {formData.startDate && formData.endDate && (
-              <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-                <p className='text-sm text-blue-800'>
-                  <strong>Rental duration:</strong> {rentalDays} day
-                  {rentalDays > 1 ? 's' : ''}
-                  <br />
-                  <strong>Total price:</strong> ${calculatePrice}
-                </p>
+            {formData.startDate && formData.endDate && totalCarts > 0 && (
+              <div className='p-4 bg-blue-50 border border-blue-200 rounded-lg'>
+                <div className='space-y-2 text-sm text-blue-800'>
+                  <div className='flex justify-between'>
+                    <strong>Rental duration:</strong>
+                    <span>
+                      {rentalDays} night{rentalDays > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <strong>Total carts:</strong>
+                    <span>
+                      {totalCarts} cart{totalCarts > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className='flex justify-between border-t border-blue-300 pt-2 font-bold'>
+                    <span>Grand Total:</span>
+                    <span>${calculateTotalPrice}</span>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -887,9 +1052,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                     <Truck className='w-4 h-4 text-blue-600 mr-2 mt-0.5' />
                     <div className='text-sm text-blue-800'>
                       <strong>Delivery Information:</strong> Our team will
-                      deliver your golf cart to your location and provide a
-                      quick orientation. Pickup will be scheduled at your
-                      specified return time.
+                      deliver your golf cart{totalCarts > 1 ? 's' : ''} to your
+                      location and provide a quick orientation
+                      {totalCarts > 1 ? ' for each cart' : ''}. Pickup will be
+                      scheduled at your specified return time.
                     </div>
                   </div>
                 </div>
@@ -972,25 +1138,32 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
             </span>
             <div className='flex items-center mt-1'>
               <span className='text-3xl font-light'>
-                ${calculatePrice.toFixed(2)}
+                ${calculateTotalPrice.toFixed(2)}
               </span>
               <span className='ml-2 text-sm bg-blue-800 px-2 py-1 rounded'>
-                {rentalDays} day{rentalDays > 1 ? 's' : ''}
+                {rentalDays} night{rentalDays > 1 ? 's' : ''}
               </span>
             </div>
 
             {/* Price breakdown */}
             <div className='text-xs text-gray-400 mt-2 space-y-1'>
-              <div className='text-blue-400 font-medium'>
-                {selectedCartData.name}
-              </div>
-              <div>
-                ${selectedCartData.basePrice}/day × {rentalDays} day
-                {rentalDays > 1 ? 's' : ''} = ${calculatePrice}
-              </div>
-              <div className='text-cyan-400'>
-                Includes: Free delivery & pickup, 24/7 support, safety equipment
-              </div>
+              {totalCarts > 0 && (
+                <>
+                  <div className='text-blue-400 font-medium'>
+                    {totalCarts} cart{totalCarts > 1 ? 's' : ''} selected
+                  </div>
+                  {selectedCartsDetails.map((item) => (
+                    <div key={item.cart.id}>
+                      {item.quantity}x {item.cart.name}: ${item.cart.basePrice}
+                      /night × {rentalDays} = ${item.subtotal * rentalDays}
+                    </div>
+                  ))}
+                  <div className='text-cyan-400'>
+                    Includes: Free delivery & pickup, 24/7 support, safety
+                    equipment
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -1006,11 +1179,13 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
 
             <button
               type='submit'
-              disabled={isSubmitting}
+              disabled={isSubmitting || totalCarts === 0}
               className='px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
             >
               <Car className='h-4 w-4 mr-2' />
-              {isSubmitting ? 'Booking...' : 'Book Golf Cart'}
+              {isSubmitting
+                ? 'Booking...'
+                : `Book ${totalCarts || 0} Cart${totalCarts !== 1 ? 's' : ''}`}
             </button>
           </div>
         </div>

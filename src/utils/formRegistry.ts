@@ -265,20 +265,6 @@ registerForm({
   }),
 });
 
-// AtvRideForm Form
-registerForm({
-  name: 'AtvRideForm',
-  component: () => import('@/UI/components/forms/AtvRideForm'),
-  servicePatterns: ['atv-excursions'],
-  propsMapper: (service, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('AtvRideForm Tour:', data)),
-    onCancel,
-  }),
-});
-
 // Saona Island Form
 registerForm({
   name: 'SaonaIslandForm',
@@ -326,6 +312,20 @@ registerForm({
   name: 'private-catamaran',
   component: () => import('@/UI/components/forms/CatamaranForm'),
   servicePatterns: ['private-catamaran'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit ||
+      ((data: any) => console.log('private-catamaran:', data)),
+    onCancel,
+  }),
+});
+
+// AtvRideForm Form
+registerForm({
+  name: 'AtvRideForm',
+  component: () => import('@/UI/components/forms/AtvRideForm'),
+  servicePatterns: ['atv-excursions'],
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,
     onSubmit:
