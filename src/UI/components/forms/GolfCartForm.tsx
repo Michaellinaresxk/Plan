@@ -121,10 +121,10 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
 
 // Location options
 const DELIVERY_LOCATIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'punta-cana-resorts', name: 'Puntacana Resorts' },
+  { id: 'cap-cana', name: 'Capcana' },
   { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'punta-village', name: 'Puntacana Village' },
   { id: 'uvero-alto', name: 'Uvero Alto' },
   { id: 'macao', name: 'Macao Beach Area' },
   { id: 'other', name: 'Other (Specify below)' },
@@ -137,7 +137,7 @@ const RENTAL_REQUIREMENTS = [
   'Drive responsibly and follow resort/community rules',
   'Respect local driving laws and speed limits',
   'Children must be supervised at all times while in cart',
-  'Available throughout Punta Cana area',
+  'Available throughout Puntacana area',
 ];
 
 const WHAT_TO_EXPECT = [
@@ -148,11 +148,9 @@ const WHAT_TO_EXPECT = [
 ];
 
 const INCLUDED_FEATURES = [
-  'Fully charged battery',
   'Full fuel tank (if applicable)',
   'Free delivery & pickup',
   '24/7 support',
-  'Safety equipment',
   'Quick orientation',
 ];
 
@@ -518,7 +516,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
             {/* Price Overlay */}
             <div className='absolute bottom-4 left-4 text-white'>
               <div className='text-2xl font-bold'>${cart.basePrice}</div>
-              <div className='text-sm opacity-90'>per day</div>
+              <div className='text-sm opacity-90'>per night</div>
             </div>
           </div>
 
@@ -734,20 +732,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                     </p>
                   )}
                 </div>
-
-                <div>
-                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                    <Clock className='w-4 h-4 mr-2 text-blue-700' />
-                    Delivery Time
-                  </label>
-                  <input
-                    type='time'
-                    name='startTime'
-                    value={formData.startTime}
-                    onChange={handleInputChange}
-                    className='w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50'
-                  />
-                </div>
               </div>
 
               {/* End Date & Time */}
@@ -775,20 +759,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                       {errors.endDate}
                     </p>
                   )}
-                </div>
-
-                <div>
-                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                    <Clock className='w-4 h-4 mr-2 text-blue-700' />
-                    Pickup Time
-                  </label>
-                  <input
-                    type='time'
-                    name='endTime'
-                    value={formData.endTime}
-                    onChange={handleInputChange}
-                    className='w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50'
-                  />
                 </div>
               </div>
             </div>

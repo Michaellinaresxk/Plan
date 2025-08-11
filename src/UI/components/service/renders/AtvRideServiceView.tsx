@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ChevronRight,
   MapPin,
@@ -220,97 +220,213 @@ const HeroSection = ({ onBookNow }) => {
 // Updated Photo Gallery for ATV Adventures
 const PhotoGallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('all');
 
   const photos = [
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595136/6_xkqjqa.jpg',
       alt: 'ATV jungle adventure',
       caption: 'Explore lush jungle trails',
+      category: 'atv',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595137/5_qkapnv.jpg',
       alt: 'Beach ATV riding',
       caption: 'Race along pristine beaches',
+      category: 'buggies',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595138/3_xanwzg.jpg',
-      alt: 'Tropical cenote',
+      alt: 'Buggy adventure',
       caption: 'Discover hidden cenotes',
+      category: '',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754596293/4_enh3k1.jpg',
-      alt: 'ATV sunset',
+      alt: 'Polaris sunset',
       caption: 'Sunset adventures',
+      category: 'buggies',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
-      alt: 'Tropical landscape',
+      alt: 'Polaris landscape',
       caption: 'Breathtaking landscapes',
+      category: 'atv',
     },
   ];
+
+  // Configuración de categorías
+  const categories = [
+    { id: 'all', label: 'All Vehicles', count: photos.length },
+    {
+      id: 'atv',
+      label: 'ATV',
+      count: photos.filter((p) => p.category === 'atv').length,
+    },
+    {
+      id: 'buggies',
+      label: 'Buggies',
+      count: photos.filter((p) => p.category === 'buggies').length,
+    },
+    {
+      id: 'polaris',
+      label: 'Polaris',
+      count: photos.filter((p) => p.category === 'polaris').length,
+    },
+  ];
+
+  // Filtrar fotos según categoría activa
+  const filteredPhotos = useMemo(() => {
+    return activeCategory === 'all'
+      ? photos
+      : photos.filter((photo) => photo.category === activeCategory);
+  }, [activeCategory, photos]);
+
+  const handleCategoryChange = (categoryId) => {
+    setActiveCategory(categoryId);
+  };
+
+  const handleImageClick = (photo) => {
+    setSelectedImage(photo);
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+  };
 
   return (
     <section className='py-16 bg-white'>
       <div className='max-w-7xl mx-auto px-4'>
+        {/* Header */}
         <div className='text-center mb-12'>
           <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
             Adventure <span className='text-green-500'>Gallery</span>
           </h2>
-          <p className='text-lg text-gray-600'>
+          <p className='text-lg text-gray-600 mb-8'>
             See what awaits you on this tropical adventure
           </p>
+
+          {/* Filtros */}
+          <div className='flex flex-wrap justify-center gap-2 md:gap-4'>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryChange(category.id)}
+                className={`
+                  px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300
+                  ${
+                    activeCategory === category.id
+                      ? 'bg-green-500 text-white shadow-lg transform scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                  }
+                `}
+                aria-pressed={activeCategory === category.id}
+              >
+                {category.label}
+                <span className='ml-2 text-xs opacity-75'>
+                  ({category.count})
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-          {photos.map((photo, idx) => (
+        {/* Grid de fotos - 2 columnas en móvil, 4 en desktop */}
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4'>
+          {filteredPhotos.map((photo, idx) => (
             <div
-              key={idx}
-              className={`group relative overflow-hidden rounded-xl cursor-pointer ${
-                idx === 0 ? 'md:col-span-2 md:row-span-2' : ''
-              }`}
-              onClick={() => setSelectedImage(photo)}
+              key={`${photo.category}-${idx}`}
+              className={`
+                group relative overflow-hidden rounded-xl cursor-pointer
+                transition-all duration-300 hover:shadow-xl
+                ${
+                  idx === 0 && filteredPhotos.length > 3
+                    ? 'md:col-span-2 md:row-span-2'
+                    : ''
+                }
+              `}
+              onClick={() => handleImageClick(photo)}
             >
               <div
-                className={`${
-                  idx === 0 ? 'h-full min-h-[300px]' : 'aspect-square'
-                }`}
+                className={`
+                  ${
+                    idx === 0 && filteredPhotos.length > 3
+                      ? 'h-full min-h-[200px] md:min-h-[300px]'
+                      : 'aspect-square'
+                  }
+                `}
               >
                 <img
                   src={photo.src}
                   alt={photo.alt}
                   className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+                  loading='lazy'
                 />
               </div>
+
+              {/* Overlay con caption */}
               <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                 <div className='absolute bottom-4 left-4 text-white'>
-                  <p className='font-semibold text-sm md:text-base'>
+                  <p className='font-semibold text-xs md:text-base'>
                     {photo.caption}
+                  </p>
+                  <p className='text-xs opacity-80 mt-1 capitalize'>
+                    {photo.category.replace('_', ' ')}
                   </p>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Mensaje cuando no hay fotos */}
+        {filteredPhotos.length === 0 && (
+          <div className='text-center py-12'>
+            <p className='text-gray-500 text-lg'>
+              No photos found for this category
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Lightbox */}
+      {/* Lightbox Modal */}
       {selectedImage && (
         <div
           className='fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4'
-          onClick={() => setSelectedImage(null)}
+          onClick={closeLightbox}
+          role='dialog'
+          aria-modal='true'
+          aria-labelledby='lightbox-title'
         >
           <button
-            className='absolute top-4 right-4 text-white hover:text-gray-300 z-50'
-            onClick={() => setSelectedImage(null)}
+            className='absolute top-4 right-4 text-white hover:text-gray-300 z-50 p-2 rounded-full hover:bg-white/10 transition-colors'
+            onClick={closeLightbox}
+            aria-label='Close image'
           >
             <X className='w-8 h-8' />
           </button>
-          <img
-            src={selectedImage.src}
-            alt={selectedImage.alt}
-            className='max-w-full max-h-[90vh] rounded-lg'
-            onClick={(e) => e.stopPropagation()}
-          />
+
+          <div className='relative'>
+            <img
+              src={selectedImage.src}
+              alt={selectedImage.alt}
+              className='max-w-full max-h-[90vh] rounded-lg'
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Info overlay en lightbox */}
+            <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg'>
+              <h3
+                id='lightbox-title'
+                className='text-white font-semibold text-lg mb-2'
+              >
+                {selectedImage.caption}
+              </h3>
+              <p className='text-gray-300 capitalize'>
+                {selectedImage.category.replace('_', ' ')}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </section>

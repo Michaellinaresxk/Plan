@@ -16,24 +16,24 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Lux Punta Cana - Premium Luxury Services & Concierge',
-    template: '%s | Lux Punta Cana',
+    default: 'Lux Puntacana',
+    template: '%s | Lux Puntacana',
   },
   description:
-    'Experience luxury vacations in Punta Cana, Dominican Republic. Premium concierge services, private chefs, exclusive excursions, and personalized experiences for resort guests. 24/7 local expert team.',
+    'Experience luxury vacations in Puntacana, Dominican Republic. Premium concierge services, private chefs, exclusive excursions, and personalized experiences for resort guests. 24/7 local expert team.',
   keywords: [
-    'Punta Cana luxury services',
+    'Puntacana luxury services',
     'Dominican Republic concierge',
     'premium vacation services',
     'private chef Punta Cana',
     'exclusive excursions',
     'luxury resort services',
     'personalized vacation experiences',
-    'Punta Cana resort concierge',
+    'Puntacana resort concierge',
   ],
-  authors: [{ name: 'Lux Punta Cana' }],
-  creator: 'Lux Punta Cana',
-  publisher: 'Lux Punta Cana',
+  authors: [{ name: 'Lux Puntacana' }],
+  creator: 'Lux Puntacana',
+  publisher: 'Lux Puntacana',
   robots: {
     index: true,
     follow: true,
@@ -49,8 +49,8 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://luxpuntacana.com',
-    siteName: 'Lux Punta Cana',
-    title: 'Lux Punta Cana - Premium Luxury Services & Concierge',
+    siteName: 'Lux Puntacana',
+    title: 'Lux Puntacana - Premium Luxury Services & Concierge',
     description:
       'Experience luxury vacations in Punta Cana with our premium concierge services, private chefs, and exclusive excursions. Personalized experiences for resort guests.',
     images: [
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lux Punta Cana - Premium Luxury Services',
+    title: 'Lux Puntacana - Premium Luxury Services',
     description:
       'Experience luxury vacations in Punta Cana with premium concierge services and personalized experiences.',
     images: ['https://luxpuntacana.com/images/punta-cana-luxury-hero.jpg'],

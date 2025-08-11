@@ -23,7 +23,9 @@ import {
   Waves,
   Calendar,
   Play,
+  Camera,
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface HorseBackRidingServiceViewProps {
   service: Service;
@@ -125,79 +127,101 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
   );
 };
 
-// Photo Gallery Component
-const PhotoGallery: React.FC = () => {
+// Gallery Section
+const PhotoGallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-
-  const photos = [
+  const GALLERY_IMAGES = [
     {
+      id: 1,
       src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/08/image00011-1536x1017.jpeg',
-      alt: 'Beach horseback riding',
-      caption: 'Ride along pristine Macao Beach',
+      alt: 'Golf cart on tropical beach',
     },
     {
+      id: 2,
       src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00013-scaled.jpeg',
-      alt: 'Sunset riding',
-      caption: 'Magical sunset experiences',
+      alt: 'Resort exploration',
     },
     {
+      id: 3,
       src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00021-scaled.jpeg',
-      alt: 'Ocean views',
-      caption: 'Breathtaking ocean views',
+      alt: 'Family fun',
+    },
+    {
+      id: 4,
+      src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00012-scaled.jpeg',
+      alt: 'Family fun',
     },
   ];
-
   return (
-    <section className='py-8 bg-white'>
-      <div className='max-w-7xl mx-auto px-4'>
-        <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
-          {photos.map((photo, idx) => (
-            <div
-              key={idx}
-              className={`group relative overflow-hidden rounded-xl cursor-pointer ${
-                idx === 0 ? 'md:col-span-2 md:row-span-2' : ''
-              }`}
-              onClick={() => setSelectedImage(photo)}
+    <section className='py-20 bg-gradient-to-br from-slate-50 to-teal-50'>
+      <div className='max-w-7xl mx-auto px-6'>
+        <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
+          {GALLERY_IMAGES.map((image, index) => (
+            <motion.div
+              key={image.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+              className='group relative cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300'
+              onClick={() => setSelectedImage(index)}
             >
-              <div className={`${idx === 0 ? 'h-full' : 'aspect-square'}`}>
+              <div className='aspect-square overflow-hidden'>
                 <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+                  src={image.src}
+                  alt={image.alt}
+                  className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
                 />
               </div>
-              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                <div className='absolute bottom-4 left-4 text-white'>
-                  <p className='font-semibold text-sm md:text-base'>
-                    {photo.caption}
-                  </p>
+              <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+              <div className='absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                <h3 className='font-bold text-sm md:text-base'>
+                  {image.title}
+                </h3>
+              </div>
+              <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                <div className='bg-white/20 backdrop-blur-sm rounded-full p-2 md:p-3'>
+                  <Camera className='w-4 h-4 md:w-6 md:h-6 text-white' />
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
 
-      {/* Lightbox */}
-      {selectedImage && (
-        <div
-          className='fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4'
-          onClick={() => setSelectedImage(null)}
-        >
-          <button
-            className='absolute top-4 right-4 text-white hover:text-gray-300 z-50'
-            onClick={() => setSelectedImage(null)}
-          >
-            <X className='w-8 h-8' />
-          </button>
-          <img
-            src={selectedImage.src}
-            alt={selectedImage.alt}
-            className='max-w-full max-h-[90vh] rounded-lg'
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
+        {/* Gallery Modal */}
+        <AnimatePresence>
+          {selectedImage !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className='fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'
+              onClick={() => setSelectedImage(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+                className='relative max-w-4xl w-full'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img
+                  src={GALLERY_IMAGES[selectedImage].src}
+                  alt={GALLERY_IMAGES[selectedImage].alt}
+                  className='w-full h-auto rounded-2xl'
+                />
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className='absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full p-2 text-white hover:bg-white/30 transition-colors'
+                >
+                  <X className='w-6 h-6' />
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 };
