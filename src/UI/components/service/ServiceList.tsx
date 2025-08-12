@@ -28,7 +28,6 @@ interface EnhancedServiceListProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Optimized service categories with better UX
 const serviceCategories = [
   {
     id: 'all',

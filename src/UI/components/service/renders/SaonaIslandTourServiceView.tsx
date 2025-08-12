@@ -27,6 +27,16 @@ import {
   Palmtree,
   Compass,
   Sparkles,
+  Car,
+  ShoppingBag,
+  Music,
+  Timer,
+  Sunset,
+  CloudRain,
+  AlertTriangle,
+  Shirt,
+  DollarSign,
+  Camera as CameraIcon,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BookingModal from '../../modal/BookingModal';
@@ -50,6 +60,151 @@ interface GalleryImage {
   alt: string;
   title: string;
 }
+
+// ✅ Detailed itinerary data
+interface ItineraryStep {
+  time: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  duration?: string;
+  highlights?: string[];
+}
+
+const ITINERARY_STEPS: ItineraryStep[] = [
+  {
+    time: '7:00 - 7:45 AM',
+    title: 'Hotel Pickup',
+    description:
+      'Recogida en tu hotel o resort. Nuestro equipo te llevará al punto de encuentro principal.',
+    icon: Car,
+    duration: '30-45 min',
+    highlights: ['Transporte cómodo', 'Guía local', 'Recogida puntual'],
+  },
+  {
+    time: '8:00 - 8:30 AM',
+    title: 'Meeting Point & Options',
+    description:
+      'Llegada al punto de encuentro donde puedes elegir transporte regular grupal o upgrade a transporte privado para llegar más rápido.',
+    icon: MapPin,
+    highlights: [
+      'Opción de transporte privado',
+      'Menos espera',
+      'Llegada más rápida',
+    ],
+  },
+  {
+    time: '8:30 - 9:00 AM',
+    title: 'Souvenir Stop',
+    description:
+      'Parada en tienda local para comprar souvenirs, usar el baño y prepararse para la aventura.',
+    icon: ShoppingBag,
+    duration: '15-20 min',
+    highlights: [
+      'Artesanías locales',
+      'Servicios sanitarios',
+      'Últimas compras',
+    ],
+  },
+  {
+    time: '9:30 - 11:00 AM',
+    title: 'Catamaran Experience',
+    description:
+      'Viaje en catamarán con música, animación, bailarines y bebidas incluidas (refresco, hielo, ron). Los fotógrafos ofrecen servicios adicionales.',
+    icon: Music,
+    duration: '1.5 horas',
+    highlights: [
+      'Música y animación',
+      'Bebidas incluidas',
+      'Bailarines profesionales',
+      'Fotógrafos (servicio adicional)',
+    ],
+  },
+  {
+    time: '11:00 - 11:15 AM',
+    title: 'Natural Pool Stop',
+    description:
+      'Parada de 15 minutos en la famosa piscina natural con aguas cristalinas y estrellas de mar.',
+    icon: Waves,
+    duration: '15 min',
+    highlights: ['Aguas cristalinas', 'Estrellas de mar', 'Fotos perfectas'],
+  },
+  {
+    time: '11:30 AM - 3:00 PM',
+    title: 'Saona Island Paradise',
+    description:
+      'Llegada a Isla Saona. Disfruta del buffet típico dominicano con bebidas, área de recreo con tumbonas en la playa.',
+    icon: Palmtree,
+    duration: '3.5 horas',
+    highlights: [
+      'Buffet dominicano',
+      'Bebidas gaseosas, ron, agua',
+      'Tumbonas en la playa',
+      'Tiempo libre',
+      'Servicios adicionales externos',
+    ],
+  },
+  {
+    time: '3:00 - 4:30 PM',
+    title: 'Speedboat Return',
+    description:
+      'Regreso en lancha rápida (sin refrigerio) directamente al punto de partida.',
+    icon: Anchor,
+    duration: '1.5 horas',
+    highlights: [
+      'Viaje más rápido',
+      'Vistas espectaculares',
+      'Llegada directa',
+    ],
+  },
+  {
+    time: '5:00 - 6:00 PM',
+    title: 'Return to Hotel',
+    description:
+      'Transporte de regreso a tu hotel o resort, llegada aproximada entre 5:00 y 6:00 PM.',
+    icon: Sunset,
+    duration: '30-60 min',
+    highlights: [
+      'Transporte incluido',
+      'Llegada cómoda',
+      'Día completo terminado',
+    ],
+  },
+];
+
+// What to bring items
+const WHAT_TO_BRING = [
+  {
+    icon: Shirt,
+    title: 'Toalla',
+    description: 'Para secarte después de nadar',
+  },
+  {
+    icon: '',
+    title: 'Chanclas',
+    description: 'Calzado cómodo para la playa',
+  },
+  {
+    icon: Sun,
+    title: 'Gafas de Sol',
+    description: 'Protección esencial del sol caribeño',
+  },
+  {
+    icon: DollarSign,
+    title: 'Efectivo',
+    description: 'Para souvenirs, propinas y servicios adicionales',
+  },
+  {
+    icon: CameraIcon,
+    title: 'Cámara',
+    description: 'Para capturar momentos inolvidables',
+  },
+  {
+    icon: Shirt,
+    title: 'Protector Solar',
+    description: 'SPF 30+ recomendado',
+  },
+];
 
 // Simple gallery data
 const galleryImages: GalleryImage[] = [
@@ -83,17 +238,19 @@ const galleryImages: GalleryImage[] = [
 const tourPackage: TourPackage = {
   id: 'classic',
   name: 'Excursión Isla Saona',
-  price: 75,
-  duration: '8 horas',
+  price: 55,
+  duration: '8-9 horas',
   includes: [
     'Transporte desde tu hotel',
-    'Paseo en lancha rápida',
-    'Almuerzo buffet típico',
+    'Paseo en catamaran y lancha rápida',
+    'Almuerzo buffet típico dominicano',
     'Parada en piscina natural',
     'Guía local experimentado',
     'Tiempo libre en la playa',
+    'Bebidas incluidas (refresco, ron, agua)',
+    'Animación y música',
   ],
-  maxGuests: 50,
+  maxGuests: 15,
 };
 
 // Simple Video Hero
@@ -201,13 +358,27 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
             excursión.
           </p>
 
+          {/* Pricing info */}
+          <div className='bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-6 inline-block'>
+            <p className='text-white text-lg'>
+              Desde{' '}
+              <span className='text-3xl font-bold text-cyan-400'>$55</span>
+              <span className='text-sm text-white/80 ml-1'>
+                por persona + transporte
+              </span>
+            </p>
+            <p className='text-xs text-white/70 mt-1'>
+              Niños 0-4 años gratis • Máximo 15 personas
+            </p>
+          </div>
+
           {/* Simple CTA */}
           <button
             onClick={onBookClick}
             className='bg-cyan-600 hover:bg-cyan-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg flex items-center gap-3 mx-auto transition-all duration-300 shadow-lg'
           >
             <Anchor className='w-5 h-5' />
-            Ver Excursión
+            Reservar Excursión
             <ArrowRight className='w-5 h-5' />
           </button>
 
@@ -219,10 +390,215 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
             </div>
             <span>•</span>
             <span>Más de 1,000 excursionistas</span>
+            <span>•</span>
+            <span>Guías profesionales</span>
           </div>
         </div>
       </div>
     </div>
+  );
+};
+
+// ✅ New Itinerary Section
+const ItinerarySection: React.FC = () => {
+  return (
+    <section className='w-full py-12'>
+      <div className='text-center mb-10'>
+        <h2 className='text-2xl sm:text-3xl font-bold text-slate-800 mb-3'>
+          Itinerario Completo
+        </h2>
+        <p className='text-slate-600'>
+          Conoce paso a paso tu aventura en Isla Saona
+        </p>
+      </div>
+
+      <div className='max-w-4xl mx-auto'>
+        <div className='relative'>
+          {/* Timeline line */}
+          <div className='absolute left-4 md:left-1/2 md:transform md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-blue-200'></div>
+
+          {ITINERARY_STEPS.map((step, index) => {
+            const Icon = step.icon;
+            const isEven = index % 2 === 0;
+
+            return (
+              <div
+                key={index}
+                className={`relative flex items-start mb-8 ${
+                  isEven ? 'md:flex-row' : 'md:flex-row-reverse'
+                }`}
+              >
+                {/* Timeline dot */}
+                <div className='absolute left-4 md:left-1/2 md:transform md:-translate-x-1/2 w-3 h-3 bg-blue-600 rounded-full border-4 border-white shadow-lg z-10'></div>
+
+                {/* Content */}
+                <div
+                  className={`ml-12 md:ml-0 md:w-1/2 ${
+                    isEven ? 'md:pr-8' : 'md:pl-8'
+                  }`}
+                >
+                  <div
+                    className={`bg-white rounded-lg shadow-lg p-6 border border-blue-100 ${
+                      !isEven ? 'md:text-right' : ''
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center mb-3 ${
+                        !isEven ? 'md:justify-end' : ''
+                      }`}
+                    >
+                      <div
+                        className={`w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center ${
+                          !isEven ? 'md:order-2 md:ml-3' : 'mr-3'
+                        }`}
+                      >
+                        <Icon className='w-5 h-5 text-blue-600' />
+                      </div>
+                      <div>
+                        <h3 className='font-semibold text-gray-800 text-lg'>
+                          {step.title}
+                        </h3>
+                        <div className='flex items-center gap-2 text-sm text-blue-600'>
+                          <Clock className='w-3 h-3' />
+                          <span>{step.time}</span>
+                          {step.duration && (
+                            <>
+                              <span>•</span>
+                              <span>{step.duration}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className='text-gray-600 mb-4 leading-relaxed'>
+                      {step.description}
+                    </p>
+
+                    {step.highlights && (
+                      <div className='space-y-1'>
+                        {step.highlights.map((highlight, idx) => (
+                          <div
+                            key={idx}
+                            className={`flex items-center text-sm text-green-700 ${
+                              !isEven ? 'md:justify-end' : ''
+                            }`}
+                          >
+                            <Check className='w-3 h-3 mr-2 text-green-500 flex-shrink-0' />
+                            <span>{highlight}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ✅ What to Bring Section
+const WhatToBringSection: React.FC = () => {
+  return (
+    <section className='w-full py-12 bg-blue-50'>
+      <div className='text-center mb-10'>
+        <h2 className='text-2xl sm:text-3xl font-bold text-slate-800 mb-3'>
+          Qué Llevar
+        </h2>
+        <p className='text-slate-600'>
+          Prepárate para el día perfecto en el paraíso
+        </p>
+      </div>
+
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto'>
+        {WHAT_TO_BRING.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <div
+              key={index}
+              className='bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300'
+            >
+              <div className='w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4'>
+                {/* <Icon className='w-6 h-6 text-blue-600' /> */}
+              </div>
+              <h3 className='text-lg font-semibold text-slate-800 mb-2'>
+                {item.title}
+              </h3>
+              <p className='text-slate-600 text-sm leading-relaxed'>
+                {item.description}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className='mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-2xl mx-auto'>
+        <div className='flex items-start'>
+          <Sun className='w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5' />
+          <div>
+            <h4 className='font-medium text-yellow-800 mb-1'>
+              Consejo Importante
+            </h4>
+            <p className='text-sm text-yellow-700'>
+              Lleva ropa cómoda y traje de baño. El protector solar es esencial
+              - ¡el sol caribeño es fuerte! No olvides efectivo para propinas y
+              souvenirs locales.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ✅ Weather Disclaimer Section
+const WeatherDisclaimerSection: React.FC = () => {
+  return (
+    <section className='w-full py-8'>
+      <div className='bg-slate-100 border border-slate-200 rounded-lg p-6'>
+        <div className='flex items-start'>
+          <div className='w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center mr-4 flex-shrink-0'>
+            <CloudRain className='w-6 h-6 text-slate-600' />
+          </div>
+          <div className='flex-1'>
+            <h3 className='font-semibold text-slate-800 mb-3 text-lg flex items-center'>
+              <AlertTriangle className='w-5 h-5 text-slate-600 mr-2' />
+              Política de Cancelaciones por Clima
+            </h3>
+            <div className='space-y-3 text-slate-700'>
+              <p className='leading-relaxed'>
+                <strong>La excursión NO se cancela por lluvia.</strong> El
+                Caribe tropical puede tener lluvias breves que no afectan la
+                experiencia. Nuestros catamaranes y áreas de la isla están
+                preparados para condiciones climáticas normales.
+              </p>
+              <p className='leading-relaxed'>
+                La excursión únicamente se cancela en casos de{' '}
+                <strong>condiciones climáticas extremas</strong>
+                que representen un riesgo para la seguridad de los pasajeros,
+                como:
+              </p>
+              <ul className='list-disc list-inside space-y-1 ml-4 text-sm'>
+                <li>Tormentas tropicales o huracanes</li>
+                <li>Condiciones marítimas peligrosas</li>
+                <li>Alertas meteorológicas oficiales</li>
+              </ul>
+              <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+                <p className='text-blue-800 text-sm'>
+                  <strong>Garantía:</strong> Si cancelamos por condiciones
+                  extremas, te ofrecemos reembolso completo o cambio de fecha
+                  sin costo adicional.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -245,7 +621,7 @@ const SimpleGallery: React.FC = () => {
   };
 
   return (
-    <section className='w-full  rounded-lg p-4 sm:p-6 '>
+    <section className='w-full rounded-lg p-4 sm:p-6'>
       {/* Simple Header */}
       <div className='text-center mb-6'>
         <h2 className='text-2xl sm:text-3xl font-bold text-slate-800 mb-2'>
@@ -254,7 +630,7 @@ const SimpleGallery: React.FC = () => {
         <p className='text-slate-600'>Un vistazo a lo que vas a descubrir</p>
       </div>
 
-      {/* Simple Grid - 3 columns max */}
+      {/* Simple Grid - 4 columns */}
       <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
         {galleryImages.map((image, index) => (
           <div
@@ -404,14 +780,16 @@ const TourInformation: React.FC = () => {
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-3 text-blue-700 text-sm'>
             <div className='space-y-2'>
-              <p>• Recogida en hoteles: 7:00 AM - 8:30 AM</p>
-              <p>• Regreso aproximado: 5:00 PM</p>
+              <p>• Recogida en hoteles: 7:00 AM - 7:45 AM</p>
+              <p>• Regreso aproximado: 5:00 PM - 6:00 PM</p>
               <p>• Incluye almuerzo y bebidas</p>
+              <p>• Máximo 15 personas por grupo</p>
             </div>
             <div className='space-y-2'>
-              <p>• Llevar: protector solar, toalla, cámara</p>
-              <p>• Ropa cómoda y traje de baño</p>
-              <p>• Actividad apta para toda la familia</p>
+              <p>• Edad mínima: Sin restricciones (bebés bienvenidos)</p>
+              <p>• No apta para mayores de 75 años</p>
+              <p>• Ropa cómoda y traje de baño recomendado</p>
+              <p>• Actividad familiar</p>
             </div>
           </div>
         </div>
@@ -428,7 +806,7 @@ const SpecialBanner = ({ onBookClick }) => {
       <div className='absolute inset-0'>
         <img
           src='https://puntacanaexcursions.online/wp-content/uploads/2024/09/saona-sky-scaled.jpg'
-          alt='Horseback riding experience'
+          alt='Saona Island experience'
           className='w-full h-full object-cover'
         />
         <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent' />
@@ -437,36 +815,36 @@ const SpecialBanner = ({ onBookClick }) => {
       {/* Content */}
       <div className='relative z-10 max-w-6xl mx-auto px-4'>
         <div className='max-w-2xl'>
-          <div className='inline-flex items-center gap-2 bg-cyan-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-amber-400/30'>
+          <div className='inline-flex items-center gap-2 bg-cyan-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-cyan-400/30'>
             <Sparkles className='w-4 h-4 text-cyan-400' />
             <span className='text-cyan-200 text-sm font-medium'>
-              Limited Time Offer
+              Experiencia Premium
             </span>
           </div>
 
           <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
-            Create Memories That
-            <span className='block text-cyan-400'>Last a Lifetime</span>
+            Crea Recuerdos Que
+            <span className='block text-cyan-400'>Durarán Toda la Vida</span>
           </h2>
 
           <p className='text-lg text-white/90 mb-8'>
-            Join over 800+ happy riders who've experienced the magic of Macao
-            Beach on horseback. Our gentle horses and expert guides ensure a
-            safe, unforgettable adventure for riders of all levels.
+            Únete a más de 1,000 viajeros que han experimentado la magia de Isla
+            Saona. Nuestros guías expertos y catamaranes cómodos aseguran una
+            aventura segura e inolvidable para toda la familia.
           </p>
 
           <div className='flex flex-wrap gap-6 mb-8'>
             <div className='flex items-center gap-2 text-white'>
               <Heart className='w-5 h-5 text-red-400' />
-              <span>Family Friendly</span>
+              <span>Familiar</span>
             </div>
             <div className='flex items-center gap-2 text-white'>
               <Shield className='w-5 h-5 text-green-400' />
-              <span>100% Safe</span>
+              <span>100% Seguro</span>
             </div>
             <div className='flex items-center gap-2 text-white'>
               <Star className='w-5 h-5 text-amber-400' />
-              <span>Top Rated</span>
+              <span>Mejor Valorado</span>
             </div>
           </div>
 
@@ -474,7 +852,7 @@ const SpecialBanner = ({ onBookClick }) => {
             onClick={onBookClick}
             className='bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
           >
-            Book Now
+            Reservar Ahora
           </button>
         </div>
       </div>
@@ -500,28 +878,25 @@ const BannersSection: React.FC<{
   };
   const DECORATION_BANNERS = [
     {
-      id: 'romantic',
-      title: 'Romantic Moments',
-      subtitle: 'Candlelit elegance for intimate celebrations',
+      id: 'natural-pool',
+      title: 'Piscina Natural',
+      subtitle: 'Aguas cristalinas con estrellas de mar en su hábitat natural',
       image:
         'https://puntacanaexcursions.online/wp-content/uploads/2024/09/saaoaaa.jpeg',
-      color: 'from-rose-300/60 to-pink-400/60',
     },
     {
-      id: 'birthday',
-      title: 'Birthday Magic',
-      subtitle: 'Vibrant celebrations that create lasting memories',
+      id: 'catamaran',
+      title: 'Experiencia en Catamarán',
+      subtitle: 'Música, animación y bebidas mientras navegas hacia el paraíso',
       image:
         'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island-scaled.jpg',
-      color: 'from-indigo-300/60 to-purple-400/60',
     },
     {
-      id: 'poolside',
-      title: 'Poolside Paradise',
-      subtitle: 'Transform your pool area into a celebration oasis',
+      id: 'beach-paradise',
+      title: 'Paraíso Playero',
+      subtitle: 'Tumbonas, buffet dominicano y tiempo libre en arena blanca',
       image:
         'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island-puj.png',
-      color: 'from-teal-300/60 to-cyan-400/60',
     },
   ] as const;
 
@@ -532,7 +907,6 @@ const BannersSection: React.FC<{
     onBookClick: () => void;
   }> = ({ banner, reverse, onBookClick }) => (
     <motion.div
-      // variants={fadeInUp}
       className={`grid lg:grid-cols-2 gap-12 items-center ${
         reverse ? 'lg:grid-flow-col-dense' : ''
       }`}
@@ -548,9 +922,6 @@ const BannersSection: React.FC<{
           alt={banner.title}
           className='w-full h-full object-cover'
         />
-        {/* <div
-          className={`absolute inset-0 bg-gradient-to-r ${banner.color}`}
-        ></div> */}
       </div>
 
       {/* Content */}
@@ -620,16 +991,28 @@ const SaonaIslandTourServiceView: React.FC = ({ service }) => {
       <IslandHero onBookClick={handleBookNow} />
 
       {/* Main content - Full width responsive */}
-      <div className='w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12  mx-auto'>
+      <div className='w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12 mx-auto'>
         {/* Compact Gallery */}
         <SimpleGallery />
+
         {/* Island Experience */}
         <IslandExperience />
+
+        {/* ✅ What to Bring Section */}
+        <WhatToBringSection />
+
         <BannersSection onBookClick={handleBookNow} />
+
         <SpecialBanner onBookClick={handleBookNow} />
+
+        {/* ✅ New Itinerary Section */}
+        <ItinerarySection />
 
         {/* Practical Information */}
         <TourInformation />
+
+        {/* ✅ Weather Disclaimer */}
+        <WeatherDisclaimerSection />
       </div>
 
       {/* Booking Modal */}

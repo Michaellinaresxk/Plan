@@ -1,724 +1,229 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from '@/lib/i18n/client';
+import { Service } from '@/types/type';
+import { ServiceData, ServiceExtendedDetails } from '@/types/services';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import {
-  ChevronRight,
-  MapPin,
+  Car,
   Clock,
-  Shield,
-  Star,
-  Check,
-  ArrowRight,
-  X,
-  Sparkles,
-  Heart,
+  MapPin,
   Users,
+  Calendar,
+  CheckCircle,
+  ArrowRight,
+  Info,
+  Shield,
+  AlertTriangle,
+  Plane,
+  Repeat,
+  ChevronRight,
+  Check,
+  Star,
+  Award,
+  Baby,
+  Wifi,
+  Coffee,
+  Luggage,
+  Navigation,
+  MapPinned,
+  Timer,
+  UserCheck,
+  CarFront,
+  PlayCircle,
+  Quote,
+  ChevronLeft,
 } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
-import BookingModal from '../../modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
-import { BookingDate, Service } from '@/constants/formFields';
+import { BookingDate } from '@/types/type';
+import BookingModal from '../../modal/BookingModal';
 
-// ============================================
-// TIPOS PARA PROPS DE BOOKING
-// ============================================
-interface BookingActions {
-  onBookClick: () => void;
-  onVehicleSelect?: (vehicleType: string) => void;
+interface AirportServiceViewProps {
   service: Service;
+  serviceData?: ServiceData;
+  extendedDetails?: ServiceExtendedDetails;
+  primaryColor: string;
 }
 
-// ============================================
-// VEHICLE TYPES DATA
-// ============================================
-const VEHICLE_TYPES = {
-  ATV: {
-    id: 'atv',
-    name: 'ATV Quad',
-    image:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
-    description: 'Single rider adventure',
-    features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
-    price: '$89',
+// Constants
+const TRANSFER_GALLERY = [
+  {
+    src: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+    alt: 'Luxury private van transfer',
+    caption: 'Modern air-conditioned vehicles for your comfort',
   },
-  BUGGY: {
-    id: 'buggy',
-    name: 'Dune Buggy',
-    image:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754597118/9_m5fya0.jpg',
-    description: 'Shared adventure for couples',
-    features: ['2-person capacity', 'Side by side', 'Great for couples'],
-    price: '$129',
+  {
+    src: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+    alt: 'Professional driver service',
+    caption: 'Professional drivers with personalized meet & greet',
   },
-  POLARIS: {
-    id: 'polaris',
-    name: 'Polaris RZR',
-    image:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
-    description: 'Premium off-road experience',
-    features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
-    price: '$159',
+  {
+    src: 'https://images.unsplash.com/photo-1577435213005-1acb8929ad3e?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3',
+    alt: 'Airport terminal arrival',
+    caption: 'Seamless pickup at airport arrivals area',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+    alt: 'Punta Cana destination',
+    caption: 'Direct transfer to your accommodation in paradise',
+  },
+];
+
+const WHATS_INCLUDED = [
+  'Meet & Greet at airport exit',
+  'Professional driver service',
+  'Luggage assistance',
+  'Air-conditioned vehicle',
+  'Bottled water on board',
+  'Flight tracking service',
+];
+
+const WHATS_NOT_INCLUDED = ['Gratuity (optional, appreciated)'];
+
+const TRANSFER_PROCESS = [
+  {
+    step: 1,
+    icon: UserCheck,
+    title: 'Driver meets you',
+    description: 'At the arrivals area with your name sign',
+  },
+  {
+    step: 2,
+    icon: Luggage,
+    title: 'Bag assistance',
+    description: 'Help with luggage and comfortable boarding',
+  },
+  {
+    step: 3,
+    icon: CarFront,
+    title: 'Comfortable ride',
+    description: 'Direct, air-conditioned journey to destination',
+  },
+  {
+    step: 4,
+    icon: MapPin,
+    title: 'Safe arrival',
+    description: 'Smooth drop-off right at your door',
+  },
+];
+
+// Animation variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
+
+const staggerChildren = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
   },
 };
 
-// ============================================
-// COMPONENTES CON BOOKING ACTIONS
-// ============================================
-
-// Vehicle Selection Section
-const VehicleSelection: React.FC<{
-  onVehicleSelect: (vehicleType: string) => void;
-}> = ({ onVehicleSelect }) => {
-  return (
-    <section className='py-20 px-4 bg-gradient-to-br from-green-50 to-amber-50'>
-      <div className='max-w-6xl mx-auto'>
-        <div className='text-center mb-12'>
-          <div className='inline-flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full mb-4'>
-            <Sparkles className='w-4 h-4 text-green-600' />
-            <span className='text-green-700 font-medium'>
-              Choose Your Adventure
-            </span>
-          </div>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
-            Select Your <span className='text-amber-500'>Off-Road Vehicle</span>
-          </h2>
-          <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
-            Each vehicle offers a unique way to explore the tropical wilderness.
-            Choose the perfect ride for your adventure level.
-          </p>
-        </div>
-
-        <div className='grid md:grid-cols-3 gap-8'>
-          {Object.values(VEHICLE_TYPES).map((vehicle) => (
-            <div
-              key={vehicle.id}
-              className='group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer'
-              onClick={() => onVehicleSelect(vehicle.id.toUpperCase())}
-            >
-              {/* Vehicle Image */}
-              <div className='relative h-48 overflow-hidden'>
-                <img
-                  src={vehicle.image}
-                  alt={vehicle.name}
-                  className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
-                />
-                <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent group-hover:from-black/40 transition-all duration-300' />
-              </div>
-
-              {/* Card Content */}
-              <div className='p-6'>
-                <h3 className='text-xl font-bold text-gray-800 mb-2'>
-                  {vehicle.name}
-                </h3>
-                <p className='text-gray-600 mb-3'>{vehicle.description}</p>
-                <div className='space-y-1'>
-                  {vehicle.features.slice(0, 2).map((feature, idx) => (
-                    <div
-                      key={idx}
-                      className='flex items-center gap-2 text-sm text-gray-600'
-                    >
-                      <Check className='w-3 h-3 text-green-500' />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Additional Info */}
-        <div className='mt-12 text-center'>
-          <div className='inline-flex items-center gap-6 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg'>
-            <div className='flex items-center gap-2 text-sm text-gray-700'>
-              <Shield className='w-4 h-4 text-green-500' />
-              <span>All safety gear included</span>
-            </div>
-            <div className='flex items-center gap-2 text-sm text-gray-700'>
-              <Clock className='w-4 h-4 text-blue-500' />
-              <span>3-hour adventure</span>
-            </div>
-            <div className='flex items-center gap-2 text-sm text-gray-700'>
-              <MapPin className='w-4 h-4 text-red-500' />
-              <span>Tropical trails & beaches</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Hero Section
-const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <div className='relative h-screen min-h-[600px] md:min-h-[700px] overflow-hidden'>
-      {/* Parallax Background */}
-      <div
-        className='absolute inset-0'
-        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
-      >
-        <img
-          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg'
-          alt='ATV adventures in tropical paradise'
-          className='w-full h-full object-cover'
-        />
-        <div className='absolute inset-0 bg-black/40' />
-        <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70' />
-      </div>
-
-      <div className='relative z-10 h-full flex flex-col justify-end px-4 md:px-8 pb-10'>
-        <div className='max-w-4xl mx-auto w-full'>
-          <div className='inline-flex items-center gap-2 bg-green-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-green-400/30'>
-            <Sparkles className='w-4 h-4 text-green-400' />
-            <span className='text-green-200 text-sm font-medium'>
-              #1 Tropical Adventure
-            </span>
-          </div>
-
-          <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 text-white'>
-            ATV Adventures
-            <span className='block text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-amber-400 mt-2'>
-              Tropical Paradise
-            </span>
-          </h1>
-
-          <p className='text-base sm:text-lg md:text-xl text-white/90 mb-8 md:mb-10 max-w-2xl'>
-            Explore hidden beaches, jungle trails, and crystal-clear cenotes on
-            the ultimate off-road adventure.
-          </p>
-
-          <div className='flex flex-col sm:flex-row gap-4 mb-8'>
-            <button
-              onClick={onBookClick}
-              className='group bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all transform hover:scale-105 shadow-2xl inline-flex items-center justify-center gap-2'
-            >
-              Start Your Adventure
-              <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
-            </button>
-          </div>
-
-          <div className='flex flex-wrap gap-6 text-white/80 text-sm sm:text-base'>
-            <div className='flex items-center gap-2'>
-              <Star className='w-4 h-4 text-amber-400 fill-amber-400' />
-              <span>4.9 Rating</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Clock className='w-4 h-4' />
-              <span>3 Hours</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Users className='w-4 h-4' />
-              <span>Small Groups</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Photo Gallery (sin cambios, no necesita booking actions)
-const PhotoGallery: React.FC = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  const photos = [
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595136/6_xkqjqa.jpg',
-      alt: 'ATV jungle adventure',
-      caption: 'Explore lush jungle trails',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595137/5_qkapnv.jpg',
-      alt: 'Beach ATV riding',
-      caption: 'Race along pristine beaches',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595138/3_xanwzg.jpg',
-      alt: 'Tropical cenote',
-      caption: 'Discover hidden cenotes',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754596293/4_enh3k1.jpg',
-      alt: 'ATV sunset',
-      caption: 'Sunset adventures',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
-      alt: 'Tropical landscape',
-      caption: 'Breathtaking landscapes',
-    },
-  ];
-
-  return (
-    <section className='py-16 bg-white'>
-      <div className='max-w-7xl mx-auto px-4'>
-        <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
-            Adventure <span className='text-green-500'>Gallery</span>
-          </h2>
-          <p className='text-lg text-gray-600'>
-            See what awaits you on this tropical adventure
-          </p>
-        </div>
-
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-          {photos.map((photo, idx) => (
-            <div
-              key={idx}
-              className={`group relative overflow-hidden rounded-xl cursor-pointer ${
-                idx === 0 ? 'md:col-span-2 md:row-span-2' : ''
-              }`}
-              onClick={() => setSelectedImage(photo)}
-            >
-              <div
-                className={`${
-                  idx === 0 ? 'h-full min-h-[300px]' : 'aspect-square'
-                }`}
-              >
-                <img
-                  src={photo.src}
-                  alt={photo.alt}
-                  className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
-                />
-              </div>
-              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                <div className='absolute bottom-4 left-4 text-white'>
-                  <p className='font-semibold text-sm md:text-base'>
-                    {photo.caption}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Lightbox */}
-      {selectedImage && (
-        <div
-          className='fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4'
-          onClick={() => setSelectedImage(null)}
-        >
-          <button
-            className='absolute top-4 right-4 text-white hover:text-gray-300 z-50'
-            onClick={() => setSelectedImage(null)}
-          >
-            <X className='w-8 h-8' />
-          </button>
-          <img
-            src={selectedImage.src}
-            alt={selectedImage.alt}
-            className='max-w-full max-h-[90vh] rounded-lg'
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
-    </section>
-  );
-};
-
-// Quick Info Section (sin cambios)
-const QuickInfoSection: React.FC = () => {
-  const cards = [
-    {
-      icon: <MapPin className='w-5 h-5' />,
-      title: 'Jungle & Beach',
-      description: 'Explore diverse tropical terrain',
-    },
-    {
-      icon: <Shield className='w-5 h-5' />,
-      title: 'Safety First',
-      description: 'Professional guides & gear',
-    },
-    {
-      icon: <Clock className='w-5 h-5' />,
-      title: '3 Hours',
-      description: 'Action-packed adventure',
-    },
-    {
-      icon: <Star className='w-5 h-5' />,
-      title: '4.9 Rating',
-      description: 'From 1,200+ adventurers',
-    },
-  ];
-
-  return (
-    <section className='py-16 px-4 bg-gray-50'>
-      <div className='max-w-5xl mx-auto'>
-        <div className='grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
-          {cards.map((card, idx) => (
-            <div
-              key={idx}
-              className='text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow'
-            >
-              <div className='inline-flex p-3 rounded-full bg-gradient-to-br from-amber-100 to-green-100 text-amber-600 mb-3'>
-                {card.icon}
-              </div>
-              <h3 className='font-semibold text-gray-800 mb-1'>{card.title}</h3>
-              <p className='text-sm text-gray-600'>{card.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Special Banner con booking action
-const SpecialBanner: React.FC<BookingActions> = ({ onBookClick }) => {
-  return (
-    <section className='relative py-32 overflow-hidden'>
-      <div className='absolute inset-0'>
-        <img
-          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754596123/8_y6xwml.jpg'
-          alt='ATV adventure through tropical paradise'
-          className='w-full h-full object-cover'
-        />
-        <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent' />
-      </div>
-
-      <div className='relative z-10 max-w-6xl mx-auto px-4'>
-        <div className='max-w-2xl'>
-          <div className='inline-flex items-center gap-2 bg-green-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-green-400/30'>
-            <Sparkles className='w-4 h-4 text-green-400' />
-            <span className='text-green-200 text-sm font-medium'>
-              Eco-Adventure Experience
-            </span>
-          </div>
-
-          <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
-            Off-Road Adventure
-            <span className='block text-amber-400'>Through Paradise</span>
-          </h2>
-
-          <p className='text-lg text-white/90 mb-8'>
-            Navigate through tropical jungles, splash through crystal-clear
-            rivers, and discover hidden beaches on the ultimate ATV adventure.
-            Our eco-friendly tours respect nature while delivering maximum
-            thrills.
-          </p>
-
-          <div className='flex flex-wrap gap-6 mb-8'>
-            <div className='flex items-center gap-2 text-white'>
-              <Heart className='w-5 h-5 text-red-400' />
-              <span>Eco-Friendly</span>
-            </div>
-            <div className='flex items-center gap-2 text-white'>
-              <Shield className='w-5 h-5 text-green-400' />
-              <span>Certified Guides</span>
-            </div>
-            <div className='flex items-center gap-2 text-white'>
-              <Star className='w-5 h-5 text-amber-400' />
-              <span>Premium Equipment</span>
-            </div>
-          </div>
-
-          <button
-            onClick={onBookClick}
-            className='bg-gradient-to-r from-amber-500 to-green-500 hover:from-amber-600 hover:to-green-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
-          >
-            Book Your ATV Adventure
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Includes Section (sin cambios)
-const IncludesSection: React.FC = () => {
-  const includes = [
-    'Round-trip hotel transportation',
-    'Professional ATV/Buggy/Polaris',
-    'Safety equipment & briefing',
-    'Expert bilingual guide',
-    'Jungle & beach exploration',
-    'Cenote swimming opportunity',
-    'Tropical fruit tasting',
-    'Action photos included',
-  ];
-
-  return (
-    <section className='py-16 px-4 bg-white'>
-      <div className='max-w-4xl mx-auto'>
-        <h2 className='text-3xl font-bold text-center mb-10 text-gray-800'>
-          Everything <span className='text-green-500'>Included</span>
-        </h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          {includes.map((item, idx) => (
-            <div
-              key={idx}
-              className='flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors'
-            >
-              <Check className='w-5 h-5 text-green-500 flex-shrink-0' />
-              <span className='text-gray-700 font-medium'>{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Adventure Banner con booking action
-const AdventureBanner: React.FC<BookingActions> = ({ onBookClick }) => {
-  return (
-    <section className='relative py-24 overflow-hidden bg-gradient-to-br from-green-50 to-amber-50'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <div className='grid lg:grid-cols-2 gap-12 items-center'>
-          <div>
-            <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-6'>
-              Why Choose Our
-              <span className='text-green-500'> ATV Adventures?</span>
-            </h2>
-
-            <div className='space-y-6'>
-              <div className='flex items-start gap-4'>
-                <div className='w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0'>
-                  <Check className='w-5 h-5 text-green-600' />
-                </div>
-                <div>
-                  <h3 className='font-semibold text-gray-800 mb-2'>
-                    Diverse Terrain Exploration
-                  </h3>
-                  <p className='text-gray-600'>
-                    From dense jungle trails to pristine beaches and refreshing
-                    cenotes, experience the full spectrum of tropical paradise.
-                  </p>
-                </div>
-              </div>
-
-              <div className='flex items-start gap-4'>
-                <div className='w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0'>
-                  <Check className='w-5 h-5 text-amber-600' />
-                </div>
-                <div>
-                  <h3 className='font-semibold text-gray-800 mb-2'>
-                    Premium Equipment Fleet
-                  </h3>
-                  <p className='text-gray-600'>
-                    Choose from ATVs, Buggies, or Polaris RZRs - all regularly
-                    maintained and equipped with latest safety features.
-                  </p>
-                </div>
-              </div>
-
-              <div className='flex items-start gap-4'>
-                <div className='w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0'>
-                  <Check className='w-5 h-5 text-blue-600' />
-                </div>
-                <div>
-                  <h3 className='font-semibold text-gray-800 mb-2'>
-                    Eco-Responsible Tourism
-                  </h3>
-                  <p className='text-gray-600'>
-                    We follow strict environmental guidelines to preserve the
-                    natural beauty for future generations.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={onBookClick}
-              className='mt-8 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105'
-            >
-              Start Your Adventure
-            </button>
-          </div>
-
-          <div className='relative'>
-            <div className='rounded-2xl overflow-hidden shadow-2xl'>
-              <img
-                src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg'
-                alt='ATV adventure group'
-                className='w-full h-[400px] object-cover'
-              />
-            </div>
-            <div className='absolute -bottom-6 -right-6 bg-white rounded-xl shadow-lg p-4'>
-              <div className='flex items-center gap-3'>
-                <div className='w-12 h-12 bg-gradient-to-br from-green-100 to-amber-100 rounded-full flex items-center justify-center'>
-                  <Sparkles className='w-6 h-6 text-green-600' />
-                </div>
-                <div>
-                  <p className='text-xl font-bold text-gray-800'>Premium</p>
-                  <p className='text-xs text-gray-600'>Adventure</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Reviews Section (sin cambios)
-const ReviewsSection: React.FC = () => {
-  const reviews = [
-    {
-      name: 'Carlos Rodriguez',
-      rating: 5,
-      text: 'Incredible ATV adventure! The jungle trails were amazing and the cenote swim was refreshing.',
-      date: '3 days ago',
-      vehicle: 'Polaris RZR',
-    },
-    {
-      name: 'Jennifer Smith',
-      rating: 5,
-      text: 'Perfect for beginners! Our guide was patient and the buggy was easy to handle. Loved every minute!',
-      date: '1 week ago',
-      vehicle: 'Dune Buggy',
-    },
-    {
-      name: 'Alex Thompson',
-      rating: 5,
-      text: 'Best excursion in Punta Cana! The ATV was powerful and the routes were thrilling but safe.',
-      date: '2 weeks ago',
-      vehicle: 'ATV Quad',
-    },
-  ];
-
-  return (
-    <section className='py-16 px-4 bg-gray-50'>
-      <div className='max-w-5xl mx-auto'>
-        <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold mb-4 text-gray-800'>
-            Adventure <span className='text-green-500'>Stories</span>
-          </h2>
-          <div className='flex justify-center items-center gap-1'>
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className='w-5 h-5 fill-amber-400 text-amber-400' />
-            ))}
-            <span className='ml-2 text-gray-600'>
-              4.9 from 1,200+ adventures
-            </span>
-          </div>
-        </div>
-
-        <div className='grid md:grid-cols-3 gap-6'>
-          {reviews.map((review, idx) => (
-            <div
-              key={idx}
-              className='bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow'
-            >
-              <div className='flex gap-1 mb-3'>
-                {[...Array(review.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className='w-4 h-4 fill-amber-400 text-amber-400'
-                  />
-                ))}
-              </div>
-              <p className='text-gray-700 mb-4'>"{review.text}"</p>
-              <div className='flex justify-between items-center text-sm'>
-                <div>
-                  <p className='font-medium text-gray-800'>{review.name}</p>
-                  <p className='text-green-600 text-xs'>{review.vehicle}</p>
-                </div>
-                <span className='text-gray-500'>{review.date}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// ============================================
-// PROPS INTERFACE PARA EL COMPONENTE PRINCIPAL
-// ============================================
-interface AtvRideServiceViewProps {
-  service: Service;
-  serviceData?: any;
-  primaryColor?: string;
-  viewContext?: 'standard-view' | 'premium-view';
-}
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-const AtvRideServiceView: React.FC<AtvRideServiceViewProps> = ({
+const AirportServiceView: React.FC<AirportServiceViewProps> = ({
   service,
   serviceData,
+  extendedDetails,
   primaryColor,
-  viewContext,
 }) => {
-  const { bookService } = useBooking();
-  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { bookService } = useBooking();
 
-  // ============================================
-  // FUNCIONES CENTRALIZADAS
-  // ============================================
-  const handleBookClick = useCallback(() => {
-    // Scroll to vehicle selection
-    const vehicleSection = document.querySelector(
-      '[data-section="vehicle-selection"]'
-    );
-    if (vehicleSection) {
-      vehicleSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
+  // Determinar si es servicio premium
+  const isPremium = service.packageType.includes('premium');
 
-  const handleVehicleSelect = useCallback((vehicleType: string) => {
-    setSelectedVehicle(vehicleType);
-    setIsModalOpen(true);
-  }, []);
+  // Extraer propiedades relevantes
+  const travelTime =
+    extendedDetails?.travelTime ||
+    serviceData?.metaData?.travelTime ||
+    '20-40 min';
 
-  const handleBookingConfirm = useCallback(
-    (bookingService: Service, dates: BookingDate, guests: number) => {
-      bookService(bookingService, dates, guests);
-      setIsModalOpen(false);
-      setSelectedVehicle(null);
-    },
-    [bookService]
-  );
+  // Extraer opciones de viaje
+  let tripOptions = {};
+  if (serviceData?.options?.isRoundTrip?.subOptions) {
+    tripOptions = serviceData.options.isRoundTrip.subOptions;
+  } else {
+    tripOptions = {
+      oneWay: {
+        nameKey: 'services.airport.options.isRoundTrip.options.oneWay',
+        price: 0,
+      },
+      roundTrip: {
+        nameKey: 'services.airport.options.isRoundTrip.options.roundTrip',
+        price: 'double',
+      },
+    };
+  }
 
-  const handleCloseModal = useCallback(() => {
+  const handleBookingConfirm = (
+    bookingService: Service,
+    dates: BookingDate,
+    guests: number
+  ) => {
+    bookService(bookingService, dates, guests);
     setIsModalOpen(false);
-    setSelectedVehicle(null);
-  }, []);
-
-  // ============================================
-  // OBJETO CON ACCIONES PARA PASAR A COMPONENTES
-  // ============================================
-  const bookingActions: BookingActions = {
-    onBookClick: handleBookClick,
-    service,
   };
+
+  function formatTripOptionName(key: string): string {
+    if (key === 'oneWay') return 'One Way';
+    if (key === 'roundTrip') return 'Round Trip';
+    return key.replace(/([A-Z])/g, ' $1').trim();
+  }
 
   return (
     <div className='min-h-screen bg-white'>
-      {/* Pasar funciones como props a cada componente */}
-      <HeroSection {...bookingActions} />
-      <QuickInfoSection />
+      {/* Hero Section */}
+      <HeroSection
+        service={service}
+        isPremium={isPremium}
+        travelTime={travelTime}
+        onBookClick={() => setIsModalOpen(true)}
+      />
 
-      {/* Vehicle Selection Section */}
-      <div data-section='vehicle-selection'>
-        <VehicleSelection onVehicleSelect={handleVehicleSelect} />
-      </div>
+      {/* Trip Options Section */}
+      <TripOptionsSection
+        tripOptions={tripOptions}
+        isPremium={isPremium}
+        formatTripOptionName={formatTripOptionName}
+        onBookClick={() => setIsModalOpen(true)}
+        t={t}
+      />
 
-      <PhotoGallery />
-      <IncludesSection />
-      <SpecialBanner {...bookingActions} />
-      <AdventureBanner {...bookingActions} />
-      <ReviewsSection />
+      {/* Transfer Process Section */}
+      <TransferProcessSection />
+
+      {/* Gallery Section */}
+      <GallerySection />
+
+      {/* Human Banner CTA */}
+      <HumanBannerSection onBookClick={() => setIsModalOpen(true)} />
+
+      {/* What's Included Section */}
+      <IncludedSection />
+
+      {/* Traveler Tips Section */}
+      <TravelerTipsSection isPremium={isPremium} />
+
+      {/* Good to Know Section */}
+      <GoodToKnowSection travelTime={travelTime} />
+
+      {/* Final CTA Section */}
+      <FinalCTASection
+        isPremium={isPremium}
+        onBookClick={() => setIsModalOpen(true)}
+      />
+
+      {/* Disclaimer */}
+      <DisclaimerSection />
 
       {/* Booking Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <BookingModal
             isOpen={isModalOpen}
-            onClose={handleCloseModal}
+            onClose={() => setIsModalOpen(false)}
             onConfirm={handleBookingConfirm}
             service={service}
           />
@@ -728,4 +233,620 @@ const AtvRideServiceView: React.FC<AtvRideServiceViewProps> = ({
   );
 };
 
-export default AtvRideServiceView;
+// Hero Section Component
+const HeroSection: React.FC<{
+  service: Service;
+  isPremium: boolean;
+  travelTime: string;
+  onBookClick: () => void;
+}> = ({ service, isPremium, travelTime, onBookClick }) => (
+  <motion.section
+    className='relative pt-20 pb-32 px-6 overflow-hidden'
+    initial='hidden'
+    animate='visible'
+    variants={fadeInUp}
+  >
+    {/* Background with overlay */}
+    <div className='absolute inset-0 z-0'>
+      <Image
+        src={service.img || TRANSFER_GALLERY[0].src}
+        alt={service.name}
+        fill
+        className='object-cover'
+      />
+      <div className='absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40'></div>
+    </div>
+
+    <div className='relative z-10 max-w-6xl mx-auto'>
+      <div className='grid lg:grid-cols-2 gap-16 items-center'>
+        {/* Content */}
+        <div className='space-y-8 text-white'>
+          <motion.div variants={fadeInUp}>
+            {isPremium && (
+              <span className='inline-flex items-center px-4 py-2 bg-amber-500/90 backdrop-blur-sm rounded-full text-amber-900 text-sm font-bold uppercase'>
+                <Award className='w-4 h-4 mr-2' />
+                Premium Service
+              </span>
+            )}
+          </motion.div>
+
+          <motion.div variants={fadeInUp} className='space-y-6'>
+            <h1 className='text-5xl lg:text-6xl font-bold leading-tight'>
+              Start Your Vacation
+              <span className='block text-blue-400'>Stress-Free</span>
+            </h1>
+            <p className='text-xl leading-relaxed max-w-lg opacity-90'>
+              Enjoy a seamless and private transfer from the airport to your
+              accommodation. Skip the lines and crowds—your personal driver will
+              be waiting, ready to welcome you with comfort and efficiency.
+            </p>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            variants={staggerChildren}
+            className='flex flex-wrap gap-6'
+          >
+            <StatItem icon={Clock} value={travelTime} label='Travel Time' />
+            <StatItem icon={Star} value='4.9' label='Rating' />
+            <StatItem icon={Car} value='24/7' label='Available' />
+          </motion.div>
+
+          {/* CTA */}
+          <motion.div variants={fadeInUp} className='pt-4'>
+            <button
+              onClick={onBookClick}
+              className='group inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-[1.02] shadow-xl'
+            >
+              <PlayCircle className='w-5 h-5' />
+              Book Your Transfer
+              <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
+            </button>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Stat Item Component
+const StatItem: React.FC<{
+  icon: React.ComponentType<any>;
+  value: string;
+  label: string;
+}> = ({ icon: Icon, value, label }) => (
+  <motion.div variants={fadeInUp} className='flex items-center gap-3'>
+    <div className='w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center'>
+      <Icon className='w-5 h-5 text-white' />
+    </div>
+    <div>
+      <p className='font-bold text-white'>{value}</p>
+      <p className='text-sm text-white/80'>{label}</p>
+    </div>
+  </motion.div>
+);
+
+// Trip Options Section
+const TripOptionsSection: React.FC<{
+  tripOptions: any;
+  isPremium: boolean;
+  formatTripOptionName: (key: string) => string;
+  onBookClick: () => void;
+  t: any;
+}> = ({ tripOptions, isPremium, formatTripOptionName, onBookClick, t }) => (
+  <motion.section
+    className='py-24 px-6'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-16'>
+        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+          Choose Your Transfer Option
+        </h2>
+        <p className='text-xl text-gray-600'>
+          Select between one-way or round-trip transfer for maximum convenience
+        </p>
+      </motion.div>
+
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+        {Object.entries(tripOptions).map(([key, option], index) => (
+          <motion.div
+            key={key}
+            variants={fadeInUp}
+            className='bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100'
+          >
+            <div className='flex items-center mb-6'>
+              <div
+                className={`p-4 rounded-full mr-4 ${
+                  isPremium
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-blue-100 text-blue-700'
+                }`}
+              >
+                {key === 'oneWay' ? (
+                  <ArrowRight className='w-6 h-6' />
+                ) : (
+                  <Repeat className='w-6 h-6' />
+                )}
+              </div>
+              <div>
+                <h3 className='text-2xl font-bold text-gray-900'>
+                  {typeof option === 'object' && 'nameKey' in option
+                    ? t(option.nameKey, { fallback: formatTripOptionName(key) })
+                    : formatTripOptionName(key)}
+                </h3>
+                <p className='text-gray-600'>
+                  {key === 'oneWay'
+                    ? 'One-way transfer to or from the airport'
+                    : 'Return transfers included, for arrival and departure'}
+                </p>
+              </div>
+            </div>
+
+            <div className='space-y-3 mb-6'>
+              <div className='flex items-center text-gray-700'>
+                <Check className='w-4 h-4 text-green-500 mr-3' />
+                Professional driver service
+              </div>
+              <div className='flex items-center text-gray-700'>
+                <Check className='w-4 h-4 text-green-500 mr-3' />
+                Air-conditioned vehicle
+              </div>
+              <div className='flex items-center text-gray-700'>
+                <Check className='w-4 h-4 text-green-500 mr-3' />
+                Meet & greet included
+              </div>
+            </div>
+
+            {typeof option === 'object' && 'price' in option && (
+              <div className='text-right mb-4'>
+                {option.price === 'double' ? (
+                  <span className='text-lg font-bold text-gray-600'>
+                    2x base price
+                  </span>
+                ) : option.price > 0 ? (
+                  <span className='text-lg font-bold text-blue-600'>
+                    +${option.price}
+                  </span>
+                ) : (
+                  <span className='text-lg font-bold text-green-600'>
+                    Base price
+                  </span>
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={onBookClick}
+              className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
+                isPremium
+                  ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
+            >
+              Select {formatTripOptionName(key)}
+            </button>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Transfer Process Section
+const TransferProcessSection: React.FC = () => (
+  <motion.section
+    className='py-24 px-6 bg-gray-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-16'>
+        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+          What to Expect
+        </h2>
+        <p className='text-xl text-gray-600'>
+          Your seamless transfer experience in 4 simple steps
+        </p>
+      </motion.div>
+
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+        {TRANSFER_PROCESS.map((process, index) => (
+          <motion.div
+            key={index}
+            variants={fadeInUp}
+            className='bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center'
+          >
+            <div className='w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+              <div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm'>
+                {process.step}
+              </div>
+            </div>
+            <div className='mb-4'>
+              <process.icon className='w-8 h-8 text-blue-600 mx-auto' />
+            </div>
+            <h3 className='text-lg font-bold text-gray-900 mb-2'>
+              {process.title}
+            </h3>
+            <p className='text-gray-600 text-sm'>{process.description}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Gallery Section - Responsive 4 photos, 2 columns on mobile
+const GallerySection: React.FC = () => (
+  <motion.section
+    className='py-24 px-6'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-16'>
+        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+          Our Transfer Experience
+        </h2>
+        <p className='text-xl text-gray-600'>
+          See what makes our airport transfer service exceptional
+        </p>
+      </motion.div>
+
+      {/* Responsive Gallery Grid */}
+      <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
+        {TRANSFER_GALLERY.map((image, index) => (
+          <motion.div
+            key={index}
+            variants={fadeInUp}
+            className='relative aspect-square rounded-xl overflow-hidden group cursor-pointer'
+          >
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              className='object-cover transition-transform duration-700 group-hover:scale-110'
+            />
+            <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end'>
+              <p className='p-4 text-white font-medium text-sm'>
+                {image.caption}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Human Banner Section
+const HumanBannerSection: React.FC<{
+  onBookClick: () => void;
+}> = ({ onBookClick }) => (
+  <motion.section
+    className='py-24 px-6 relative overflow-hidden'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='absolute inset-0 z-0'>
+      <Image
+        src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3'
+        alt='Airport transfer comfort'
+        fill
+        className='object-cover'
+      />
+      <div className='absolute inset-0 bg-black/70'></div>
+    </div>
+
+    <div className='relative z-10 max-w-4xl mx-auto text-center text-white'>
+      <h2 className='text-4xl md:text-5xl font-bold mb-6'>
+        Skip the Taxi Lines
+        <span className='block text-blue-400'>Start Your Vacation Now</span>
+      </h2>
+      <p className='text-xl mb-8 max-w-2xl mx-auto opacity-90'>
+        Your personal driver is waiting for you. No stress, no delays, no
+        complications. Just comfort and efficiency from the moment you land.
+      </p>
+
+      <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+        <button
+          onClick={onBookClick}
+          className='bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:scale-[1.02] shadow-xl'
+        >
+          Book Your Transfer Now
+        </button>
+        <p className='text-sm opacity-75'>
+          🚐 Available 24/7 with advance reservation
+        </p>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// What's Included Section
+const IncludedSection: React.FC = () => (
+  <motion.section
+    className='py-24 px-6 bg-gray-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <div className='grid lg:grid-cols-2 gap-16'>
+        {/* What's Included */}
+        <div>
+          <h2 className='text-3xl font-bold text-gray-900 mb-8'>
+            What's Included
+          </h2>
+          <div className='bg-white rounded-2xl p-8 shadow-lg'>
+            <div className='space-y-4'>
+              {WHATS_INCLUDED.map((item, index) => (
+                <div key={index} className='flex items-center gap-4'>
+                  <div className='w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0'>
+                    <Check className='w-4 h-4 text-green-600' />
+                  </div>
+                  <span className='text-gray-700'>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* What's Not Included */}
+        <div>
+          <h2 className='text-3xl font-bold text-gray-900 mb-8'>
+            Not Included
+          </h2>
+          <div className='bg-white rounded-2xl p-8 shadow-lg'>
+            <div className='space-y-4'>
+              {WHATS_NOT_INCLUDED.map((item, index) => (
+                <div key={index} className='flex items-center gap-4'>
+                  <div className='w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0'>
+                    <span className='text-gray-500 text-sm'>•</span>
+                  </div>
+                  <span className='text-gray-700'>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Why Choose Us */}
+          <div className='mt-8 bg-blue-50 rounded-2xl p-8'>
+            <h3 className='text-xl font-bold text-gray-900 mb-4'>
+              Why Choose Us?
+            </h3>
+            <p className='text-gray-700'>
+              We value your time and comfort. Our punctual, friendly service
+              ensures you feel relaxed from the moment you land. Perfect for
+              families, couples, solo travelers, or VIP guests.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Traveler Tips Section
+const TravelerTipsSection: React.FC<{
+  isPremium: boolean;
+}> = ({ isPremium }) => (
+  <motion.section
+    className={`py-24 px-6 ${isPremium ? 'bg-amber-50' : 'bg-blue-50'}`}
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={staggerChildren}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <motion.div variants={fadeInUp} className='text-center mb-16'>
+        <div className='flex items-center justify-center mb-4'>
+          <AlertTriangle
+            className={`h-8 w-8 ${
+              isPremium ? 'text-amber-500' : 'text-blue-500'
+            } mr-3`}
+          />
+          <h2 className='text-4xl font-bold text-gray-900'>Traveler Tips</h2>
+        </div>
+        <p className='text-xl text-gray-600'>
+          Important information to ensure a smooth transfer experience
+        </p>
+      </motion.div>
+
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+        <motion.div
+          variants={fadeInUp}
+          className='bg-white rounded-2xl p-8 shadow-lg'
+        >
+          <Calendar
+            className={`h-8 w-8 ${
+              isPremium ? 'text-amber-500' : 'text-blue-500'
+            } mb-4`}
+          />
+          <h3 className='font-bold text-gray-800 mb-3 text-xl'>
+            Book in Advance
+          </h3>
+          <p className='text-gray-600'>
+            Reserve your transfer at least 24 hours before your flight for the
+            best experience. Early booking ensures availability and better
+            coordination.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={fadeInUp}
+          className='bg-white rounded-2xl p-8 shadow-lg'
+        >
+          <Plane
+            className={`h-8 w-8 ${
+              isPremium ? 'text-amber-500' : 'text-blue-500'
+            } mb-4`}
+          />
+          <h3 className='font-bold text-gray-800 mb-3 text-xl'>
+            Provide Flight Details
+          </h3>
+          <p className='text-gray-600'>
+            Include your flight number, arrival/departure time, and
+            accommodation address. Accurate details ensure perfect timing and
+            coordination.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={fadeInUp}
+          className='bg-white rounded-2xl p-8 shadow-lg'
+        >
+          <Clock
+            className={`h-8 w-8 ${
+              isPremium ? 'text-amber-500' : 'text-blue-500'
+            } mb-4`}
+          />
+          <h3 className='font-bold text-gray-800 mb-3 text-xl'>
+            Allow Buffer Time
+          </h3>
+          <p className='text-gray-600'>
+            For departures, schedule your pickup with ample time before your
+            flight. We recommend 3 hours for international flights.
+          </p>
+        </motion.div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Good to Know Section
+const GoodToKnowSection: React.FC<{
+  travelTime: string;
+}> = ({ travelTime }) => (
+  <motion.section
+    className='py-24 px-6'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <div className='text-center mb-16'>
+        <h2 className='text-4xl font-bold text-gray-900 mb-4'>Good to Know</h2>
+        <p className='text-xl text-gray-600'>
+          Essential information about your transfer service
+        </p>
+      </div>
+
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+        <div className='bg-white p-6 rounded-xl shadow-lg text-center'>
+          <Plane className='w-12 h-12 text-blue-600 mx-auto mb-4' />
+          <h3 className='font-bold text-gray-900 mb-2'>Flight Tracking</h3>
+          <p className='text-gray-600 text-sm'>
+            We monitor your flight to adjust for delays automatically
+          </p>
+        </div>
+
+        <div className='bg-white p-6 rounded-xl shadow-lg text-center'>
+          <Clock className='w-12 h-12 text-blue-600 mx-auto mb-4' />
+          <h3 className='font-bold text-gray-900 mb-2'>Travel Time</h3>
+          <p className='text-gray-600 text-sm'>
+            Approximately {travelTime} within Punta Cana zone
+          </p>
+        </div>
+
+        <div className='bg-white p-6 rounded-xl shadow-lg text-center'>
+          <Baby className='w-12 h-12 text-blue-600 mx-auto mb-4' />
+          <h3 className='font-bold text-gray-900 mb-2'>Child Safety</h3>
+          <p className='text-gray-600 text-sm'>
+            Child seats available upon request for safe travel
+          </p>
+        </div>
+
+        <div className='bg-white p-6 rounded-xl shadow-lg text-center'>
+          <h3 className='font-bold text-gray-900 mb-2'>24/7 Service</h3>
+          <p className='text-gray-600 text-sm'>
+            Round-the-clock availability with advance reservation
+          </p>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Final CTA Section
+const FinalCTASection: React.FC<{
+  isPremium: boolean;
+  onBookClick: () => void;
+}> = ({ isPremium, onBookClick }) => (
+  <motion.section
+    className='py-24 px-6 bg-gray-900'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-6xl mx-auto'>
+      <div className='text-center text-white'>
+        <h2 className='text-4xl md:text-5xl font-bold mb-6'>
+          Ready to Start Your Vacation Stress-Free?
+        </h2>
+        <p className='text-xl mb-8 max-w-2xl mx-auto opacity-90'>
+          Secure your hassle-free transportation now and start your vacation the
+          moment you land. Avoid the hassle—travel in style and peace of mind.
+        </p>
+
+        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+          <button
+            onClick={onBookClick}
+            className={`px-8 py-4 rounded-xl font-bold text-lg shadow-lg transform transition-all duration-300 hover:scale-105 ${
+              isPremium
+                ? 'bg-amber-500 hover:bg-amber-600 text-amber-900'
+                : 'bg-blue-500 hover:bg-blue-600 text-white'
+            }`}
+          >
+            Book Your Transfer
+            <ArrowRight className='inline-block ml-2 h-5 w-5' />
+          </button>
+          <p className='text-gray-300 text-sm'>
+            🚐 Private Van | Group Shuttle available
+          </p>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+// Disclaimer Section
+const DisclaimerSection: React.FC = () => (
+  <motion.section
+    className='py-12 px-6 bg-amber-50'
+    initial='hidden'
+    whileInView='visible'
+    viewport={{ once: true }}
+    variants={fadeInUp}
+  >
+    <div className='max-w-4xl mx-auto'>
+      <div className='flex gap-4'>
+        <Shield className='w-6 h-6 text-amber-600 flex-shrink-0 mt-1' />
+        <div>
+          <h3 className='font-semibold text-amber-900 mb-2'>
+            Important Information
+          </h3>
+          <p className='text-amber-800 text-sm'>
+            To ensure your pickup, please provide accurate flight details and
+            contact information. Changes or cancellations should be made at
+            least 24 hours in advance for the best service experience.
+          </p>
+        </div>
+      </div>
+    </div>
+  </motion.section>
+);
+
+export default AirportServiceView;

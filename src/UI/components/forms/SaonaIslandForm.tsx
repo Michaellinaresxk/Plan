@@ -14,6 +14,8 @@ import {
   Waves,
   Star,
   CheckCircle,
+  Car,
+  DollarSign,
 } from 'lucide-react';
 
 // Types for better type safety
@@ -21,12 +23,13 @@ interface ChildInfo {
   id: string;
   age: number;
   hasCharge: boolean;
+  price: number;
 }
 
 interface FormData {
   // Tour details
   tourDate: string;
-  location: string; // ✅ Now stores location ID instead of free text
+  location: string;
 
   // Participants
   adultCount: number;
@@ -49,22 +52,50 @@ interface SaonaIslandFormProps {
   onCancel: () => void;
 }
 
-// ✅ Location options configuration - same as BabysitterForm
+// ✅ Updated Location options with pricing
 const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
+  {
+    id: 'punta-cana-resorts',
+    name: 'Punta Cana Resorts',
+    surcharge: 0,
+    description: 'Precio estándar',
+  },
+  {
+    id: 'bavaro',
+    name: 'Bavaro',
+    surcharge: 0,
+    description: 'Mismo precio que Punta Cana',
+  },
+  {
+    id: 'cap-cana',
+    name: 'Cap Cana',
+    surcharge: 15,
+    description: '+$15 USD adicional',
+  },
+  {
+    id: 'uvero-alto',
+    name: 'Uvero Alto',
+    surcharge: 15,
+    description: '+$15 USD adicional',
+  },
 ] as const;
 
-// Age restrictions and pricing configuration
-const AGE_CONFIG = {
-  FREE_AGE_LIMIT: 5,
-  CHILD_PRICE_LIMIT: 12,
-  ADULT_PRICE: 85,
-  CHILD_PRICE: 60,
+// ✅ Updated Age and pricing configuration
+const PRICING_CONFIG = {
+  // Age restrictions
+  FREE_AGE_LIMIT: 4, // 4 años para abajo gratis
+  CHILD_AGE_LIMIT: 6, // 5-6 años precio de niño
+  ADULT_AGE_START: 7, // 7+ años paga como adulto
+  MAX_AGE_LIMIT: 75, // No apta para mayores de 75 años
+
+  // Base prices per person
+  BASE_PRICE_PER_PERSON: 55,
   FREE_PRICE: 0,
-};
+
+  // Transport costs based on group size
+  TRANSPORT_1_8_PEOPLE: 120,
+  TRANSPORT_9_15_PEOPLE: 160,
+} as const;
 
 const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   service,
@@ -77,30 +108,33 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
 
   // Tour information
   const TOUR_INFO = {
-    PICKUP_TIME: '7:30 AM',
+    PICKUP_TIME: '7:00 AM - 7:45 AM',
     DURATION: '8-9 hours',
     INCLUDES: [
       'Round-trip transportation',
-      'Catamaran ride',
-      'Natural pool swimming',
+      'Catamaran or speedboat ride',
+      'Natural pool swimming (15 min stop)',
       'Beach time at Saona Island',
-      'Buffet lunch',
-      'Open bar (local drinks)',
-      'Snorkeling equipment',
+      'Dominican buffet lunch',
+      'Drinks (soft drinks, rum, water)',
+      'Animation and music on catamaran',
+      'Professional guide',
       'Life jackets',
     ],
     RESTRICTIONS: [
       'Not recommended for pregnant women',
       'Not suitable for people with mobility issues',
+      'Not suitable for people over 75 years old',
       'Minimum age: No restrictions (babies welcome)',
       'Children must be supervised at all times',
+      'Tour does not cancel for rain - only in extreme weather conditions',
     ],
   };
 
-  // ✅ Fixed: Form state with proper initial values
+  // ✅ Form state with proper initial values
   const [formData, setFormData] = useState<FormData>({
     tourDate: '',
-    location: '', // ✅ Fixed: Now properly initialized as empty string
+    location: '',
     adultCount: 2,
     childCount: 0,
     children: [],
@@ -110,7 +144,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Helper to update form fields - optimized like BabysitterForm
+  // ✅ Helper to update form fields
   const updateFormField = useCallback((field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
@@ -128,7 +162,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     });
   }, []);
 
-  // ✅ Handle location selection - same logic as BabysitterForm
+  // ✅ Handle location selection
   const handleLocationSelect = useCallback(
     (locationId: string) => {
       updateFormField('location', locationId);
@@ -150,10 +184,12 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       const newChildren = [...formData.children];
       for (let i = currentChildrenCount; i < newChildCount; i++) {
         const defaultAge = 8;
+        const price = calculateChildPrice(defaultAge);
         newChildren.push({
           id: `child-${i + 1}`,
           age: defaultAge,
-          hasCharge: defaultAge > AGE_CONFIG.FREE_AGE_LIMIT,
+          hasCharge: defaultAge > PRICING_CONFIG.FREE_AGE_LIMIT,
+          price,
         });
       }
       setFormData((prev) => ({ ...prev, children: newChildren }));
@@ -165,26 +201,62 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     }
   }, [formData.childCount]);
 
-  // Calculate pricing for children
+  // ✅ Updated pricing calculation for children
   const calculateChildPrice = (age: number): number => {
-    if (age <= AGE_CONFIG.FREE_AGE_LIMIT) {
-      return AGE_CONFIG.FREE_PRICE;
-    } else if (age <= AGE_CONFIG.CHILD_PRICE_LIMIT) {
-      return AGE_CONFIG.CHILD_PRICE;
+    if (age <= PRICING_CONFIG.FREE_AGE_LIMIT) {
+      return PRICING_CONFIG.FREE_PRICE;
+    } else if (age <= PRICING_CONFIG.CHILD_AGE_LIMIT) {
+      // 5-6 años: precio de niño (50% del precio base)
+      return PRICING_CONFIG.BASE_PRICE_PER_PERSON * 0.5;
     } else {
-      return AGE_CONFIG.ADULT_PRICE;
+      // 7+ años: precio de adulto
+      return PRICING_CONFIG.BASE_PRICE_PER_PERSON;
     }
   };
 
-  // Calculate total price
+  // ✅ Calculate transport cost based on group size
+  const calculateTransportCost = (totalPeople: number): number => {
+    if (totalPeople <= 8) {
+      return PRICING_CONFIG.TRANSPORT_1_8_PEOPLE;
+    } else if (totalPeople <= 15) {
+      return PRICING_CONFIG.TRANSPORT_9_15_PEOPLE;
+    }
+    return PRICING_CONFIG.TRANSPORT_9_15_PEOPLE; // Max 15 people
+  };
+
+  // ✅ Get location surcharge
+  const getLocationSurcharge = (): number => {
+    const selectedLocation = LOCATION_OPTIONS.find(
+      (loc) => loc.id === formData.location
+    );
+    return selectedLocation?.surcharge || 0;
+  };
+
+  // ✅ Calculate total price with new formula
   const calculatePrice = useMemo(() => {
-    let total = 0;
-    total += formData.adultCount * AGE_CONFIG.ADULT_PRICE;
+    let basePrice = 0;
+
+    // Adults: count × base price per person
+    basePrice += formData.adultCount * PRICING_CONFIG.BASE_PRICE_PER_PERSON;
+
+    // Children: individual pricing based on age
     formData.children.forEach((child) => {
-      total += calculateChildPrice(child.age);
+      basePrice += calculateChildPrice(child.age);
     });
-    return total;
-  }, [formData.adultCount, formData.children]);
+
+    // Transport cost based on total participants
+    const transportCost = calculateTransportCost(totalParticipants);
+
+    // Location surcharge
+    const locationSurcharge = getLocationSurcharge();
+
+    return basePrice + transportCost + locationSurcharge;
+  }, [
+    formData.adultCount,
+    formData.children,
+    totalParticipants,
+    formData.location,
+  ]);
 
   // Date validation helpers
   const isSameDay = (dateString: string): boolean => {
@@ -203,7 +275,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     return hours >= 24;
   };
 
-  // ✅ Updated validation to check location ID like BabysitterForm
+  // ✅ Updated validation
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
@@ -212,7 +284,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       newErrors.tourDate = 'Tour date is required';
     }
 
-    // ✅ Updated: Validate location ID instead of free text
     if (!formData.location) {
       newErrors.location = 'Please select a pickup location';
     }
@@ -231,6 +302,17 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       newErrors.adultCount = 'At least one participant is required';
     }
 
+    // ✅ Maximum participants validation
+    if (totalParticipants > 15) {
+      newErrors.adultCount = 'Maximum 15 participants allowed';
+    }
+
+    // ✅ Age restrictions validation
+    if (formData.adultCount > 0) {
+      // Check if any adult is over 75 (assuming adults are 18+, but we need age input for this)
+      // For now, we'll add this as a warning in the restrictions section
+    }
+
     // Children age validation
     formData.children.forEach((child, index) => {
       if (child.age < 0 || child.age > 17) {
@@ -241,7 +323,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     return newErrors;
   };
 
-  // ✅ Updated submit handler to include location name like BabysitterForm
+  // ✅ Updated submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -273,7 +355,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       const bookingEndDate = new Date(selectedDate);
       bookingEndDate.setHours(18, 30, 0, 0);
 
-      // ✅ Get selected location name like BabysitterForm
       const selectedLocation = LOCATION_OPTIONS.find(
         (loc) => loc.id === formData.location
       );
@@ -285,8 +366,13 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           serviceType: 'saona-island',
           totalPrice: calculatePrice,
           pickupTime: TOUR_INFO.PICKUP_TIME,
-          // ✅ Add location name for display
           locationName: selectedLocation?.name || formData.location,
+          transportCost: calculateTransportCost(totalParticipants),
+          locationSurcharge: getLocationSurcharge(),
+          basePrice:
+            calculatePrice -
+            calculateTransportCost(totalParticipants) -
+            getLocationSurcharge(),
         },
         totalPrice: calculatePrice,
         bookingDate: bookingStartDate,
@@ -308,7 +394,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           },
         ],
         clientInfo: undefined,
-        // ✅ Updated with location details
         saonaSpecifics: {
           pickupTime: TOUR_INFO.PICKUP_TIME,
           duration: TOUR_INFO.DURATION,
@@ -318,14 +403,21 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           specialRequests: formData.specialRequests,
           includes: TOUR_INFO.INCLUDES,
           restrictions: TOUR_INFO.RESTRICTIONS,
-          // ✅ Add location details like BabysitterForm
           location: formData.location,
           locationName: selectedLocation?.name || formData.location,
+          pricing: {
+            basePrice:
+              calculatePrice -
+              calculateTransportCost(totalParticipants) -
+              getLocationSurcharge(),
+            transportCost: calculateTransportCost(totalParticipants),
+            locationSurcharge: getLocationSurcharge(),
+            totalPrice: calculatePrice,
+          },
         },
       };
 
       console.log('🏝️ SaonaForm - Reservation data created:', reservationData);
-      console.log('📍 Selected location:', selectedLocation);
 
       setReservationData(reservationData);
 
@@ -362,7 +454,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   );
 
   // Counter handlers
-  const createCounterHandler = (field: keyof FormData, min = 0, max = 20) => ({
+  const createCounterHandler = (field: keyof FormData, min = 0, max = 15) => ({
     increment: () =>
       setFormData((prev) => ({
         ...prev,
@@ -387,7 +479,8 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           ? {
               ...child,
               age,
-              hasCharge: age > AGE_CONFIG.FREE_AGE_LIMIT,
+              hasCharge: age > PRICING_CONFIG.FREE_AGE_LIMIT,
+              price: calculateChildPrice(age),
             }
           : child
       ),
@@ -402,6 +495,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     onDecrement,
     icon: Icon,
     min = 0,
+    max = 15,
   }: {
     label: string;
     value: number;
@@ -409,6 +503,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     onDecrement: () => void;
     icon: React.ElementType;
     min?: number;
+    max?: number;
   }) => (
     <div>
       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
@@ -428,13 +523,77 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
         <button
           type='button'
           onClick={onIncrement}
-          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+          disabled={value >= max}
+          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
         >
           +
         </button>
       </div>
+      {value >= max && (
+        <p className='text-xs text-amber-600 mt-1'>
+          Maximum {max} participants allowed
+        </p>
+      )}
     </div>
   );
+
+  // ✅ Pricing breakdown component
+  const PricingBreakdown = () => {
+    const basePrice =
+      calculatePrice -
+      calculateTransportCost(totalParticipants) -
+      getLocationSurcharge();
+    const transportCost = calculateTransportCost(totalParticipants);
+    const locationSurcharge = getLocationSurcharge();
+
+    return (
+      <div className='bg-blue-50 p-4 rounded-lg border border-blue-200'>
+        <h4 className='font-medium text-blue-800 mb-3 flex items-center'>
+          <DollarSign className='w-4 h-4 mr-2' />
+          Pricing Breakdown
+        </h4>
+        <div className='space-y-2 text-sm'>
+          <div className='flex justify-between'>
+            <span>Adults ({formData.adultCount} × $55):</span>
+            <span>
+              $
+              {(
+                formData.adultCount * PRICING_CONFIG.BASE_PRICE_PER_PERSON
+              ).toFixed(2)}
+            </span>
+          </div>
+          {formData.children.map((child, index) => (
+            <div key={child.id} className='flex justify-between'>
+              <span>
+                Child {index + 1} ({child.age} years):
+              </span>
+              <span>${child.price.toFixed(2)}</span>
+            </div>
+          ))}
+          <div className='flex justify-between font-medium'>
+            <span>Subtotal (per person costs):</span>
+            <span>${basePrice.toFixed(2)}</span>
+          </div>
+          <div className='flex justify-between'>
+            <span>
+              Transport ({totalParticipants <= 8 ? '1-8' : '9-15'} people):
+            </span>
+            <span>${transportCost.toFixed(2)}</span>
+          </div>
+          {locationSurcharge > 0 && (
+            <div className='flex justify-between'>
+              <span>Location surcharge:</span>
+              <span>${locationSurcharge.toFixed(2)}</span>
+            </div>
+          )}
+          <div className='border-t pt-2 flex justify-between font-bold text-blue-800'>
+            <span>Total:</span>
+            <span>${calculatePrice.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Tour restrictions component
   const TourRestrictionsSection = () => (
@@ -511,7 +670,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                   {TOUR_INFO.PICKUP_TIME} (Fixed)
                 </div>
                 <p className='text-xs text-gray-500 mt-1'>
-                  Pickup time is fixed for all participants
+                  Pickup time window for all participants
                 </p>
               </div>
             </div>
@@ -540,7 +699,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             )}
           </div>
 
-          {/* ✅ Updated Location Section - Using card selection like BabysitterForm */}
+          {/* ✅ Updated Location Section with pricing info */}
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
               Pickup Location
@@ -552,7 +711,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                 Select your pickup location *
               </label>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 {LOCATION_OPTIONS.map((location) => (
                   <div
                     key={location.id}
@@ -561,32 +720,44 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                       ${
                         formData.location === location.id
                           ? 'border-blue-500 bg-white shadow-lg ring-2 ring-blue-200'
-                          : 'border-blue-200 bg-white hover:border-blue-300 hover:bg-blue-25'
+                          : 'border-blue-200 bg-white hover:border-blue-300'
                       }
                     `}
                     onClick={() => handleLocationSelect(location.id)}
                   >
-                    <div className='flex items-center'>
-                      <div
-                        className={`
-                          w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
-                          ${
-                            formData.location === location.id
-                              ? 'border-blue-500 bg-blue-500'
-                              : 'border-blue-300'
-                          }
-                        `}
-                      >
-                        {formData.location === location.id && (
-                          <CheckCircle className='w-4 h-4 text-white' />
-                        )}
-                      </div>
+                    <div className='flex items-start justify-between'>
                       <div className='flex items-center'>
-                        <MapPin className='w-4 h-4 mr-2 text-blue-500' />
-                        <span className='font-medium text-blue-900 text-sm'>
-                          {location.name}
-                        </span>
+                        <div
+                          className={`
+                            w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
+                            ${
+                              formData.location === location.id
+                                ? 'border-blue-500 bg-blue-500'
+                                : 'border-blue-300'
+                            }
+                          `}
+                        >
+                          {formData.location === location.id && (
+                            <CheckCircle className='w-4 h-4 text-white' />
+                          )}
+                        </div>
+                        <div>
+                          <div className='flex items-center'>
+                            <MapPin className='w-4 h-4 mr-1 text-blue-500' />
+                            <span className='font-medium text-blue-900 text-sm'>
+                              {location.name}
+                            </span>
+                          </div>
+                          <p className='text-xs text-blue-600 mt-1'>
+                            {location.description}
+                          </p>
+                        </div>
                       </div>
+                      {location.surcharge > 0 && (
+                        <span className='bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full'>
+                          +${location.surcharge}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -612,6 +783,11 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                         )?.name
                       }
                     </span>
+                    {getLocationSurcharge() > 0 && (
+                      <span className='ml-2 bg-blue-800 text-white px-2 py-1 rounded text-xs'>
+                        +${getLocationSurcharge()} USD
+                      </span>
+                    )}
                   </p>
                 </div>
               )}
@@ -621,26 +797,40 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           {/* Participants Section */}
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Participants
+              Participants (Maximum 15)
             </h3>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               <Counter
-                label='Adults (13+)'
+                label='Adults (7+ years) - $55 each'
                 value={formData.adultCount}
                 onIncrement={adultCounter.increment}
                 onDecrement={adultCounter.decrement}
                 icon={Users}
                 min={1}
+                max={15}
               />
 
               <Counter
-                label='Children (0-17)'
+                label='Children (0-17 years)'
                 value={formData.childCount}
                 onIncrement={childCounter.increment}
                 onDecrement={childCounter.decrement}
                 icon={Baby}
+                max={15}
               />
+            </div>
+
+            {/* ✅ Age pricing info */}
+            <div className='bg-green-50 p-4 rounded-lg border border-green-200'>
+              <h4 className='font-medium text-green-800 mb-2'>
+                Age-Based Pricing
+              </h4>
+              <div className='text-sm text-green-700 space-y-1'>
+                <div>• 0-4 years: Free</div>
+                <div>• 5-6 years: $27.50 (Child price - 50% off)</div>
+                <div>• 7+ years: $55 (Adult price)</div>
+              </div>
             </div>
 
             {/* Children Details */}
@@ -650,12 +840,19 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   {formData.children.map((child, index) => {
                     const price = calculateChildPrice(child.age);
-                    const priceLabel =
-                      price === 0
-                        ? 'Free'
-                        : price === AGE_CONFIG.CHILD_PRICE
-                        ? 'Child Price'
-                        : 'Adult Price';
+                    let priceLabel = '';
+                    let priceColor = '';
+
+                    if (price === 0) {
+                      priceLabel = 'Free';
+                      priceColor = 'bg-green-100 text-green-800';
+                    } else if (child.age <= PRICING_CONFIG.CHILD_AGE_LIMIT) {
+                      priceLabel = 'Child Price';
+                      priceColor = 'bg-orange-100 text-orange-800';
+                    } else {
+                      priceLabel = 'Adult Price';
+                      priceColor = 'bg-blue-100 text-blue-800';
+                    }
 
                     return (
                       <div key={child.id} className='p-4 bg-gray-50 rounded-lg'>
@@ -664,15 +861,9 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                             Child {index + 1} Age
                           </label>
                           <span
-                            className={`text-xs px-2 py-1 rounded ${
-                              price === 0
-                                ? 'bg-green-100 text-green-800'
-                                : price === AGE_CONFIG.CHILD_PRICE
-                                ? 'bg-orange-100 text-orange-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}
+                            className={`text-xs px-2 py-1 rounded ${priceColor}`}
                           >
-                            ${price} - {priceLabel}
+                            ${price.toFixed(2)} - {priceLabel}
                           </span>
                         </div>
                         <select
@@ -709,12 +900,20 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
 
             {/* Total participants display */}
             <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-              <p className='text-sm text-blue-800'>
-                <strong>Total participants:</strong> {totalParticipants} (
-                {formData.adultCount} adults + {formData.childCount} children)
+              <p className='text-sm text-blue-800 flex items-center justify-between'>
+                <span>
+                  <strong>Total participants:</strong> {totalParticipants} (
+                  {formData.adultCount} adults + {formData.childCount} children)
+                </span>
+                <span className='text-xs bg-blue-800 text-white px-2 py-1 rounded'>
+                  Transport: {totalParticipants <= 8 ? '$120' : '$160'}
+                </span>
               </p>
             </div>
           </div>
+
+          {/* ✅ Pricing breakdown */}
+          <PricingBreakdown />
 
           {/* What's Included Section */}
           <div className='space-y-6'>
@@ -783,21 +982,25 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
               </span>
             </div>
 
-            {/* Price breakdown */}
+            {/* Compact price breakdown */}
             <div className='text-xs text-gray-400 mt-2 space-y-1'>
               <div>
-                Adults: {formData.adultCount} × ${AGE_CONFIG.ADULT_PRICE} = $
-                {formData.adultCount * AGE_CONFIG.ADULT_PRICE}
+                Per person: $
+                {(
+                  calculatePrice -
+                  calculateTransportCost(totalParticipants) -
+                  getLocationSurcharge()
+                ).toFixed(2)}
               </div>
-              {formData.children.map((child, index) => {
-                const price = calculateChildPrice(child.age);
-                return (
-                  <div key={child.id}>
-                    Child {index + 1} ({child.age} years): ${price}
-                  </div>
-                );
-              })}
-              {/* ✅ Display selected location in price breakdown */}
+              <div>
+                Transport ({totalParticipants <= 8 ? '1-8' : '9-15'} people): $
+                {calculateTransportCost(totalParticipants)}
+              </div>
+              {getLocationSurcharge() > 0 && (
+                <div className='text-blue-400'>
+                  Location surcharge: ${getLocationSurcharge()}
+                </div>
+              )}
               {formData.location && (
                 <div className='text-blue-400'>
                   Pickup from:{' '}
@@ -807,9 +1010,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                   }
                 </div>
               )}
-              <div className='text-blue-400'>
-                Includes: Transportation, catamaran, lunch, open bar & equipment
-              </div>
             </div>
           </div>
 
@@ -825,7 +1025,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
 
             <button
               type='submit'
-              disabled={isSubmitting}
+              disabled={isSubmitting || totalParticipants > 15}
               className='px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
             >
               <Waves className='h-4 w-4 mr-2' />

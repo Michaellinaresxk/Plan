@@ -263,7 +263,7 @@ const PremiumPackageContent = () => {
                   <div className='text-center'>
                     <Loader2 className='w-12 h-12 animate-spin text-amber-400 mx-auto mb-4' />
                     <p className='text-gray-300 text-lg'>
-                      Loading your exclusive experiences...
+                      Loading your Xclusive experiences...
                     </p>
                   </div>
                 </div>
