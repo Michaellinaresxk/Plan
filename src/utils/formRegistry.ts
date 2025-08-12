@@ -335,4 +335,17 @@ registerForm({
   }),
 });
 
+// Yoga Form
+registerForm({
+  name: 'LuxeYachtForm',
+  component: () => import('@/UI/components/forms/LuxeYachtForm'),
+  servicePatterns: ['luxe-yacht'],
+  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
+    service,
+    onSubmit:
+      additionalData?.onSubmit || ((data: any) => console.log('Yacht:', data)),
+    onCancel,
+  }),
+});
+
 console.log('✅ All forms auto-registered successfully');

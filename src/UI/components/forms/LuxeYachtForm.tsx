@@ -1,281 +1,248 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from '@/lib/i18n/client';
-import { Service } from '@/types/type';
 import {
-  Anchor,
+  X,
   Calendar,
-  Clock,
-  MapPin,
+  Waves,
+  Crown,
   Users,
-  MessageSquare,
+  Clock,
   CreditCard,
   AlertCircle,
-  Star,
-  Waves,
-  Check,
+  CheckCircle,
+  Phone,
+  Mail,
+  MessageSquare,
   Info,
-  Zap,
-  BedDouble,
-  Ruler,
+  Baby,
+  MapPin,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
+import { motion } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n/client';
+import {
+  LOCATION_OPTIONS,
+  LuxeYachtFormProps,
+  YachtFormData,
+} from '@/types/yachts';
+import { ACTIVITY_OPTIONS, TIME_SLOTS } from '@/constants/yacht/yachts';
 
-interface YachtFormProps {
-  service: Service;
-  onSubmit: (formData: any) => void;
-  onCancel: () => void;
-  yachtData?: any; // Additional yacht-specific data
-}
-
-interface FormData {
-  date: string;
-  startTime: string;
-  endTime: string;
-  location: string;
-  guestCount: number;
-  specialRequests: string;
-  // Additional yacht-specific fields
-  yachtType: string;
-  duration: string;
-  hasTransport: boolean;
-  cateringOption: string;
-  waterSports: string[];
-}
-
-const LuxeYachtForm: React.FC<YachtFormProps> = ({
+const LuxeYachtForm: React.FC<LuxeYachtFormProps> = ({
+  yacht: providedYacht,
   service,
   onSubmit,
   onCancel,
-  yachtData,
+  isOpen,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
 
-  const [formData, setFormData] = useState<FormData>({
+  // Default yacht data si no se proporciona uno
+  const defaultYacht = {
+    id: 'azimut-s7',
+    name: 'Azimut S7',
+    price: 3500,
+    isPremium: false,
+    mainImage:
+      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200&h=800&fit=crop',
+    specifications: {
+      maxGuests: 12,
+      length: '68 ft',
+      cabins: 3,
+      bathrooms: 2,
+      crew: 3,
+      maxSpeed: '32 knots',
+      manufacturer: 'Azimut',
+      year: 2023,
+    },
+    location: 'Punta Cana Marina',
+  };
+
+  // Usar el yacht proporcionado o el por defecto
+  const yacht = providedYacht || defaultYacht;
+
+  const [formData, setFormData] = useState<YachtFormData>({
     date: '',
     startTime: '',
-    endTime: '',
-    location: '',
-    guestCount: 1,
-    specialRequests: '',
-    yachtType: yachtData?.selectedYacht || '',
-    duration: 'half-day',
-    hasTransport: false,
-    cateringOption: 'basic',
-    waterSports: [],
+    guests: 2,
+    minorsCount: 0,
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+    hasSpecialNeeds: false,
+    specialNeedsDetails: '',
+    confirmSpecialNeeds: false,
+    experienceLevel: 'beginner',
+    activityPreferences: [],
+    location: '', // Agregamos location al estado
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentPrice, setCurrentPrice] = useState(service?.price ?? 0);
+  const [errors, setErrors] = useState<Partial<YachtFormData>>({});
+  const [currentPrice, setCurrentPrice] = useState(yacht?.price || 3500);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Yacht options based on the data from YachtServiceView
-  const yachtOptions = [
-    {
-      id: 'sport-yacht-42',
-      name: 'Azimut S7',
-      category: 'Sport Yacht',
-      length: '68 ft',
-      maxGuests: 12,
-      basePrice: 2500,
-      image:
-        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=300&fit=crop',
-      gradient: 'from-cyan-500 to-blue-600',
-    },
-    {
-      id: 'luxury-yacht-85',
-      name: 'Princess Y85',
-      category: 'Luxury Yacht',
-      length: '85 ft',
-      maxGuests: 18,
-      basePrice: 5500,
-      image:
-        'https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=400&h=300&fit=crop',
-      gradient: 'from-purple-600 to-pink-600',
-    },
-    {
-      id: 'mega-yacht-120',
-      name: 'Sunseeker 120',
-      category: 'Mega Yacht',
-      length: '120 ft',
-      maxGuests: 24,
-      basePrice: 12000,
-      image:
-        'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=400&h=300&fit=crop',
-      gradient: 'from-amber-500 to-orange-600',
-    },
-  ];
-
-  // Duration options
-  const durationOptions = [
-    { id: 'half-day', name: 'Half Day (4 hours)', multiplier: 0.5 },
-    { id: 'full-day', name: 'Full Day (8 hours)', multiplier: 1 },
-    { id: 'sunset', name: 'Sunset Cruise (3 hours)', multiplier: 0.4 },
-    { id: 'overnight', name: 'Overnight (24 hours)', multiplier: 2 },
-  ];
-
-  // Location options
-  const locationOptions = [
-    'Punta Cana Marina',
-    'Cap Cana Marina',
-    'Bavaro Beach',
-    'Macao Beach',
-    'Hotel Pickup (Bavaro/Punta Cana)',
-    'Custom Location',
-  ];
-
-  // Catering options
-  const cateringOptions = [
-    {
-      id: 'basic',
-      name: 'Basic Package',
-      description: 'Light snacks and beverages',
-      price: 0,
-    },
-    {
-      id: 'premium',
-      name: 'Premium Package',
-      description: 'Gourmet lunch and premium drinks',
-      price: 150,
-    },
-    {
-      id: 'luxury',
-      name: 'Luxury Package',
-      description: 'Chef-prepared meals and top-shelf bar',
-      price: 300,
-    },
-  ];
-
-  // Water sports options
-  const waterSportsOptions = [
-    { id: 'snorkeling', name: 'Snorkeling Equipment', price: 50 },
-    { id: 'fishing', name: 'Deep Sea Fishing', price: 200 },
-    { id: 'jetski', name: 'Jet Ski Rental', price: 300 },
-    { id: 'paddleboard', name: 'Paddle Boards', price: 75 },
-    { id: 'kayak', name: 'Kayaks', price: 60 },
-    { id: 'diving', name: 'Scuba Diving', price: 250 },
-  ];
-
-  // Calculate price based on form selections
+  // Calculate price based on guest count and special needs
   useEffect(() => {
-    let price = service.price;
+    if (!yacht?.price) return;
 
-    // Get selected yacht
-    const selectedYacht = yachtOptions.find((y) => y.id === formData.yachtType);
-    if (selectedYacht) {
-      price = selectedYacht.basePrice;
-    }
+    const basePrice = yacht.price;
+    const pricePerGuest = formData.guests > 4 ? basePrice * 1.1 : basePrice; // 10% increase for more than 4 guests
+    const specialNeedsFee = formData.hasSpecialNeeds ? 50 : 0; // Special needs accommodation fee
 
-    // Apply duration multiplier
-    const duration = durationOptions.find((d) => d.id === formData.duration);
-    if (duration) {
-      price *= duration.multiplier;
-    }
-
-    // Add guest count pricing (base price includes up to 6 guests)
-    if (formData.guestCount > 6) {
-      const extraGuests = formData.guestCount - 6;
-      price += extraGuests * 100; // $100 per additional guest
-    }
-
-    // Add catering price
-    const catering = cateringOptions.find(
-      (c) => c.id === formData.cateringOption
-    );
-    if (catering) {
-      price += catering.price;
-    }
-
-    // Add water sports pricing
-    const waterSportsPrice = formData.waterSports.reduce((total, sportId) => {
-      const sport = waterSportsOptions.find((s) => s.id === sportId);
-      return total + (sport?.price || 0);
-    }, 0);
-    price += waterSportsPrice;
-
-    // Add transport fee
-    if (formData.hasTransport) {
-      price += 150; // Hotel pickup/drop-off
-    }
-
-    setCurrentPrice(price);
-  }, [
-    formData.yachtType,
-    formData.duration,
-    formData.guestCount,
-    formData.cateringOption,
-    formData.waterSports,
-    formData.hasTransport,
-    service.price,
-  ]);
+    setCurrentPrice(pricePerGuest + specialNeedsFee);
+  }, [formData.guests, formData.hasSpecialNeeds, yacht?.price]);
 
   // Handle input changes
-  const handleInputChange = (
+  const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value, type } = e.target;
-    const checked = 'checked' in e.target ? e.target.checked : false;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    if (type === 'checkbox') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
 
-    // Clear error when user starts typing
+      if (name === 'hasSpecialNeeds' && !checked) {
+        setFormData((prev) => ({
+          ...prev,
+          hasSpecialNeeds: false,
+          specialNeedsDetails: '',
+          confirmSpecialNeeds: false,
+        }));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+
+    // Clear errors for this field
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
   };
 
-  // Handle water sports selection
-  const toggleWaterSport = (sportId: string) => {
+  // Handle location selection - igual que PersonalTrainerForm
+  const handleLocationSelect = (locationId: string) => {
     setFormData((prev) => ({
       ...prev,
-      waterSports: prev.waterSports.includes(sportId)
-        ? prev.waterSports.filter((id) => id !== sportId)
-        : [...prev.waterSports, sportId],
+      location: locationId,
+    }));
+
+    // Clear location error if exists
+    if (errors.location) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.location;
+        return newErrors;
+      });
+    }
+  };
+
+  // Handle activity preferences selection
+  const toggleActivityPreference = (activityId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      activityPreferences: prev.activityPreferences.includes(activityId)
+        ? prev.activityPreferences.filter((id) => id !== activityId)
+        : [...prev.activityPreferences, activityId],
     }));
   };
 
   // Handle guest count changes
   const updateGuestCount = (increment: boolean) => {
-    const selectedYacht = yachtOptions.find((y) => y.id === formData.yachtType);
-    const maxGuests = selectedYacht?.maxGuests || 20;
+    setFormData((prev) => {
+      const maxGuests = yacht?.specifications?.maxGuests || 12;
+      const newCount = increment
+        ? Math.min(prev.guests + 1, maxGuests)
+        : Math.max(1, prev.guests - 1);
 
-    setFormData((prev) => ({
-      ...prev,
-      guestCount: increment
-        ? Math.min(maxGuests, prev.guestCount + 1)
-        : Math.max(1, prev.guestCount - 1),
-    }));
+      // If decreasing guests, ensure minors count doesn't exceed total
+      const adjustedMinorsCount = Math.min(prev.minorsCount, newCount);
+
+      return {
+        ...prev,
+        guests: newCount,
+        minorsCount: adjustedMinorsCount,
+      };
+    });
   };
 
-  // Form validation
+  // Validate form before submission
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Partial<YachtFormData> = {};
+
+    // Required fields
+    if (!formData.name.trim()) {
+      newErrors.name = t('form.errors.required', {
+        fallback: 'Name is required',
+      });
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = t('form.errors.required', {
+        fallback: 'Email is required',
+      });
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = t('form.errors.required', {
+        fallback: 'Phone is required',
+      });
+    }
 
     if (!formData.date) {
-      newErrors.date = 'Date is required';
+      newErrors.date = t('form.errors.required', {
+        fallback: 'Date is required',
+      });
     }
 
     if (!formData.startTime) {
-      newErrors.startTime = 'Start time is required';
+      newErrors.startTime = t('form.errors.required', {
+        fallback: 'Start time is required',
+      });
     }
 
     if (!formData.location) {
-      newErrors.location = 'Location is required';
+      newErrors.location = t('form.errors.required', {
+        fallback: 'Please select a location',
+      });
     }
 
-    if (!formData.yachtType) {
-      newErrors.yachtType = 'Please select a yacht';
+    // Validate minors count
+    if (formData.minorsCount > formData.guests) {
+      newErrors.minorsCount = 'Number of minors cannot exceed total guests';
     }
 
-    // Validate end time if provided
-    if (formData.startTime && formData.endTime) {
-      const start = new Date(`2000-01-01T${formData.startTime}`);
-      const end = new Date(`2000-01-01T${formData.endTime}`);
-      if (end <= start) {
-        newErrors.endTime = 'End time must be after start time';
+    if (formData.minorsCount < 0) {
+      newErrors.minorsCount = 'Number of minors cannot be negative';
+    }
+
+    // Validate special needs
+    if (formData.hasSpecialNeeds) {
+      if (!formData.specialNeedsDetails.trim()) {
+        newErrors.specialNeedsDetails = t('form.errors.required', {
+          fallback: 'Please provide details about special needs',
+        });
+      }
+
+      if (!formData.confirmSpecialNeeds) {
+        newErrors.confirmSpecialNeeds = t('form.errors.confirmation', {
+          fallback: 'Please confirm special needs accommodation',
+        });
       }
     }
 
@@ -283,266 +250,595 @@ const LuxeYachtForm: React.FC<YachtFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
-  const handleSubmit = () => {
-    if (!validateForm()) return;
+  // Handle form submission - igual que PersonalTrainerForm
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      console.log('❌ YachtForm - Validation errors:', errors);
+      return;
+    }
 
     setIsSubmitting(true);
 
-    const submissionData = {
-      ...formData,
-      totalPrice: currentPrice,
-      serviceId: service.id,
-      serviceName: service.name,
-      selectedYachtDetails: yachtOptions.find(
-        (y) => y.id === formData.yachtType
-      ),
-    };
+    try {
+      const selectedDate = new Date(formData.date);
+      const bookingStartDate = new Date(selectedDate);
+      const bookingEndDate = new Date(selectedDate);
 
-    // Simulate API call
-    setTimeout(() => {
-      onSubmit(submissionData);
+      // Set start time based on selection
+      const [hours, minutes] = formData.startTime.split(':').map(Number);
+      bookingStartDate.setHours(hours, minutes || 0, 0, 0);
+
+      // Yacht service is typically 8.5 hours (9 AM - 5:30 PM)
+      bookingEndDate.setHours(17, 30, 0, 0);
+
+      // Get selected location name
+      const selectedLocation =
+        LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
+        formData.location;
+
+      // Get selected activities names
+      const selectedActivities = ACTIVITY_OPTIONS.filter((activity) =>
+        formData.activityPreferences.includes(activity.id)
+      ).map((activity) => activity.name);
+
+      const reservationData = {
+        service: service || {
+          id: yacht?.id || defaultYacht.id,
+          name: yacht?.name || defaultYacht.name,
+          price: yacht?.price || defaultYacht.price,
+          packageType: yacht?.isPremium ? 'premium' : 'standard',
+        },
+        formData: {
+          ...formData,
+          serviceType: 'yacht',
+          totalPrice: currentPrice,
+          calculatedPrice: currentPrice,
+          locationName: selectedLocation,
+        },
+        totalPrice: currentPrice,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: formData.guests - formData.minorsCount,
+          children: formData.minorsCount,
+          total: formData.guests,
+        },
+        selectedItems: [
+          {
+            id: `yacht-${yacht?.id || defaultYacht.id}`,
+            name: `${yacht?.name || defaultYacht.name} - Caribbean Experience`,
+            quantity: 1,
+            price: currentPrice,
+            totalPrice: currentPrice,
+            startTime: formData.startTime,
+            specialNeeds: formData.hasSpecialNeeds,
+            location: selectedLocation,
+            activities: selectedActivities,
+          },
+        ],
+        clientInfo: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+        },
+        yachtSpecifics: {
+          yachtId: yacht?.id || defaultYacht.id,
+          yachtName: yacht?.name || defaultYacht.name,
+          startTime: formData.startTime,
+          location: formData.location,
+          locationName: selectedLocation,
+          hasSpecialNeeds: formData.hasSpecialNeeds,
+          specialNeedsDetails: formData.specialNeedsDetails,
+          guests: formData.guests,
+          minorsCount: formData.minorsCount,
+          experienceLevel: formData.experienceLevel,
+          activityPreferences: formData.activityPreferences,
+          selectedActivities: selectedActivities,
+          additionalNotes: formData.message,
+          yachtSpecs: yacht?.specifications || defaultYacht.specifications,
+        },
+      };
+
+      console.log('🛥️ YachtForm - Reservation data created:', reservationData);
+
+      // Use setReservationData and router.push like PersonalTrainerForm
+      setReservationData(reservationData);
+
+      if (onSubmit) {
+        await onSubmit(reservationData);
+      }
+
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ YachtForm - Error submitting form:', error);
+      setErrors({
+        submit: 'Failed to submit reservation. Please try again.',
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
-  const selectedYacht = yachtOptions.find((y) => y.id === formData.yachtType);
-  const isPremium = service.packageType?.includes('premium');
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
+  const isPremium =
+    yacht?.isPremium || service?.packageType?.includes('premium');
+
+  if (!isOpen) return null;
 
   return (
-    <div className='w-full mx-auto overflow-hidden'>
-      <div className='bg-white rounded-2xl shadow-2xl border border-gray-100'>
-        {/* Header */}
-        <div
-          className={`bg-gradient-to-r ${
-            isPremium
-              ? 'from-amber-900 via-amber-800 to-amber-900'
-              : 'from-blue-900 via-blue-800 to-cyan-900'
-          } p-8 text-white relative overflow-hidden`}
-        >
-          <div className='absolute inset-0 bg-black/10'></div>
-          <div className='absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full'></div>
-          <div className='absolute -bottom-10 -left-10 w-32 h-32 bg-white/5 rounded-full'></div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className='fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4'
+    >
+      <div className='bg-white rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden shadow-2xl'>
+        {/* Form Header */}
+        <div className='relative'>
+          {/* Background Image */}
+          <div className='h-40 overflow-hidden'>
+            <img
+              src={yacht?.mainImage || defaultYacht.mainImage}
+              alt={yacht?.name || defaultYacht.name}
+              className='w-full h-full object-cover'
+            />
+            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent' />
+          </div>
 
-          <div className='relative'>
-            <div className='flex items-center mb-4'>
-              <Anchor className='w-8 h-8 mr-3' />
-              <h2 className='text-3xl font-light tracking-wide'>
-                {t('yacht.form.title', { fallback: 'Luxury Yacht Booking' })}
-              </h2>
+          {/* Close Button */}
+          <button
+            onClick={onCancel}
+            className='absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors'
+          >
+            <X className='w-4 h-4' />
+          </button>
+
+          {/* Header Content */}
+          <div className='absolute bottom-0 left-0 right-0 p-6 text-white'>
+            <div className='flex items-center justify-between'>
+              <div>
+                <div className='flex items-center gap-3 mb-2'>
+                  <h2 className='text-2xl font-light tracking-wide'>
+                    {yacht?.name || defaultYacht.name}
+                  </h2>
+                  {isPremium && (
+                    <div className='bg-gradient-to-r from-orange-400 to-red-400 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1'>
+                      <Crown className='w-3 h-3' />
+                      Premium
+                    </div>
+                  )}
+                </div>
+                <p className='text-white/90 text-sm'>
+                  {t('services.yacht.formDescription', {
+                    fallback:
+                      'Private Caribbean yacht experience - 9:00 AM to 5:30 PM',
+                  })}
+                </p>
+              </div>
+              <div className='text-right'>
+                <div className='text-3xl font-light'>
+                  ${currentPrice.toLocaleString()}
+                </div>
+                <div className='text-white/80 text-sm'>per day</div>
+              </div>
             </div>
-            <p
-              className={`${
-                isPremium ? 'text-amber-100' : 'text-blue-100'
-              } text-lg font-light`}
-            >
-              {t('yacht.form.subtitle', {
-                fallback: 'Reserve your exclusive yacht experience in paradise',
-              })}
-            </p>
           </div>
         </div>
 
-        {/* Form Body */}
-        <div className='p-8 space-y-10'>
-          {/* Yacht Selection */}
-          <div className='space-y-6'>
-            <h3
-              className={`text-xl font-semibold ${
-                isPremium ? 'text-amber-900' : 'text-blue-900'
-              } border-b border-gray-200 pb-3 flex items-center`}
-            >
-              <Anchor
-                className={`w-6 h-6 mr-3 ${
-                  isPremium ? 'text-amber-600' : 'text-blue-600'
-                }`}
-              />
-              Select Your Yacht
-            </h3>
-
-            <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-              {yachtOptions.map((yacht) => (
-                <div
-                  key={yacht.id}
-                  onClick={() =>
-                    setFormData((prev) => ({ ...prev, yachtType: yacht.id }))
-                  }
-                  className={`relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                    formData.yachtType === yacht.id
-                      ? 'ring-4 ring-blue-500 shadow-2xl'
-                      : 'shadow-lg hover:shadow-xl'
-                  }`}
-                >
-                  <div className='relative h-48'>
-                    <img
-                      src={yacht.image}
-                      alt={yacht.name}
-                      className='w-full h-full object-cover'
-                    />
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-t ${yacht.gradient} opacity-30`}
-                    ></div>
-
-                    {formData.yachtType === yacht.id && (
-                      <div className='absolute top-4 right-4 bg-white rounded-full p-2'>
-                        <Check className='w-5 h-5 text-green-500' />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className='p-4 bg-white'>
-                    <div className='flex justify-between items-start mb-2'>
-                      <h4 className='font-bold text-lg text-gray-900'>
-                        {yacht.name}
-                      </h4>
-                      <div className='text-right'>
-                        <div className='text-xl font-bold text-blue-600'>
-                          ${yacht.basePrice.toLocaleString()}
-                        </div>
-                        <div className='text-xs text-gray-500'>per day</div>
-                      </div>
-                    </div>
-                    <p className='text-sm text-gray-600 mb-3'>
-                      {yacht.category}
-                    </p>
-
-                    <div className='grid grid-cols-2 gap-2 text-xs'>
-                      <div className='flex items-center text-gray-600'>
-                        <Ruler className='w-3 h-3 mr-1' />
-                        {yacht.length}
-                      </div>
-                      <div className='flex items-center text-gray-600'>
-                        <Users className='w-3 h-3 mr-1' />
-                        {yacht.maxGuests} guests
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {errors.yachtType && (
-              <p className='text-red-500 text-sm'>{errors.yachtType}</p>
-            )}
-          </div>
-
-          {/* Date, Time & Duration */}
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+        {/* Form Content */}
+        <div className='max-h-[60vh] overflow-y-auto'>
+          <form onSubmit={handleSubmit} className='p-8 space-y-8'>
+            {/* Date and Time Section */}
             <div className='space-y-6'>
-              <h3
-                className={`text-xl font-semibold ${
-                  isPremium ? 'text-amber-900' : 'text-blue-900'
-                } border-b border-gray-200 pb-3 flex items-center`}
-              >
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
                 <Calendar
-                  className={`w-6 h-6 mr-3 ${
-                    isPremium ? 'text-amber-600' : 'text-blue-600'
+                  className={`w-5 h-5 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
                   }`}
                 />
-                When
+                {t('services.yacht.scheduling', {
+                  fallback: 'Yacht Scheduling',
+                })}
               </h3>
 
-              {/* Date */}
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Date *
-                </label>
-                <input
-                  type='date'
-                  name='date'
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  min={new Date().toISOString().split('T')[0]}
-                  className={`w-full p-4 border rounded-xl focus:ring-2 ${
-                    isPremium
-                      ? 'focus:ring-amber-500 focus:border-amber-500'
-                      : 'focus:ring-blue-500 focus:border-blue-500'
-                  } ${
-                    errors.date ? 'border-red-300' : 'border-gray-300'
-                  } bg-gray-50`}
-                />
-                {errors.date && (
-                  <p className='text-red-500 text-sm mt-1'>{errors.date}</p>
-                )}
-              </div>
-
-              {/* Time Range */}
-              <div className='grid grid-cols-2 gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                {/* Date Selection */}
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-2'>
-                    Start Time *
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Calendar
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    {t('services.yacht.date', { fallback: 'Select Date' })} *
                   </label>
                   <input
-                    type='time'
-                    name='startTime'
-                    value={formData.startTime}
-                    onChange={handleInputChange}
-                    className={`w-full p-4 border rounded-xl focus:ring-2 ${
+                    type='date'
+                    name='date'
+                    value={formData.date}
+                    onChange={handleChange}
+                    min={getTomorrowDate()}
+                    className={`w-full p-3 border ${
+                      errors.date ? 'border-red-500' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 ${
                       isPremium
                         ? 'focus:ring-amber-500 focus:border-amber-500'
-                        : 'focus:ring-blue-500 focus:border-blue-500'
-                    } ${
-                      errors.startTime ? 'border-red-300' : 'border-gray-300'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
                     } bg-gray-50`}
                   />
+                  {errors.date && (
+                    <p className='text-red-500 text-xs mt-1'>{errors.date}</p>
+                  )}
+                </div>
+
+                {/* Start Time Selection */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Clock
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    {t('services.yacht.startTime', {
+                      fallback: 'Departure Time',
+                    })}{' '}
+                    *
+                  </label>
+                  <select
+                    name='startTime'
+                    value={formData.startTime}
+                    onChange={handleChange}
+                    className={`w-full p-3 border ${
+                      errors.startTime ? 'border-red-500' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 ${
+                      isPremium
+                        ? 'focus:ring-amber-500 focus:border-amber-500'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
+                    } bg-gray-50`}
+                  >
+                    <option value=''>Select departure time</option>
+                    {TIME_SLOTS.map((slot) => (
+                      <option key={slot.id} value={slot.id}>
+                        {slot.name}
+                      </option>
+                    ))}
+                  </select>
                   {errors.startTime && (
-                    <p className='text-red-500 text-sm mt-1'>
+                    <p className='text-red-500 text-xs mt-1'>
                       {errors.startTime}
                     </p>
                   )}
+                  <p className='text-xs text-gray-500 mt-1'>
+                    Service ends at 5:30 PM regardless of start time
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Location Selection - igual que PersonalTrainerForm */}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <MapPin
+                  className={`w-5 h-5 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
+                  }`}
+                />
+                {t('services.yacht.location', {
+                  fallback: 'Location',
+                })}
+              </h3>
+
+              <div>
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
+                  <MapPin
+                    className={`w-4 h-4 mr-2 ${
+                      isPremium ? 'text-amber-600' : 'text-teal-600'
+                    }`}
+                  />
+                  Select Departure Location *
+                </label>
+
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                  {LOCATION_OPTIONS.map((location) => (
+                    <div
+                      key={location.id}
+                      className={`
+                        border rounded-lg p-4 cursor-pointer transition-all
+                        ${
+                          formData.location === location.id
+                            ? `${
+                                isPremium
+                                  ? 'bg-amber-50 border-amber-300'
+                                  : 'bg-teal-50 border-teal-300'
+                              } shadow-sm`
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }
+                      `}
+                      onClick={() => handleLocationSelect(location.id)}
+                    >
+                      <div className='flex items-center'>
+                        <div
+                          className={`
+                          w-5 h-5 rounded-full border flex items-center justify-center mr-3
+                          ${
+                            formData.location === location.id
+                              ? `${
+                                  isPremium
+                                    ? 'border-amber-500 bg-amber-500'
+                                    : 'border-teal-500 bg-teal-500'
+                                }`
+                              : 'border-gray-300'
+                          }
+                        `}
+                        >
+                          {formData.location === location.id && (
+                            <CheckCircle className='w-4 h-4 text-white' />
+                          )}
+                        </div>
+                        <span className='font-medium text-gray-800'>
+                          {location.name}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
+                {errors.location && (
+                  <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Guests Section */}
+            <div className='space-y-6'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <Users
+                  className={`w-5 h-5 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
+                  }`}
+                />
+                {t('services.yacht.guests', { fallback: 'Guests Information' })}
+              </h3>
+
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {/* Guest Count */}
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-2'>
-                    End Time (Optional)
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Users
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    Total Guests (Max: {yacht?.specifications?.maxGuests || 12})
+                  </label>
+                  <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
+                    <button
+                      type='button'
+                      onClick={() => updateGuestCount(false)}
+                      className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                    >
+                      -
+                    </button>
+                    <div className='flex-1 py-2 text-center font-medium'>
+                      {formData.guests}
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => updateGuestCount(true)}
+                      className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                {/* Minors Count */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Baby
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    Guests under 18
                   </label>
                   <input
-                    type='time'
-                    name='endTime'
-                    value={formData.endTime}
-                    onChange={handleInputChange}
-                    className={`w-full p-4 border rounded-xl focus:ring-2 ${
+                    type='number'
+                    name='minorsCount'
+                    min='0'
+                    max={formData.guests}
+                    value={formData.minorsCount}
+                    onChange={handleChange}
+                    className={`w-full max-w-xs p-3 border ${
+                      errors.minorsCount ? 'border-red-500' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 ${
                       isPremium
                         ? 'focus:ring-amber-500 focus:border-amber-500'
-                        : 'focus:ring-blue-500 focus:border-blue-500'
-                    } ${
-                      errors.endTime ? 'border-red-300' : 'border-gray-300'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
                     } bg-gray-50`}
+                    placeholder='0'
                   />
-                  {errors.endTime && (
-                    <p className='text-red-500 text-sm mt-1'>
-                      {errors.endTime}
+                  {errors.minorsCount && (
+                    <p className='text-red-500 text-xs mt-1'>
+                      {errors.minorsCount}
                     </p>
+                  )}
+
+                  {formData.minorsCount > 0 && (
+                    <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200 mt-3'>
+                      <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
+                      <p className='text-xs text-blue-700'>
+                        {formData.minorsCount} guest(s) under 18 detected. Adult
+                        supervision is required at all times.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
+            </div>
 
-              {/* Duration */}
+            {/* Contact Information Section */}
+            <div className='space-y-6'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <Phone
+                  className={`w-5 h-5 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
+                  }`}
+                />
+                {t('services.yacht.contact', {
+                  fallback: 'Contact Information',
+                })}
+              </h3>
+
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                {/* Full Name */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    Full Name <span className='text-red-500'>*</span>
+                  </label>
+                  <input
+                    type='text'
+                    name='name'
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`w-full p-3 border ${
+                      errors.name ? 'border-red-500' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 ${
+                      isPremium
+                        ? 'focus:ring-amber-500 focus:border-amber-500'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
+                    } bg-gray-50`}
+                    placeholder='Enter your full name'
+                  />
+                  {errors.name && (
+                    <p className='text-red-500 text-xs mt-1'>{errors.name}</p>
+                  )}
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Mail
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    Email <span className='text-red-500'>*</span>
+                  </label>
+                  <input
+                    type='email'
+                    name='email'
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={`w-full p-3 border ${
+                      errors.email ? 'border-red-500' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 ${
+                      isPremium
+                        ? 'focus:ring-amber-500 focus:border-amber-500'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
+                    } bg-gray-50`}
+                    placeholder='your@email.com'
+                  />
+                  {errors.email && (
+                    <p className='text-red-500 text-xs mt-1'>{errors.email}</p>
+                  )}
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Phone
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    Phone <span className='text-red-500'>*</span>
+                  </label>
+                  <input
+                    type='tel'
+                    name='phone'
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={`w-full p-3 border ${
+                      errors.phone ? 'border-red-500' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 ${
+                      isPremium
+                        ? 'focus:ring-amber-500 focus:border-amber-500'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
+                    } bg-gray-50`}
+                    placeholder='+1 (555) 000-0000'
+                  />
+                  {errors.phone && (
+                    <p className='text-red-500 text-xs mt-1'>{errors.phone}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Activity Preferences Section */}
+            <div className='space-y-6'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <Waves
+                  className={`w-5 h-5 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
+                  }`}
+                />
+                {t('services.yacht.activities', {
+                  fallback: 'Preferred Activities',
+                })}
+              </h3>
+
               <div>
                 <label className='block text-sm font-medium text-gray-700 mb-3'>
-                  Duration Package
+                  Select your preferred activities (optional)
                 </label>
-                <div className='space-y-3'>
-                  {durationOptions.map((option) => (
+                <div className='grid grid-cols-2 md:grid-cols-3 gap-3'>
+                  {ACTIVITY_OPTIONS.map((activity) => (
                     <div
-                      key={option.id}
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          duration: option.id,
-                        }))
-                      }
-                      className={`p-4 border rounded-xl cursor-pointer transition-all ${
-                        formData.duration === option.id
-                          ? `border-blue-500 bg-blue-50`
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
+                      key={activity.id}
+                      className={`
+                        border rounded-lg p-3 cursor-pointer transition-all
+                        ${
+                          formData.activityPreferences.includes(activity.id)
+                            ? `${
+                                isPremium
+                                  ? 'bg-amber-50 border-amber-300'
+                                  : 'bg-teal-50 border-teal-300'
+                              } shadow-sm`
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }
+                      `}
+                      onClick={() => toggleActivityPreference(activity.id)}
                     >
-                      <div className='flex items-center justify-between'>
-                        <span className='font-medium'>{option.name}</span>
-                        {formData.duration === option.id && (
-                          <Check className='w-5 h-5 text-blue-500' />
-                        )}
+                      <div className='flex items-center'>
+                        <div
+                          className={`
+                          w-4 h-4 rounded border flex items-center justify-center mr-3
+                          ${
+                            formData.activityPreferences.includes(activity.id)
+                              ? `${
+                                  isPremium
+                                    ? 'border-amber-500 bg-amber-500'
+                                    : 'border-teal-500 bg-teal-500'
+                                }`
+                              : 'border-gray-300'
+                          }
+                        `}
+                        >
+                          {formData.activityPreferences.includes(
+                            activity.id
+                          ) && <CheckCircle className='w-3 h-3 text-white' />}
+                        </div>
+                        <span className='text-sm font-medium text-gray-800'>
+                          {activity.name}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -550,342 +846,267 @@ const LuxeYachtForm: React.FC<YachtFormProps> = ({
               </div>
             </div>
 
-            <div className='space-y-6'>
-              <h3
-                className={`text-xl font-semibold ${
-                  isPremium ? 'text-amber-900' : 'text-blue-900'
-                } border-b border-gray-200 pb-3 flex items-center`}
-              >
-                <MapPin
-                  className={`w-6 h-6 mr-3 ${
-                    isPremium ? 'text-amber-600' : 'text-blue-600'
+            {/* Special Needs Section */}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <AlertCircle
+                  className={`w-5 h-5 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
                   }`}
                 />
-                Where & Who
+                {t('services.yacht.specialNeeds', {
+                  fallback: 'Special Requirements',
+                })}
               </h3>
 
-              {/* Location */}
+              {/* Special Needs Toggle */}
+              <div
+                className={`
+                  flex items-center justify-between p-4 border rounded-lg cursor-pointer
+                  ${
+                    formData.hasSpecialNeeds
+                      ? `${
+                          isPremium
+                            ? 'border-amber-300 bg-amber-50'
+                            : 'border-teal-300 bg-teal-50'
+                        }`
+                      : 'border-gray-200 hover:bg-gray-50'
+                  }
+                `}
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    hasSpecialNeeds: !prev.hasSpecialNeeds,
+                    specialNeedsDetails: !prev.hasSpecialNeeds
+                      ? prev.specialNeedsDetails
+                      : '',
+                    confirmSpecialNeeds: !prev.hasSpecialNeeds
+                      ? prev.confirmSpecialNeeds
+                      : false,
+                  }))
+                }
+              >
+                <div className='flex items-center'>
+                  <div
+                    className={`
+                    w-5 h-5 rounded-full border flex items-center justify-center mr-3
+                    ${
+                      formData.hasSpecialNeeds
+                        ? `${
+                            isPremium
+                              ? 'border-amber-500 bg-amber-500'
+                              : 'border-teal-500 bg-teal-500'
+                          }`
+                        : 'border-gray-300'
+                    }
+                  `}
+                  >
+                    {formData.hasSpecialNeeds && (
+                      <CheckCircle className='w-4 h-4 text-white' />
+                    )}
+                  </div>
+                  <span className='font-medium text-gray-800'>
+                    Disability or mobility requirements
+                  </span>
+                </div>
+                <AlertCircle
+                  className={`w-5 h-5 ${
+                    isPremium ? 'text-amber-500' : 'text-teal-500'
+                  }`}
+                />
+              </div>
+
+              {/* Special Needs Details */}
+              {formData.hasSpecialNeeds && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className={`p-4 border rounded-lg ${
+                    isPremium ? 'border-amber-200' : 'border-teal-200'
+                  }`}
+                >
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Please specify requirements *
+                  </label>
+                  <textarea
+                    name='specialNeedsDetails'
+                    value={formData.specialNeedsDetails}
+                    onChange={handleChange}
+                    placeholder='Describe any conditions that would require special accommodation...'
+                    className={`w-full p-3 border ${
+                      errors.specialNeedsDetails
+                        ? 'border-red-500'
+                        : 'border-gray-300'
+                    } rounded-lg ${
+                      isPremium
+                        ? 'focus:ring-amber-500 focus:border-amber-500'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
+                    } bg-white resize-none h-24`}
+                  />
+                  {errors.specialNeedsDetails && (
+                    <p className='text-red-500 text-xs mt-1'>
+                      {errors.specialNeedsDetails}
+                    </p>
+                  )}
+
+                  {/* Confirmation checkbox */}
+                  <div className='mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200'>
+                    <div className='flex items-start'>
+                      <div className='flex items-center h-5'>
+                        <input
+                          id='confirmSpecialNeeds'
+                          name='confirmSpecialNeeds'
+                          type='checkbox'
+                          checked={formData.confirmSpecialNeeds}
+                          onChange={handleChange}
+                          className={`h-4 w-4 ${
+                            isPremium ? 'text-amber-600' : 'text-teal-600'
+                          } focus:ring-2 border-gray-300 rounded`}
+                        />
+                      </div>
+                      <label
+                        htmlFor='confirmSpecialNeeds'
+                        className='ml-3 text-sm text-gray-700'
+                      >
+                        I confirm that someone in my group requires the special
+                        accommodations described above
+                      </label>
+                    </div>
+                    {errors.confirmSpecialNeeds && (
+                      <p className='text-red-500 text-xs mt-1'>
+                        {errors.confirmSpecialNeeds}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className='mt-3 flex items-start'>
+                    <Info className='h-5 w-5 text-gray-400 mt-0.5 mr-2 flex-shrink-0' />
+                    <p className='text-xs text-gray-500'>
+                      There is an additional fee for special accommodations. Our
+                      team will contact you to discuss specific arrangements.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Additional Notes Section */}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
+                <MessageSquare
+                  className={`w-5 h-5 mr-2 ${
+                    isPremium ? 'text-amber-600' : 'text-teal-600'
+                  }`}
+                />
+                {t('services.yacht.additionalInfo', {
+                  fallback: 'Additional Information',
+                })}
+              </h3>
+
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                  Departure Location *
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                  <MessageSquare
+                    className={`w-4 h-4 mr-2 ${
+                      isPremium ? 'text-amber-600' : 'text-teal-600'
+                    }`}
+                  />
+                  Special Requests & Notes
                 </label>
-                <select
-                  name='location'
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  className={`w-full p-4 border rounded-xl focus:ring-2 ${
+                <textarea
+                  name='message'
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder='Celebrations, dietary requirements, specific destinations, or any other special requests...'
+                  className={`w-full p-3 border border-gray-300 rounded-lg ${
                     isPremium
                       ? 'focus:ring-amber-500 focus:border-amber-500'
-                      : 'focus:ring-blue-500 focus:border-blue-500'
-                  } ${
-                    errors.location ? 'border-red-300' : 'border-gray-300'
-                  } bg-gray-50`}
-                >
-                  <option value=''>Select location</option>
-                  {locationOptions.map((location) => (
-                    <option key={location} value={location}>
-                      {location}
-                    </option>
-                  ))}
-                </select>
-                {errors.location && (
-                  <p className='text-red-500 text-sm mt-1'>{errors.location}</p>
-                )}
-              </div>
-
-              {/* Hotel Transport */}
-              <div className='flex items-center bg-gray-50 p-4 rounded-xl'>
-                <input
-                  type='checkbox'
-                  id='hasTransport'
-                  name='hasTransport'
-                  checked={formData.hasTransport}
-                  onChange={handleInputChange}
-                  className={`h-5 w-5 ${
-                    isPremium
-                      ? 'text-amber-600 focus:ring-amber-500'
-                      : 'text-blue-600 focus:ring-blue-500'
-                  } border-gray-300 rounded`}
+                      : 'focus:ring-teal-500 focus:border-teal-500'
+                  } bg-gray-50 resize-none h-24`}
                 />
-                <label
-                  htmlFor='hasTransport'
-                  className='ml-3 text-sm text-gray-700'
-                >
-                  Hotel pickup and drop-off service (+$150)
-                </label>
-              </div>
-
-              {/* Guest Count */}
-              <div>
-                <label className='block text-sm font-medium text-gray-700 mb-3'>
-                  Number of Guests
-                </label>
-                <div className='flex items-center justify-center max-w-xs mx-auto'>
-                  <button
-                    type='button'
-                    onClick={() => updateGuestCount(false)}
-                    className='w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors'
-                  >
-                    -
-                  </button>
-                  <div className='mx-6 text-center'>
-                    <div className='text-3xl font-bold text-gray-900'>
-                      {formData.guestCount}
-                    </div>
-                    <div className='text-sm text-gray-600'>guests</div>
-                  </div>
-                  <button
-                    type='button'
-                    onClick={() => updateGuestCount(true)}
-                    className='w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors'
-                  >
-                    +
-                  </button>
-                </div>
-                {selectedYacht && (
-                  <p className='text-sm text-gray-500 mt-2 text-center'>
-                    Maximum: {selectedYacht.maxGuests} guests
-                  </p>
-                )}
-                {formData.guestCount > 6 && (
-                  <p className='text-sm text-blue-600 mt-2 text-center'>
-                    +${(formData.guestCount - 6) * 100} for additional guests
-                  </p>
-                )}
               </div>
             </div>
-          </div>
 
-          {/* Catering Options */}
-          <div className='space-y-6'>
-            <h3
-              className={`text-xl font-semibold ${
-                isPremium ? 'text-amber-900' : 'text-blue-900'
-              } border-b border-gray-200 pb-3 flex items-center`}
-            >
-              <Star
-                className={`w-6 h-6 mr-3 ${
-                  isPremium ? 'text-amber-600' : 'text-blue-600'
-                }`}
-              />
-              Catering & Beverages
-            </h3>
-
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              {cateringOptions.map((option) => (
-                <div
-                  key={option.id}
-                  onClick={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      cateringOption: option.id,
-                    }))
-                  }
-                  className={`p-6 border rounded-xl cursor-pointer transition-all ${
-                    formData.cateringOption === option.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  <div className='flex items-center justify-between mb-2'>
-                    <h4 className='font-semibold'>{option.name}</h4>
-                    {option.price > 0 && (
-                      <span className='text-blue-600 font-medium'>
-                        +${option.price}
-                      </span>
-                    )}
-                  </div>
-                  <p className='text-sm text-gray-600 mb-3'>
-                    {option.description}
-                  </p>
-                  {formData.cateringOption === option.id && (
-                    <Check className='w-5 h-5 text-blue-500' />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Water Sports */}
-          <div className='space-y-6'>
-            <h3
-              className={`text-xl font-semibold ${
-                isPremium ? 'text-amber-900' : 'text-blue-900'
-              } border-b border-gray-200 pb-3 flex items-center`}
-            >
-              <Waves
-                className={`w-6 h-6 mr-3 ${
-                  isPremium ? 'text-amber-600' : 'text-blue-600'
-                }`}
-              />
-              Water Sports & Activities
-            </h3>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {waterSportsOptions.map((sport) => (
-                <div
-                  key={sport.id}
-                  onClick={() => toggleWaterSport(sport.id)}
-                  className={`p-4 border rounded-xl cursor-pointer transition-all ${
-                    formData.waterSports.includes(sport.id)
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  <div className='flex items-center justify-between'>
-                    <div>
-                      <h4 className='font-medium'>{sport.name}</h4>
-                      <span className='text-blue-600 text-sm'>
-                        +${sport.price}
-                      </span>
-                    </div>
-                    {formData.waterSports.includes(sport.id) && (
-                      <Check className='w-5 h-5 text-blue-500' />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Special Requests */}
-          <div className='space-y-6'>
-            <h3
-              className={`text-xl font-semibold ${
-                isPremium ? 'text-amber-900' : 'text-blue-900'
-              } border-b border-gray-200 pb-3 flex items-center`}
-            >
-              <MessageSquare
-                className={`w-6 h-6 mr-3 ${
-                  isPremium ? 'text-amber-600' : 'text-blue-600'
-                }`}
-              />
-              Special Requests
-            </h3>
-
-            <textarea
-              name='specialRequests'
-              value={formData.specialRequests}
-              onChange={handleInputChange}
-              rows={4}
-              placeholder='Tell us about any special occasions, dietary requirements, preferred routes, or specific requests to make your yacht experience perfect...'
-              className={`w-full p-4 border rounded-xl focus:ring-2 ${
-                isPremium
-                  ? 'focus:ring-amber-500 focus:border-amber-500'
-                  : 'focus:ring-blue-500 focus:border-blue-500'
-              } border-gray-300 bg-gray-50 resize-none`}
-            />
-          </div>
-
-          {/* Important Information */}
-          <div className='bg-blue-50 p-6 rounded-2xl'>
-            <div className='flex items-start'>
-              <Info className='w-6 h-6 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
-              <div>
-                <h4 className='font-semibold text-blue-900 mb-2'>
-                  What's Included
-                </h4>
-                <ul className='text-sm text-blue-800 space-y-1'>
-                  <li>• Professional captain and crew</li>
-                  <li>• Fuel, insurance, and safety equipment</li>
-                  <li>• Basic refreshments and towels</li>
-                  <li>• Sound system and entertainment</li>
-                  <li>• Snorkeling equipment (basic package)</li>
-                </ul>
+            {/* Error Display */}
+            {errors.submit && (
+              <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+                <p className='text-red-800 text-sm'>{errors.submit}</p>
               </div>
-            </div>
-          </div>
+            )}
+          </form>
         </div>
 
-        {/* Footer with Price and Actions */}
-        <div
-          className={`bg-gradient-to-r ${
-            isPremium
-              ? 'from-amber-900 to-amber-800'
-              : 'from-blue-900 to-cyan-900'
-          } text-white p-8`}
-        >
-          <div className='flex flex-col lg:flex-row items-center justify-between'>
-            <div className='flex flex-col items-center lg:items-start mb-6 lg:mb-0'>
-              <span className='text-white/80 text-sm uppercase tracking-wide font-medium'>
-                Total Investment
+        {/* Form Footer */}
+        <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
+          <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
+            <span className='text-gray-400 text-sm uppercase tracking-wide'>
+              Total Price
+            </span>
+            <div className='flex items-center mt-1'>
+              <span className='text-3xl font-light'>
+                ${currentPrice.toFixed(2)}
               </span>
-              <div className='flex items-center mt-2'>
-                <span className='text-4xl font-light'>
-                  ${currentPrice.toLocaleString()}
+              {formData.guests > 1 && (
+                <span className='ml-2 text-sm bg-blue-800 px-2 py-1 rounded'>
+                  {formData.guests} guests
                 </span>
-                {selectedYacht && (
-                  <span className='ml-3 bg-white/20 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-full'>
-                    {selectedYacht.name}
-                  </span>
-                )}
-              </div>
-
-              {/* Price breakdown */}
-              <div className='text-xs text-white/60 mt-3 space-y-1'>
-                {selectedYacht && (
-                  <div>Yacht: ${selectedYacht.basePrice.toLocaleString()}</div>
-                )}
-                {formData.guestCount > 6 && (
-                  <div>Extra guests: +${(formData.guestCount - 6) * 100}</div>
-                )}
-                {formData.cateringOption !== 'basic' && (
-                  <div>
-                    Catering: +$
-                    {
-                      cateringOptions.find(
-                        (c) => c.id === formData.cateringOption
-                      )?.price
-                    }
-                  </div>
-                )}
-                {formData.waterSports.length > 0 && (
-                  <div>
-                    Activities: +$
-                    {formData.waterSports.reduce((total, sportId) => {
-                      const sport = waterSportsOptions.find(
-                        (s) => s.id === sportId
-                      );
-                      return total + (sport?.price || 0);
-                    }, 0)}
-                  </div>
-                )}
-                {formData.hasTransport && <div>Transport: +$150</div>}
-              </div>
+              )}
             </div>
 
-            <div className='flex flex-col sm:flex-row gap-4'>
-              <button
-                onClick={onCancel}
-                className='px-8 py-4 border-2 border-white/30 rounded-xl text-white hover:bg-white/10 transition-colors font-medium'
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className={`px-12 py-4 bg-white text-blue-900 rounded-xl hover:bg-white/90 transition-colors font-semibold flex items-center justify-center ${
-                  isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-                }`}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-blue-900 mr-2'></div>
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className='w-5 h-5 mr-2' />
-                    Reserve Yacht
-                  </>
-                )}
-              </button>
+            {/* Price breakdown */}
+            <div className='text-xs text-gray-400 mt-2 space-y-1'>
+              <div>
+                Caribbean Yacht Experience ({yacht?.name || defaultYacht.name})
+              </div>
+              <div>
+                {formData.startTime &&
+                  `Departure: ${formData.startTime} - Return: 5:30 PM`}
+              </div>
+              {formData.guests > 4 && (
+                <div className='text-yellow-400'>
+                  Large group fee applied (+10%)
+                </div>
+              )}
+              {formData.hasSpecialNeeds && (
+                <div>Special accommodation fee: +$50</div>
+              )}
+              {formData.minorsCount > 0 && (
+                <div className='text-blue-400'>
+                  {formData.minorsCount} guest(s) under 18
+                </div>
+              )}
             </div>
+          </div>
+
+          <div className='flex space-x-4'>
+            <button
+              type='button'
+              onClick={onCancel}
+              disabled={isSubmitting}
+              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
+            >
+              {t('common.cancel', { fallback: 'Cancel' })}
+            </button>
+
+            <button
+              type='submit'
+              disabled={isSubmitting}
+              className={`px-8 py-3 ${
+                isPremium
+                  ? 'bg-amber-600 hover:bg-amber-500'
+                  : 'bg-teal-600 hover:bg-teal-500'
+              } text-white rounded-lg transition flex items-center disabled:opacity-50`}
+            >
+              <CreditCard className='h-4 w-4 mr-2' />
+              {isSubmitting
+                ? t('services.yacht.booking', { fallback: 'Booking...' })
+                : t('services.yacht.book', {
+                    fallback: 'Book Yacht Experience',
+                  })}
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
