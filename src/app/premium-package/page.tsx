@@ -145,9 +145,9 @@ const PremiumPackageContent = () => {
               variants={fadeInUp}
               className='text-5xl md:text-8xl font-extrabold text-white mb-6 leading-tight'
             >
-              Punta Cana{' '}
+              X
               <span className='bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent'>
-                Luxe
+                clusive
               </span>
               {/* <span className='block text-3xl md:text-5xl font-normal text-amber-300 mt-4'>
                 Ultimate Premium Experience
@@ -276,7 +276,7 @@ const PremiumPackageContent = () => {
                   className='text-center mb-16'
                 >
                   <h2 className='text-4xl md:text-6xl font-bold text-white mb-6'>
-                    Your Premium Experience
+                    Your Xclusive Experience
                   </h2>
                   <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                     Indulge in the ultimate luxury with our handpicked premium
@@ -297,7 +297,7 @@ const PremiumPackageContent = () => {
                         The Ultimate Punta Cana Experience
                       </h3>
                       <p className='text-gray-300 mb-6 leading-relaxed text-lg'>
-                        Our Punta Cana Luxe package redefines the Dominican
+                        Our Lux Puntacana package redefines the Dominican
                         vacation experience, offering an exclusive journey into
                         luxury and personalized service. From your arrival in a
                         premium SUV to unforgettable days aboard your private

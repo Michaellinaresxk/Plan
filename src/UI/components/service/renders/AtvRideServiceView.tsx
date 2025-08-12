@@ -750,6 +750,53 @@ const InfoSection = () => {
   );
 };
 
+// Quick Info Section Component
+const QuickInfoSection = () => {
+  const cards = [
+    {
+      icon: <MapPin className='w-5 h-5' />,
+      title: 'Jungle & Beach',
+      description: 'Explore diverse tropical terrain',
+    },
+    {
+      icon: <Shield className='w-5 h-5' />,
+      title: 'Safety First',
+      description: 'Professional guides & gear',
+    },
+    {
+      icon: <Clock className='w-5 h-5' />,
+      title: '3 Hours',
+      description: 'Action-packed adventure',
+    },
+    {
+      icon: <Star className='w-5 h-5' />,
+      title: '4.9 Rating',
+      description: 'From 1,200+ adventurers',
+    },
+  ];
+
+  return (
+    <section className='py-16 px-4 bg-gray-50'>
+      <div className='max-w-5xl mx-auto'>
+        <div className='grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
+          {cards.map((card, idx) => (
+            <div
+              key={idx}
+              className='text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow'
+            >
+              <div className='inline-flex p-3 rounded-full bg-gradient-to-br from-amber-100 to-green-100 text-amber-600 mb-3'>
+                {card.icon}
+              </div>
+              <h3 className='font-semibold text-gray-800 mb-1'>{card.title}</h3>
+              <p className='text-sm text-gray-600'>{card.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // Updated Includes Section with specific cenote info
 const IncludesSection = () => {
   const includes = [
@@ -1106,6 +1153,7 @@ const AtvRideServiceView = () => {
   return (
     <div className='min-h-screen bg-white'>
       <HeroSection onBookNow={handleBookNow} />
+      <QuickInfoSection />
 
       {/* Vehicle Selection Section */}
       <div data-section='vehicle-selection'>
@@ -1125,36 +1173,34 @@ const AtvRideServiceView = () => {
       <ReviewsSection />
 
       {/* Cenote Important Notice */}
-      <section className='px-16 py-20'>
-        <div className='mt-20 bg-red-50 border-2 border-red-300 rounded-xl p-6'>
-          <div className='flex items-start gap-4'>
-            <Waves className='w-8 h-8 text-red-600 flex-shrink-0 mt-1' />
-            <div>
-              <h3 className='text-xl font-bold text-red-800 mb-3'>
-                🏊‍♂️ Important: Cenote Swimming
-              </h3>
-              <p className='text-red-700 font-medium mb-2'>
-                Life vests are NOT included for cenote swimming and must be
-                purchased as an additional service at the location.
-              </p>
-              <p className='text-red-600 text-sm'>
-                Swimming in the cenote is completely optional. Safety equipment
-                can be rented on-site for those who wish to swim.
-              </p>
-            </div>
+      <div className='mt-8 bg-red-50 border-2 border-red-300 rounded-xl p-6'>
+        <div className='flex items-start gap-4'>
+          <Waves className='w-8 h-8 text-red-600 flex-shrink-0 mt-1' />
+          <div>
+            <h3 className='text-xl font-bold text-red-800 mb-3'>
+              🏊‍♂️ Important: Cenote Swimming
+            </h3>
+            <p className='text-red-700 font-medium mb-2'>
+              Life vests are NOT included for cenote swimming and must be
+              purchased as an additional service at the location.
+            </p>
+            <p className='text-red-600 text-sm'>
+              Swimming in the cenote is completely optional. Safety equipment
+              can be rented on-site for those who wish to swim.
+            </p>
           </div>
         </div>
+      </div>
 
-        <div className='mt-6 text-center'>
-          <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full'>
-            <Info className='w-4 h-4 text-blue-600' />
-            <span className='text-blue-800 font-medium text-sm'>
-              All safety equipment and professional guidance included for
-              vehicle operation
-            </span>
-          </div>
+      <div className='mt-6 text-center'>
+        <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full'>
+          <Info className='w-4 h-4 text-blue-600' />
+          <span className='text-blue-800 font-medium text-sm'>
+            All safety equipment and professional guidance included for vehicle
+            operation
+          </span>
         </div>
-      </section>
+      </div>
 
       {/* Booking Modal */}
       <AnimatePresence>

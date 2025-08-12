@@ -324,47 +324,6 @@ const FlightNumberInput: React.FC<{
   );
 };
 
-const TerminalSummary: React.FC<{ formData: FormData }> = ({ formData }) => {
-  const arrivalInfo = getAirlineInfo(formData.airline);
-  const departureInfo = formData.isRoundTrip
-    ? getAirlineInfo(formData.returnAirline)
-    : null;
-
-  if (!arrivalInfo && !departureInfo) return null;
-
-  return (
-    <div className='mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg'>
-      <h4 className='font-medium text-blue-900 mb-3 flex items-center'>
-        <Info className='w-4 h-4 mr-2' />
-        Terminal Information Summary
-      </h4>
-
-      {arrivalInfo && (
-        <div className='mb-2'>
-          <span className='text-sm text-blue-800'>
-            <strong>Arrival:</strong> {formData.airline} → Terminal{' '}
-            {arrivalInfo.terminal}
-          </span>
-        </div>
-      )}
-
-      {departureInfo && (
-        <div>
-          <span className='text-sm text-blue-800'>
-            <strong>Departure:</strong> {formData.returnAirline} → Terminal{' '}
-            {departureInfo.terminal}
-          </span>
-        </div>
-      )}
-
-      <p className='text-xs text-blue-700 mt-2'>
-        Your driver will receive this terminal information to ensure smooth
-        pickup and drop-off.
-      </p>
-    </div>
-  );
-};
-
 // Main Component
 const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   service,
@@ -915,7 +874,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                     <div className='md:col-span-2'>
                       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                         <Clock className='w-4 h-4 mr-2 text-blue-700' />
-                        Hotel Pickup Time *
+                        Pickup Time *
                       </label>
                       <input
                         type='time'
@@ -943,12 +902,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
               )}
             </div>
           </div>
-
-          {/* Terminal Summary */}
-          {(formData.airline ||
-            (formData.isRoundTrip && formData.returnAirline)) && (
-            <TerminalSummary formData={formData} />
-          )}
 
           {/* Passenger Information */}
           <div className='space-y-6'>
@@ -1144,59 +1097,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
               {errors.pickupName && (
                 <p className='text-red-500 text-xs mt-1'>{errors.pickupName}</p>
               )}
-            </div>
-          </div>
-
-          {/* Price Summary */}
-          <div className='bg-gray-50 p-6 rounded-lg border'>
-            <h3 className='text-lg font-medium text-gray-800 mb-4'>
-              Price Summary
-            </h3>
-            <div className='space-y-2 text-sm'>
-              <div className='flex justify-between'>
-                <span>Base service:</span>
-                <span>${service.price}</span>
-              </div>
-              {VEHICLE_OPTIONS[formData.vehicleType]?.additionalCost > 0 && (
-                <div className='flex justify-between'>
-                  <span>
-                    Vehicle upgrade (
-                    {VEHICLE_OPTIONS[formData.vehicleType].name}):
-                  </span>
-                  <span>
-                    +${VEHICLE_OPTIONS[formData.vehicleType].additionalCost}
-                  </span>
-                </div>
-              )}
-              {formData.isRoundTrip && (
-                <div className='flex justify-between'>
-                  <span>Round trip (80% discount on return):</span>
-                  <span>×1.8</span>
-                </div>
-              )}
-              {formData.carSeatCount > 0 && (
-                <div className='flex justify-between'>
-                  <span>Car seats ({formData.carSeatCount}):</span>
-                  <span>+${formData.carSeatCount * 25}</span>
-                </div>
-              )}
-              {/* ✅ Display selected location area in price breakdown */}
-              {formData.locationArea && (
-                <div className='flex justify-between text-blue-600'>
-                  <span>Destination area:</span>
-                  <span>
-                    {
-                      LOCATION_OPTIONS.find(
-                        (loc) => loc.id === formData.locationArea
-                      )?.name
-                    }
-                  </span>
-                </div>
-              )}
-              <div className='border-t pt-2 font-bold flex justify-between'>
-                <span>Total:</span>
-                <span>${calculatePrice}</span>
-              </div>
             </div>
           </div>
         </div>

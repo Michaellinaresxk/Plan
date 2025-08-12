@@ -658,42 +658,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
         })}
       </div>
 
-      {/* Selection Summary */}
-      {totalCarts > 0 && (
-        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-          <h4 className='font-medium text-blue-800 mb-2 flex items-center'>
-            <ShoppingCart className='w-4 h-4 mr-2' />
-            Cart Selection Summary
-          </h4>
-          <div className='space-y-2'>
-            {selectedCartsDetails.map((item) => (
-              <div
-                key={item.cart.id}
-                className='flex justify-between items-center text-sm text-blue-700'
-              >
-                <span>
-                  {item.quantity}x {item.cart.name}
-                </span>
-                <span>${item.subtotal}/night</span>
-              </div>
-            ))}
-            <div className='pt-2 border-t border-blue-300 flex justify-between items-center font-medium text-blue-800'>
-              <span>
-                Total: {totalCarts} cart{totalCarts > 1 ? 's' : ''}
-              </span>
-              <span>
-                $
-                {selectedCartsDetails.reduce(
-                  (sum, item) => sum + item.subtotal,
-                  0
-                )}
-                /night
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {errors.selectedCarts && (
         <p className='text-red-500 text-sm'>{errors.selectedCarts}</p>
       )}
@@ -915,30 +879,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                 </div>
               </div>
             </div>
-
-            {/* Rental Duration Display */}
-            {formData.startDate && formData.endDate && totalCarts > 0 && (
-              <div className='p-4 bg-blue-50 border border-blue-200 rounded-lg'>
-                <div className='space-y-2 text-sm text-blue-800'>
-                  <div className='flex justify-between'>
-                    <strong>Rental duration:</strong>
-                    <span>
-                      {rentalDays} night{rentalDays > 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <strong>Total carts:</strong>
-                    <span>
-                      {totalCarts} cart{totalCarts > 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <div className='flex justify-between border-t border-blue-300 pt-2 font-bold'>
-                    <span>Grand Total:</span>
-                    <span>${calculateTotalPrice}</span>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Booking timing warnings */}
             {formData.startDate && (

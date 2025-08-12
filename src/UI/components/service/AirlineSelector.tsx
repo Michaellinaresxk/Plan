@@ -233,38 +233,6 @@ const AirlineSelector: React.FC<AirlineSelectorProps> = ({
           )}
       </div>
 
-      {/* Terminal Information Display */}
-      {terminalInfo && (
-        <div className='p-4 bg-blue-50 border border-blue-200 rounded-lg'>
-          <div className='flex items-start'>
-            <Info className='w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0' />
-            <div className='flex-1'>
-              <div className='flex items-center mb-2 flex-wrap'>
-                <span className='text-sm font-medium text-blue-900'>
-                  Arrival Terminal:
-                </span>
-                <span className='ml-2 px-3 py-1 bg-blue-700 text-white text-sm font-bold rounded'>
-                  Terminal {terminalInfo.terminal}
-                </span>
-              </div>
-
-              <div className='text-xs text-blue-800 space-y-1'>
-                <p>
-                  <strong>Airline Code:</strong> {terminalInfo.code}
-                </p>
-                <p>
-                  <strong>Region:</strong> {terminalInfo.regions?.join(', ')}
-                </p>
-                <p className='mt-2 text-blue-700'>
-                  <strong>Note:</strong> Your transfer service will meet you at
-                  Terminal {terminalInfo.terminal} arrivals area.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* No Terminal Info Available */}
       {value && !terminalInfo && value !== 'Other' && (
         <div className='p-3 bg-yellow-50 border border-yellow-200 rounded-lg'>
