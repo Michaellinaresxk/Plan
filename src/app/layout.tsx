@@ -24,9 +24,9 @@ export const metadata: Metadata = {
   keywords: [
     'Puntacana luxury services',
     'Dominican Republic concierge',
-    'premium vacation services',
+    'Xclusive vacation services',
     'private chef Punta Cana',
-    'exclusive excursions',
+    'Xclusive excursions',
     'luxury resort services',
     'personalized vacation experiences',
     'Puntacana resort concierge',
@@ -50,9 +50,9 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://luxpuntacana.com',
     siteName: 'Lux Puntacana',
-    title: 'Lux Puntacana - Premium Luxury Services & Concierge',
+    title: 'Lux Puntacana - Xclusive Luxury Services & Concierge',
     description:
-      'Experience luxury vacations in Punta Cana with our premium concierge services, private chefs, and exclusive excursions. Personalized experiences for resort guests.',
+      'Experience luxury vacations in Punta Cana with our Xclusive concierge services, private chefs, and exclusive excursions. Personalized experiences for resort guests.',
     images: [
       {
         url: 'https://luxpuntacana.com/images/punta-cana-luxury-hero.jpg',
@@ -70,9 +70,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lux Puntacana - Premium Luxury Services',
+    title: 'Lux Puntacana - Xclusive Luxury Services',
     description:
-      'Experience luxury vacations in Punta Cana with premium concierge services and personalized experiences.',
+      'Experience luxury vacations in Punta Cana with Xclusive concierge services and personalized experiences.',
     images: ['https://luxpuntacana.com/images/punta-cana-luxury-hero.jpg'],
   },
   verification: {
@@ -130,9 +130,9 @@ const structuredData = {
       '@type': 'WebSite',
       '@id': 'https://luxpuntacana.com/#website',
       url: 'https://luxpuntacana.com',
-      name: 'Lux Punta Cana - Premium Luxury Services',
+      name: 'Lux Punta Cana - Premium Xclusive Services',
       description:
-        'Experience luxury vacations in Punta Cana with premium concierge services, private chefs, and exclusive excursions.',
+        'Experience luxury vacations in Punta Cana with Xclusive concierge services, private chefs, and exclusive excursions.',
       publisher: {
         '@id': 'https://luxpuntacana.com/#organization',
       },

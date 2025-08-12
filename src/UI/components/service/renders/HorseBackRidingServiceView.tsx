@@ -24,6 +24,17 @@ import {
   Calendar,
   Play,
   Camera,
+  Coffee,
+  Trees,
+  Shirt,
+  Eye,
+  Bug,
+  AlertTriangle,
+  Info,
+  Scale,
+  Globe,
+  Droplets,
+  Navigation,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -34,17 +45,123 @@ interface HorseBackRidingServiceViewProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-// ============================================
-// TIPOS PARA PROPS
-// ============================================
 interface BookingActions {
   onBookClick: () => void;
   service: Service;
 }
 
-// ============================================
-// COMPONENTES INTERNOS
-// ============================================
+// Itinerary data
+const ITINERARY_STEPS = [
+  {
+    id: 1,
+    icon: Coffee,
+    title: 'Courtesy Stop',
+    duration: '15 min',
+    description: 'Taste Dominican coffee, mamajuana, and enjoy shopping',
+  },
+  {
+    id: 2,
+    icon: Info,
+    title: 'Safety Briefing',
+    duration: '10 min',
+    description: 'Learn horse riding basics and safety instructions',
+  },
+  {
+    id: 3,
+    icon: Trees,
+    title: 'Forest Trail',
+    duration: '30 min',
+    description: 'Ride through tropical forest to reach the river mouth',
+  },
+  {
+    id: 4,
+    icon: Waves,
+    title: 'River Recreation',
+    duration: '20 min',
+    description: 'Enjoy recreation time at the beautiful river',
+  },
+  {
+    id: 5,
+    icon: Sun,
+    title: 'Macao Beach',
+    duration: '30 min',
+    description: 'Experience the pristine Macao Beach',
+  },
+  {
+    id: 6,
+    icon: Droplets,
+    title: 'Beach Swimming',
+    duration: '20 min',
+    description: 'Optional swimming and beach time',
+  },
+  {
+    id: 7,
+    icon: Navigation,
+    title: 'Return Journey',
+    duration: '25 min',
+    description: 'Return to the ranch for transportation back',
+  },
+];
+
+// What to bring data
+const WHAT_TO_BRING = [
+  {
+    icon: Shirt,
+    title: 'Comfortable Clothing',
+    description: 'Light, breathable clothes',
+  },
+  {
+    icon: Shield,
+    title: 'Closed-toe Shoes',
+    description: 'Sneakers or boots required',
+  },
+  {
+    icon: Bug,
+    title: 'Mosquito Repellent',
+    description: 'Essential protection',
+  },
+  {
+    icon: Eye,
+    title: 'Sunglasses',
+    description: 'Eye protection',
+  },
+];
+
+// Restrictions data
+const RESTRICTIONS_INFO = [
+  {
+    icon: Baby,
+    title: 'Age Requirements',
+    items: [
+      '6+ years can ride alone',
+      '3-5 years with adult',
+      'Under 3 not recommended',
+    ],
+  },
+  {
+    icon: Scale,
+    title: 'Weight Limit',
+    items: ['Maximum: 300 lbs (136 kg)', 'Weight verification required'],
+  },
+  {
+    icon: AlertTriangle,
+    title: 'Health Restrictions',
+    items: [
+      'Not for pregnant women',
+      'No back/neck problems',
+      'Heart conditions need clearance',
+    ],
+  },
+  {
+    icon: Globe,
+    title: 'Language & Safety',
+    items: [
+      'English-speaking guides',
+      'Safety helmets provided',
+      'Professional supervision',
+    ],
+  },
+];
 
 // Hero Section Component
 const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
@@ -58,7 +175,6 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
 
   return (
     <div className='relative h-screen min-h-[600px] md:min-h-[700px] overflow-hidden'>
-      {/* Parallax Background */}
       <div
         className='absolute inset-0'
         style={{ transform: `translateY(${scrollY * 0.3}px)` }}
@@ -72,7 +188,6 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
         <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70' />
       </div>
 
-      {/* Content */}
       <div className='relative z-10 h-full flex flex-col justify-end px-4 md:px-8 pb-30'>
         <div className='max-w-4xl mx-auto w-full'>
           <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 text-white'>
@@ -101,7 +216,6 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
             </button>
           </div>
 
-          {/* Quick Info */}
           <div className='flex flex-wrap gap-6 text-white/80 text-sm sm:text-base'>
             <div className='flex items-center gap-2'>
               <Star className='w-4 h-4 text-amber-400 fill-amber-400' />
@@ -109,7 +223,7 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
             </div>
             <div className='flex items-center gap-2'>
               <Clock className='w-4 h-4' />
-              <span>2 Hours</span>
+              <span>3 Hours</span>
             </div>
             <div className='flex items-center gap-2'>
               <Users className='w-4 h-4' />
@@ -119,7 +233,6 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div className='absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/50 animate-bounce'>
         <ChevronRight className='w-6 h-6 rotate-90' />
       </div>
@@ -134,24 +247,25 @@ const PhotoGallery = () => {
     {
       id: 1,
       src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/08/image00011-1536x1017.jpeg',
-      alt: 'Golf cart on tropical beach',
+      alt: 'Horse riding on tropical beach',
     },
     {
       id: 2,
       src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00013-scaled.jpeg',
-      alt: 'Resort exploration',
+      alt: 'Riders in tropical forest',
     },
     {
       id: 3,
       src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00021-scaled.jpeg',
-      alt: 'Family fun',
+      alt: 'Family horseback adventure',
     },
     {
       id: 4,
       src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00012-scaled.jpeg',
-      alt: 'Family fun',
+      alt: 'Beach horseback experience',
     },
   ];
+
   return (
     <section className='py-20 bg-gradient-to-br from-slate-50 to-teal-50'>
       <div className='max-w-7xl mx-auto px-6'>
@@ -175,11 +289,6 @@ const PhotoGallery = () => {
                 />
               </div>
               <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-              <div className='absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                <h3 className='font-bold text-sm md:text-base'>
-                  {image.title}
-                </h3>
-              </div>
               <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                 <div className='bg-white/20 backdrop-blur-sm rounded-full p-2 md:p-3'>
                   <Camera className='w-4 h-4 md:w-6 md:h-6 text-white' />
@@ -226,66 +335,6 @@ const PhotoGallery = () => {
   );
 };
 
-// Special Banner Component
-const SpecialBanner: React.FC<BookingActions> = ({ onBookClick }) => {
-  return (
-    <section className='relative py-32 overflow-hidden'>
-      <div className='absolute inset-0'>
-        <img
-          src='https://puntacanaexcursions.online/wp-content/uploads/2024/07/Imagen-de-WhatsApp-2024-06-03-a-las-15.47.17_45e97ed7-scaled.jpg'
-          alt='Horseback riding experience'
-          className='w-full h-full object-cover'
-        />
-        <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent' />
-      </div>
-
-      <div className='relative z-10 max-w-6xl mx-auto px-4'>
-        <div className='max-w-2xl'>
-          <div className='inline-flex items-center gap-2 bg-amber-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-amber-400/30'>
-            <Sparkles className='w-4 h-4 text-amber-400' />
-            <span className='text-amber-200 text-sm font-medium'>
-              Limited Time Offer
-            </span>
-          </div>
-
-          <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
-            Create Memories That
-            <span className='block text-amber-400'>Last a Lifetime</span>
-          </h2>
-
-          <p className='text-lg text-white/90 mb-8'>
-            Join over 800+ happy riders who've experienced the magic of Macao
-            Beach on horseback. Our gentle horses and expert guides ensure a
-            safe, unforgettable adventure for riders of all levels.
-          </p>
-
-          <div className='flex flex-wrap gap-6 mb-8'>
-            <div className='flex items-center gap-2 text-white'>
-              <Heart className='w-5 h-5 text-red-400' />
-              <span>Family Friendly</span>
-            </div>
-            <div className='flex items-center gap-2 text-white'>
-              <Shield className='w-5 h-5 text-green-400' />
-              <span>100% Safe</span>
-            </div>
-            <div className='flex items-center gap-2 text-white'>
-              <Star className='w-5 h-5 text-amber-400' />
-              <span>Top Rated</span>
-            </div>
-          </div>
-
-          <button
-            onClick={onBookClick}
-            className='bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
-          >
-            Book Now
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 // Quick Info Section Component
 const QuickInfoSection: React.FC = () => {
   const cards = [
@@ -301,8 +350,8 @@ const QuickInfoSection: React.FC = () => {
     },
     {
       icon: <Clock className='w-5 h-5' />,
-      title: '2 Hours',
-      description: 'Complete beach experience',
+      title: '3 Hours',
+      description: 'Complete adventure experience',
     },
     {
       icon: <Star className='w-5 h-5' />,
@@ -362,10 +411,13 @@ const TrustBadges: React.FC = () => {
 const IncludesSection: React.FC = () => {
   const includes = [
     'Round-trip transportation',
-    'Playa Macao',
-    '2-hour beach experience',
+    'Playa Macao experience',
+    '3-hour adventure',
     'Shopping stop',
-    'Scenic river',
+    'Scenic river visit',
+    'Professional guide',
+    'Safety equipment',
+    'Forest trail ride',
   ];
 
   return (
@@ -374,7 +426,7 @@ const IncludesSection: React.FC = () => {
         <h2 className='text-3xl font-bold text-center mb-10 text-gray-800'>
           Everything Included
         </h2>
-        <div className='grid grid-cols-2 md:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-2 gap-4'>
           {includes.map((item, idx) => (
             <div key={idx} className='flex items-center gap-3'>
               <Check className='w-5 h-5 text-amber-500 flex-shrink-0' />
@@ -387,13 +439,193 @@ const IncludesSection: React.FC = () => {
   );
 };
 
+// Compact Itinerary Section (2 columns)
+const ItinerarySection: React.FC = () => {
+  return (
+    <section className='py-16 bg-gradient-to-br from-amber-50 to-orange-50'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='text-center mb-12'>
+          <h2 className='text-3xl font-bold text-gray-800 mb-4'>
+            Your Adventure <span className='text-amber-500'>Itinerary</span>
+          </h2>
+          <p className='text-gray-600'>
+            Approximately 3 hours of unforgettable experiences
+          </p>
+        </div>
+
+        <div className='grid md:grid-cols-2 gap-6'>
+          {ITINERARY_STEPS.map((step, index) => {
+            const IconComponent = step.icon;
+            return (
+              <motion.div
+                key={step.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className='flex items-center gap-4 bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300'
+              >
+                <div className='w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0'>
+                  <IconComponent className='w-6 h-6 text-amber-600' />
+                </div>
+
+                <div className='flex-grow'>
+                  <div className='flex items-center gap-2 mb-1'>
+                    <span className='bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full'>
+                      {step.id}
+                    </span>
+                    <span className='text-gray-500 text-xs'>
+                      {step.duration}
+                    </span>
+                  </div>
+                  <h3 className='font-semibold text-gray-800 text-sm mb-1'>
+                    {step.title}
+                  </h3>
+                  <p className='text-gray-600 text-xs'>{step.description}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className='mt-8 text-center'>
+          <div className='inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full'>
+            <Clock className='w-4 h-4 text-amber-600' />
+            <span className='text-amber-800 font-medium text-sm'>
+              Total Duration: ~3 hours
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Compact What to Bring & Restrictions Section (2 columns)
+const InfoSection: React.FC = () => {
+  return (
+    <section className='py-16 bg-white'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='grid lg:grid-cols-2 gap-12'>
+          {/* What to Bring */}
+          <div>
+            <h2 className='text-2xl font-bold text-gray-800 mb-6'>
+              What to <span className='text-amber-500'>Bring</span>
+            </h2>
+            <div className='grid grid-cols-2 gap-4'>
+              {WHAT_TO_BRING.map((item, index) => {
+                const IconComponent = item.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className='text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors'
+                  >
+                    <div className='w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+                      <IconComponent className='w-6 h-6 text-amber-600' />
+                    </div>
+                    <h3 className='font-semibold text-gray-800 text-sm mb-2'>
+                      {item.title}
+                    </h3>
+                    <p className='text-gray-600 text-xs'>{item.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Restrictions */}
+          <div>
+            <h2 className='text-2xl font-bold text-gray-800 mb-6'>
+              Important <span className='text-red-500'>Information</span>
+            </h2>
+            <div className='space-y-4'>
+              {RESTRICTIONS_INFO.map((category, index) => {
+                const IconComponent = category.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className='bg-gray-50 rounded-xl p-4'
+                  >
+                    <div className='flex items-center gap-3 mb-3'>
+                      <div className='w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center'>
+                        <IconComponent className='w-4 h-4 text-red-600' />
+                      </div>
+                      <h3 className='font-semibold text-gray-800 text-sm'>
+                        {category.title}
+                      </h3>
+                    </div>
+                    <ul className='space-y-1'>
+                      {category.items.map((item, itemIndex) => (
+                        <li key={itemIndex} className='flex items-start gap-2'>
+                          <Check className='w-3 h-3 text-green-500 flex-shrink-0 mt-0.5' />
+                          <span className='text-gray-600 text-xs'>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Horse Disclaimer */}
+        <div className='mt-12 bg-amber-50 rounded-2xl p-6 border border-amber-200'>
+          <div className='flex items-start gap-4'>
+            <Heart className='w-6 h-6 text-amber-600 flex-shrink-0 mt-1' />
+            <div>
+              <h3 className='text-lg font-semibold text-amber-800 mb-3'>
+                About Our Dominican Horses
+              </h3>
+              <p className='text-amber-700 text-sm leading-relaxed mb-3'>
+                Dominican horses are different from European horses - they're
+                perfectly adapted to tropical climate and terrain. Our horses
+                are well-cared for, regularly veterinarian-checked, and trained
+                specifically for tourist activities.
+              </p>
+              <p className='text-amber-700 text-sm'>
+                We follow all animal welfare standards and treat our horses with
+                utmost respect and care.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Weather Note */}
+        <div className='mt-6 bg-blue-50 rounded-xl p-4 border border-blue-200'>
+          <div className='flex items-start gap-3'>
+            <Info className='w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5' />
+            <div>
+              <h3 className='font-semibold text-blue-800 mb-1'>
+                Weather Policy
+              </h3>
+              <p className='text-blue-700 text-sm'>
+                Tours continue rain or shine! We only cancel in extreme weather
+                conditions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // Reviews Section Component
 const ReviewsSection: React.FC = () => {
   const reviews = [
     {
       name: 'Sarah Johnson',
       rating: 5,
-      text: 'Amazing experience! The sunset ride was magical and our guide was excellent.',
+      text: 'Amazing experience! The ride was magical and our guide was excellent.',
       date: '2 days ago',
     },
     {
@@ -557,6 +789,66 @@ const AdventureBanner: React.FC<BookingActions> = ({ onBookClick }) => {
   );
 };
 
+// Special Banner Component
+const SpecialBanner: React.FC<BookingActions> = ({ onBookClick }) => {
+  return (
+    <section className='relative py-32 overflow-hidden'>
+      <div className='absolute inset-0'>
+        <img
+          src='https://puntacanaexcursions.online/wp-content/uploads/2024/07/Imagen-de-WhatsApp-2024-06-03-a-las-15.47.17_45e97ed7-scaled.jpg'
+          alt='Horseback riding experience'
+          className='w-full h-full object-cover'
+        />
+        <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent' />
+      </div>
+
+      <div className='relative z-10 max-w-6xl mx-auto px-4'>
+        <div className='max-w-2xl'>
+          <div className='inline-flex items-center gap-2 bg-amber-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-amber-400/30'>
+            <Sparkles className='w-4 h-4 text-amber-400' />
+            <span className='text-amber-200 text-sm font-medium'>
+              Limited Time Offer
+            </span>
+          </div>
+
+          <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
+            Create Memories That
+            <span className='block text-amber-400'>Last a Lifetime</span>
+          </h2>
+
+          <p className='text-lg text-white/90 mb-8'>
+            Join over 800+ happy riders who've experienced the magic of Macao
+            Beach on horseback. Our gentle horses and expert guides ensure a
+            safe, unforgettable adventure for riders of all levels.
+          </p>
+
+          <div className='flex flex-wrap gap-6 mb-8'>
+            <div className='flex items-center gap-2 text-white'>
+              <Heart className='w-5 h-5 text-red-400' />
+              <span>Family Friendly</span>
+            </div>
+            <div className='flex items-center gap-2 text-white'>
+              <Shield className='w-5 h-5 text-green-400' />
+              <span>100% Safe</span>
+            </div>
+            <div className='flex items-center gap-2 text-white'>
+              <Star className='w-5 h-5 text-amber-400' />
+              <span>Top Rated</span>
+            </div>
+          </div>
+
+          <button
+            onClick={onBookClick}
+            className='bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
+          >
+            Book Now
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // Floating Action Button Component
 const FloatingActionButton: React.FC<BookingActions> = ({ onBookClick }) => {
   return (
@@ -571,9 +863,7 @@ const FloatingActionButton: React.FC<BookingActions> = ({ onBookClick }) => {
   );
 };
 
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
+// Main Component
 const HorseBackRidingServiceView: React.FC<HorseBackRidingServiceViewProps> = ({
   service,
   serviceData,
@@ -582,11 +872,7 @@ const HorseBackRidingServiceView: React.FC<HorseBackRidingServiceViewProps> = ({
   const { t } = useTranslation();
   const { bookService } = useBooking();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState('');
 
-  // ============================================
-  // FUNCIONES CENTRALIZADAS
-  // ============================================
   const handleBookNow = useCallback(() => {
     setIsModalOpen(true);
   }, []);
@@ -599,13 +885,6 @@ const HorseBackRidingServiceView: React.FC<HorseBackRidingServiceViewProps> = ({
     [bookService]
   );
 
-  const handleLocationSelect = useCallback((locationId: string) => {
-    setSelectedLocation((prev) => (prev === locationId ? '' : locationId));
-  }, []);
-
-  // ============================================
-  // OBJETO CON ACCIONES PARA PASAR A COMPONENTES
-  // ============================================
   const bookingActions: BookingActions = {
     onBookClick: handleBookNow,
     service,
@@ -613,11 +892,12 @@ const HorseBackRidingServiceView: React.FC<HorseBackRidingServiceViewProps> = ({
 
   return (
     <div className='min-h-screen bg-white'>
-      {/* Pasar funciones como props a cada componente */}
       <HeroSection {...bookingActions} />
       <PhotoGallery />
       <QuickInfoSection />
       <IncludesSection />
+      <ItinerarySection />
+      <InfoSection />
       <SpecialBanner {...bookingActions} />
       <AdventureBanner {...bookingActions} />
       <TrustBadges />

@@ -11,13 +11,121 @@ import {
   Sparkles,
   Heart,
   Users,
+  Eye,
+  Shirt,
+  Waves,
+  Coffee,
+  Trees,
+  Camera,
+  Info,
+  AlertTriangle,
+  DollarSign,
+  Mountain,
 } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import BookingModal from '../../modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
 import { BookingDate, Service } from '@/constants/formFields';
 
-// Vehicle Selection Types
+// Itinerary data - Places to visit (updated with specific sequence)
+const ITINERARY_STEPS = [
+  {
+    id: 1,
+    icon: Waves,
+    title: 'Playa Macao',
+    duration: '45 min',
+    description:
+      'First stop: Experience pristine untouched beach with white sand',
+  },
+  {
+    id: 2,
+    icon: Mountain,
+    title: 'Cueva Taína (Cenote)',
+    duration: '30 min',
+    description: 'Natural cenote cave with crystal-clear water for swimming',
+  },
+  {
+    id: 3,
+    icon: Coffee,
+    title: 'Casa Típica',
+    duration: '30 min',
+    description:
+      'Traditional Dominican house with coffee, tobacco & chocolate tasting',
+  },
+  {
+    id: 4,
+    icon: ArrowRight,
+    title: 'Return to Ranch',
+    duration: '45 min',
+    description: 'Return journey through scenic tropical trails',
+  },
+];
+
+// What to bring data (specific items mentioned)
+const WHAT_TO_BRING = [
+  {
+    icon: Eye,
+    title: 'Sunglasses',
+    description: 'Eye protection (optional purchase at ranch)',
+  },
+  {
+    icon: Shirt,
+    title: 'Bandanas',
+    description: 'Dust protection (optional purchase at ranch)',
+  },
+  {
+    icon: Waves,
+    title: 'Swimwear',
+    description: 'Essential for cenote swimming experience',
+  },
+  {
+    icon: AlertTriangle,
+    title: 'Old Clothes',
+    description: 'Clothes WILL get dirty from muddy trails',
+  },
+];
+
+// Pickup times and schedule info
+const SCHEDULE_INFO = [
+  {
+    icon: Clock,
+    title: 'Pickup Times',
+    items: [
+      '7:30 AM pickup → 8:00 AM start',
+      '10:30 AM pickup → 11:00 AM start',
+      '1:30 PM pickup → 2:00 PM start',
+    ],
+  },
+  {
+    icon: Waves,
+    title: 'Cenote Important',
+    items: [
+      'Life vests NOT included',
+      'Available as additional paid service',
+      'Swimming is optional',
+    ],
+  },
+  {
+    icon: Shield,
+    title: 'Weather Policy',
+    items: [
+      'Excursion does NOT cancel for rain',
+      'Only cancelled in extreme weather conditions',
+      'Come prepared for adventure!',
+    ],
+  },
+  {
+    icon: Camera,
+    title: 'Photo Disclaimer',
+    items: [
+      'Photos taken during excursion may be used for promotion',
+      'Professional action shots included',
+      'Your adventure memories captured',
+    ],
+  },
+];
+
+// Vehicle Selection Types with updated pricing
 const VEHICLE_TYPES = {
   ATV: {
     id: 'atv',
@@ -26,7 +134,7 @@ const VEHICLE_TYPES = {
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
     description: 'Single rider adventure',
     features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
-    price: 89,
+    price: 50,
     duration: '3 hours',
     maxParticipants: 1,
   },
@@ -37,7 +145,7 @@ const VEHICLE_TYPES = {
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754597118/9_m5fya0.jpg',
     description: 'Shared adventure for couples',
     features: ['2-person capacity', 'Side by side', 'Great for couples'],
-    price: 129,
+    price: 45,
     duration: '3 hours',
     maxParticipants: 2,
   },
@@ -48,7 +156,7 @@ const VEHICLE_TYPES = {
       'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
     description: 'Premium off-road experience',
     features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
-    price: 159,
+    price: null, // No price - contact for pricing
     duration: '3 hours',
     maxParticipants: 2,
   },
@@ -90,7 +198,7 @@ const VehicleSelection = ({ onVehicleSelect }) => {
                   className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
                 />
                 <div className='absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-semibold'>
-                  ${vehicle.price}
+                  {vehicle.price ? `$${vehicle.price}` : 'Contact Us'}
                 </div>
                 <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent group-hover:from-black/40 transition-all duration-300' />
               </div>
@@ -433,47 +541,298 @@ const PhotoGallery = () => {
   );
 };
 
-// Updated Quick Info for ATV Adventures
-const QuickInfoSection = () => {
-  const cards = [
-    {
-      icon: <MapPin className='w-5 h-5' />,
-      title: 'Jungle & Beach',
-      description: 'Explore diverse tropical terrain',
-    },
-    {
-      icon: <Shield className='w-5 h-5' />,
-      title: 'Safety First',
-      description: 'Professional guides & gear',
-    },
-    {
-      icon: <Clock className='w-5 h-5' />,
-      title: '3 Hours',
-      description: 'Action-packed adventure',
-    },
-    {
-      icon: <Star className='w-5 h-5' />,
-      title: '4.9 Rating',
-      description: 'From 1,200+ adventurers',
-    },
+// Compact Itinerary Section (2 columns) - Updated with specific sequence
+const ItinerarySection = () => {
+  return (
+    <section className='py-16 bg-gradient-to-br from-green-50 to-amber-50'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='text-center mb-12'>
+          <h2 className='text-3xl font-bold text-gray-800 mb-4'>
+            Adventure <span className='text-green-500'>Itinerary</span>
+          </h2>
+          <p className='text-gray-600'>
+            Approximately 3 hours exploring tropical paradise
+          </p>
+          <p className='text-sm text-blue-600 mt-2 font-medium'>
+            Route: Playa Macao → Cueva Taína → Casa Típica → Return to Ranch
+          </p>
+        </div>
+
+        <div className='grid md:grid-cols-2 gap-6'>
+          {ITINERARY_STEPS.map((step, index) => {
+            const IconComponent = step.icon;
+            return (
+              <motion.div
+                key={step.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className='flex items-center gap-4 bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300'
+              >
+                <div className='w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0'>
+                  <IconComponent className='w-6 h-6 text-green-600' />
+                </div>
+
+                <div className='flex-grow'>
+                  <div className='flex items-center gap-2 mb-1'>
+                    <span className='bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full'>
+                      Stop {step.id}
+                    </span>
+                    <span className='text-gray-500 text-xs'>
+                      {step.duration}
+                    </span>
+                  </div>
+                  <h3 className='font-semibold text-gray-800 text-sm mb-1'>
+                    {step.title}
+                  </h3>
+                  <p className='text-gray-600 text-xs'>{step.description}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className='mt-8 text-center space-y-3'>
+          <div className='inline-flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full'>
+            <Clock className='w-4 h-4 text-green-600' />
+            <span className='text-green-800 font-medium text-sm'>
+              Total Duration: ~3 hours
+            </span>
+          </div>
+
+          <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full ml-3'>
+            <Waves className='w-4 h-4 text-blue-600' />
+            <span className='text-blue-800 font-medium text-sm'>
+              Life vests available as additional service
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Compact What to Bring & Schedule Info Section (2 columns)
+const InfoSection = () => {
+  return (
+    <section className='py-16 bg-white'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='grid lg:grid-cols-2 gap-12'>
+          {/* What to Bring */}
+          <div>
+            <h2 className='text-2xl font-bold text-gray-800 mb-6'>
+              What to <span className='text-green-500'>Bring</span>
+            </h2>
+            <div className='grid grid-cols-2 gap-4'>
+              {WHAT_TO_BRING.map((item, index) => {
+                const IconComponent = item.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className='text-center p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors'
+                  >
+                    <div className='w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+                      <IconComponent className='w-6 h-6 text-green-600' />
+                    </div>
+                    <h3 className='font-semibold text-gray-800 text-sm mb-2'>
+                      {item.title}
+                    </h3>
+                    <p className='text-gray-600 text-xs'>{item.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Special Observation */}
+            <div className='mt-6 bg-red-50 rounded-xl p-4 border border-red-200'>
+              <div className='flex items-start gap-3'>
+                <AlertTriangle className='w-5 h-5 text-red-600 flex-shrink-0 mt-0.5' />
+                <div>
+                  <h3 className='font-semibold text-red-800 mb-2'>
+                    ⚠️ Important Observation
+                  </h3>
+                  <p className='text-red-700 text-sm font-medium'>
+                    Your clothes WILL get dirty from the muddy trails! Wear old
+                    clothes that you don't mind getting messy.
+                  </p>
+                  <p className='text-red-600 text-xs mt-2'>
+                    Sunglasses and bandanas are available for purchase at the
+                    ranch if needed.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Schedule & Important Information */}
+          <div>
+            <h2 className='text-2xl font-bold text-gray-800 mb-6'>
+              Schedule & <span className='text-blue-500'>Important Info</span>
+            </h2>
+            <div className='space-y-4'>
+              {SCHEDULE_INFO.map((category, index) => {
+                const IconComponent = category.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className='bg-gray-50 rounded-xl p-4'
+                  >
+                    <div className='flex items-center gap-3 mb-3'>
+                      <div className='w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center'>
+                        <IconComponent className='w-4 h-4 text-blue-600' />
+                      </div>
+                      <h3 className='font-semibold text-gray-800 text-sm'>
+                        {category.title}
+                      </h3>
+                    </div>
+                    <ul className='space-y-1'>
+                      {category.items.map((item, itemIndex) => (
+                        <li key={itemIndex} className='flex items-start gap-2'>
+                          <Check className='w-3 h-3 text-green-500 flex-shrink-0 mt-0.5' />
+                          <span className='text-gray-600 text-xs'>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Photo & Weather Disclaimer - Combined */}
+        <div className='mt-12 grid md:grid-cols-2 gap-6'>
+          {/* Weather Policy */}
+          <div className='bg-amber-50 rounded-2xl p-6 border border-amber-200'>
+            <div className='flex items-start gap-4'>
+              <Shield className='w-6 h-6 text-amber-600 flex-shrink-0 mt-1' />
+              <div>
+                <h3 className='text-lg font-semibold text-amber-800 mb-3'>
+                  🌦️ Weather Policy
+                </h3>
+                <p className='text-amber-700 text-sm leading-relaxed'>
+                  <strong>The excursion does NOT cancel for rain!</strong> We
+                  only cancel in extreme weather conditions. Come prepared for
+                  an adventure regardless of weather.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Photo Disclaimer */}
+          <div className='bg-blue-50 rounded-2xl p-6 border border-blue-200'>
+            <div className='flex items-start gap-4'>
+              <Camera className='w-6 h-6 text-blue-600 flex-shrink-0 mt-1' />
+              <div>
+                <h3 className='text-lg font-semibold text-blue-800 mb-3'>
+                  📸 Photo Disclaimer
+                </h3>
+                <p className='text-blue-700 text-sm leading-relaxed'>
+                  Photos taken during our excursions may be used for promotional
+                  purposes. Professional action shots are included in your
+                  adventure experience.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Updated Includes Section with specific cenote info
+const IncludesSection = () => {
+  const includes = [
+    'Round-trip hotel transportation',
+    'Professional ATV/Buggy/Polaris rental',
+    'Safety equipment & briefing',
+    'Expert bilingual guide',
+    'Playa Macao beach access',
+    'Cueva Taína (cenote) exploration',
+    'Casa Típica traditional house visit',
+    'Coffee, tobacco & chocolate tasting',
+  ];
+
+  const notIncluded = [
+    '🚨 Life vests for cenote (additional paid service)',
+    'Sunglasses (optional purchase at ranch)',
+    'Bandanas (optional purchase at ranch)',
+    'Personal items & souvenirs',
   ];
 
   return (
-    <section className='py-16 px-4 bg-gray-50'>
-      <div className='max-w-5xl mx-auto'>
-        <div className='grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
-          {cards.map((card, idx) => (
-            <div
-              key={idx}
-              className='text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow'
-            >
-              <div className='inline-flex p-3 rounded-full bg-gradient-to-br from-amber-100 to-green-100 text-amber-600 mb-3'>
-                {card.icon}
-              </div>
-              <h3 className='font-semibold text-gray-800 mb-1'>{card.title}</h3>
-              <p className='text-sm text-gray-600'>{card.description}</p>
+    <section className='py-16 px-4 bg-white'>
+      <div className='max-w-4xl mx-auto'>
+        <h2 className='text-3xl font-bold text-center mb-10 text-gray-800'>
+          What's <span className='text-green-500'>Included</span>
+        </h2>
+
+        <div className='grid md:grid-cols-2 gap-8'>
+          {/* Included */}
+          <div>
+            <h3 className='text-lg font-semibold text-green-600 mb-4 flex items-center'>
+              <Check className='w-5 h-5 mr-2' />
+              Included in Your Adventure
+            </h3>
+            <div className='space-y-3'>
+              {includes.map((item, idx) => (
+                <div
+                  key={idx}
+                  className='flex items-center gap-3 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors'
+                >
+                  <Check className='w-4 h-4 text-green-500 flex-shrink-0' />
+                  <span className='text-gray-700 font-medium'>{item}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Not Included */}
+          <div>
+            <h3 className='text-lg font-semibold text-orange-600 mb-4 flex items-center'>
+              <X className='w-5 h-5 mr-2' />
+              Additional Services Available
+            </h3>
+            <div className='space-y-3'>
+              {notIncluded.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`flex items-center gap-3 p-3 rounded-lg ${
+                    item.includes('Life vests')
+                      ? 'bg-red-50 border border-red-200'
+                      : 'bg-orange-50'
+                  }`}
+                >
+                  <X
+                    className={`w-4 h-4 flex-shrink-0 ${
+                      item.includes('Life vests')
+                        ? 'text-red-500'
+                        : 'text-orange-500'
+                    }`}
+                  />
+                  <span
+                    className={`${
+                      item.includes('Life vests')
+                        ? 'text-red-700 font-semibold'
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -535,41 +894,6 @@ const SpecialBanner = ({ onBookNow }) => {
           >
             Book Your ATV Adventure
           </button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Updated Includes Section
-const IncludesSection = () => {
-  const includes = [
-    'Round-trip hotel transportation',
-    'Professional ATV/Buggy/Polaris',
-    'Safety equipment & briefing',
-    'Expert bilingual guide',
-    'Jungle & beach exploration',
-    'Cenote swimming opportunity',
-    'Tropical fruit tasting',
-    'Action photos included',
-  ];
-
-  return (
-    <section className='py-16 px-4 bg-white'>
-      <div className='max-w-4xl mx-auto'>
-        <h2 className='text-3xl font-bold text-center mb-10 text-gray-800'>
-          Everything <span className='text-green-500'>Included</span>
-        </h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          {includes.map((item, idx) => (
-            <div
-              key={idx}
-              className='flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors'
-            >
-              <Check className='w-5 h-5 text-green-500 flex-shrink-0' />
-              <span className='text-gray-700 font-medium'>{item}</span>
-            </div>
-          ))}
         </div>
       </div>
     </section>
@@ -735,7 +1059,7 @@ const ReviewsSection = () => {
   );
 };
 
-// Main Component with State Management - IGUAL QUE YOGA
+// Main Component with State Management
 const AtvRideServiceView = () => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -747,7 +1071,7 @@ const AtvRideServiceView = () => {
     type: 'ATV_EXPERIENCE',
     description: 'Tropical paradise off-road adventure',
     duration: '3 hours',
-    price: selectedVehicle?.price || 89, // Precio dinámico basado en vehículo seleccionado
+    price: selectedVehicle?.price || 50, // Precio dinámico basado en vehículo seleccionado
     included: [
       'Round-trip transportation',
       'Safety equipment',
@@ -768,12 +1092,12 @@ const AtvRideServiceView = () => {
     setIsModalOpen(false);
   };
 
-  // Función para abrir el modal - IGUAL QUE YOGA
+  // Función para abrir el modal
   const handleBookNow = () => {
     setIsModalOpen(true);
   };
 
-  // Handle vehicle selection - ACTUALIZADO
+  // Handle vehicle selection
   const handleVehicleSelect = (vehicle) => {
     setSelectedVehicle(vehicle);
     setIsModalOpen(true);
@@ -782,7 +1106,6 @@ const AtvRideServiceView = () => {
   return (
     <div className='min-h-screen bg-white'>
       <HeroSection onBookNow={handleBookNow} />
-      <QuickInfoSection />
 
       {/* Vehicle Selection Section */}
       <div data-section='vehicle-selection'>
@@ -790,15 +1113,50 @@ const AtvRideServiceView = () => {
       </div>
 
       <PhotoGallery />
+      <ItinerarySection />
+      <InfoSection />
       <IncludesSection />
 
-      {/* CORREGIDO: Pasar handleBookNow como prop */}
+      {/* Special Banner */}
       <SpecialBanner onBookNow={handleBookNow} />
 
       <AdventureBanner />
+
       <ReviewsSection />
 
-      {/* Booking Modal - IGUAL QUE YOGA */}
+      {/* Cenote Important Notice */}
+      <section className='px-16 py-20'>
+        <div className='mt-20 bg-red-50 border-2 border-red-300 rounded-xl p-6'>
+          <div className='flex items-start gap-4'>
+            <Waves className='w-8 h-8 text-red-600 flex-shrink-0 mt-1' />
+            <div>
+              <h3 className='text-xl font-bold text-red-800 mb-3'>
+                🏊‍♂️ Important: Cenote Swimming
+              </h3>
+              <p className='text-red-700 font-medium mb-2'>
+                Life vests are NOT included for cenote swimming and must be
+                purchased as an additional service at the location.
+              </p>
+              <p className='text-red-600 text-sm'>
+                Swimming in the cenote is completely optional. Safety equipment
+                can be rented on-site for those who wish to swim.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className='mt-6 text-center'>
+          <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full'>
+            <Info className='w-4 h-4 text-blue-600' />
+            <span className='text-blue-800 font-medium text-sm'>
+              All safety equipment and professional guidance included for
+              vehicle operation
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Booking Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <BookingModal

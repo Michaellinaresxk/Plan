@@ -22,7 +22,7 @@ export const galleryImages = [
     src: 'https://images.unsplash.com/photo-1548574505-5e239809ee19?q=80&w=1200',
     alt: 'Catamaran deck experience',
     title: 'Spacious Comfort',
-    subtitle: 'Relax on our premium deck facilities',
+    subtitle: 'Relax on our Xclusive deck facilities',
   },
   {
     src: 'https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=1200',
