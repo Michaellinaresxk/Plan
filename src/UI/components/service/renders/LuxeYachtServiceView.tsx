@@ -40,7 +40,9 @@ import {
   Zap,
   Music,
   Droplets,
+  Globe,
 } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 // Types
 interface Yacht {
@@ -78,30 +80,30 @@ interface Yacht {
 // Enhanced Yacht Data
 const YACHT_DATA: Yacht[] = [
   {
-    id: 'azimut-s7',
-    name: 'Azimut S7',
+    id: 'aiconFly-60',
+    name: 'AiconFly 60',
     category: 'sport',
     price: 3500,
     priceUnit: 'day',
     shortDescription: 'Italian elegance meets high-performance',
     mainImage:
-      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200&h=800&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
     gallery: [
-      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=1200&h=800&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/5_ryceky.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/3_eapwql.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600016/7_mkxuiy.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
     ],
     specifications: {
-      length: '68 ft',
-      maxGuests: 12,
+      length: '60 ft',
+      maxGuests: 16,
       cabins: 3,
       bathrooms: 2,
       crew: 3,
-      maxSpeed: '32 knots',
-      manufacturer: 'Azimut',
-      year: 2023,
+      maxSpeed: '30 knots',
+      manufacturer: 'AiconFly',
+      year: 2008,
     },
     amenities: [
       {
@@ -126,34 +128,32 @@ const YACHT_DATA: Yacht[] = [
       'Water sports equipment',
     ],
     isPremium: false,
-    rating: 4.9,
+    rating: 5,
     reviews: 128,
-    location: 'Punta Cana Marina',
+    location: 'Casa de Campo',
     itinerary: [
-      'Departure from Punta Cana Marina',
-      'Cruise to Bavaro Natural Pool',
+      'Departure from Casa de Campo',
       'Swimming & snorkeling time',
       'Gourmet lunch onboard',
       'Water sports activities',
-      'Sunset viewing',
       'Return to marina',
     ],
   },
   {
-    id: 'princess-y85',
-    name: 'Princess Y85',
+    id: 'fairline-43',
+    name: 'Fairline 43',
     category: 'luxury',
     price: 6500,
     priceUnit: 'day',
     shortDescription: 'British luxury with spa facilities',
     mainImage:
-      'https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=1200&h=800&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600208/2_k72tfn.jpg',
     gallery: [
-      'https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=1200&h=800&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600211/1_k81g6k.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600212/4_yj68bm.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600213/5_uvzjqd.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
     ],
     specifications: {
       length: '85 ft',
@@ -332,69 +332,216 @@ const PRIVATE_SERVICE_INFO = [
 ];
 
 // Caribbean Hero with Yacht Background
-const CaribbeanHero: React.FC<{ onExploreFleet: () => void }> = ({
-  onExploreFleet,
+const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
+  onBookingClick,
 }) => {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 800], [0, 200]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const scale = useTransform(scrollY, [0, 400], [1, 1.1]);
+
   return (
-    <div className='relative h-screen min-h-[600px] overflow-hidden'>
-      {/* Yacht Background */}
-      <div className='absolute inset-0'>
-        <img
-          src='https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=1080&fit=crop'
-          alt='Luxury yacht in Caribbean waters'
-          className='w-full h-full object-cover'
-        />
-        <div className='absolute inset-0 bg-gradient-to-b from-teal-900/40 via-blue-900/30 to-blue-900/60' />
+    <div className='relative h-screen overflow-hidden'>
+      {/* Video Background */}
+      <motion.div style={{ y, scale }} className='absolute inset-0'>
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className='absolute inset-0 w-full h-full object-cover'
+          poster='https://images.pexels.com/photos/32995074/pexels-photo-32995074.jpeg'
+        >
+          {/* <source
+            src='https://videos.pexels.com/video-files/1093662/1093662-hd_1920_1080_30fps.mp4'
+            type='video/mp4'
+          /> */}
+          <source src='/video/yates-promo.mp4' type='video/mp4' />
+        </video>
+        <div className='absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70' />
+      </motion.div>
+
+      {/* Floating Elements */}
+      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className='absolute w-1 h-1 bg-white/40 rounded-full'
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.4, 0.8, 0.4],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
       </div>
 
-      {/* Content */}
-      <div className='relative z-10 h-full flex flex-col justify-end px-4 sm:px-6 lg:px-8 pb-20'>
-        <div className='max-w-4xl mx-auto w-full text-center'>
-          <div className='inline-flex items-center gap-2 bg-teal-500/20 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-teal-400/30'>
-            <Waves className='w-5 h-5 text-teal-300' />
-            <span className='text-teal-100 text-sm font-medium tracking-wide'>
-              Caribbean Yacht Collection
-            </span>
-          </div>
-
-          <h1 className='text-4xl sm:text-6xl md:text-7xl font-light mb-6 text-white leading-tight'>
-            Escape to
-            <span className='block font-normal text-teal-300'>Paradise</span>
-          </h1>
-
-          <p className='text-lg sm:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed'>
-            Discover the Caribbean's hidden gems aboard luxury yachts with
-            crystal-clear waters, pristine beaches, and unforgettable sunsets.
-          </p>
-
-          <div className='flex flex-col sm:flex-row gap-4 justify-center mb-12'>
-            <button
-              onClick={onExploreFleet}
-              className='group bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-full font-medium text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-3'
+      {/* Hero Content */}
+      <motion.div
+        style={{ opacity }}
+        className='relative z-10 h-full flex items-end'
+      >
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full'>
+          <div className='grid lg:grid-cols-2 gap-12 items-center'>
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+              className='text-white'
             >
-              <Anchor className='w-5 h-5' />
-              Explore Our Fleet
-              <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
-            </button>
-          </div>
+              {/* Premium Badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 }}
+                className='inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-3 mb-8'
+              >
+                <Diamond className='w-5 h-5 text-cyan-400' />
+                <span className='text-sm font-semibold'>
+                  ULTRA LUXURY COLLECTION
+                </span>
+                <Diamond className='w-5 h-5 text-cyan-400' />
+              </motion.div>
 
-          {/* Caribbean Stats */}
-          <div className='flex flex-wrap gap-6 justify-center text-white/90 text-sm sm:text-base'>
-            <div className='flex items-center gap-2'>
-              <Star className='w-5 h-5 text-yellow-400 fill-yellow-400' />
-              <span>4.9 Rating</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Palmtree className='w-5 h-5 text-green-400' />
-              <span>15+ Destinations</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Users className='w-5 h-5 text-blue-300' />
-              <span>2,500+ Adventures</span>
-            </div>
+              <motion.h1
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.8 }}
+                className='text-5xl lg:text-7xl font-thin mb-6 leading-tight'
+              >
+                Beyond
+                <span className='block font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent'>
+                  Expectations
+                </span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.8 }}
+                className='text-xl lg:text-2xl text-gray-300 mb-8 leading-relaxed max-w-lg'
+              >
+                Discover the world's most exclusive yacht collection. Where
+                every journey becomes an unforgettable masterpiece.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3, duration: 0.8 }}
+                className='flex flex-col sm:flex-row gap-4 mb-12'
+              >
+                <motion.button
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: '0 20px 40px rgba(6, 182, 212, 0.3)',
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onBookingClick}
+                  className='group bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center space-x-3 relative overflow-hidden'
+                >
+                  <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000' />
+                  <Calendar className='w-6 h-6' />
+                  <span>Explore Collection</span>
+                </motion.button>
+              </motion.div>
+            </motion.div>
+
+            {/* Right Content - Modern Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8, duration: 1 }}
+              className='hidden lg:block'
+            >
+              <div className='relative'>
+                {/* Main Card */}
+                <motion.div
+                  whileHover={{ y: -10, rotateY: 5 }}
+                  className='bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 transform perspective-1000'
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <div className='flex items-center space-x-4 mb-6'>
+                    <div className='w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center'>
+                      <Crown className='w-8 h-8 text-white' />
+                    </div>
+                    <div>
+                      <h3 className='text-2xl font-bold text-white'>
+                        Premium Concierge
+                      </h3>
+                      <p className='text-gray-300'>24/7 Luxury Service</p>
+                    </div>
+                  </div>
+
+                  <p className='text-gray-300 mb-6'>
+                    Experience personalized service that anticipates your every
+                    need. From arrival to departure, every detail is crafted to
+                    perfection.
+                  </p>
+
+                  <div className='grid grid-cols-2 gap-4'>
+                    {[
+                      {
+                        icon: <Shield className='w-5 h-5' />,
+                        text: 'Fully Insured',
+                      },
+                      {
+                        icon: <Award className='w-5 h-5' />,
+                        text: '5-Star Service',
+                      },
+                      {
+                        icon: <Globe className='w-5 h-5' />,
+                        text: 'Destination Experts',
+                      },
+                      {
+                        icon: <Heart className='w-5 h-5' />,
+                        text: 'Trusted by 1000+',
+                      },
+                    ].map((item, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 1.2 + index * 0.1 }}
+                        className='flex items-center space-x-2 text-gray-300'
+                      >
+                        {item.icon}
+                        <span className='text-sm font-medium'>{item.text}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Floating Elements */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                  className='absolute -top-4 -right-4 w-8 h-8 border-2 border-cyan-400/50 rounded-full'
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className='absolute -bottom-4 -left-4 w-6 h-6 bg-purple-500/50 rounded-full'
+                />
+              </div>
+            </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
@@ -406,7 +553,7 @@ const PhotoOnlyYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
 }) => {
   return (
     <div
-      className='group relative h-80 rounded-3xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-[1.02] hover:shadow-xl'
+      className='group relative h-50 lg:h-80 rounded-3xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-[1.02] hover:shadow-xl'
       onClick={onSelect}
     >
       {/* Background Image */}
@@ -428,28 +575,16 @@ const PhotoOnlyYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
       )}
 
       {/* Text Content Inside */}
-      <div className='absolute bottom-0 left-0 right-0 p-6 text-white'>
-        <h3 className='text-2xl font-semibold mb-2 group-hover:text-teal-300 transition-colors'>
-          {yacht.name}
-        </h3>
-
+      <div className='absolute bottom-0 left-0 right-0 p-5 text-white'>
         <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-3 text-sm'>
-            <div className='flex items-center gap-1'>
-              <Star className='w-4 h-4 text-yellow-400 fill-yellow-400' />
-              <span>{yacht.rating}</span>
-            </div>
+          <h3 className='text-1xl md:text-2xl  font-semibold mb-2 group-hover:text-teal-300 transition-colors'>
+            {yacht.name}
+          </h3>
+          <div className='text-right'>
             <div className='flex items-center gap-1'>
               <Users className='w-4 h-4' />
               <span>{yacht.specifications.maxGuests}</span>
             </div>
-          </div>
-
-          <div className='text-right'>
-            <div className='text-xl font-bold'>
-              ${yacht.price.toLocaleString()}
-            </div>
-            <div className='text-white/80 text-sm'>per day</div>
           </div>
         </div>
       </div>
@@ -517,7 +652,7 @@ const CaribbeanYachtGrid: React.FC<{
         </div>
 
         {/* Yacht Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 md:gap-6'>
           {filteredYachts.map((yacht) => (
             <PhotoOnlyYachtCard
               key={yacht.id}
@@ -870,22 +1005,22 @@ const CaribbeanCTA: React.FC = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='grid md:grid-cols-2 gap-8'>
           {/* Book Now CTA */}
-          <div className='relative h-80 rounded-3xl overflow-hidden group cursor-pointer transform hover:scale-[1.02] transition-all duration-500'>
+          <div className='relative h-80 rounded-3xl overflow-hidden group cursor-pointer hover:shadow-2xl transition-all duration-500'>
             <img
               src='https://images.unsplash.com/photo-1566024164372-0281f1133aa6?w=800&h=600&fit=crop'
               alt='Book your yacht experience'
-              className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
             />
-            <div className='absolute inset-0 bg-gradient-to-t from-teal-900/80 via-teal-900/40 to-transparent' />
+            <div className='absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500' />
 
-            <div className='absolute bottom-0 left-0 right-0 p-8 text-white text-center'>
-              <h3 className='text-2xl md:text-3xl font-light mb-4'>
-                Ready for <span className='font-normal'>Paradise?</span>
+            <div className='absolute inset-0 flex flex-col justify-center items-center text-center text-white p-8'>
+              <h3 className='text-3xl md:text-4xl font-bold mb-4'>
+                Ready for Paradise?
               </h3>
-              <p className='text-white/90 mb-6'>
+              <p className='text-lg text-white/90 mb-8 max-w-xs'>
                 Start your Caribbean yacht adventure today
               </p>
-              <button className='bg-white text-teal-900 px-8 py-3 rounded-full font-semibold hover:bg-teal-50 transition-colors flex items-center justify-center gap-2 mx-auto'>
+              <button className='bg-white text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 flex items-center gap-3 shadow-lg'>
                 <Calendar className='w-5 h-5' />
                 Book Your Escape
               </button>
@@ -893,22 +1028,22 @@ const CaribbeanCTA: React.FC = () => {
           </div>
 
           {/* Contact CTA */}
-          <div className='relative h-80 rounded-3xl overflow-hidden group cursor-pointer transform hover:scale-[1.02] transition-all duration-500'>
+          <div className='relative h-80 rounded-3xl overflow-hidden group cursor-pointer hover:shadow-2xl transition-all duration-500'>
             <img
               src='https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop'
               alt='Contact our concierge'
-              className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
             />
-            <div className='absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent' />
+            <div className='absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500' />
 
-            <div className='absolute bottom-0 left-0 right-0 p-8 text-white text-center'>
-              <h3 className='text-2xl md:text-3xl font-light mb-4'>
-                Need <span className='font-normal'>Assistance?</span>
+            <div className='absolute inset-0 flex flex-col justify-center items-center text-center text-white p-8'>
+              <h3 className='text-3xl md:text-4xl font-bold mb-4'>
+                Need Assistance?
               </h3>
-              <p className='text-white/90 mb-6'>
+              <p className='text-lg text-white/90 mb-8 max-w-xs'>
                 Our concierge team is here 24/7
               </p>
-              <button className='bg-white text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 mx-auto'>
+              <button className='bg-white text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 flex items-center gap-3 shadow-lg'>
                 <Phone className='w-5 h-5' />
                 Call Concierge
               </button>
@@ -919,7 +1054,6 @@ const CaribbeanCTA: React.FC = () => {
     </section>
   );
 };
-
 // Enhanced Modal for Yacht Details - FIXED SCROLL ISSUE
 const YachtDetailsModal: React.FC<{
   yacht: Yacht;
@@ -980,18 +1114,18 @@ const YachtDetailsModal: React.FC<{
             />
 
             {/* Navigation */}
-            <button
+            {/* <button
               onClick={prevImage}
               className='absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all'
             >
               <ChevronLeft className='w-5 h-5' />
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={nextImage}
               className='absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all'
             >
               <ChevronRight className='w-5 h-5' />
-            </button>
+            </button> */}
 
             {/* Image Counter */}
             <div className='absolute top-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm'>
@@ -1073,7 +1207,7 @@ const YachtDetailsModal: React.FC<{
           </div>
 
           {/* Tab Content - FIXED: Added proper overflow handling */}
-          <div className='flex-1 min-h-0 overflow-y-auto p-6'>
+          <div className='flex-1 min-h-0 overflow-y-auto p-6 pb-30'>
             {activeTab === 'overview' && (
               <div className='space-y-6'>
                 <div>
@@ -1444,7 +1578,7 @@ const LuxeYachtServiceView: React.FC = () => {
 
   return (
     <div className='min-h-screen bg-white'>
-      <CaribbeanHero onExploreFleet={handleExploreFleet} />
+      <CinematicHero onExploreFleet={handleExploreFleet} />
       <div ref={fleetRef}>
         <CaribbeanYachtGrid onYachtSelect={handleYachtSelect} />
       </div>

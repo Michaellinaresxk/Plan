@@ -1666,99 +1666,118 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   // BIKE_RENTALS SERVICE
   [SERVICE_IDS.ATV_RIDE_EXCURSION]: {
     id: SERVICE_IDS.ATV_RIDE_EXCURSION,
-    titleKey: 'services.standard.bikeRental.name',
-    descriptionKey: 'services.standard.bikeRental.short',
-    fullDescriptionKey: 'services.standard.bikeRental.full',
-    basePrice: 25,
-    priceUnit: 'services.priceUnits.perDay',
+    titleKey: 'services.standard.atvAdventure.name',
+    descriptionKey: 'services.standard.atvAdventure.description',
+    fullDescriptionKey: 'services.standard.atvAdventure.full',
+    basePrice: 85, // Precio típico para ATV por persona
+    priceUnit: 'services.priceUnits.perPerson',
     category: 'tours',
     packageType: ['standard'],
     imageUrl:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg',
-    duration: 2,
+    duration: 3, // 3 horas típicas para aventura ATV
+    bookingDuration: {
+      min: 3,
+      max: 6,
+      unit: 'hours',
+    },
     options: {
-      bikeType: {
-        id: 'bikeType',
-        nameKey: 'services.bikeRental.options.bikeType.title',
+      vehicleType: {
+        id: 'vehicleType',
+        nameKey: 'services.atvAdventure.options.vehicleType.title',
         subOptions: {
-          beachCruiser: {
-            id: 'beachCruiser',
+          atv: {
+            id: 'atv',
+            nameKey: 'services.atvAdventure.options.vehicleType.options.atv',
+            price: 0, // Precio base
+            maxParticipants: 1,
+          },
+          buggy: {
+            id: 'buggy',
+            nameKey: 'services.atvAdventure.options.vehicleType.options.buggy',
+            price: 10,
+            maxParticipants: 2,
+          },
+          polaris: {
+            id: 'polaris',
             nameKey:
-              'services.bikeRental.options.bikeType.options.beachCruiser',
+              'services.atvAdventure.options.vehicleType.options.polaris',
+            price: 25,
+            maxParticipants: 2,
+          },
+        },
+      },
+      timeSlot: {
+        id: 'timeSlot',
+        nameKey: 'services.atvAdventure.options.timeSlot.title',
+        subOptions: {
+          morning: {
+            id: 'morning',
+            nameKey: 'services.atvAdventure.options.timeSlot.options.morning',
+            price: 0,
+            time: '8:00 AM',
+          },
+          afternoon: {
+            id: 'afternoon',
+            nameKey: 'services.atvAdventure.options.timeSlot.options.afternoon',
+            price: 0,
+            time: '2:00 PM',
+          },
+        },
+      },
+      pickupLocation: {
+        id: 'pickupLocation',
+        nameKey: 'services.atvAdventure.options.pickupLocation.title',
+        subOptions: {
+          puntaCana: {
+            id: 'puntaCana',
+            nameKey:
+              'services.atvAdventure.options.pickupLocation.options.puntaCana',
             price: 0,
           },
-          cityBike: {
-            id: 'cityBike',
-            nameKey: 'services.bikeRental.options.bikeType.options.cityBike',
-            price: 5,
-          },
-          mountainBike: {
-            id: 'mountainBike',
+          capCana: {
+            id: 'capCana',
             nameKey:
-              'services.bikeRental.options.bikeType.options.mountainBike',
+              'services.atvAdventure.options.pickupLocation.options.capCana',
+            price: 15,
+          },
+          bavaro: {
+            id: 'bavaro',
+            nameKey:
+              'services.atvAdventure.options.pickupLocation.options.bavaro',
             price: 10,
           },
-          eBike: {
-            id: 'eBike',
-            nameKey: 'services.bikeRental.options.bikeType.options.eBike',
-            price: 20,
-          },
-        },
-      },
-      rentalDuration: {
-        id: 'rentalDuration',
-        nameKey: 'services.bikeRental.options.rentalDuration.title',
-        subOptions: {
-          halfDay: {
-            id: 'halfDay',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.halfDay',
-            price: -10,
-          },
-          fullDay: {
-            id: 'fullDay',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.fullDay',
-            price: 0,
-          },
-          twoDays: {
-            id: 'twoDays',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.twoDays',
-            price: 20,
-          },
-          weekly: {
-            id: 'weekly',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.weekly',
-            price: 100,
-          },
         },
       },
     },
-    additionalInfoKeys: [
-      'services.bikeRental.additionalInfo.1',
-      'services.bikeRental.additionalInfo.2',
-      'services.bikeRental.additionalInfo.3',
+    includes: [
+      'services.atvAdventure.includes.1', // Round-trip transportation
+      'services.atvAdventure.includes.2', // Professional guide
+      'services.atvAdventure.includes.3', // Safety equipment
+      'services.atvAdventure.includes.4', // ATV/Buggy rental
+      'services.atvAdventure.includes.5', // Refreshments
     ],
-    specialRender: 'bikeRental',
-    relatedServices: [],
-    tags: ['adventure', 'exploration', 'outdoor', 'cycling'],
+    notIncluded: [
+      'services.atvAdventure.notIncluded.1', // Personal expenses
+      'services.atvAdventure.notIncluded.2', // Tips
+    ],
+    specialRender: 'atvAdventure',
+    relatedServices: [SERVICE_IDS.HORSEBACK_RIDING, SERVICE_IDS.SAONA_TOUR],
+    tags: ['adventure', 'outdoor', 'tours', 'atv', 'buggy'],
     availability: {
       daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
-      hoursOfDay: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+      hoursOfDay: [8, 9, 10, 11, 14, 15, 16],
     },
     metaData: {
-      deliveryIncluded: true,
-      pickupIncluded: true,
-      helmetIncluded: true,
-      lockIncluded: true,
-      support24h: true,
-      deliveryZone: 'Punta Cana area',
-      childrenBikesAvailable: true,
-      maintenanceStandard: 'highest',
+      minAge: 16,
+      driverLicense: 'required',
+      maxWeight: '300 lbs',
+      difficulty: 'easy-moderate',
+      duration: '3 hours',
+      groupSize: 'max 20 people',
       languages: 'english,spanish',
-      disclaimer: 'services.bikeRental.disclaimer',
+      weatherDependent: true,
+      includes: 'transportation,guide,equipment,refreshments',
     },
   },
 

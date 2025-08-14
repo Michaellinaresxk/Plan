@@ -114,15 +114,6 @@ const SCHEDULE_INFO = [
       'Come prepared for adventure!',
     ],
   },
-  {
-    icon: Camera,
-    title: 'Photo Disclaimer',
-    items: [
-      'Photos taken during excursion may be used for promotion',
-      'Professional action shots included',
-      'Your adventure memories captured',
-    ],
-  },
 ];
 
 // Vehicle Selection Types with updated pricing
