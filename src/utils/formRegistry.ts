@@ -325,12 +325,19 @@ registerForm({
 registerForm({
   name: 'AtvRideForm',
   component: () => import('@/UI/components/forms/AtvRideForm'),
-  servicePatterns: ['atv-excursions'],
+  servicePatterns: [
+    'atv-excursions', // ✅ Coincide con SERVICE_IDS.ATV_RIDE_EXCURSION
+    'atv-adventure',
+    'atv',
+    'quad',
+    'buggy',
+  ],
   propsMapper: (service, selectedItems, additionalData, onCancel) => ({
     service,
+    selectedVehicle: additionalData?.selectedVehicle,
     onSubmit:
       additionalData?.onSubmit ||
-      ((data: any) => console.log('private-catamaran:', data)),
+      ((data: any) => console.log('✅ ATV Adventure:', data)),
     onCancel,
   }),
 });

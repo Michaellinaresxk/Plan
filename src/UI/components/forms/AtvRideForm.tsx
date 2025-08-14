@@ -28,7 +28,7 @@ import {
 import { useLocationPricing } from '@/hooks/useLocationPricing';
 import { LocationSelector } from '../service/LocationSelector';
 
-interface AtvAdventureFormProps {
+interface AtvRideFormProps {
   service: Service;
   selectedVehicle?: any;
   onSubmit?: (formData: any) => void;
@@ -77,7 +77,7 @@ const ATV_TRANSPORT_PRICING = {
   maxCapacity: 8,
 };
 
-const AtvAdventureForm: React.FC<AtvAdventureFormProps> = ({
+const AtvRideForm: React.FC<AtvRideFormProps> = ({
   service,
   selectedVehicle,
   onSubmit,
@@ -839,4 +839,4 @@ const AtvAdventureForm: React.FC<AtvAdventureFormProps> = ({
   );
 };
 
-export default AtvAdventureForm;
+export default AtvRideForm;
