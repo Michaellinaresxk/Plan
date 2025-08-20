@@ -19,10 +19,10 @@ import { useState } from 'react';
 
 // ✅ Location options configuration - consistent with other forms
 const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
+  { id: 'punta-cana-resorts', name: 'Puntacana Resorts' },
   { id: 'cap-cana', name: 'Cap Cana' },
   { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'punta-village', name: 'Puntacana Village' },
   { id: 'uvero-alto', name: 'Uvero Alto' },
   { id: 'macao', name: 'Macao' },
 ] as const;
@@ -398,27 +398,6 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
                 <Info className='w-3 h-3 mr-1' />
                 {errors.location}
               </p>
-            )}
-
-            {/* Display selected location */}
-            {formData.location && (
-              <div className='mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-200'>
-                <p className='text-sm text-emerald-700 flex items-center'>
-                  <CheckCircle className='w-4 h-4 mr-2 text-emerald-600' />
-                  Selected:{' '}
-                  <span className='font-medium ml-1'>
-                    {
-                      LOCATION_OPTIONS.find(
-                        (loc) => loc.id === formData.location
-                      )?.name
-                    }
-                  </span>
-                </p>
-                <p className='text-xs text-emerald-600 mt-1'>
-                  We provide in-home, hotel, and office massage services in this
-                  area
-                </p>
-              </div>
             )}
           </div>
 

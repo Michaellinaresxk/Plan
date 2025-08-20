@@ -19,6 +19,8 @@ import {
   Star,
   Check,
 } from 'lucide-react';
+import { useFormModal } from '@/hooks/useFormModal';
+import FormHeader from './FormHeader';
 
 // Types for better type safety
 interface ChildInfo {
@@ -79,12 +81,11 @@ const AGE_CONFIG = {
   FREE_PRICE: 0, // Free for children 5 and under
 };
 
-// Location options configuration
 const LOCATION_OPTIONS = [
   { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
   { id: 'cap-cana', name: 'Cap Cana' },
   { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'punta-village', name: 'Puntacana Village' },
   { id: 'uvero-alto', name: 'Uvero Alto' },
   { id: 'macao', name: 'Macao Beach Area' },
 ] as const;
@@ -169,6 +170,7 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
+  const { handleClose } = useFormModal({ onCancel });
 
   // Form state
   const [formData, setFormData] = useState<FormData>({
@@ -679,19 +681,16 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
       <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-        {/* Header */}
-        <div className='bg-gradient-to-r from-blue-800 via-blue-700 to-cyan-800 p-6 text-white'>
-          <h2 className='text-2xl font-light tracking-wide'>
-            Catamaran Adventure Booking
-          </h2>
-          <p className='text-blue-100 mt-1 font-light'>
-            Choose your perfect Caribbean catamaran experience
-          </p>
-          <div className='mt-3 flex items-center text-blue-100 text-sm'>
-            <Ship className='w-4 h-4 mr-2' />
-            Duration: {TOUR_INFO.DURATION} | Multiple departure times available
-          </div>
-        </div>
+        <FormHeader
+          title='Catamaran Adventure Booking'
+          subtitle=' Choose your perfect Caribbean catamaran experience'
+          // icon={Chip}
+          onCancel={handleClose}
+          showCloseButton={true}
+          gradientFrom='blue-800'
+          gradientVia='via-blue-700'
+          gradientTo='cyan-800'
+        />
 
         {/* Form Body */}
         <div className='p-8 space-y-8'>
@@ -837,20 +836,6 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
               {errors.location && (
                 <p className='text-red-500 text-xs mt-2'>{errors.location}</p>
               )}
-
-              {/* Additional pickup info */}
-              {formData.location && (
-                <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-                  <div className='flex items-start'>
-                    <Info className='w-4 h-4 text-blue-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-blue-800'>
-                      <strong>Pickup Information:</strong> Our team will contact
-                      you 24 hours before your tour to confirm the exact pickup
-                      time and location within your selected area.
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
@@ -953,17 +938,6 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
                 </div>
               </div>
             )}
-
-            {/* Total participants display */}
-            <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-              <p className='text-sm text-blue-800'>
-                <strong>Total participants:</strong> {totalParticipants} (
-                {formData.adultCount} adults + {formData.childCount} children)
-                <br />
-                <strong>Catamaran capacity:</strong>{' '}
-                {selectedCatamaranData.capacity} guests
-              </p>
-            </div>
           </div>
 
           {/* What's Included Section */}

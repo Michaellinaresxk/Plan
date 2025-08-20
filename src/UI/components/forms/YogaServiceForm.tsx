@@ -18,22 +18,15 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/client';
 import { useEffect, useState } from 'react';
+import { LOCATION_OPTIONS } from '@/constants/location/location';
+import FormHeader from './FormHeader';
+import { useFormModal } from '@/hooks/useFormModal';
 
 interface YogaServiceFormProps {
   service: Service;
   onSubmit?: (formData: any) => void;
   onCancel: () => void;
 }
-
-// Location options configuration
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
-
-// Simplified - just need count of minors
 
 const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
   service,
@@ -59,6 +52,8 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentPrice, setCurrentPrice] = useState(service.price);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { handleClose } = useFormModal({ onCancel });
 
   // Calculate price based on participant count
   useEffect(() => {
@@ -303,55 +298,31 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
       <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
         <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
           {/* Form Header */}
-          <div
-            className={`bg-gradient-to-r ${
-              isPremium
-                ? 'from-amber-800 via-amber-700 to-amber-800'
-                : 'from-teal-800 via-teal-700 to-teal-800'
-            } p-6 text-white`}
-          >
-            <h2 className='text-2xl font-light tracking-wide flex items-center'>
-              {t('services.yoga.formTitle', {
-                fallback: 'Yoga Session Booking',
-              })}
-            </h2>
-            <p
-              className={`${
-                isPremium ? 'text-amber-100' : 'text-teal-100'
-              } mt-1 font-light`}
-            >
-              {t('services.yoga.formDescription', {
-                fallback:
-                  'Find your inner peace with a personalized yoga session',
-              })}
-            </p>
-          </div>
+
+          <FormHeader
+            title='Yoga Session'
+            subtitle='Find your inner peace with a personalized yoga session'
+            // icon={Yoga}
+            onCancel={handleClose}
+            showCloseButton={true}
+            gradientFrom='teal-800'
+            gradientVia='teal-700'
+            gradientTo='teal-800'
+          />
 
           {/* Form Body */}
           <div className='p-8 space-y-8'>
             {/* Date and Time Section */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Calendar
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-amber-600' : 'text-teal-600'
-                  }`}
-                />
+                <Calendar className={`w-5 h-5 mr-2 'text-teal-600'`} />
                 {t('services.yoga.scheduling', {
-                  fallback: 'Session Scheduling',
+                  fallback: 'Select Date',
                 })}
               </h3>
 
               {/* Date Selection */}
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Calendar
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-amber-600' : 'text-teal-600'
-                    }`}
-                  />
-                  {t('services.yoga.date', { fallback: 'Select Date' })} *
-                </label>
                 <input
                   type='date'
                   name='date'
@@ -512,19 +483,10 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     isPremium ? 'text-amber-600' : 'text-teal-600'
                   }`}
                 />
-                {t('services.yoga.location', { fallback: 'Location' })}
+                {t('services.yoga.location', { fallback: ' Select Location' })}
               </h3>
 
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                  <MapPin
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-amber-600' : 'text-teal-600'
-                    }`}
-                  />
-                  Select Location *
-                </label>
-
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                   {LOCATION_OPTIONS.map((location) => (
                     <div
@@ -587,81 +549,83 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                 {t('services.yoga.participants', { fallback: 'Participants' })}
               </h3>
 
-              {/* Participant Count */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Users
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-amber-600' : 'text-teal-600'
-                    }`}
-                  />
-                  {t('services.yoga.participantCount', {
-                    fallback: 'Number of Participants',
-                  })}
-                </label>
-                <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
-                  <button
-                    type='button'
-                    onClick={() => updateParticipantCount(false)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                  >
-                    -
-                  </button>
-                  <div className='flex-1 py-2 text-center'>
-                    {formData.participantCount}
+              <section className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {/* Participant Count */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Users
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    {t('services.yoga.participantCount', {
+                      fallback: 'Number of Participants',
+                    })}
+                  </label>
+                  <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
+                    <button
+                      type='button'
+                      onClick={() => updateParticipantCount(false)}
+                      className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                    >
+                      -
+                    </button>
+                    <div className='flex-1 py-2 text-center'>
+                      {formData.participantCount}
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => updateParticipantCount(true)}
+                      className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                    >
+                      +
+                    </button>
                   </div>
-                  <button
-                    type='button'
-                    onClick={() => updateParticipantCount(true)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                  >
-                    +
-                  </button>
                 </div>
-              </div>
 
-              {/* Minors Count */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Baby
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-amber-600' : 'text-teal-600'
-                    }`}
+                {/* Minors Count */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Baby
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-amber-600' : 'text-teal-600'
+                      }`}
+                    />
+                    Number of participants under 18
+                  </label>
+                  <input
+                    type='number'
+                    name='minorsCount'
+                    min='0'
+                    max={formData.participantCount}
+                    value={formData.minorsCount}
+                    onChange={handleChange}
+                    className={`w-full max-w-xs p-3 border ${
+                      errors.minorsCount ? 'border-red-500' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 ${
+                      isPremium
+                        ? 'focus:ring-amber-500 focus:border-amber-500'
+                        : 'focus:ring-teal-500 focus:border-teal-500'
+                    } bg-gray-50`}
+                    placeholder='0'
                   />
-                  Number of participants under 18
-                </label>
-                <input
-                  type='number'
-                  name='minorsCount'
-                  min='0'
-                  max={formData.participantCount}
-                  value={formData.minorsCount}
-                  onChange={handleChange}
-                  className={`w-full max-w-xs p-3 border ${
-                    errors.minorsCount ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium
-                      ? 'focus:ring-amber-500 focus:border-amber-500'
-                      : 'focus:ring-teal-500 focus:border-teal-500'
-                  } bg-gray-50`}
-                  placeholder='0'
-                />
-                {errors.minorsCount && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.minorsCount}
-                  </p>
-                )}
-
-                {formData.minorsCount > 0 && (
-                  <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200 mt-3'>
-                    <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
-                    <p className='text-xs text-blue-700'>
-                      {formData.minorsCount} participant(s) under 18 detected.
-                      Adult supervision is required during the yoga session.
+                  {errors.minorsCount && (
+                    <p className='text-red-500 text-xs mt-1'>
+                      {errors.minorsCount}
                     </p>
-                  </div>
-                )}
-              </div>
+                  )}
+
+                  {formData.minorsCount > 0 && (
+                    <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200 mt-3'>
+                      <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
+                      <p className='text-xs text-blue-700'>
+                        {formData.minorsCount} participant(s) under 18 detected.
+                        Adult supervision is required during the yoga session.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </section>
 
               {/* Special Needs Toggle */}
               <div className='mt-4'>
@@ -823,14 +787,6 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
               </h3>
 
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <MessageSquare
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-amber-600' : 'text-teal-600'
-                    }`}
-                  />
-                  {t('services.yoga.notes', { fallback: 'Notes' })}
-                </label>
                 <textarea
                   name='additionalNotes'
                   value={formData.additionalNotes}

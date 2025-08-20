@@ -21,11 +21,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  // Debug logs
-  console.log('🏨 BookingModal rendered for service:', service.id);
-  console.log('🏨 BookingModal selectedItems:', selectedItems);
-  console.log('🏨 BookingModal additionalData:', additionalData);
-
   // ✅ TÍTULO UNIFICADO PARA TODOS LOS SERVICIOS
   const getModalTitle = () => {
     return t('bookingModal.title', {
@@ -47,7 +42,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
             selectedItems={selectedItems}
             additionalData={additionalData}
             onCancel={() => {
-              console.log('🔄 BookingModal - onCancel called, closing modal');
               onClose();
             }}
           />

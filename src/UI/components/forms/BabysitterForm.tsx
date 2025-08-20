@@ -19,20 +19,15 @@ import {
 import ServiceManager from '@/constants/services/ServiceManager';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
+import { LOCATION_OPTIONS } from '@/constants/location/location';
+import FormHeader from './FormHeader';
+import { useFormModal } from '@/hooks/useFormModal';
 
 interface BabysitterFormProps {
   service: Service;
   onSubmit: (formData: any) => void;
   onCancel: () => void;
 }
-
-// ✅ Location options configuration - similar to YogaServiceForm
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
 
 const BabysitterForm: React.FC<BabysitterFormProps> = ({
   service,
@@ -42,7 +37,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
   const { t } = useTranslation();
   const { setReservationData } = useReservation();
   const router = useRouter();
-
+  const { handleClose } = useFormModal({ onCancel });
   // ✅ Updated state with location as ID instead of free text
   const [formData, setFormData] = useState({
     date: '',
@@ -360,34 +355,17 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
       <div className='bg-white rounded-2xl shadow-lg border-t-8 border-purple-500'>
         {/* Form Header */}
-        <div
-          className='relative p-6 text-white overflow-hidden'
-          style={{
-            background:
-              'linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #7c3aed 100%)',
-          }}
-        >
-          {/* Decorative blob */}
-          <div className='absolute top-0 right-0 w-64 h-64 opacity-10'>
-            <svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'>
-              <path
-                fill='#FFFFFF'
-                d='M42.8,-62.2C54.9,-56.3,63.7,-42.8,69.8,-28.5C75.9,-14.2,79.3,0.9,75.2,14.3C71.2,27.7,59.7,39.3,46.8,47.3C34,55.3,19.8,59.7,4.9,63C-10,66.3,-25.6,68.6,-37.7,62.3C-49.8,56,-58.4,41.2,-62.5,26.2C-66.6,11.3,-66.2,-3.9,-63.6,-19.3C-61,-34.7,-56.1,-50.3,-45.5,-56.7C-34.9,-63,-17.5,-60,-1.4,-58C14.7,-55.9,30.7,-68.1,42.8,-62.2Z'
-                transform='translate(100 100)'
-              />
-            </svg>
-          </div>
 
-          <div className='relative z-10'>
-            <h2 className='text-3xl font-bold tracking-wide flex items-center'>
-              <Baby className='w-8 h-8 mr-3' />
-              Happy Kids Babysitting
-            </h2>
-            <p className='text-purple-100 mt-2 text-lg'>
-              Professional childcare in the comfort of your accommodation
-            </p>
-          </div>
-        </div>
+        <FormHeader
+          title=' Happy Kids Babysitting'
+          subtitle='Professional childcare in the comfort of your accommodation'
+          icon={Baby}
+          onCancel={handleClose}
+          showCloseButton={true}
+          gradientFrom='purple-800'
+          gradientVia='purple-500'
+          gradientTo='purple-500'
+        />
 
         {/* Form Body */}
         <div className='p-8 space-y-8 relative'>

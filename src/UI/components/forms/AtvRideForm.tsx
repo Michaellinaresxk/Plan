@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { useLocationPricing } from '@/hooks/useLocationPricing';
 import { LocationSelector } from '../service/LocationSelector';
+import FormHeader from './FormHeader';
+import { useFormModal } from '@/hooks/useFormModal';
 
 interface AtvRideFormProps {
   service: Service;
@@ -86,6 +88,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
+  const { handleClose } = useFormModal({ onCancel });
 
   const [formData, setFormData] = useState({
     date: '',
@@ -339,57 +342,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
 
   const isPremium = formData.vehicleType === 'polaris';
 
-  // Pricing breakdown component
-  const PricingBreakdown = () => (
-    <div className='bg-blue-50 p-4 rounded-lg border border-blue-200'>
-      <h4 className='font-medium text-blue-800 mb-3 flex items-center'>
-        <DollarSign className='w-4 h-4 mr-2' />
-        Pricing Breakdown
-      </h4>
-      {vehicleInfo?.price ? (
-        <div className='space-y-2 text-sm'>
-          <div className='flex justify-between'>
-            <span>
-              {vehicleInfo.name} ({formData.vehicleCount} × ${vehicleInfo.price}
-              ):
-            </span>
-            <span>${basePrice.toFixed(2)}</span>
-          </div>
-          <div className='flex justify-between font-medium'>
-            <span>Subtotal (vehicles):</span>
-            <span>${basePrice.toFixed(2)}</span>
-          </div>
-          <div className='flex justify-between'>
-            <span>
-              Transport ({formData.totalParticipants <= 4 ? '1-4' : '5-8'}{' '}
-              people):
-            </span>
-            <span>${transportCost.toFixed(2)}</span>
-          </div>
-          {locationSurcharge > 0 && (
-            <div className='flex justify-between'>
-              <span>Location surcharge:</span>
-              <span>${locationSurcharge.toFixed(2)}</span>
-            </div>
-          )}
-          <div className='border-t pt-2 flex justify-between font-bold text-blue-800'>
-            <span>Total:</span>
-            <span>${totalPrice.toFixed(2)}</span>
-          </div>
-        </div>
-      ) : (
-        <div className='text-center p-4'>
-          <p className='text-blue-800 font-medium'>
-            Contact us for Polaris pricing
-          </p>
-          <p className='text-blue-600 text-sm mt-2'>
-            Premium experience with custom rates
-          </p>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -399,26 +351,19 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
         <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
           {/* Form Header */}
-          <div
-            className={`bg-gradient-to-r ${
-              isPremium
-                ? 'from-purple-800 via-purple-700 to-purple-800'
-                : 'from-green-800 via-green-700 to-green-800'
-            } p-6 text-white`}
-          >
-            <h2 className='text-2xl font-semibold tracking-wide flex items-center'>
-              <Car className='w-6 h-6 mr-3' />
-              ATV Adventure Booking
-            </h2>
-            <p
-              className={`${
-                isPremium ? 'text-purple-100' : 'text-green-100'
-              } mt-1 font-light`}
-            >
-              Explore tropical paradise through jungle trails and pristine
-              beaches
-            </p>
-          </div>
+
+          <FormHeader
+            title='ATVs Adventure'
+            subtitle='Explore tropical paradise through jungle trails and pristine
+              beaches'
+            icon={Mountain}
+            isPremium={isPremium}
+            onCancel={handleClose}
+            showCloseButton={true}
+            gradientFrom='green-800'
+            gradientVia='green-700'
+            gradientTo='green-800'
+          />
 
           {/* Form Body */}
           <div className='p-8 space-y-8'>
@@ -561,19 +506,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 error={errors.location}
                 isPremium={isPremium}
               />
-
-              {formData.location && (
-                <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-                  <div className='flex items-start'>
-                    <Info className='w-4 h-4 text-blue-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-blue-800'>
-                      <strong>Pickup Information:</strong> Our team will contact
-                      you 24 hours before your adventure to confirm the exact
-                      pickup time and location.
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Vehicle Selection */}
@@ -589,14 +521,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
 
               {/* Vehicle Type */}
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Car
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    }`}
-                  />
-                  Vehicle Type *
-                </label>
                 <select
                   name='vehicleType'
                   value={formData.vehicleType}
@@ -667,38 +591,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               </div>
             </div>
 
-            {/* Experience Level */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Shield
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-purple-600' : 'text-green-600'
-                  }`}
-                />
-                Experience & Preferences
-              </h3>
-
-              <div>
-                <label className='flex items-center gap-3'>
-                  <input
-                    type='checkbox'
-                    name='hasExperience'
-                    checked={formData.hasExperience}
-                    onChange={handleChange}
-                    className={`h-4 w-4 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    } focus:ring-2 border-gray-300 rounded`}
-                  />
-                  <span className='text-sm text-gray-700'>
-                    I have ATV/off-road driving experience
-                  </span>
-                </label>
-              </div>
-            </div>
-
-            {/* Pricing breakdown */}
-            <PricingBreakdown />
-
             {/* Additional Information */}
             <div className='space-y-4'>
               <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
@@ -707,23 +599,15 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     isPremium ? 'text-purple-600' : 'text-green-600'
                   }`}
                 />
-                Additional Information
+                Special Requests
               </h3>
 
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Info
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    }`}
-                  />
-                  Special Requests
-                </label>
                 <textarea
                   name='additionalNotes'
                   value={formData.additionalNotes}
                   onChange={handleChange}
-                  placeholder='Celebration details, dietary requirements, photo preferences, or any other special requests...'
+                  placeholder='Celebration details, photo preferences, or any other special requests...'
                   className={`w-full p-3 border border-gray-300 rounded-lg ${
                     isPremium
                       ? 'focus:ring-purple-500 focus:border-purple-500'

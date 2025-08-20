@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ColorPicker from '../shared/ColorPicker';
+import { LOCATION_OPTIONS } from '@/constants/location/location';
 
 interface CustomDecorationFormProps {
   service: Service;
@@ -35,14 +36,6 @@ interface CustomDecorationFormProps {
   ) => void;
   onClose: () => void;
 }
-
-// ✅ Location options configuration - same as BabysitterForm
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
 
 const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
   service,
@@ -670,22 +663,6 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                       <AlertCircle className='w-3 h-3 mr-1' />
                       {errors.location}
                     </p>
-                  )}
-
-                  {/* Display selected location */}
-                  {location && (
-                    <div className='mt-4 p-3 bg-purple-100 rounded-lg border border-purple-200'>
-                      <p className='text-sm text-purple-800 flex items-center'>
-                        <CheckCircle className='w-4 h-4 mr-2 text-purple-600' />
-                        Selected area:{' '}
-                        <span className='font-medium ml-1'>
-                          {
-                            LOCATION_OPTIONS.find((loc) => loc.id === location)
-                              ?.name
-                          }
-                        </span>
-                      </p>
-                    </div>
                   )}
                 </div>
 

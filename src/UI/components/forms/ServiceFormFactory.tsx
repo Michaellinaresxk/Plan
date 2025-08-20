@@ -6,26 +6,36 @@ import { findFormForService } from '@/utils/formRegistry';
 
 interface ServiceFormFactoryProps {
   service: Service;
+  selectedItems?: any[]; // ✅ ADDED: Agregado selectedItems
   additionalData?: any;
   onCancel: () => void;
 }
 
 /**
- * Ultra-Clean ServiceFormFactory
+ * ✅ FIXED ServiceFormFactory - Parámetros corregidos
  *
- * Solo 3 responsabilidades:
- * 1. Encontrar el formulario correcto (auto-detección)
- * 2. Validar requisitos
- * 3. Renderizar con lazy loading
+ * PROBLEMA ENCONTRADO: Los parámetros se pasaban en orden incorrecto
+ * - FormRegistry espera: (service, selectedItems, additionalData, onCancel)
+ * - ServiceFormFactory pasaba: (service, additionalData, onCancel)
  *
- * Todo lo demás está en el sistema de registro automático
+ * RESULTADO: onCancel llegaba como undefined
  */
 const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
   service,
+  selectedItems = [], // ✅ FIXED: Agregado selectedItems con default
   additionalData = {},
   onCancel,
 }) => {
   const { t } = useTranslation();
+
+  // ✅ DEBUG: Logging para verificar parámetros
+  console.log('🏭 ServiceFormFactory Debug:', {
+    serviceId: service.id,
+    hasOnCancel: typeof onCancel === 'function',
+    selectedItemsCount: selectedItems.length,
+    additionalDataKeys: Object.keys(additionalData),
+    onCancel: onCancel,
+  });
 
   // 1. Auto-detectar formulario
   const formConfig = useMemo(() => {
@@ -42,11 +52,33 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
     return registration;
   }, [service.id]);
 
-  // 3. Preparar props
+  // ✅ FIXED: Preparar props con parámetros en orden correcto
   const formProps = useMemo(() => {
     if (!formConfig) return {};
-    return formConfig.propsMapper(service, additionalData, onCancel);
-  }, [formConfig, service, additionalData, onCancel]);
+
+    console.log('🔧 Calling propsMapper with:', {
+      service: service.id,
+      selectedItemsCount: selectedItems.length,
+      additionalData: Object.keys(additionalData),
+      onCancelType: typeof onCancel,
+    });
+
+    // ✅ CRITICAL FIX: Pasar parámetros en el orden correcto
+    return formConfig.propsMapper(
+      service, // 1. service
+      selectedItems, // 2. selectedItems (era el que faltaba)
+      additionalData, // 3. additionalData
+      onCancel // 4. onCancel (ahora llega correctamente)
+    );
+  }, [formConfig, service, selectedItems, additionalData, onCancel]);
+
+  // ✅ DEBUG: Verificar props finales
+  console.log('📋 Final form props:', {
+    hasService: !!formProps.service,
+    hasOnCancel: typeof formProps.onCancel === 'function',
+    hasOnSubmit: typeof formProps.onSubmit === 'function',
+    onCancelValue: formProps.onCancel,
+  });
 
   // 4. Renderizar formulario
   return (
@@ -59,17 +91,22 @@ const ServiceFormFactory: React.FC<ServiceFormFactoryProps> = ({
           </div>
         }
       >
-        <LazyFormRenderer formConfig={formConfig!} formProps={formProps} />
+        <LazyFormRenderer
+          formConfig={formConfig!}
+          formProps={formProps}
+          onCancel={onCancel} // ✅ Pass onCancel as backup
+        />
       </Suspense>
     </div>
   );
 };
 
-// Componente separado para renderizar formularios lazy
+// ✅ IMPROVED: Componente separado para renderizar formularios lazy
 const LazyFormRenderer: React.FC<{
   formConfig: any;
   formProps: any;
-}> = ({ formConfig, formProps }) => {
+  onCancel: () => void; // ✅ Added onCancel as backup
+}> = ({ formConfig, formProps, onCancel }) => {
   const [FormComponent, setFormComponent] =
     React.useState<React.ComponentType<any> | null>(null);
   const [loadError, setLoadError] = React.useState<string | null>(null);
@@ -98,7 +135,14 @@ const LazyFormRenderer: React.FC<{
         <p className='text-gray-600 mb-4'>
           Failed to load the form component. Please try again.
         </p>
-        <details className='text-xs text-gray-500'>
+        {/* ✅ IMPROVED: Botón para cerrar en caso de error */}
+        <button
+          onClick={onCancel}
+          className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition'
+        >
+          Close
+        </button>
+        <details className='text-xs text-gray-500 mt-4'>
           <summary>Error details</summary>
           <code>{loadError}</code>
         </details>
@@ -115,56 +159,20 @@ const LazyFormRenderer: React.FC<{
     );
   }
 
-  return <FormComponent {...formProps} />;
+  // ✅ IMPROVED: Verificar que formProps.onCancel existe antes de renderizar
+  const finalProps = {
+    ...formProps,
+    // Asegurar que onCancel siempre exista
+    onCancel: formProps.onCancel || onCancel,
+  };
+
+  console.log('🎯 Rendering form with final props:', {
+    formName: formConfig.name,
+    hasOnCancel: typeof finalProps.onCancel === 'function',
+    propsKeys: Object.keys(finalProps),
+  });
+
+  return <FormComponent {...finalProps} />;
 };
 
 export default ServiceFormFactory;
-
-// ===================================
-// INSTRUCCIONES DE USO
-// ===================================
-
-/*
-PARA AGREGAR UN NUEVO FORMULARIO:
-
-1. Crea tu componente de formulario normalmente
-2. Agrega una línea en formRegistry.ts: se encuentra en src/utils/formRegistry.ts
-3. ¡YA ESTÁ! El sistema detectará automáticamente cuándo usar tu formulario.
-
-PATRÓN DE NOMENCLATURA RECOMENDADO:
-
-Para servicios: 'categoria-tipo' o 'luxe-categoria'
-Ejemplos: 'massage-relaxing', 'luxe-spa', 'bike-mountain', 'yoga-beginner'
-
-El sistema buscará automáticamente por:
-1. Coincidencia exacta del ID
-2. Patrones que contengan palabras clave
-3. Fallback al formulario default
-
-DEBUG EN DESARROLLO:
-
-El sistema mostrará automáticamente en console:
-- Qué formulario se detectó para cada servicio
-- Qué props se están pasando
-- Errores de carga o configuración
-- Patrones de búsqueda utilizados
-
-ARQUITECTURA COMPLETA:
-
-BookingModal.tsx
-    ↓
-ServiceFormFactory.tsx (ultra-simple)
-    ↓
-formRegistry.ts (auto-registro)
-    ↓
-[Formulario específico].tsx
-
-MIGRACIÓN DESDE SISTEMA ANTERIOR:
-
-Si tienes formularios existentes que no funcionan:
-1. Abre la consola del navegador
-2. Busca logs como "⚠️ No form found for service: X"
-3. Agrega el ID faltante a servicePatterns en formRegistry.ts
-4. Reinicia y debería funcionar automáticamente
-
-*/

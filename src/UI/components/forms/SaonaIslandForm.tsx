@@ -17,6 +17,8 @@ import {
   Car,
   DollarSign,
 } from 'lucide-react';
+import { useFormModal } from '@/hooks/useFormModal';
+import FormHeader from './FormHeader';
 
 // Types for better type safety
 interface ChildInfo {
@@ -105,7 +107,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
-
+  const { handleClose } = useFormModal({ onCancel });
   // Tour information
   const TOUR_INFO = {
     PICKUP_TIME: '7:00 AM - 7:45 AM',
@@ -537,64 +539,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     </div>
   );
 
-  // ✅ Pricing breakdown component
-  const PricingBreakdown = () => {
-    const basePrice =
-      calculatePrice -
-      calculateTransportCost(totalParticipants) -
-      getLocationSurcharge();
-    const transportCost = calculateTransportCost(totalParticipants);
-    const locationSurcharge = getLocationSurcharge();
-
-    return (
-      <div className='bg-blue-50 p-4 rounded-lg border border-blue-200'>
-        <h4 className='font-medium text-blue-800 mb-3 flex items-center'>
-          <DollarSign className='w-4 h-4 mr-2' />
-          Pricing Breakdown
-        </h4>
-        <div className='space-y-2 text-sm'>
-          <div className='flex justify-between'>
-            <span>Adults ({formData.adultCount} × $55):</span>
-            <span>
-              $
-              {(
-                formData.adultCount * PRICING_CONFIG.BASE_PRICE_PER_PERSON
-              ).toFixed(2)}
-            </span>
-          </div>
-          {formData.children.map((child, index) => (
-            <div key={child.id} className='flex justify-between'>
-              <span>
-                Child {index + 1} ({child.age} years):
-              </span>
-              <span>${child.price.toFixed(2)}</span>
-            </div>
-          ))}
-          <div className='flex justify-between font-medium'>
-            <span>Subtotal (per person costs):</span>
-            <span>${basePrice.toFixed(2)}</span>
-          </div>
-          <div className='flex justify-between'>
-            <span>
-              Transport ({totalParticipants <= 8 ? '1-8' : '9-15'} people):
-            </span>
-            <span>${transportCost.toFixed(2)}</span>
-          </div>
-          {locationSurcharge > 0 && (
-            <div className='flex justify-between'>
-              <span>Location surcharge:</span>
-              <span>${locationSurcharge.toFixed(2)}</span>
-            </div>
-          )}
-          <div className='border-t pt-2 flex justify-between font-bold text-blue-800'>
-            <span>Total:</span>
-            <span>${calculatePrice.toFixed(2)}</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   // Tour restrictions component
   const TourRestrictionsSection = () => (
     <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
@@ -617,20 +561,17 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
       <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-        {/* Header */}
-        <div className='bg-gradient-to-r from-blue-800 via-blue-700 to-cyan-800 p-6 text-white'>
-          <h2 className='text-2xl font-light tracking-wide'>
-            Saona Island Tour Booking
-          </h2>
-          <p className='text-blue-100 mt-1 font-light'>
-            Paradise adventure with catamaran, natural pools, and pristine
-            beaches
-          </p>
-          <div className='mt-3 flex items-center text-blue-100 text-sm'>
-            <Clock className='w-4 h-4 mr-2' />
-            Pickup: {TOUR_INFO.PICKUP_TIME} | Duration: {TOUR_INFO.DURATION}
-          </div>
-        </div>
+        <FormHeader
+          title=' Saona Island Tour'
+          subtitle=' Paradise adventure with catamaran, natural pools, and pristine
+            beaches'
+          icon={Waves}
+          onCancel={handleClose}
+          showCloseButton={true}
+          gradientFrom='blue-800'
+          gradientVia='blue-700'
+          gradientTo='cyan-800'
+        />
 
         {/* Form Body */}
         <div className='p-8 space-y-8'>
@@ -769,28 +710,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                   {errors.location}
                 </p>
               )}
-
-              {/* Display selected location */}
-              {formData.location && (
-                <div className='mt-4 p-3 bg-blue-100 rounded-lg border border-blue-200'>
-                  <p className='text-sm text-blue-800 flex items-center'>
-                    <CheckCircle className='w-4 h-4 mr-2 text-blue-600' />
-                    Selected pickup location:{' '}
-                    <span className='font-medium ml-1'>
-                      {
-                        LOCATION_OPTIONS.find(
-                          (loc) => loc.id === formData.location
-                        )?.name
-                      }
-                    </span>
-                    {getLocationSurcharge() > 0 && (
-                      <span className='ml-2 bg-blue-800 text-white px-2 py-1 rounded text-xs'>
-                        +${getLocationSurcharge()} USD
-                      </span>
-                    )}
-                  </p>
-                </div>
-              )}
             </div>
           </div>
 
@@ -897,23 +816,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                 </div>
               </div>
             )}
-
-            {/* Total participants display */}
-            <div className='p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-              <p className='text-sm text-blue-800 flex items-center justify-between'>
-                <span>
-                  <strong>Total participants:</strong> {totalParticipants} (
-                  {formData.adultCount} adults + {formData.childCount} children)
-                </span>
-                <span className='text-xs bg-blue-800 text-white px-2 py-1 rounded'>
-                  Transport: {totalParticipants <= 8 ? '$120' : '$160'}
-                </span>
-              </p>
-            </div>
           </div>
-
-          {/* ✅ Pricing breakdown */}
-          <PricingBreakdown />
 
           {/* What's Included Section */}
           <div className='space-y-6'>

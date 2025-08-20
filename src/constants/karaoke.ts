@@ -28,7 +28,6 @@ export interface KaraokeFormProps {
   onCancel: () => void;
 }
 
-// Pricing configuration
 export const PRICING = {
   BASE_PRICE: 200, // Base karaoke setup price
   SCREEN_RENTAL: 75, // Additional screen rental fee

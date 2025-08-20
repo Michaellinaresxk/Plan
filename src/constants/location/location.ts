@@ -33,6 +33,13 @@ export const DEFAULT_LOCATION_OPTIONS: LocationOption[] = [
   },
 ];
 
+export const LOCATION_OPTIONS = [
+  { id: 'punta-cana-resorts', name: 'Puntacana Resorts' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'bavaro', name: 'Bavaro' },
+  { id: 'punta-village', name: 'Puntacana Village' },
+] as const;
+
 export const DEFAULT_TRANSPORT_PRICING: TransportPricing = {
   small: 120, // 1-8 people
   large: 160, // 9-15 people

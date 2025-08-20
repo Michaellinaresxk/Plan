@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
+import FormHeader from '@/UI/components/forms/FormHeader';
 
 // Import the enhanced airline selector and utilities
 import AirlineSelector from '@/UI/components/service/AirlineSelector';
@@ -28,14 +29,8 @@ import {
   getAirlineInfo,
   validateAirlineWithTerminal,
 } from '@/constants/airlines';
-
-// ✅ Location options configuration - same as BabysitterForm
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
+import { LOCATION_OPTIONS } from '@/constants/location/location';
+import { useFormModal } from '@/hooks/useFormModal';
 
 // Types and Interfaces
 interface FormData {
@@ -336,6 +331,14 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
   const { setReservationData } = useReservation();
   const { isSameDay, hasMinimum24Hours } = useFormValidation();
 
+  const { handleClose, registerEscapeListener } = useFormModal({ onCancel });
+
+  // ✅ 2. REGISTRAR ESCAPE KEY
+  useEffect(() => {
+    const cleanup = registerEscapeListener();
+    return cleanup;
+  }, [registerEscapeListener]);
+
   // ✅ Updated form state with location area ID
   const [formData, setFormData] = useState<FormData>({
     date: '',
@@ -394,12 +397,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     () => formData.passengerCount + formData.kidsCount,
     [formData.passengerCount, formData.kidsCount]
   );
-
-  // Vehicle recommendation logic
-  const recommendedVehicle = useMemo(() => {
-    if (totalPassengers > 6) return 'van';
-    return 'suv';
-  }, [totalPassengers]);
 
   // Calculate price using custom hook
   const calculatePrice = usePriceCalculation(formData, service.price);
@@ -652,15 +649,16 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
       <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
         {/* Header */}
-        <div className='bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 p-6 text-white'>
-          <h2 className='text-2xl font-light tracking-wide'>
-            Premium Airport Transfer Booking
-          </h2>
-          <p className='text-blue-100 mt-1 font-light'>
-            Professional transfer service to/from Punta Cana International
-            Airport
-          </p>
-        </div>
+        <FormHeader
+          title='Airport Transfer'
+          subtitle='Experience the magic of riding along pristine Macao Beach'
+          icon={Plane}
+          onCancel={handleClose}
+          showCloseButton={true}
+          gradientFrom='blue-800'
+          gradientVia='via-blue-700'
+          gradientTo='cyan-800'
+        />
 
         {/* Form Body */}
         <div className='p-8 space-y-8'>
@@ -1038,23 +1036,6 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
                   {errors.locationArea}
                 </p>
               )}
-
-              {/* Display selected location area */}
-              {formData.locationArea && (
-                <div className='mt-4 p-3 bg-blue-100 rounded-lg border border-blue-200'>
-                  <p className='text-sm text-blue-800 flex items-center'>
-                    <CheckCircle className='w-4 h-4 mr-2 text-blue-600' />
-                    Selected area:{' '}
-                    <span className='font-medium ml-1'>
-                      {
-                        LOCATION_OPTIONS.find(
-                          (loc) => loc.id === formData.locationArea
-                        )?.name
-                      }
-                    </span>
-                  </p>
-                </div>
-              )}
             </div>
 
             {/* Exact Destination Address */}
@@ -1109,7 +1090,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
           <div className='flex space-x-4'>
             <button
               type='button'
-              onClick={onCancel}
+              onClick={handleClose}
               disabled={isSubmitting}
               className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
             >

@@ -11,15 +11,6 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
 }) => {
   return (
     <div className='space-y-4'>
-      <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-        <MapPin
-          className={`w-4 h-4 mr-2 ${
-            isPremium ? 'text-orange-600' : 'text-amber-600'
-          }`}
-        />
-        Select Pickup Location *
-      </label>
-
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
         {locationOptions.map((location) => (
           <div

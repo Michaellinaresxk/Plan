@@ -32,14 +32,7 @@ import {
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
-
-// Location options configuration
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
+import { LOCATION_OPTIONS } from '@/constants/location/location';
 
 const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
   const [currentStep, setCurrentStep] = useState(1);

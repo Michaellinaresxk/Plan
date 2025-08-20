@@ -1,6 +1,3 @@
-// constants/airlines.ts
-// Comprehensive airline-terminal mapping for Punta Cana International Airport
-
 export interface AirlineInfo {
   terminal: string;
   code: string;
