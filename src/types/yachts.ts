@@ -64,5 +64,5 @@ export const LOCATION_OPTIONS = [
   { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
   { id: 'cap-cana', name: 'Cap Cana' },
   { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
+  { id: 'punta-village', name: 'Puntacana Village' },
 ] as const;

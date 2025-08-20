@@ -119,9 +119,9 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   // YOGA SERVICE
   [SERVICE_IDS.YOGA]: {
     id: SERVICE_IDS.YOGA,
-    titleKey: 'services.standard.yogaStandard.tagline',
-    descriptionKey: 'services.standard.yogaStandard.description',
-    fullDescriptionKey: 'services.standard.yogaStandard.full',
+    titleKey: 'services.standard.yoga.short',
+    descriptionKey: 'services.standard.yoga.short',
+    fullDescriptionKey: 'ramon dime aver ',
     basePrice: 50,
     priceUnit: 'services.priceUnits.perSession',
     category: 'wellness',

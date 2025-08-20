@@ -1,8 +1,8 @@
 /**
- * Sistema de Auto-Registro de Formularios
+ * ✅ FIXED: Sistema de Auto-Registro de Formularios
  *
- * Este archivo permite registrar automáticamente nuevos formularios
- * sin necesidad de modificar el ServiceFormFactory
+ * PROBLEMA RESUELTO: propsMappers inconsistentes
+ * SOLUCIÓN: Todos los propsMappers ahora usan 4 parámetros consistentemente
  */
 
 export interface FormRegistration {
@@ -72,10 +72,60 @@ export const getAllRegisteredForms = (): FormRegistration[] => {
 };
 
 // ===================================
-// AUTO-REGISTRO DE FORMULARIOS
+// ✅ AUTO-REGISTRO DE FORMULARIOS CON PROPSMAPPERS CONSISTENTES
 // ===================================
 
-// Airport Transfer Form
+/**
+ * ✅ Helper para crear propsMapper estándar y consistente
+ */
+const createStandardPropsMapper = (
+  formName: string,
+  requiresSelectedItems = false
+) => {
+  return (
+    service: any,
+    selectedItems: any[] = [],
+    additionalData: any = {},
+    onCancel?: () => void
+  ) => {
+    // ✅ Debug logging para cada form
+    console.log(`🔧 ${formName} propsMapper called:`, {
+      service: service?.id,
+      selectedItemsCount: selectedItems.length,
+      hasOnCancel: typeof onCancel === 'function',
+      hasOnSubmit: typeof additionalData?.onSubmit === 'function',
+      additionalDataKeys: Object.keys(additionalData),
+    });
+
+    const baseProps = {
+      service,
+      onCancel, // ✅ CRITICAL: Siempre pasar onCancel
+      onSubmit:
+        additionalData?.onSubmit ||
+        ((data: any) => {
+          console.log(`✅ ${formName} submitted:`, data);
+        }),
+    };
+
+    // Agregar selectedItems si es requerido
+    if (requiresSelectedItems) {
+      return {
+        ...baseProps,
+        selectedItems,
+      };
+    }
+
+    // Pasar datos adicionales específicos del formulario
+    return {
+      ...baseProps,
+      initialData: additionalData?.initialData,
+      selectedVehicle: additionalData?.selectedVehicle,
+      ...additionalData, // Spread para props específicos
+    };
+  };
+};
+
+// ✅ FIXED: Airport Transfer Form - Parámetros corregidos
 registerForm({
   name: 'AirportTransferForm',
   component: () => import('@/UI/components/forms/AirportTransferForm'),
@@ -86,43 +136,27 @@ registerForm({
     'transfer',
     'transport',
   ],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('Airport transfer:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('AirportTransferForm'),
 });
 
-// HorseBack Riding Form
+// ✅ HorseBack Riding Form
 registerForm({
   name: 'HorseBackRidingForm',
   component: () => import('@/UI/components/forms/HorseBackRidingForm'),
   servicePatterns: ['horseback-riding'],
-  requiresItems: true,
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    selectedItems: selectedItems || [],
-    onCancel,
-  }),
+  requiresItems: false, // ✅ Cambié a false según el nuevo sistema
+  propsMapper: createStandardPropsMapper('HorseBackRidingForm'),
 });
 
-// Babysitter Form
+// ✅  Babysitter Form
 registerForm({
   name: 'BabysitterForm',
   component: () => import('@/UI/components/forms/BabysitterForm'),
   servicePatterns: ['babysitter', 'baby-sitter', 'luxe-childcare', 'childcare'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('Babysitter:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('BabysitterForm'),
 });
 
-// Decoration Form
+// ✅ Decoration Form - Mantiene su lógica especial pero consistente
 registerForm({
   name: 'CustomDecorationForm',
   component: () => import('@/UI/components/forms/CustomDecorationForm'),
@@ -132,18 +166,36 @@ registerForm({
     'decoration',
     'decor',
   ],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onBookService:
-      additionalData?.onBookService ||
-      ((service: any, dates: any, guests: number, formData: any) => {
-        console.log('Decoration booked:', { service, dates, guests, formData });
-      }),
-    onClose: onCancel,
-  }),
+  propsMapper: (
+    service: any,
+    selectedItems: any[] = [],
+    additionalData: any = {},
+    onCancel?: () => void
+  ) => {
+    console.log('🔧 CustomDecorationForm propsMapper called:', {
+      service: service?.id,
+      hasOnCancel: typeof onCancel === 'function',
+    });
+
+    return {
+      service,
+      onCancel,
+      onBookService:
+        additionalData?.onBookService ||
+        ((service: any, dates: any, guests: number, formData: any) => {
+          console.log('✅ Decoration booked:', {
+            service,
+            dates,
+            guests,
+            formData,
+          });
+        }),
+      onClose: onCancel,
+    };
+  },
 });
 
-// Massage Form
+// ✅ Massage Form
 registerForm({
   name: 'MassageForm',
   component: () => import('@/UI/components/forms/massage/MassageForm'),
@@ -154,16 +206,10 @@ registerForm({
     'luxe-massage',
     'spa',
   ],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('Massage:', data)),
-    onCancel,
-    initialData: additionalData?.initialData,
-  }),
+  propsMapper: createStandardPropsMapper('MassageForm'),
 });
 
-// Bike Form
+// ✅  Bike Form
 registerForm({
   name: 'BikeForm',
   component: () => import('@/UI/components/forms/BikeForm'),
@@ -174,68 +220,42 @@ registerForm({
     'bike',
     'bicycle',
   ],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit || ((data: any) => console.log('Bike:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('BikeForm'),
 });
 
-// Live Music Form
+// ✅ Live Music Form
 registerForm({
   name: 'LiveMusicForm',
   component: () => import('@/UI/components/forms/LiveMusicForm'),
   servicePatterns: ['live-music', 'luxe-music', 'music', 'musician'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('Live music:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('LiveMusicForm'),
 });
 
-// Yoga Form
+// ✅ Yoga Form
 registerForm({
   name: 'YogaServiceForm',
   component: () => import('@/UI/components/forms/YogaServiceForm'),
-  servicePatterns: ['yoga', 'yoga-session', 'yoga-standard', 'luxe-yoga'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit || ((data: any) => console.log('Yoga:', data)),
-    onCancel,
-  }),
+  servicePatterns: ['yoga', 'yoga-session', 'yoga-standard'],
+  propsMapper: createStandardPropsMapper('YogaServiceForm'),
 });
 
-// Golf Cart Form
+// ✅ Luxe Yoga Form
+registerForm({
+  name: 'LuxeYogaServiceForm',
+  component: () => import('@/UI/components/forms/YogaServiceForm'),
+  servicePatterns: ['luxe-yoga'],
+  propsMapper: createStandardPropsMapper('LuxeYogaServiceForm'),
+});
+
+// ✅ Golf Cart Form
 registerForm({
   name: 'GolfCartForm',
   component: () => import('@/UI/components/forms/GolfCartForm'),
   servicePatterns: ['golf-cart-rentals'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit || ((data: any) => console.log('Yoga:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('GolfCartForm'),
 });
 
-// Luxe Yoga Form
-registerForm({
-  name: 'LuxeYogaServiceForm',
-  component: () => import('@/UI/components/forms/YogaServiceForm'),
-  servicePatterns: ['yoga', 'yoga-session', 'yoga-standard', 'luxe-yoga'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit || ((data: any) => console.log('Yoga:', data)),
-    onCancel,
-  }),
-});
-
-// Chef Form
+// ✅ Chef Form
 registerForm({
   name: 'ChefForm',
   component: () => import('@/UI/components/forms/chef/ChefForm'),
@@ -246,113 +266,189 @@ registerForm({
     'chef',
     'culinary',
   ],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit || ((data: any) => console.log('Chef:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('ChefForm'),
 });
 
-// Default Form (fallback)
-registerForm({
-  name: 'DefaultServiceForm',
-  component: () => import('@/UI/components/forms/DefaultServiceForm'),
-  servicePatterns: ['*'], // Catch-all
-  propsMapper: (service, onCancel) => ({
-    service,
-    onCancel,
-  }),
-});
-
-// Saona Island Form
+// ✅ Saona Island Form
 registerForm({
   name: 'SaonaIslandForm',
   component: () => import('@/UI/components/forms/SaonaIslandForm'),
   servicePatterns: ['saona-island-tour'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('Saona Island Tour:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('SaonaIslandForm'),
 });
 
-// Personal Trainer Form
+// ✅ Personal Trainer Form
 registerForm({
-  name: 'personalTraining',
+  name: 'PersonalTrainerForm',
   component: () => import('@/UI/components/forms/PersonalTrainerForm'),
   servicePatterns: ['personal-training', 'luxe-fitness', 'fitness'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('Personal Trainer:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('PersonalTrainerForm'),
 });
 
-// Karaoke Form
+// ✅ Karaoke Form
 registerForm({
-  name: 'KaraokeFrom',
+  name: 'KaraokeForm',
   component: () => import('@/UI/components/forms/KaraokeFrom'),
   servicePatterns: ['karaoke'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('Karaoke:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('KaraokeForm'),
 });
 
-// Catamaran Form
+// ✅ Catamaran Form
 registerForm({
-  name: 'private-catamaran',
+  name: 'CatamaranForm',
   component: () => import('@/UI/components/forms/CatamaranForm'),
   servicePatterns: ['private-catamaran'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('private-catamaran:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('CatamaranForm'),
 });
 
-// AtvRideForm Form
+// ✅ ATV Ride Form
 registerForm({
   name: 'AtvRideForm',
   component: () => import('@/UI/components/forms/AtvRideForm'),
-  servicePatterns: [
-    'atv-excursions', // ✅ Coincide con SERVICE_IDS.ATV_RIDE_EXCURSION
-    'atv-adventure',
-    'atv',
-    'quad',
-    'buggy',
-  ],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    selectedVehicle: additionalData?.selectedVehicle,
-    onSubmit:
-      additionalData?.onSubmit ||
-      ((data: any) => console.log('✅ ATV Adventure:', data)),
-    onCancel,
-  }),
+  servicePatterns: ['atv-excursions', 'atv-adventure', 'atv', 'quad', 'buggy'],
+  propsMapper: (
+    service: any,
+    selectedItems: any[] = [],
+    additionalData: any = {},
+    onCancel?: () => void
+  ) => {
+    console.log('🔧 AtvRideForm propsMapper called:', {
+      service: service?.id,
+      hasOnCancel: typeof onCancel === 'function',
+      hasSelectedVehicle: !!additionalData?.selectedVehicle,
+    });
+
+    return {
+      service,
+      onCancel,
+      selectedVehicle: additionalData?.selectedVehicle,
+      onSubmit:
+        additionalData?.onSubmit ||
+        ((data: any) => {
+          console.log('✅ ATV Adventure submitted:', data);
+        }),
+    };
+  },
 });
 
-// Yoga Form
+// ✅ Luxe Yacht Form
 registerForm({
   name: 'LuxeYachtForm',
   component: () => import('@/UI/components/forms/LuxeYachtForm'),
   servicePatterns: ['luxe-yacht'],
-  propsMapper: (service, selectedItems, additionalData, onCancel) => ({
-    service,
-    onSubmit:
-      additionalData?.onSubmit || ((data: any) => console.log('Yacht:', data)),
-    onCancel,
-  }),
+  propsMapper: createStandardPropsMapper('LuxeYachtForm'),
 });
 
-console.log('✅ All forms auto-registered successfully');
+// ✅ Default Form - Ahora usa 4 parámetros consistentemente
+registerForm({
+  name: 'DefaultServiceForm',
+  component: () => import('@/UI/components/forms/DefaultServiceForm'),
+  servicePatterns: ['*'],
+  propsMapper: (
+    service: any,
+    selectedItems: any[] = [],
+    additionalData: any = {},
+    onCancel?: () => void
+  ) => {
+    console.log('🔧 DefaultServiceForm propsMapper called:', {
+      service: service?.id,
+      hasOnCancel: typeof onCancel === 'function',
+    });
+
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`⚠️ Using DefaultServiceForm for service: ${service?.id}`);
+      console.log('Consider adding specific form registration for better UX');
+    }
+
+    return {
+      service,
+      onCancel,
+    };
+  },
+});
+
+/**
+ * Función de debug para verificar registros
+ */
+export const debugFormRegistry = () => {
+  if (process.env.NODE_ENV === 'development') {
+    console.group('📋 Form Registry Debug');
+
+    const forms = getAllRegisteredForms();
+    forms.forEach((form) => {
+      console.log(`📝 ${form.name}:`, {
+        patterns: form.servicePatterns,
+        requiresItems: form.requiresItems || false,
+        hasPropsMapper: typeof form.propsMapper === 'function',
+      });
+    });
+
+    console.groupEnd();
+  }
+};
+
+/**
+ * Función para verificar que un servicio tiene formulario
+ */
+export const checkServiceHasForm = (serviceId: string): boolean => {
+  const form = findFormForService(serviceId);
+  if (!form) {
+    console.warn(`⚠️ No form found for service: ${serviceId}`);
+    return false;
+  }
+  console.log(`✅ Form found for ${serviceId}: ${form.name}`);
+  return true;
+};
+
+// ✅ Test propsMapper consistency
+export const testPropsMapperConsistency = () => {
+  if (process.env.NODE_ENV === 'development') {
+    console.group('🧪 Testing propsMapper consistency');
+
+    const testService = { id: 'test-service', name: 'Test' };
+    const testSelectedItems = [];
+    const testAdditionalData = { onSubmit: () => {} };
+    const testOnCancel = () => console.log('Test cancel');
+
+    const forms = getAllRegisteredForms();
+    forms.forEach((form) => {
+      try {
+        const props = form.propsMapper(
+          testService,
+          testSelectedItems,
+          testAdditionalData,
+          testOnCancel
+        );
+        const hasOnCancel = typeof props.onCancel === 'function';
+
+        console.log(
+          `${hasOnCancel ? '✅' : '❌'} ${
+            form.name
+          }: onCancel = ${typeof props.onCancel}`
+        );
+
+        if (!hasOnCancel) {
+          console.error(
+            `❌ ${form.name} propsMapper not returning onCancel correctly`
+          );
+        }
+      } catch (error) {
+        console.error(`❌ ${form.name} propsMapper error:`, error);
+      }
+    });
+
+    console.groupEnd();
+  }
+};
+
+// Ejecutar debug en desarrollo
+if (process.env.NODE_ENV === 'development') {
+  setTimeout(() => {
+    debugFormRegistry();
+    testPropsMapperConsistency();
+  }, 1000);
+}
+
+console.log(
+  '✅ All forms auto-registered successfully with FIXED propsMappers'
+);

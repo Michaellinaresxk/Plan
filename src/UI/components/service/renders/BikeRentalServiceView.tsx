@@ -19,14 +19,7 @@ import {
   ShoppingCart,
   Phone,
 } from 'lucide-react';
-
-// Location options
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-];
+import { LOCATION_OPTIONS } from '@/constants/location/location';
 
 // Bike types data
 const BIKE_TYPES = [

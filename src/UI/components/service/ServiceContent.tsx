@@ -53,7 +53,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
           yogaExtendedData,
           primaryColor,
           t,
-          `services.standard.yogaStandard`
+          `services.standard.yoga.short`
         );
       // Eventualmente podemos cambiarlo por el nuevo orquestador:
       // return <ServiceContentOrchestrator service={service} primaryColor={primaryColor} />;

@@ -24,6 +24,8 @@ import {
   Minus,
   ShoppingCart,
 } from 'lucide-react';
+import FormHeader from './FormHeader';
+import { useFormModal } from '@/hooks/useFormModal';
 
 // Types for better type safety
 interface GolfCartOption {
@@ -170,7 +172,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
-
+  const { handleClose } = useFormModal({ onCancel });
   // Initialize cart selections
   const initializeCartSelections = (): CartSelection => {
     const initialSelection: CartSelection = {};
@@ -626,13 +628,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                   </h4>
                 </div>
 
-                <div className='flex items-center text-gray-600 text-sm mb-3'>
-                  <Users className='w-4 h-4 mr-1' />
-                  {cart.seats} seats • Electric/Gas
-                </div>
-
-                <p className='text-gray-600 text-sm mb-4'>{cart.description}</p>
-
                 {/* Quantity Controls */}
                 <div className='flex items-center justify-between'>
                   <span className='text-sm font-medium text-gray-700'>
@@ -796,18 +791,17 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
       <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
         {/* Header */}
-        <div className='bg-gradient-to-r from-blue-800 via-blue-700 to-cyan-800 p-6 text-white'>
-          <h2 className='text-2xl font-light tracking-wide'>
-            Golf Cart Rental Booking
-          </h2>
-          <p className='text-blue-100 mt-1 font-light'>
-            Move Freely. Explore Comfortably.
-          </p>
-          <div className='mt-3 flex items-center text-blue-100 text-sm'>
-            <Car className='w-4 h-4 mr-2' />
-            Flexible duration | Free delivery & pickup included
-          </div>
-        </div>
+
+        <FormHeader
+          title='Golf Cart Rental'
+          subtitle=' Move Freely. Explore Comfortably.'
+          icon={Car}
+          onCancel={handleClose}
+          showCloseButton={true}
+          gradientFrom='blue-800'
+          gradientVia='via-blue-700'
+          gradientTo='cyan-800'
+        />
 
         {/* Form Body */}
         <div className='p-8 space-y-8'>
@@ -911,11 +905,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
             </h3>
 
             <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                <MapPin className='w-4 h-4 mr-2 text-blue-700' />
-                Select Delivery Location *
-              </label>
-
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
                 {DELIVERY_LOCATIONS.map((location) => (
                   <div
@@ -982,22 +971,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                       {errors.specificAddress}
                     </p>
                   )}
-                </div>
-              )}
-
-              {/* Delivery info */}
-              {formData.deliveryLocation && (
-                <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-                  <div className='flex items-start'>
-                    <Truck className='w-4 h-4 text-blue-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-blue-800'>
-                      <strong>Delivery Information:</strong> Our team will
-                      deliver your golf cart{totalCarts > 1 ? 's' : ''} to your
-                      location and provide a quick orientation
-                      {totalCarts > 1 ? ' for each cart' : ''}. Pickup will be
-                      scheduled at your specified return time.
-                    </div>
-                  </div>
                 </div>
               )}
             </div>

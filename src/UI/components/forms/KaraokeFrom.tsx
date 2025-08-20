@@ -26,14 +26,9 @@ import {
   SETUP_TYPES,
   FormData,
 } from '@/constants/karaoke';
-
-// Location options configuration
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
+import { LOCATION_OPTIONS } from '@/constants/location/location';
+import FormHeader from './FormHeader';
+import { useFormModal } from '@/hooks/useFormModal';
 
 // Enhanced FormData interface
 interface EnhancedFormData extends Omit<FormData, 'location'> {
@@ -47,6 +42,8 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { setReservationData } = useReservation();
+
+  const { handleClose } = useFormModal({ onCancel });
 
   // Enhanced form state
   const [formData, setFormData] = useState<EnhancedFormData>({
@@ -326,15 +323,17 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
   return (
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
       <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-        {/* Header */}
-        <div className='bg-gradient-to-r from-purple-800 via-purple-700 to-pink-800 p-6 text-white'>
-          <h2 className='text-2xl font-light tracking-wide'>
-            Karaoke Night Booking
-          </h2>
-          <p className='text-purple-100 mt-1 font-light'>
-            Professional karaoke setup for unforgettable singing experiences
-          </p>
-        </div>
+        {/* Form Header */}
+        <FormHeader
+          title='Karaoke'
+          subtitle='Experience the magic of riding along pristine Macao Beach'
+          icon={Mic}
+          onCancel={handleClose}
+          showCloseButton={true}
+          gradientFrom='purple-800'
+          gradientVia='purple-500'
+          gradientTo='purple-600'
+        />
 
         {/* Form Body */}
         <div className='p-8 space-y-8'>
@@ -384,37 +383,6 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                 {errors.startTime && (
                   <p className='text-red-500 text-xs mt-1'>
                     {errors.startTime}
-                  </p>
-                )}
-              </div>
-
-              {/* End Time */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock className='w-4 h-4 mr-2 text-purple-700' />
-                  End Time *
-                </label>
-                <input
-                  type='time'
-                  name='endTime'
-                  value={formData.endTime}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.endTime ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-gray-50`}
-                />
-                {errors.endTime && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.endTime}</p>
-                )}
-                {eventDuration > 0 && (
-                  <p className='text-purple-600 text-xs mt-1'>
-                    Duration: {eventDuration.toFixed(1)} hours
-                    {eventDuration > 4 && (
-                      <span className='text-orange-600 ml-1'>
-                        (+${((eventDuration - 4) * 50).toFixed(0)} extended
-                        session fee)
-                      </span>
-                    )}
                   </p>
                 )}
               </div>
@@ -493,97 +461,6 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
             )}
           </div>
 
-          {/* Projection Setup Section */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Screen & Projection Setup
-            </h3>
-
-            {/* Projection Space Question */}
-            <div className='space-y-4'>
-              <div className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                <Monitor className='w-4 h-4 mr-2 text-purple-700' />
-                Available projection setup *
-              </div>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                <div
-                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                    formData.hasProjectionSpace === true
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  onClick={() => handleProjectionSpaceChange(true)}
-                >
-                  <div className='flex items-center justify-between'>
-                    <div>
-                      <h4 className='font-medium text-gray-900 mb-1'>
-                        The Place offers Large TV
-                      </h4>
-                      <p className='text-sm text-gray-600'>
-                        The venue has a wall, large TV, or projection screen
-                        available
-                      </p>
-                    </div>
-                    {formData.hasProjectionSpace === true && (
-                      <Check className='w-5 h-5 text-green-600' />
-                    )}
-                  </div>
-                </div>
-
-                <div
-                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                    formData.hasProjectionSpace === false
-                      ? 'border-orange-500 bg-orange-50'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  onClick={() => handleProjectionSpaceChange(false)}
-                >
-                  <div className='flex items-center justify-between'>
-                    <div>
-                      <h4 className='font-medium text-gray-900 mb-1'>
-                        Need professional screen
-                      </h4>
-                      <p className='text-sm text-gray-600'>
-                        Please provide a projection screen (+$
-                        {PRICING.SCREEN_RENTAL})
-                      </p>
-                    </div>
-                    {formData.hasProjectionSpace === false && (
-                      <Check className='w-5 h-5 text-orange-600' />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Screen rental option for those who have space */}
-            {formData.hasProjectionSpace === true && (
-              <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-                <div className='flex items-center'>
-                  <input
-                    type='checkbox'
-                    id='needsScreen'
-                    name='needsScreen'
-                    checked={formData.needsScreen}
-                    onChange={handleInputChange}
-                    className='h-4 w-4 text-purple-700 focus:ring-purple-500 border-gray-300 rounded'
-                  />
-                  <label
-                    htmlFor='needsScreen'
-                    className='ml-2 text-sm text-gray-700'
-                  >
-                    I'd still like to rent a professional screen (+$
-                    {PRICING.SCREEN_RENTAL})
-                  </label>
-                </div>
-                <p className='text-xs text-gray-600 mt-1 ml-6'>
-                  Professional screens provide better visibility and experience
-                </p>
-              </div>
-            )}
-          </div>
-
           {/* Setup Type Section */}
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
@@ -618,11 +495,6 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                           <h4 className='font-medium text-gray-900'>
                             {setup.name}
                           </h4>
-                          {setup.additionalFee && (
-                            <span className='text-sm text-orange-600 font-medium'>
-                              +${setup.additionalFee}
-                            </span>
-                          )}
                         </div>
                       </div>
                       {isSelected && (
@@ -776,10 +648,6 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
             </h3>
 
             <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                <MessageSquare className='w-4 h-4 mr-2 text-purple-700' />
-                Additional Information
-              </label>
               <textarea
                 name='specialRequests'
                 value={formData.specialRequests}
@@ -840,9 +708,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
               {formData.needsScreen && (
                 <div>Screen rental: +${PRICING.SCREEN_RENTAL}</div>
               )}
-              {formData.setupType === 'outdoor' && (
-                <div>Outdoor setup: +${PRICING.OUTDOOR_SETUP}</div>
-              )}
+              {formData.setupType === 'outdoor' && <div>Outdoor setup</div>}
               {eventDuration > 4 && (
                 <div className='text-orange-400'>
                   Extended session ({(eventDuration - 4).toFixed(1)}h): +$

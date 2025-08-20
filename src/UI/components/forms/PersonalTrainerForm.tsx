@@ -21,20 +21,15 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/client';
 import { useEffect, useState } from 'react';
+import { LOCATION_OPTIONS } from '@/constants/location/location';
+import { useFormModal } from '@/hooks/useFormModal';
+import FormHeader from './FormHeader';
 
 interface PersonalTrainerFormProps {
   service: Service;
   onSubmit?: (formData: any) => void;
   onCancel: () => void;
 }
-
-// Location options configuration
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
 
 const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
   service,
@@ -44,6 +39,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
+  const { handleClose } = useFormModal({ onCancel });
 
   const [formData, setFormData] = useState({
     date: '',
@@ -354,30 +350,18 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
       <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
         <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
           {/* Form Header */}
-          <div
-            className={`bg-gradient-to-r ${
-              isPremium
-                ? 'from-orange-800 via-orange-700 to-orange-800'
-                : 'from-blue-800 via-blue-700 to-blue-800'
-            } p-6 text-white`}
-          >
-            <h2 className='text-2xl font-semibold tracking-wide flex items-center'>
-              <Dumbbell className='w-6 h-6 mr-3' />
-              {t('services.personalTrainer.formTitle', {
-                fallback: 'Personal Training Session',
-              })}
-            </h2>
-            <p
-              className={`${
-                isPremium ? 'text-orange-100' : 'text-blue-100'
-              } mt-1 font-light`}
-            >
-              {t('services.personalTrainer.formDescription', {
-                fallback:
-                  'Transform your fitness journey with a certified personal trainer',
-              })}
-            </p>
-          </div>
+
+          <FormHeader
+            title='Personal Training Session'
+            subtitle='Transform your fitness journey with a certified personal trainer'
+            icon={Dumbbell}
+            isPremium={isPremium}
+            onCancel={handleClose}
+            showCloseButton={true}
+            gradientFrom='blue-800'
+            gradientVia='via-blue-700'
+            gradientTo='cyan-800'
+          />
 
           {/* Form Body */}
           <div className='p-8 space-y-8'>
@@ -579,15 +563,6 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
               </h3>
 
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                  <MapPin
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-blue-600'
-                    }`}
-                  />
-                  Select Training Location *
-                </label>
-
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                   {LOCATION_OPTIONS.map((location) => (
                     <div
@@ -904,14 +879,6 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
               </h3>
 
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <MessageSquare
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-blue-600'
-                    }`}
-                  />
-                  {t('services.personalTrainer.notes', { fallback: 'Notes' })}
-                </label>
                 <textarea
                   name='additionalNotes'
                   value={formData.additionalNotes}

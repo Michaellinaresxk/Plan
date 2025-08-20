@@ -17,14 +17,7 @@ import {
   User,
 } from 'lucide-react';
 import { BIKE_TYPES, BikeFormProps, FormErrors } from '@/constants/bike/bike';
-
-// ✅ Location options configuration - same as other forms
-const LOCATION_OPTIONS = [
-  { id: 'punta-cana-resorts', name: 'Punta Cana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
-  { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Punta Village' },
-] as const;
+import { LOCATION_OPTIONS } from '@/constants/location/location';
 
 interface Person {
   id: string;
