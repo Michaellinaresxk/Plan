@@ -17,6 +17,7 @@ import {
   Gem,
   Zap,
   Globe,
+  Anchor,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -48,52 +49,57 @@ const useBooking = () => {
   return { packageType, setPackageType };
 };
 
-// Enhanced Feature Component
-const UltraFeature = ({
-  icon,
-  text,
-  color,
+// Service Card Component
+const ServiceCard = ({
+  title,
+  description,
+  imageUrl,
+  href,
+  icon: Icon,
+  isExclusive = false,
   delay = 0,
 }: {
-  icon: React.ReactNode;
-  text: string;
-  color: 'blue' | 'amber';
+  title: string;
+  description: string;
+  imageUrl: string;
+  href: string;
+  icon: any;
+  isExclusive?: boolean;
   delay?: number;
 }) => {
-  const colorClasses = {
-    blue: {
-      bg: 'bg-blue-500/20',
-      icon: 'text-blue-400',
-      glow: 'group-hover:shadow-blue-500/25',
-    },
-    amber: {
-      bg: 'bg-amber-500/20',
-      icon: 'text-amber-400',
-      glow: 'group-hover:shadow-amber-500/25',
-    },
-  };
+  const colorScheme = isExclusive
+    ? {
+        gradient: 'from-amber-900/80 via-amber-600/40 to-transparent',
+        hoverGradient: 'group-hover:from-amber-800/70',
+        overlay: 'from-amber-500/20 to-orange-600/30',
+        shadow: 'hover:shadow-amber-500/20',
+        hoverText: 'hover:text-amber-900',
+      }
+    : {
+        gradient: 'from-blue-900/80 via-blue-600/40 to-transparent',
+        hoverGradient: 'group-hover:from-blue-800/70',
+        overlay: 'from-cyan-500/20 to-blue-600/30',
+        shadow: 'hover:shadow-blue-500/20',
+        hoverText: 'hover:text-blue-900',
+      };
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.6 }}
-      whileHover={{ scale: 1.02, x: 5 }}
-      className='group flex items-center space-x-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300'
+      className={`relative h-64 md:h-80 rounded-3xl overflow-hidden group cursor-pointer ${colorScheme.shadow} transition-all duration-700 hover:scale-[1.02]`}
     >
+      <img
+        src={imageUrl}
+        alt={description}
+        className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
+      />
+
       <div
-        className={`flex-shrink-0 p-3 rounded-2xl ${colorClasses[color].bg} ${colorClasses[color].glow} group-hover:shadow-lg transition-all duration-300`}
-      >
-        <div
-          className={`w-5 h-5 ${colorClasses[color].icon} group-hover:scale-110 transition-transform`}
-        >
-          {icon}
-        </div>
-      </div>
-      <span className='text-white font-medium group-hover:text-gray-100 transition-colors'>
-        {text}
-      </span>
+        className={`absolute inset-0 bg-gradient-to-br ${colorScheme.overlay} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+      />
     </motion.div>
   );
 };
@@ -190,7 +196,7 @@ const PremiumPackageCard = ({
             className='absolute -top-4 -right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-xs font-bold px-4 py-2 rounded-full flex items-center space-x-1 shadow-lg'
           >
             <Crown className='w-3 h-3' />
-            <span>PREMIUM</span>
+            <span>Xclusive</span>
           </motion.div>
         )}
 
@@ -267,17 +273,22 @@ const PremiumPackageCard = ({
             {packageData.description}
           </motion.p>
 
-          {/* Features */}
-          <div className='space-y-3'>
-            {packageData.features.map((feature: any, index: number) => (
-              <UltraFeature
-                key={index}
-                icon={feature.icon}
-                text={feature.text}
-                color={packageData.isPremium ? 'amber' : 'blue'}
-                delay={0.1 * index}
-              />
-            ))}
+          {/* Services Section */}
+          <div className='space-y-4'>
+            <div className='grid grid-cols-1 gap-4'>
+              {packageData.services.map((service: any, index: number) => (
+                <ServiceCard
+                  key={index}
+                  title={service.title}
+                  description={service.description}
+                  imageUrl={service.imageUrl}
+                  href={service.href}
+                  icon={service.icon}
+                  isExclusive={packageData.isPremium}
+                  delay={0.1 * index}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Action Button */}
@@ -336,7 +347,7 @@ const PackageSelector = () => {
     }
   };
 
-  // Package Data
+  // Package Data with Services
   const packages = [
     {
       id: 'standard',
@@ -346,41 +357,33 @@ const PackageSelector = () => {
       rating: 4,
       experience: 'Curated Experience',
       isPremium: false,
-      features: [
+      services: [
         {
-          icon: <PlaneTakeoff className='h-5 w-5' />,
-          text: t('common.package-standard.transfers'),
-        },
-        {
-          icon: <Sailboat className='h-5 w-5' />,
-          text: t('common.package-standard.trips'),
-        },
-        {
-          icon: <ChefHat className='h-5 w-5' />,
-          text: t('common.package-standard.chef'),
+          title: 'Estándar',
+          description: 'Paquetes estándar de yates',
+          imageUrl:
+            'https://images.pexels.com/photos/9207198/pexels-photo-9207198.jpeg?_gl=1*1qg0m6r*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQqbzIwJGcxJHQxNzU0NzI5NDgxJGoyNyRsMCRoMA..',
+          href: '/standard-package',
+          icon: Anchor,
         },
       ],
     },
     {
       id: 'premium',
-      title: 'Luxe',
-      subtitle: 'Premium Experience',
+      title: 'Lux',
+      subtitle: 'Exclusive Experience',
       description: t('common.package-luxe.subtitle'),
       rating: 5,
       experience: 'Ultra Luxury',
       isPremium: true,
-      features: [
+      services: [
         {
-          icon: <Sailboat className='h-5 w-5' />,
-          text: t('common.package-luxe.yacht'),
-        },
-        {
-          icon: <ChefHat className='h-5 w-5' />,
-          text: t('common.package-luxe.culinarie'),
-        },
-        {
-          icon: <Users className='h-5 h-5' />,
-          text: t('common.package-luxe.massage'),
+          title: 'Xclusivos',
+          description: 'Paquetes exclusivos de yates',
+          imageUrl:
+            'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
+          href: '/premium-package',
+          icon: Crown,
         },
       ],
     },

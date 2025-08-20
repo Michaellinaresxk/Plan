@@ -10,6 +10,7 @@ import ConsiergeSupport from '@/UI/components/layout/ConsiergeSupport';
 import Footer from '@/UI/components/shared/Footer';
 import LuxuryServices from '@/UI/components/layout/LuxuryServices';
 import ServicesGallery from '@/UI/components/service/ServicesGalery';
+import PackageSelector from '@/UI/components/layout/PackageSelector';
 
 const HomePage = () => {
   return (
@@ -18,7 +19,7 @@ const HomePage = () => {
         <Navbar />
         <Hero />
         <LuxuryServices />
-        {/* <PackageSelector /> */}
+        <PackageSelector />
         {/* <CustomPackageCTA /> */}
 
         <ServicesGallery />
