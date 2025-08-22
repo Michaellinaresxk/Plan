@@ -1,13 +1,26 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Play, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Play, CheckCircle, AlertTriangle, X } from 'lucide-react';
+
+// Define the shape of our message state
+interface MessageState {
+  type: 'success' | 'error';
+  text: string;
+}
 
 const TestApi = () => {
   const [result, setResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<MessageState | null>(null);
+
+  // Function to dismiss the message box
+  const dismissMessage = () => setMessage(null);
 
   const testPaymentIntent = async () => {
     setIsLoading(true);
     setResult(null);
+    setMessage(null);
 
     try {
       console.log('🧪 Testing payment intent creation...');
@@ -84,12 +97,14 @@ const TestApi = () => {
   };
 
   const testProcessPayment = async () => {
+    // Check if a successful intent was created first
     if (!result?.success || !result?.data?.clientSecret) {
-      alert('Create a payment intent first!');
+      setMessage({ type: 'error', text: 'Create a payment intent first!' });
       return;
     }
 
     setIsLoading(true);
+    setMessage(null);
 
     try {
       console.log('🧪 Testing payment processing...');
@@ -141,16 +156,20 @@ const TestApi = () => {
       if (response.ok && data.success) {
         console.log('✅ Payment processed successfully!');
         console.log('✅ Reservation created:', data.reservation.bookingId);
-        alert(
-          `✅ Success!\n\nReservation ID: ${data.reservation.bookingId}\nClient: ${data.reservation.clientName}`
-        );
+        setMessage({
+          type: 'success',
+          text: `Success!\n\nReservation ID: ${data.reservation.bookingId}\nClient: ${data.reservation.clientName}`,
+        });
       } else {
         console.error('❌ Payment processing failed:', data);
-        alert(`❌ Failed: ${data.error || data.message}`);
+        setMessage({
+          type: 'error',
+          text: `Failed: ${data.error || data.message}`,
+        });
       }
     } catch (error: any) {
       console.error('❌ Process test failed:', error);
-      alert(`❌ Error: ${error.message}`);
+      setMessage({ type: 'error', text: `Error: ${error.message}` });
     } finally {
       setIsLoading(false);
     }
@@ -164,6 +183,32 @@ const TestApi = () => {
           Test your payment integration step by step
         </p>
       </div>
+
+      {/* Dynamic message box */}
+      {message && (
+        <div
+          className={`relative p-4 rounded-lg mb-6 shadow-md transition-opacity duration-300 ${
+            message.type === 'success'
+              ? 'bg-green-100 border-l-4 border-green-500 text-green-700'
+              : 'bg-red-100 border-l-4 border-red-500 text-red-700'
+          }`}
+        >
+          <button
+            onClick={dismissMessage}
+            className='absolute top-2 right-2 p-1 text-sm font-medium rounded-full hover:bg-opacity-50 transition'
+          >
+            <X className='w-4 h-4' />
+          </button>
+          <div className='flex items-center'>
+            {message.type === 'success' ? (
+              <CheckCircle className='w-6 h-6 mr-3' />
+            ) : (
+              <AlertTriangle className='w-6 h-6 mr-3' />
+            )}
+            <p className='text-sm whitespace-pre-line'>{message.text}</p>
+          </div>
+        </div>
+      )}
 
       <div className='space-y-6'>
         {/* Step 1: Create Payment Intent */}
