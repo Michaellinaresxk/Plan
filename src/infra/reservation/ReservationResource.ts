@@ -37,66 +37,6 @@ export class ReservationResource implements ReservationRepository {
     }
   }
 
-  // async getReservation(bookingId: string): Promise<Reservation | null> {
-  //   try {
-  //     console.log('🏗️ ReservationResource - Getting reservation:', bookingId);
-
-  //     const apiReservation = await this.reservationCaller.getReservation(
-  //       bookingId
-  //     );
-
-  //     if (!apiReservation) {
-  //       console.log(
-  //         '❌ ReservationResource - Reservation not found:',
-  //         bookingId
-  //       );
-  //       return null;
-  //     }
-
-  //     const domainReservation = this.toDomainReservation(apiReservation);
-  //     console.log(
-  //       '✅ ReservationResource - Reservation retrieved successfully'
-  //     );
-  //     return domainReservation;
-  //   } catch (error) {
-  //     console.error(
-  //       '❌ ReservationResource - Error getting reservation:',
-  //       error
-  //     );
-  //     throw error;
-  //   }
-  // }
-
-  // async updateReservationStatus(
-  //   bookingId: string,
-  //   status: ReservationStatus,
-  //   notes?: string
-  // ): Promise<void> {
-  //   try {
-  //     console.log('🏗️ ReservationResource - Updating reservation status:', {
-  //       bookingId,
-  //       status,
-  //       notes,
-  //     });
-
-  //     await this.reservationCaller.updateReservation(bookingId, {
-  //       status: status as string,
-  //       notes,
-  //     });
-
-  //     console.log(
-  //       '✅ ReservationResource - Reservation status updated successfully'
-  //     );
-  //   } catch (error) {
-  //     console.error(
-  //       '❌ ReservationResource - Error updating reservation status:',
-  //       error
-  //     );
-  //     throw error;
-  //   }
-  // }
-
-  // FIXED: Private method to convert API reservation to domain reservation
   private toDomainReservation(apiReservation: ApiReservation): Reservation {
     console.log(
       '🔄 Converting API reservation to domain reservation:',

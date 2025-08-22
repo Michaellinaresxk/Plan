@@ -1,31 +1,20 @@
+// infra/reservation/ReservationCaller.ts (ACTUALIZADO)
 import {
   collection,
   doc,
-  getDocs,
-  getDoc,
   addDoc,
-  updateDoc,
-  deleteDoc,
-  query,
-  where,
-  orderBy,
   Timestamp,
   type Firestore,
-  type DocumentReference,
-  type DocumentData,
 } from 'firebase/firestore';
-import type {
-  ApiReservation,
-  CreateReservationData,
-  UpdateReservationData,
-} from './ApiReservation';
+import type { ApiReservation, CreateReservationData } from './ApiReservation';
+import { DataSanitizer, FirestoreErrorHandler } from '@/utils/dataSanitizer';
 
 export class ReservationCaller {
   private readonly COLLECTION_NAME = 'bookings';
 
   constructor(private readonly db: Firestore) {
     console.log(
-      '🏗️ ReservationCaller initialized with collection:',
+      '🗃️ ReservationCaller initialized with collection:',
       this.COLLECTION_NAME
     );
   }
@@ -37,30 +26,55 @@ export class ReservationCaller {
       console.log('🔥 ReservationCaller - Creating reservation...');
       console.log('🔥 Project ID:', this.db.app.options.projectId);
       console.log('🔥 Collection:', this.COLLECTION_NAME);
-      console.log('🔥 Data to save:', data);
+      console.log('🔥 Raw input data:', data);
 
+      // Step 1: Validate input data
+      const validation = DataSanitizer.validateReservationData(data);
+      if (!validation.isValid) {
+        const errorMessage = `Validation failed: ${validation.errors.join(
+          ', '
+        )}`;
+        console.error('❌ Validation errors:', validation.errors);
+        throw new Error(errorMessage);
+      }
+
+      // Step 2: Sanitize data for Firestore
+      const sanitizedData = DataSanitizer.sanitizeReservationData(data);
+      console.log('🧹 Sanitized data:', sanitizedData);
+
+      // Step 3: Create reservation document structure
       const reservationData: Omit<ApiReservation, 'bookingId'> = {
-        serviceId: data.serviceId,
-        serviceName: data.serviceName,
+        serviceId: sanitizedData.serviceId,
+        serviceName: sanitizedData.serviceName,
         bookingDate: Timestamp.fromDate(new Date()),
         status: 'pending',
-        totalPrice: data.totalPrice,
-        clientName: data.clientName,
-        clientEmail: data.clientEmail,
-        clientPhone: data.clientPhone,
-        formData: data.formData || {},
-        notes: data.notes || '',
+        totalPrice: sanitizedData.totalPrice,
+        clientName: sanitizedData.clientName,
+        clientEmail: sanitizedData.clientEmail,
+        clientPhone: sanitizedData.clientPhone,
+        formData: sanitizedData.formData,
+        notes: sanitizedData.notes,
       };
 
-      console.log('🔥 Formatted reservation data:', reservationData);
+      console.log('🔥 Final reservation data for Firestore:', reservationData);
 
-      // Get collection reference
+      // Step 4: Validate collection and document structure
       const collectionRef = collection(this.db, this.COLLECTION_NAME);
-      console.log('🔥 Collection reference created');
+      console.log('🔥 Collection reference created successfully');
 
-      // Attempt to add document
+      // Step 5: Generate safe document ID (optional - let Firestore auto-generate)
+      // const docId = DataSanitizer.generateSafeDocumentId('reservation');
+      // console.log('🆔 Generated safe document ID:', docId);
+
+      // Step 6: Add document to Firestore
+      console.log('🔥 Attempting to add document to Firestore...');
       const docRef = await addDoc(collectionRef, reservationData);
       console.log('✅ Document created with ID:', docRef.id);
+
+      // Step 7: Validate generated document ID
+      if (!DataSanitizer.isValidDocumentId(docRef.id)) {
+        console.warn('⚠️ Generated document ID may have issues:', docRef.id);
+      }
 
       const result: ApiReservation = {
         bookingId: docRef.id,
@@ -71,146 +85,96 @@ export class ReservationCaller {
       return result;
     } catch (error: any) {
       console.error('❌ ReservationCaller - Detailed error info:');
-      console.error('❌ Error code:', error.code);
-      console.error('❌ Error message:', error.message);
-      console.error('❌ Full error:', error);
 
-      // Provide more specific error messages
-      let userFriendlyMessage = 'Failed to create reservation';
+      // Use error handler to parse and log the error properly
+      const parsedError = FirestoreErrorHandler.logError(
+        error,
+        'createReservation'
+      );
 
-      if (error.code === 'permission-denied') {
-        userFriendlyMessage =
-          'Permission denied. Please check Firestore security rules.';
-        console.error('🔒 PERMISSION DENIED - Check your Firestore rules!');
-        console.error(
-          '🔒 Make sure your Firestore rules allow writes to the "bookings" collection'
-        );
-      } else if (error.code === 'unavailable') {
-        userFriendlyMessage =
-          'Firestore service is currently unavailable. Please try again.';
-      } else if (error.code === 'not-found') {
-        userFriendlyMessage =
-          'Firestore database not found. Check your Firebase configuration.';
-      }
-
-      throw new Error(`${userFriendlyMessage}: ${error.message}`);
+      // Re-throw with user-friendly message
+      throw new Error(parsedError.userMessage);
     }
   }
 
-  // async getReservation(bookingId: string): Promise<ApiReservation | null> {
-  //   try {
-  //     console.log('🔥 ReservationCaller - Getting reservation:', bookingId);
+  // Test connection method with better error handling
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log('🧪 Testing Firestore connection...');
 
-  //     const docRef = doc(this.db, this.COLLECTION_NAME, bookingId);
-  //     const docSnap = await getDoc(docRef);
+      // Test 1: Collection reference
+      const collectionRef = collection(this.db, this.COLLECTION_NAME);
+      console.log('✅ Collection reference created successfully');
 
-  //     if (!docSnap.exists()) {
-  //       console.log('❌ ReservationCaller - Reservation not found:', bookingId);
-  //       return null;
-  //     }
+      // Test 2: Try to create a test document (then delete it)
+      const testData = {
+        serviceId: 'test_service',
+        serviceName: 'Test Service',
+        bookingDate: Timestamp.fromDate(new Date()),
+        status: 'test',
+        totalPrice: 1,
+        clientName: 'Test User',
+        clientEmail: 'test@example.com',
+        clientPhone: '+1234567890',
+        formData: { test: true },
+        notes: 'Connection test - safe to delete',
+      };
 
-  //     const data = docSnap.data();
-  //     console.log('✅ ReservationCaller - Reservation found:', data);
+      console.log('🧪 Creating test document...');
+      const testDocRef = await addDoc(collectionRef, testData);
+      console.log('✅ Test document created:', testDocRef.id);
 
-  //     return {
-  //       bookingId: docSnap.id,
-  //       ...data,
-  //     } as ApiReservation;
-  //   } catch (error: any) {
-  //     console.error('❌ ReservationCaller - Error getting reservation:', error);
+      // Note: In a real scenario, you might want to delete the test document
+      // But for debugging, we'll leave it
+      console.log('ℹ️ Test document left in database for debugging');
 
-  //     let userFriendlyMessage = 'Failed to get reservation';
-  //     if (error.code === 'permission-denied') {
-  //       userFriendlyMessage =
-  //         'Permission denied. Cannot read reservation data.';
-  //     }
+      return true;
+    } catch (error) {
+      console.error('❌ Firestore connection test failed:');
+      FirestoreErrorHandler.logError(error, 'testConnection');
+      return false;
+    }
+  }
 
-  //     throw new Error(`${userFriendlyMessage}: ${error.message}`);
-  //   }
-  // }
+  // Utility method to check database health
+  async checkDatabaseHealth(): Promise<{
+    connected: boolean;
+    projectId: string;
+    collectionExists: boolean;
+    canWrite: boolean;
+    error?: string;
+  }> {
+    const result = {
+      connected: false,
+      projectId: this.db.app.options.projectId || 'unknown',
+      collectionExists: false,
+      canWrite: false,
+      error: undefined as string | undefined,
+    };
 
-  // async updateReservation(
-  //   bookingId: string,
-  //   data: UpdateReservationData
-  // ): Promise<void> {
-  //   try {
-  //     console.log(
-  //       '🔥 ReservationCaller - Updating reservation:',
-  //       bookingId,
-  //       data
-  //     );
+    try {
+      // Test collection reference
+      const collectionRef = collection(this.db, this.COLLECTION_NAME);
+      result.collectionExists = true;
+      result.connected = true;
 
-  //     const docRef = doc(this.db, this.COLLECTION_NAME, bookingId);
-  //     await updateDoc(docRef, data);
+      // Test write capability with minimal data
+      const testData = {
+        healthCheck: true,
+        timestamp: Timestamp.fromDate(new Date()),
+        testId: DataSanitizer.generateSafeDocumentId('health'),
+      };
 
-  //     console.log('✅ ReservationCaller - Reservation updated successfully');
-  //   } catch (error: any) {
-  //     console.error(
-  //       '❌ ReservationCaller - Error updating reservation:',
-  //       error
-  //     );
+      await addDoc(collectionRef, testData);
+      result.canWrite = true;
 
-  //     let userFriendlyMessage = 'Failed to update reservation';
-  //     if (error.code === 'permission-denied') {
-  //       userFriendlyMessage = 'Permission denied. Cannot update reservation.';
-  //     }
-
-  //     throw new Error(`${userFriendlyMessage}: ${error.message}`);
-  //   }
-  // }
-
-  // async getAllReservations(): Promise<ApiReservation[]> {
-  //   try {
-  //     console.log('🔥 ReservationCaller - Getting all reservations');
-
-  //     const q = query(
-  //       collection(this.db, this.COLLECTION_NAME),
-  //       orderBy('bookingDate', 'desc')
-  //     );
-
-  //     const querySnapshot = await getDocs(q);
-  //     const reservations: ApiReservation[] = [];
-
-  //     querySnapshot.forEach((doc) => {
-  //       reservations.push({
-  //         bookingId: doc.id,
-  //         ...doc.data(),
-  //       } as ApiReservation);
-  //     });
-
-  //     console.log(
-  //       '✅ ReservationCaller - Found reservations:',
-  //       reservations.length
-  //     );
-  //     return reservations;
-  //   } catch (error: any) {
-  //     console.error(
-  //       '❌ ReservationCaller - Error getting reservations:',
-  //       error
-  //     );
-
-  //     let userFriendlyMessage = 'Failed to get reservations';
-  //     if (error.code === 'permission-denied') {
-  //       userFriendlyMessage = 'Permission denied. Cannot read reservations.';
-  //     }
-
-  //     throw new Error(`${userFriendlyMessage}: ${error.message}`);
-  //   }
-  // }
-
-  // // Test connection method
-  // async testConnection(): Promise<boolean> {
-  //   try {
-  //     console.log('🧪 Testing Firestore connection...');
-
-  //     // Try to get the collection reference (this doesn't require read permissions)
-  //     const collectionRef = collection(this.db, this.COLLECTION_NAME);
-  //     console.log('✅ Collection reference created successfully');
-
-  //     return true;
-  //   } catch (error) {
-  //     console.error('❌ Firestore connection test failed:', error);
-  //     return false;
-  //   }
-  // }
+      console.log('✅ Database health check passed:', result);
+      return result;
+    } catch (error: any) {
+      const parsedError = FirestoreErrorHandler.logError(error, 'healthCheck');
+      result.error = parsedError.userMessage;
+      console.log('❌ Database health check failed:', result);
+      return result;
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Mail, Copy, ExternalLink } from 'lucide-react';
-import ReservationService from '@/infra/services/api/ReservationService';
+import { ReservationService } from '@/primary/Reservation/useCases';
 
 interface ReservationSuccessPageProps {
   reservationId: string;
