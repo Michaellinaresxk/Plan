@@ -1,16 +1,28 @@
+// application/reservation/useCases/CreateReservationUseCase.ts
 import type ReservationRepository from '@/domain/reservation/ReservationRepository';
 import type { CreateReservationData } from '@/infra/reservation/ApiReservation';
 import { Reservation } from '@/domain/reservation/Reservation';
 
+export interface CreateReservationWithPaymentData
+  extends CreateReservationData {
+  paymentIntentId?: string;
+  paymentRequired?: boolean;
+}
+
 export class CreateReservationUseCase {
   constructor(private readonly reservationRepository: ReservationRepository) {}
 
-  async execute(data: CreateReservationData): Promise<Reservation> {
+  async execute(data: CreateReservationWithPaymentData): Promise<Reservation> {
     try {
       console.log('🎯 CreateReservationUseCase - Executing with data:', data);
 
       // Validate input data
       this.validateReservationData(data);
+
+      // If payment is required but no payment intent provided, throw error
+      if (data.paymentRequired && !data.paymentIntentId) {
+        throw new Error('Payment is required but no payment intent provided');
+      }
 
       // Create the reservation
       const reservation = await this.reservationRepository.createReservation(
@@ -26,6 +38,16 @@ export class CreateReservationUseCase {
       // - Send confirmation email
       // - Log the event
       // - Trigger notifications
+      // - Update payment record with reservation ID
+
+      if (data.paymentIntentId) {
+        console.log(
+          '💳 Reservation linked with payment intent:',
+          data.paymentIntentId
+        );
+        // You could update the payment record here to link it with the reservation
+        // This would require injecting the PaymentRepository as well
+      }
 
       return reservation;
     } catch (error) {
@@ -37,7 +59,9 @@ export class CreateReservationUseCase {
     }
   }
 
-  private validateReservationData(data: CreateReservationData): void {
+  private validateReservationData(
+    data: CreateReservationWithPaymentData
+  ): void {
     if (!data.serviceId?.trim()) {
       throw new Error('Service ID is required');
     }
