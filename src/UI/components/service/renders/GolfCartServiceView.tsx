@@ -3,29 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Car,
   Users,
-  Battery,
   Star,
   CheckCircle,
-  Phone,
-  Calendar,
   ArrowRight,
   X,
-  MapPin,
-  Clock,
-  Shield,
-  Award,
   Camera,
-  ChevronLeft,
-  ChevronRight,
-  Zap,
-  Navigation,
-  Heart,
   Quote,
   AlertTriangle,
   FileText,
 } from 'lucide-react';
 import BookingModal from '../../modal/BookingModal';
-import { BookingDate, Service } from '@/constants/formFields';
 import { useBooking } from '@/context/BookingContext';
 
 // Types
@@ -85,11 +72,11 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     spanishDescription:
       'Ideal para grupos grandes y familias. Más espacio y comodidad para exploración extendida.',
     image:
-      'https://images.pexels.com/photos/9207175/pexels-photo-9207175.jpeg?_gl=1*1fk3hn7*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5OTY2JGo1OSRsMCRoMA..',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947007/IMG_3224_he26bm.jpg',
     detailImages: [
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1551058622-5d7b4f0c6e6a?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947017/IMG_3227_gktf9e.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947007/IMG_3224_he26bm.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946996/IMG_3201_iesnfk.jpg',
     ],
     features: [
       'Fully charged battery',
@@ -120,7 +107,7 @@ const GALLERY_IMAGES = [
   },
   {
     id: 2,
-    src: 'https://images.unsplash.com/photo-1551058622-5d7b4f0c6e6a?w=1200&h=800&fit=crop',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947017/IMG_3227_gktf9e.jpg',
     alt: 'Resort exploration',
     title: 'Resort Exploration',
   },

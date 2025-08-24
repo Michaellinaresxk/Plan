@@ -144,7 +144,7 @@ const VEHICLE_TYPES = {
     id: 'polaris',
     name: 'Polaris RZR',
     image:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946908/polaris1_kfwgbw.jpg',
     description: 'Premium off-road experience',
     features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
     price: null, // No price - contact for pricing
@@ -335,10 +335,10 @@ const PhotoGallery = () => {
       category: 'buggies',
     },
     {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595138/3_xanwzg.jpg',
-      alt: 'Buggy adventure',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946926/polaris-2_rrtt3b.jpg',
+      alt: 'Polaris adventure',
       caption: 'Discover hidden cenotes',
-      category: '',
+      category: 'polaris',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754596293/4_enh3k1.jpg',
@@ -347,10 +347,10 @@ const PhotoGallery = () => {
       category: 'buggies',
     },
     {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946940/polaris-3_vidkhu.jpg',
       alt: 'Polaris landscape',
       caption: 'Breathtaking landscapes',
-      category: 'atv',
+      category: 'polaris',
     },
   ];
 
@@ -1001,7 +1001,7 @@ const AdventureBanner = () => {
           <div className='relative'>
             <div className='rounded-2xl overflow-hidden shadow-2xl'>
               <img
-                src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg'
+                src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595138/3_xanwzg.jpg'
                 alt='ATV adventure group'
                 className='w-full h-[400px] object-cover'
               />

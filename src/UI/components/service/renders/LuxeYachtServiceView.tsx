@@ -48,7 +48,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 interface Yacht {
   id: string;
   name: string;
-  category: 'sport' | 'luxury' | 'mega';
+  category: 'catamaran' | 'luxury';
   price: number;
   priceUnit: 'day';
   shortDescription: string;
@@ -82,7 +82,7 @@ const YACHT_DATA: Yacht[] = [
   {
     id: 'aiconFly-60',
     name: 'AiconFly 60',
-    category: 'sport',
+    category: 'luxury',
     price: 3500,
     priceUnit: 'day',
     shortDescription: 'Italian elegance meets high-performance',
@@ -198,30 +198,30 @@ const YACHT_DATA: Yacht[] = [
     ],
   },
   {
-    id: 'sunseeker-predator',
-    name: 'Sunseeker Predator 120',
-    category: 'mega',
+    id: 'catamaran',
+    name: 'Lagoon 44',
+    category: 'catamaran',
     price: 15000,
     priceUnit: 'day',
-    shortDescription: 'Ultimate luxury with helipad & pool',
+    shortDescription: '',
     mainImage:
-      'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=1200&h=800&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956164/7030fcbb-7da3-4676-9abb-d22177efab14_qdk2ac.jpg',
     gallery: [
-      'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200&h=800&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956159/4f5f3743-f52d-4d85-b023-fb4be38f833f_n70bbg.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956399/3380551b-f82f-4fdc-86e2-47cf2ad3a6dc_foh9sp.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956172/c3b072ee-3a35-497c-8aa0-1942c9044a3b_q5xht7.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956193/d21ad3c2-f7eb-41e2-921d-3ae1be25c7a5_edwn0e.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956396/5ad4be2d-9122-45fe-bd48-0dec7b77a8b5_ymmrx8.jpg',
     ],
     specifications: {
-      length: '120 ft',
-      maxGuests: 24,
-      cabins: 6,
-      bathrooms: 8,
-      crew: 10,
+      length: '13,71 m',
+      maxGuests: 20,
+      cabins: 4,
+      bathrooms: 3,
+      crew: 3,
       maxSpeed: '26 knots',
-      manufacturer: 'Sunseeker',
-      year: 2024,
+      manufacturer: 'Lagoon',
+      year: 2013,
     },
     amenities: [
       {
@@ -246,13 +246,71 @@ const YACHT_DATA: Yacht[] = [
     reviews: 156,
     location: 'Bavaro Marina',
     itinerary: [
-      'Helicopter transfer available',
       'Grand departure ceremony',
       'Multi-destination cruise',
       'Private island experience',
-      'Michelin-level dining',
-      'Cinema under stars',
       'Luxury return transfer',
+    ],
+  },
+  {
+    id: 'tiara-38',
+    name: 'Tiara 38',
+    category: 'luxury',
+    price: 3500,
+    priceUnit: 'day',
+    shortDescription: 'Italian elegance meets high-performance',
+    mainImage:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956761/ac955cf2-03ad-4c8c-87c6-36c0ec0cb3a9_ymvcuc.jpg',
+    gallery: [
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956770/3e8353e4-c87b-4ce6-9781-151e4bcc0245_usext6.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956766/28d661b1-e505-4bbe-98b9-66354d9e3112_gzt0ku.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956782/5ac1f830-2a76-4d82-8666-37bef3104a87_i810fb.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755957154/f87b013c-affa-4058-8723-e62f49f7643d_fjzbpv.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956815/f46a7e9a-3093-404d-825d-138155d275e7_lwjmri.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956761/ac955cf2-03ad-4c8c-87c6-36c0ec0cb3a9_ymvcuc.jpg',
+    ],
+    specifications: {
+      length: '60 ft',
+      maxGuests: 16,
+      cabins: 3,
+      bathrooms: 2,
+      crew: 3,
+      maxSpeed: '30 knots',
+      manufacturer: 'AiconFly',
+      year: 2008,
+    },
+    amenities: [
+      {
+        icon: <Wifi className='w-5 h-5' />,
+        name: 'Starlink WiFi',
+        description: 'High-speed internet',
+      },
+      {
+        icon: <Utensils className='w-5 h-5' />,
+        name: 'Professional Chef',
+        description: 'Gourmet cuisine',
+      },
+      {
+        icon: <Waves className='w-5 h-5' />,
+        name: 'Water Sports',
+        description: 'Complete equipment',
+      },
+    ],
+    highlights: [
+      'Carbon fiber hull',
+      'Panoramic windows',
+      'Water sports equipment',
+    ],
+    isPremium: false,
+    rating: 5,
+    reviews: 128,
+    location: 'Casa de Campo',
+    itinerary: [
+      'Departure from Casa de Campo',
+      'Swimming & snorkeling time',
+      'Gourmet lunch onboard',
+      'Water sports activities',
+      'Return to marina',
     ],
   },
 ];
@@ -350,7 +408,7 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
           loop
           playsInline
           className='absolute inset-0 w-full h-full object-cover'
-          poster='https://images.pexels.com/photos/32995074/pexels-photo-32995074.jpeg'
+          poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
         >
           {/* <source
             src='https://videos.pexels.com/video-files/1093662/1093662-hd_1920_1080_30fps.mp4'
@@ -466,7 +524,7 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
             >
               <div className='relative'>
                 {/* Main Card */}
-                <motion.div
+                {/* <motion.div
                   whileHover={{ y: -10, rotateY: 5 }}
                   className='bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 transform perspective-1000'
                   style={{ transformStyle: 'preserve-3d' }}
@@ -520,7 +578,7 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
                       </motion.div>
                     ))}
                   </div>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Floating Elements */}
                 <motion.div
@@ -632,9 +690,8 @@ const CaribbeanYachtGrid: React.FC<{
           <div className='inline-flex bg-white/70 backdrop-blur-sm rounded-full p-1 shadow-sm border border-white/50'>
             {[
               { id: 'all', name: 'All Yachts' },
-              { id: 'sport', name: 'Sport' },
+              { id: 'catamaran', name: 'Catamaran' },
               { id: 'luxury', name: 'Luxury' },
-              { id: 'mega', name: 'Mega' },
             ].map((category) => (
               <button
                 key={category.id}
@@ -676,44 +733,29 @@ const CaribbeanGallery: React.FC = () => {
 
   const galleryImages = [
     {
-      src: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg',
       category: 'yachts',
       caption: 'Luxury yacht at sunset',
     },
     {
-      src: 'https://images.unsplash.com/photo-1566024164372-0281f1133aa6?w=800&h=600&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/3_eapwql.jpg',
       category: 'destinations',
       caption: 'Crystal clear Caribbean waters',
     },
     {
-      src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
       category: 'experiences',
       caption: 'Snorkeling in paradise',
     },
     {
-      src: 'https://images.unsplash.com/photo-1540946485063-a40da27545f8?w=800&h=600&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956399/3380551b-f82f-4fdc-86e2-47cf2ad3a6dc_foh9sp.jpg',
       category: 'yachts',
       caption: 'Princess yacht interior',
     },
     {
-      src: 'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=800&h=600&fit=crop',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600208/2_k72tfn.jpg',
       category: 'experiences',
       caption: 'Water sports adventure',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop',
-      category: 'destinations',
-      caption: 'Hidden Caribbean beaches',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop',
-      category: 'experiences',
-      caption: 'Sunset dining experience',
-    },
-    {
-      src: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop',
-      category: 'destinations',
-      caption: 'Tropical paradise views',
     },
   ];
 
@@ -998,62 +1040,6 @@ const PrivateServiceInfo: React.FC = () => {
   );
 };
 
-// Call to Action with Background Images
-const CaribbeanCTA: React.FC = () => {
-  return (
-    <section className='py-24'>
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='grid md:grid-cols-2 gap-8'>
-          {/* Book Now CTA */}
-          <div className='relative h-80 rounded-3xl overflow-hidden group cursor-pointer hover:shadow-2xl transition-all duration-500'>
-            <img
-              src='https://images.unsplash.com/photo-1566024164372-0281f1133aa6?w=800&h=600&fit=crop'
-              alt='Book your yacht experience'
-              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
-            />
-            <div className='absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500' />
-
-            <div className='absolute inset-0 flex flex-col justify-center items-center text-center text-white p-8'>
-              <h3 className='text-3xl md:text-4xl font-bold mb-4'>
-                Ready for Paradise?
-              </h3>
-              <p className='text-lg text-white/90 mb-8 max-w-xs'>
-                Start your Caribbean yacht adventure today
-              </p>
-              <button className='bg-white text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 flex items-center gap-3 shadow-lg'>
-                <Calendar className='w-5 h-5' />
-                Book Your Escape
-              </button>
-            </div>
-          </div>
-
-          {/* Contact CTA */}
-          <div className='relative h-80 rounded-3xl overflow-hidden group cursor-pointer hover:shadow-2xl transition-all duration-500'>
-            <img
-              src='https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop'
-              alt='Contact our concierge'
-              className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500'
-            />
-            <div className='absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-500' />
-
-            <div className='absolute inset-0 flex flex-col justify-center items-center text-center text-white p-8'>
-              <h3 className='text-3xl md:text-4xl font-bold mb-4'>
-                Need Assistance?
-              </h3>
-              <p className='text-lg text-white/90 mb-8 max-w-xs'>
-                Our concierge team is here 24/7
-              </p>
-              <button className='bg-white text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-300 flex items-center gap-3 shadow-lg'>
-                <Phone className='w-5 h-5' />
-                Call Concierge
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 // Enhanced Modal for Yacht Details - FIXED SCROLL ISSUE
 const YachtDetailsModal: React.FC<{
   yacht: Yacht;
@@ -1585,7 +1571,6 @@ const LuxeYachtServiceView: React.FC = () => {
       <CaribbeanGallery />
       <CaribbeanWhatToBring />
       <PrivateServiceInfo />
-      <CaribbeanCTA />
 
       {/* Modals */}
       {selectedYacht && !showBookingModal && (

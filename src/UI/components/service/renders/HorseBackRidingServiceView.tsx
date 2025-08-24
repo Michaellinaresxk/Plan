@@ -180,7 +180,7 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
         style={{ transform: `translateY(${scrollY * 0.3}px)` }}
       >
         <img
-          src='https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00008-scaled.jpeg'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1755946813/Imagen_de_WhatsApp_2024-06-03_a_las_15.47.17_45e97ed7_uoutrp.jpg'
           alt='Horseback riding at Macao Beach'
           className='w-full h-full object-cover'
         />
@@ -251,18 +251,18 @@ const PhotoGallery = () => {
     },
     {
       id: 2,
-      src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00013-scaled.jpeg',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946814/Imagen_de_WhatsApp_2024-06-03_a_las_15.47.17_f9b60a74_l7xtfu.jpg',
       alt: 'Riders in tropical forest',
     },
     {
       id: 3,
-      src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00021-scaled.jpeg',
-      alt: 'Family horseback adventure',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946811/image00043_s1jla3.jpg',
+      alt: 'Beach horseback experience',
     },
     {
       id: 4,
-      src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/07/image00012-scaled.jpeg',
-      alt: 'Beach horseback experience',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946864/image00002_krjl52.jpg',
+      alt: 'Family horseback adventure',
     },
   ];
 
@@ -795,7 +795,7 @@ const SpecialBanner: React.FC<BookingActions> = ({ onBookClick }) => {
     <section className='relative py-32 overflow-hidden'>
       <div className='absolute inset-0'>
         <img
-          src='https://puntacanaexcursions.online/wp-content/uploads/2024/07/Imagen-de-WhatsApp-2024-06-03-a-las-15.47.17_45e97ed7-scaled.jpg'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1755946864/image00002_krjl52.jpg'
           alt='Horseback riding experience'
           className='w-full h-full object-cover'
         />
