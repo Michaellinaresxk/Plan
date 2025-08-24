@@ -37,6 +37,7 @@ import {
   Shirt,
   DollarSign,
   Camera as CameraIcon,
+  Icon,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BookingModal from '../../modal/BookingModal';
@@ -175,7 +176,7 @@ const ITINERARY_STEPS: ItineraryStep[] = [
 // What to bring items
 const WHAT_TO_BRING = [
   {
-    icon: Shirt,
+    icon: Car,
     title: 'Toalla',
     description: 'Para secarte después de nadar',
   },
@@ -210,19 +211,19 @@ const WHAT_TO_BRING = [
 const galleryImages: GalleryImage[] = [
   {
     id: 1,
-    src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island.png',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946732/WhatsApp_Image_2021-08-11_at_10.08.08_PM_1_r8bxkd.jpg',
     alt: 'Playa Isla Saona',
     title: 'Playa de Arena Blanca',
   },
   {
     id: 2,
-    src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/09/playa-isla-saona-scaled.jpg',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946716/playa_isla_saona_wti2ri.jpg',
     alt: 'Piscina Natural',
     title: 'Piscina Natural',
   },
   {
     id: 3,
-    src: 'https://puntacanaexcursions.online/wp-content/uploads/2024/09/saona.png',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946768/Saona_island_rvgcvb.jpg',
     alt: 'Estrellas de Mar',
     title: 'Estrellas de Mar',
   },
@@ -297,10 +298,10 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
         loop
         muted={isMuted}
         playsInline
-        poster='https://images.unsplash.com/photo-1665581341138-78fd42914c6a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1755946732/WhatsApp_Image_2021-08-11_at_10.08.08_PM_1_r8bxkd.jpg'
       >
         <source
-          src='https://cdn.coverr.co/videos/coverr-tropical-beach-aerial-view-8662/1080p.mp4'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1755946763/WhatsApp_Image_2021-08-11_at_10.08.09_PM_2_bx0kcz.jpg'
           type='video/mp4'
         />
       </video>
@@ -333,8 +334,8 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
       <div className='absolute inset-0 bg-black/30' />
 
       {/* Hero Content - Natural and Simple */}
-      <div className='absolute inset-0 flex items-center justify-center text-center text-white p-4'>
-        <div className='w-full max-w-4xl'>
+      <div className='absolute inset-0 flex items-end text-center text-white p-4'>
+        <div className='w-full'>
           {/* Simple Location Badge */}
           <div className='inline-flex items-center bg-white/20 px-4 py-2 rounded-full mb-6'>
             <MapPin className='w-4 h-4 mr-2' />
@@ -516,15 +517,14 @@ const WhatToBringSection: React.FC = () => {
 
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto'>
         {WHAT_TO_BRING.map((item, index) => {
-          const Icon = item.icon;
           return (
             <div
               key={index}
               className='bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300'
             >
-              <div className='w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4'>
-                {/* <Icon className='w-6 h-6 text-blue-600' /> */}
-              </div>
+              {/* <div className='w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4'>
+                <Icon className='w-6 h-6 text-blue-600' />
+              </div> */}
               <h3 className='text-lg font-semibold text-slate-800 mb-2'>
                 {item.title}
               </h3>
@@ -805,7 +805,7 @@ const SpecialBanner = ({ onBookClick }) => {
       {/* Background Image with Parallax Effect */}
       <div className='absolute inset-0'>
         <img
-          src='https://puntacanaexcursions.online/wp-content/uploads/2024/09/saona-sky-scaled.jpg'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1755946736/saona_sky_ax2yol.jpg'
           alt='Saona Island experience'
           className='w-full h-full object-cover'
         />
@@ -889,14 +889,14 @@ const BannersSection: React.FC<{
       title: 'Experiencia en Catamarán',
       subtitle: 'Música, animación y bebidas mientras navegas hacia el paraíso',
       image:
-        'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island-scaled.jpg',
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946768/Saona_island_rvgcvb.jpg',
     },
     {
       id: 'beach-paradise',
       title: 'Paraíso Playero',
       subtitle: 'Tumbonas, buffet dominicano y tiempo libre en arena blanca',
       image:
-        'https://puntacanaexcursions.online/wp-content/uploads/2024/09/Saona-island-puj.png',
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946763/WhatsApp_Image_2021-08-11_at_10.08.09_PM_2_bx0kcz.jpg',
     },
   ] as const;
 
@@ -1010,6 +1010,8 @@ const SaonaIslandTourServiceView: React.FC = ({ service }) => {
 
         {/* Practical Information */}
         <TourInformation />
+
+        
 
         {/* ✅ Weather Disclaimer */}
         <WeatherDisclaimerSection />

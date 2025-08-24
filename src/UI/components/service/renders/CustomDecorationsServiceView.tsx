@@ -10,6 +10,8 @@ import {
   Camera,
   Music,
   AlertTriangle,
+  Award,
+  ArrowRight,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BookingModal from '../../modal/BookingModal';
@@ -36,38 +38,38 @@ interface CustomDecorationsServiceViewProps {
 const DECORATION_GALLERY = [
   {
     image:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80&w=1400',
-    title: 'Romantic Setup',
-    category: 'Romance',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947286/10_m1ilvn.jpg',
+    title: 'Bride',
+    category: 'Bride',
   },
   {
     image:
-      'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=1400',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947306/13_x2egzu.jpg',
     title: 'Birthday Theme',
     category: 'Birthday',
   },
   {
     image:
-      'https://images.unsplash.com/photo-1566737236500-c8ac43014a8e?q=80&w=1400',
-    title: 'Beach Picnic',
-    category: 'Beach',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947289/7_ux3z8d.jpg',
+    title: 'Aniversary',
+    category: 'Aniversary',
   },
   {
     image:
-      'https://images.unsplash.com/photo-1531058020387-3be344556be6?q=80&w=1400',
-    title: 'Kids Party',
-    category: 'Kids',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947332/17_shvrpj.jpg',
+    title: 'Dinner Setup',
+    category: 'Dinner',
   },
   {
     image:
-      'https://images.unsplash.com/photo-1551218808-94e220e084d2?q=80&w=1400',
-    title: 'Luxury Dining Decor',
-    category: 'Luxury',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947279/9_kvn1mw.jpg',
+    title: 'Celebration',
+    category: 'Celebration',
   },
   {
     image:
-      'https://images.unsplash.com/photo-1520637836862-4d197d17c881?q=80&w=1400',
-    title: 'Balloon Garlands',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947273/2_c49vqp.jpg',
+    title: 'Balloon',
     category: 'Balloons',
   },
 ];
@@ -75,38 +77,38 @@ const DECORATION_GALLERY = [
 const DECORATION_BANNERS = [
   {
     id: 'romantic',
-    title: 'Romantic Setups',
+    title: 'Setups',
     subtitle:
       'Candlelit elegance for intimate celebrations and special moments',
     image:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80&w=1400',
-    color: 'from-rose-300/60 to-pink-400/60',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755948162/15_wb6sud.jpg',
+    color: '',
   },
   {
     id: 'birthday',
     title: 'Birthday Themes',
     subtitle: 'Vibrant celebrations with custom themes for all ages',
     image:
-      'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=1400',
-    color: 'from-indigo-300/60 to-purple-400/60',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947783/12_gvtwpq.jpg',
+    color: '',
   },
   {
     id: 'beach',
-    title: 'Beach Picnics & Balloon Garlands',
+    title: 'Custom Decorations',
     subtitle:
       'Outdoor magic with stunning balloon arrangements and beach setups',
     image:
-      'https://images.unsplash.com/photo-1566737236500-c8ac43014a8e?q=80&w=1400',
-    color: 'from-teal-300/60 to-cyan-400/60',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947354/6_ynxqug.jpg',
+    color: '',
   },
   {
     id: 'luxury',
-    title: 'Kids Parties & Luxury Dining',
+    title: 'Out Door',
     subtitle:
       'From playful children celebrations to elegant dining experiences',
     image:
-      'https://images.unsplash.com/photo-1551218808-94e220e084d2?q=80&w=1400',
-    color: 'from-amber-300/60 to-orange-400/60',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947876/5_dqdkjs.jpg',
+    color: '',
   },
 ];
 
@@ -273,9 +275,12 @@ const CustomDecorationsServiceView: React.FC<
 };
 
 // Hero Section with Parallax
-const HeroSection: React.FC<{ onBookClick: () => void }> = ({
-  onBookClick,
-}) => {
+const HeroSection: React.FC<{
+  service: Service;
+  isPremium: boolean;
+  travelTime: string;
+  onBookClick: () => void;
+}> = ({ service, isPremium, travelTime, onBookClick }) => {
   const [scrollY, setScrollY] = React.useState(0);
 
   React.useEffect(() => {
@@ -295,8 +300,10 @@ const HeroSection: React.FC<{ onBookClick: () => void }> = ({
       >
         <div className='absolute inset-0 scale-110'>
           <img
-            src='https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=2070'
-            alt='Elegant decoration setup'
+            src={
+              'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=2070'
+            }
+            alt={'Custom Decoration Service'}
             className='w-full h-full object-cover'
           />
           {/* Multi-layer overlay for depth */}
@@ -308,55 +315,86 @@ const HeroSection: React.FC<{ onBookClick: () => void }> = ({
       {/* Decorative Elements */}
       <div className='absolute inset-0 overflow-hidden'>
         {/* Floating particles */}
-        <div className='absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-float-1'></div>
-        <div className='absolute top-1/3 right-1/3 w-3 h-3 bg-white/20 rounded-full animate-float-2'></div>
-        <div className='absolute bottom-1/3 left-1/5 w-1 h-1 bg-white/40 rounded-full animate-float-3'></div>
-        <div className='absolute top-1/2 right-1/4 w-2 h-2 bg-white/25 rounded-full animate-float-1'></div>
+        <div className='absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-pulse delay-0'></div>
+        <div className='absolute top-1/3 right-1/3 w-3 h-3 bg-white/20 rounded-full animate-pulse delay-300'></div>
+        <div className='absolute bottom-1/3 left-1/5 w-1 h-1 bg-white/40 rounded-full animate-pulse delay-700'></div>
+        <div className='absolute top-1/2 right-1/4 w-2 h-2 bg-white/25 rounded-full animate-pulse delay-1000'></div>
 
         {/* Gradient orbs */}
-        <div className='absolute top-20 right-20 w-32 h-32 bg-gradient-to-br from-pink-400/20 to-purple-600/20 rounded-full blur-xl animate-pulse-slow'></div>
-        <div className='absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-br from-amber-400/20 to-orange-600/20 rounded-full blur-xl animate-pulse-slow delay-1000'></div>
+        <div className='absolute top-20 right-20 w-32 h-32 bg-gradient-to-br from-pink-400/20 to-purple-600/20 rounded-full blur-xl animate-pulse'></div>
+        <div className='absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-br from-amber-400/20 to-orange-600/20 rounded-full blur-xl animate-pulse'></div>
       </div>
 
       {/* Content */}
-      <div className='relative z-10 h-full flex items-center  px-6'>
-        <div className='max-w-5xl space-y-10'>
-          {/* Main Title */}
-          <div className='space-y-4 animate-slide-up'>
-            <h1 className='text-6xl md:text-8xl lg:text-9xl font-extralight text-white leading-none tracking-tight'>
-              Create a
-            </h1>
-            <h2 className='text-5xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-white via-pink-100 to-amber-100 bg-clip-text text-transparent leading-none'>
-              Memorable Setting
-            </h2>
-          </div>
-
-          {/* Subtitle */}
-          <p className='text-xl md:text-2xl lg:text-3xl text-white/90 font-light max-w-4xl mx-auto leading-relaxed animate-fade-in-delayed'>
-            Transform any space into a celebration with our personalized
-            decoration service.
-            <span className='block mt-2 text-amber-200/80'>
-              We bring your vision to life with elegance, color, and creativity.
-            </span>
-          </p>
-
-          {/* CTA Buttons */}
-          <div className='flex flex-col sm:flex-row gap-4  items-center animate-slide-up-delayed'>
-            <button
-              onClick={onBookClick}
-              className='group relative inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-10 py-4 rounded-full font-semibold text-lg shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1'
+      <div className='relative z-10 h-full flex items-center px-6'>
+        <div className='max-w-6xl mx-auto'>
+          <div className='grid lg:grid-cols-2 gap-16 items-center'>
+            {/* Left Column - Main Content */}
+            <motion.div
+              className='space-y-10'
+              initial='hidden'
+              animate='visible'
             >
-              <div className='absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-              <Sparkles className='w-6 h-6 relative z-10' />
-              <span className='relative z-10'>Plan My Decoration</span>
-            </button>
+              {/* Premium Badge */}
+              <motion.div>
+                {isPremium && (
+                  <span className='inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500/90 to-yellow-500/90 backdrop-blur-sm rounded-full text-amber-900 text-sm font-bold uppercase shadow-xl'>
+                    <Award className='w-4 h-4 mr-2' />
+                    Premium Decoration Service
+                  </span>
+                )}
+              </motion.div>
+
+              {/* Main Title */}
+              <motion.div className='space-y-4'>
+                <h1 className='text-6xl md:text-7xl lg:text-8xl font-extralight text-white leading-none tracking-tight'>
+                  Create a
+                </h1>
+                <h2 className='text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-white via-pink-100 to-amber-100 bg-clip-text text-transparent leading-none'>
+                  Memorable Setting
+                </h2>
+              </motion.div>
+
+              {/* Subtitle */}
+              <motion.p className='text-xl md:text-2xl text-white/90 font-light max-w-2xl leading-relaxed'>
+                Transform any space into a celebration with our personalized
+                decoration service.
+                <span className='block mt-2 text-amber-200/80'>
+                  We bring your vision to life with elegance, color, and
+                  creativity.
+                </span>
+              </motion.p>
+
+              {/* CTA Button */}
+              <motion.div className='pt-4'>
+                <button
+                  onClick={onBookClick}
+                  className='group relative inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-10 py-4 rounded-full font-semibold text-lg shadow-2xl hover:shadow-pink-500/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1'
+                >
+                  <div className='absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+                  <Sparkles className='w-6 h-6 relative z-10' />
+                  <span className='relative z-10'>Plan My Decoration</span>
+                  <ArrowRight className='w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform' />
+                </button>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        className='absolute bottom-8 left-1/2 transform -translate-x-1/2'
+        animate={{ y: [0, 10, 0] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+      >
+        <div className='w-6 h-10 border-2 border-white/30 rounded-full flex justify-center'>
+          <div className='w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse'></div>
+        </div>
+      </motion.div>
     </section>
   );
 };
-
 // Decoration Banners Section
 const BannersSection: React.FC<{ onBookClick: () => void }> = ({
   onBookClick,

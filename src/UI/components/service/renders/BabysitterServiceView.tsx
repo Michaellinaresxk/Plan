@@ -41,17 +41,17 @@ interface BabysitterServiceViewProps {
 // Constants
 const GALLERY_IMAGES = [
   {
-    src: 'https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=400',
+    src: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=2040&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Art & crafts time',
     caption: 'Creative arts & crafts sessions',
   },
   {
-    src: 'https://images.unsplash.com/photo-1597413545419-4013d5fade59?auto=format&fit=crop&q=80&w=400',
+    src: 'https://plus.unsplash.com/premium_photo-1661727647956-7d7d3e8ed550?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Outdoor exploration',
     caption: 'Safe outdoor adventures',
   },
   {
-    src: 'https://images.unsplash.com/photo-1596464716066-8ee1cc47bb8e?auto=format&fit=crop&q=80&w=400',
+    src: 'https://images.unsplash.com/photo-1587323655395-b1c77a12c89a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Storytime favorites',
     caption: 'Interactive reading sessions',
   },

@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { useBooking } from '@/context/BookingContext';
 import Image from 'next/image';
-import LuxeGallery from './LuxeGallery';
 
 const featureItems = [
   {
@@ -258,10 +257,6 @@ const CustomPackageCTA = () => {
             <div className='absolute -top-8 -left-8 h-16 w-16 rounded-full border-4 border-blue-500/20 backdrop-blur-md'></div>
           </motion.div>
         </motion.div>
-      </div>
-
-      <div className='w-[90%] md:w-[80%] mx-auto mt-10'>
-        <LuxeGallery />
       </div>
     </section>
   );
