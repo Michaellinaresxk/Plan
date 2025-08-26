@@ -655,9 +655,9 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
           icon={Plane}
           onCancel={handleClose}
           showCloseButton={true}
-          gradientFrom='blue-800'
-          gradientVia='via-blue-700'
-          gradientTo='cyan-800'
+          gradientFrom='blue-500'
+          gradientVia='blue-700'
+          gradientTo='blue-800'
         />
 
         {/* Form Body */}
@@ -1083,7 +1083,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
         </div>
 
         {/* Footer with Actions */}
-        <div className='bg-gray-900 text-white p-6 flex justify-between items-center'>
+        <div className='rounded-2xl bg-gray-900 text-white p-6 flex justify-between items-center'>
           <div className='text-xl font-bold'>
             Total: <span className='text-blue-400'>${calculatePrice}</span>
           </div>

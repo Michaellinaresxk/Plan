@@ -46,8 +46,7 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
       'https://images.pexels.com/photos/9207174/pexels-photo-9207174.jpeg?_gl=1*1gvkela*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5ODY0JGoyMSRsMCRoMA..',
     detailImages: [
       'https://images.pexels.com/photos/9207175/pexels-photo-9207175.jpeg?_gl=1*1fk3hn7*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5OTY2JGo1OSRsMCRoMA..',
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756102920/14_l4wro8.jpg',
     ],
     features: [
       'Free delivery & pickup',
@@ -76,7 +75,7 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     detailImages: [
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947017/IMG_3227_gktf9e.jpg',
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947007/IMG_3224_he26bm.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946996/IMG_3201_iesnfk.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756103011/IMG_3217_ep7kyr.jpg',
     ],
     features: [
       'Fully charged battery',
@@ -113,13 +112,13 @@ const GALLERY_IMAGES = [
   },
   {
     id: 3,
-    src: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=800&fit=crop',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756103062/IMG_3212_ncjcc6.jpg',
     alt: 'Family fun',
     title: 'Family Adventures',
   },
   {
     id: 4,
-    src: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=1200&h=800&fit=crop',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756102920/14_l4wro8.jpg',
     alt: 'Sunset rides',
     title: 'Sunset Rides',
   },
@@ -157,7 +156,7 @@ const HeroSection = ({ onExploreClick }) => {
       {/* Background Image */}
       <div className='absolute inset-0'>
         <img
-          src='https://images.pexels.com/photos/9207198/pexels-photo-9207198.jpeg?_gl=1*1qg0m6r*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5NDgxJGoyNyRsMCRoMA..'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1756103062/IMG_3212_ncjcc6.jpg'
           alt='Golf cart paradise'
           className='w-full h-full object-cover opacity-20'
         />
@@ -262,7 +261,7 @@ const HeroSection = ({ onExploreClick }) => {
                   className='bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-2xl'
                 >
                   <img
-                    src='https://images.pexels.com/photos/9207198/pexels-photo-9207198.jpeg?_gl=1*1qg0m6r*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5NDgxJGoyNyRsMCRoMA..'
+                    src='https://res.cloudinary.com/ddg92xar5/image/upload/v1756103011/IMG_3217_ep7kyr.jpg'
                     alt='Premium golf cart'
                     className='w-full h-64 object-cover rounded-2xl'
                   />
@@ -669,7 +668,7 @@ const CTABanner = ({ language, onGetStartedClick }) => {
     <section className='relative py-20 overflow-hidden'>
       <div className='absolute inset-0'>
         <img
-          src='https://images.pexels.com/photos/9207174/pexels-photo-9207174.jpeg?_gl=1*1gvkela*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5ODY0JGoyMSRsMCRoMA..'
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1755947017/IMG_3227_gktf9e.jpg'
           alt='Sunset golf cart'
           className='w-full h-full object-cover'
         />
@@ -861,7 +860,7 @@ const GolfCartServiceView = () => {
         initial='hidden'
         animate='visible'
       >
-        <div className='rounded-3xl p-12 text-center relative overflow-hidden'>
+        <div className='mb-20 mt-20 text-center relative overflow-hidden'>
           <motion.div
             className='absolute '
             initial={{ scaleX: 0 }}

@@ -490,7 +490,7 @@ const LiveMusicForm = ({ service, onSubmit, onCancel }) => {
   );
 
   return (
-    <div className='w-full max-w-6xl mx-auto'>
+    <div className='w-full max-w-6xl mx-auto p-5'>
       {/* Progress Bar */}
       <div className='mb-8'>
         <div className='flex items-center justify-between mb-4'>

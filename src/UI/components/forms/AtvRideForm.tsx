@@ -361,8 +361,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             onCancel={handleClose}
             showCloseButton={true}
             gradientFrom='green-800'
-            gradientVia='green-700'
-            gradientTo='green-800'
+            gradientVia='green-600'
+            gradientTo='amber-500'
           />
 
           {/* Form Body */}

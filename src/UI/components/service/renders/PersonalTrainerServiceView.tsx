@@ -345,7 +345,7 @@ const StatItem: React.FC<{
 // Benefits Section
 const BenefitsSection: React.FC = () => (
   <motion.section
-    className='py-24 px-6 bg-gray-50'
+    className='py-24 px-2 bg-gray-50'
     initial='hidden'
     whileInView='visible'
     viewport={{ once: true }}
@@ -362,7 +362,7 @@ const BenefitsSection: React.FC = () => (
         </p>
       </motion.div>
 
-      <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
+      <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
         {KEY_BENEFITS.map((benefit, index) => (
           <BenefitCard key={index} benefit={benefit} />
         ))}
@@ -499,7 +499,7 @@ const SuccessStoriesSection: React.FC<{
 // Specialties Section
 const SpecialtiesSection: React.FC = () => (
   <motion.section
-    className='py-24 px-6 bg-gray-50'
+    className='py-24 px-2 bg-gray-50'
     initial='hidden'
     whileInView='visible'
     viewport={{ once: true }}

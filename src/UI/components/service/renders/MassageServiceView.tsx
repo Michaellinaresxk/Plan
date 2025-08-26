@@ -477,7 +477,7 @@ const MassageServiceView = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className='grid grid-cols-1 md:grid-cols-3 gap-8 mt-16'
+            className='grid grid-cols-2 md:grid-cols-3 gap-8 mt-16'
           >
             <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
               <div className='text-emerald-600 text-4xl font-bold mb-2'>

@@ -56,19 +56,9 @@ const GALLERY_IMAGES = [
     caption: 'Interactive reading sessions',
   },
   {
-    src: 'https://images.unsplash.com/photo-1607453998774-d533f65dac99?auto=format&fit=crop&q=80&w=400',
+    src: 'https://parentscanada.com/wp-content/uploads/2022/11/teenage-babysitter.jpg',
     alt: 'Learning through play',
     caption: 'Educational play activities',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&q=80&w=400',
-    alt: 'Music time',
-    caption: 'Musical exploration',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400',
-    alt: 'Snack time',
-    caption: 'Healthy snack preparation',
   },
 ];
 
@@ -408,21 +398,6 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
             </div>
 
             <div className='flex items-start'>
-              <div className='w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mr-4 flex-shrink-0'>
-                <Trophy className='w-5 h-5 text-blue-600' />
-              </div>
-              <div>
-                <h3 className='font-semibold text-gray-900 mb-2'>
-                  Certified Training
-                </h3>
-                <p className='text-gray-600'>
-                  CPR certified with specialized training in child development
-                  and safety
-                </p>
-              </div>
-            </div>
-
-            <div className='flex items-start'>
               <div className='w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center mr-4 flex-shrink-0'>
                 <Heart className='w-5 h-5 text-purple-600' />
               </div>
@@ -441,7 +416,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
 
         <div className='relative h-96 rounded-2xl overflow-hidden'>
           <Image
-            src='https://images.unsplash.com/photo-1596463059283-da257325bab8?auto=format&fit=crop&q=80&w=600'
+            src='https://res.cloudinary.com/ddg92xar5/image/upload/v1756210645/babysitteer_xle7mo.png'
             alt='Caring babysitter with child'
             fill
             className='object-cover'

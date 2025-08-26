@@ -399,7 +399,7 @@ const HeroSection: React.FC<{
 const BannersSection: React.FC<{ onBookClick: () => void }> = ({
   onBookClick,
 }) => (
-  <section className='py-10 px-6'>
+  <section className='py-10 px-2'>
     <div className='max-w-7xl mx-auto space-y-16'>
       <motion.section
         className='py-20 px-6 bg-stone-50'
@@ -610,7 +610,7 @@ const IncludedSection: React.FC = () => (
 
 // What to Expect Section
 const ExpectationSection: React.FC = () => (
-  <section className='py-20 px-6 bg-stone-100'>
+  <section className='py-20 px-2 bg-stone-100'>
     <div className='max-w-4xl mx-auto'>
       <div className='text-center mb-12'>
         <h2 className='text-4xl font-light text-stone-800 mb-6'>
@@ -621,7 +621,7 @@ const ExpectationSection: React.FC = () => (
         </p>
       </div>
 
-      <div className='grid md:grid-cols-2 gap-8'>
+      <div className='grid grid-cols-2 md:grid-cols-2 gap-8'>
         {WHAT_TO_EXPECT.map((step, index) => (
           <div
             key={index}
@@ -642,7 +642,7 @@ const ExpectationSection: React.FC = () => (
 
 // Extras Available Section
 const ExtrasSection: React.FC = () => (
-  <section className='py-20 px-6'>
+  <section className='py-20 px-2'>
     <div className='max-w-4xl mx-auto'>
       <div className='text-center mb-12'>
         <h2 className='text-4xl font-light text-stone-800 mb-6'>
@@ -653,7 +653,7 @@ const ExtrasSection: React.FC = () => (
         </p>
       </div>
 
-      <div className='grid md:grid-cols-3 gap-8'>
+      <div className='grid grid-cols-2 md:grid-cols-3 gap-8'>
         {EXTRAS_AVAILABLE.map((extra, index) => (
           <div
             key={index}

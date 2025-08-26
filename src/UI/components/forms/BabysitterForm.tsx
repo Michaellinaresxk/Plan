@@ -362,7 +362,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
           icon={Baby}
           onCancel={handleClose}
           showCloseButton={true}
-          gradientFrom='purple-800'
+          gradientFrom='purple-500'
           gradientVia='purple-500'
           gradientTo='purple-500'
         />
@@ -727,7 +727,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
         {/* Footer with Price and Actions */}
         <div
-          className='p-8 rounded-b-2xl text-white'
+          className='rounded-2xl p-8 rounded-b-2xl text-white'
           style={{
             background:
               'linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #7c3aed 100%)',

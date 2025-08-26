@@ -68,10 +68,6 @@ const FormHeader: React.FC<FormHeaderProps> = ({
       return `from-${gradientFrom} via-${gradientVia} to-${gradientTo}`;
     }
 
-    if (isPremium) {
-      return 'from-orange-800 via-orange-700 to-orange-800';
-    }
-
     return 'from-amber-800 via-amber-700 to-amber-800';
   };
 
@@ -79,13 +75,13 @@ const FormHeader: React.FC<FormHeaderProps> = ({
     if (isPremium) {
       return {
         subtitle: 'text-orange-100',
-        closeHover: 'hover:bg-orange-700',
+        closeHover: 'hover:bg-white-100',
       };
     }
 
     return {
-      subtitle: 'text-amber-100',
-      closeHover: 'hover:bg-amber-700',
+      subtitle: 'text-white-100',
+      closeHover: 'hover:bg-green-800',
     };
   };
 
@@ -93,7 +89,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
 
   return (
     <div
-      className={`bg-gradient-to-r ${getGradientClasses()} p-6 text-white relative ${className}`}
+      className={`rounded-2xl  bg-gradient-to-r ${getGradientClasses()} p-6 text-white relative ${className}`}
     >
       {/* ✅ IMPROVED: Botón de cierre con mejor control */}
       {showCloseButton && (

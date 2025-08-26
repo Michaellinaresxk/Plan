@@ -549,7 +549,7 @@ const ItinerarySection = () => {
           </p>
         </div>
 
-        <div className='grid md:grid-cols-2 gap-6'>
+        <div className='grid grid-cols-2 md:grid-cols-2 gap-6'>
           {ITINERARY_STEPS.map((step, index) => {
             const IconComponent = step.icon;
             return (
