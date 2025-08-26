@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
       'mscocina.com',
       'www.teletrans.cl',
       'puntacanaexcursions.online',
+      'parentscanada.com',
     ],
   },
 };

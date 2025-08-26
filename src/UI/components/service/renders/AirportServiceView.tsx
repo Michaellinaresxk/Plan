@@ -48,12 +48,12 @@ interface AirportServiceViewProps {
 // Constants
 const TRANSFER_GALLERY = [
   {
-    src: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756210032/6_skprwd.jpg',
     alt: 'Luxury private van transfer',
     caption: 'Modern air-conditioned vehicles for your comfort',
   },
   {
-    src: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756210026/8_bkndzo.jpg',
     alt: 'Professional driver service',
     caption: 'Professional drivers with personalized meet & greet',
   },
@@ -191,11 +191,11 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
         t={t}
       />
 
-      {/* Transfer Process Section */}
-      <TransferProcessSection />
-
       {/* Gallery Section */}
       <GallerySection />
+
+      {/* Good to Know Section */}
+      <GoodToKnowSection travelTime={travelTime} />
 
       {/* Human Banner CTA */}
       <HumanBannerSection onBookClick={() => setIsModalOpen(true)} />
@@ -205,9 +205,6 @@ const AirportServiceView: React.FC<AirportServiceViewProps> = ({
 
       {/* Traveler Tips Section */}
       <TravelerTipsSection isPremium={isPremium} />
-
-      {/* Good to Know Section */}
-      <GoodToKnowSection travelTime={travelTime} />
 
       {/* Final CTA Section */}
       <FinalCTASection
@@ -436,51 +433,6 @@ const TripOptionsSection: React.FC<{
   </motion.section>
 );
 
-// Transfer Process Section
-const TransferProcessSection: React.FC = () => (
-  <motion.section
-    className='py-24 px-6 bg-gray-50'
-    initial='hidden'
-    whileInView='visible'
-    viewport={{ once: true }}
-    variants={staggerChildren}
-  >
-    <div className='max-w-6xl mx-auto'>
-      <motion.div variants={fadeInUp} className='text-center mb-16'>
-        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
-          What to Expect
-        </h2>
-        <p className='text-xl text-gray-600'>
-          Your seamless transfer experience in 4 simple steps
-        </p>
-      </motion.div>
-
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-        {TRANSFER_PROCESS.map((process, index) => (
-          <motion.div
-            key={index}
-            variants={fadeInUp}
-            className='bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center'
-          >
-            <div className='w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <div className='w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm'>
-                {process.step}
-              </div>
-            </div>
-            <div className='mb-4'>
-              <process.icon className='w-8 h-8 text-blue-600 mx-auto' />
-            </div>
-            <h3 className='text-lg font-bold text-gray-900 mb-2'>
-              {process.title}
-            </h3>
-            <p className='text-gray-600 text-sm'>{process.description}</p>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  </motion.section>
-);
-
 // Gallery Section - Responsive 4 photos, 2 columns on mobile
 const GallerySection: React.FC = () => (
   <motion.section
@@ -539,7 +491,7 @@ const HumanBannerSection: React.FC<{
   >
     <div className='absolute inset-0 z-0'>
       <Image
-        src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3'
+        src='https://res.cloudinary.com/ddg92xar5/image/upload/v1756210026/8_bkndzo.jpg'
         alt='Airport transfer comfort'
         fill
         className='object-cover'
@@ -642,7 +594,7 @@ const TravelerTipsSection: React.FC<{
   isPremium: boolean;
 }> = ({ isPremium }) => (
   <motion.section
-    className={`py-24 px-6 ${isPremium ? 'bg-amber-50' : 'bg-blue-50'}`}
+    className={`py-24 px-2 ${isPremium ? 'bg-amber-50' : 'bg-blue-50'}`}
     initial='hidden'
     whileInView='visible'
     viewport={{ once: true }}
@@ -729,7 +681,7 @@ const GoodToKnowSection: React.FC<{
   travelTime: string;
 }> = ({ travelTime }) => (
   <motion.section
-    className='py-24 px-6'
+    className='py-24 px-2'
     initial='hidden'
     whileInView='visible'
     viewport={{ once: true }}
@@ -743,7 +695,7 @@ const GoodToKnowSection: React.FC<{
         </p>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+      <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
         <div className='bg-white p-6 rounded-xl shadow-lg text-center'>
           <Plane className='w-12 h-12 text-blue-600 mx-auto mb-4' />
           <h3 className='font-bold text-gray-900 mb-2'>Flight Tracking</h3>

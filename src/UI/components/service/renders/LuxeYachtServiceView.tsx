@@ -492,27 +492,6 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
                 Discover the world's most exclusive yacht collection. Where
                 every journey becomes an unforgettable masterpiece.
               </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.3, duration: 0.8 }}
-                className='flex flex-col sm:flex-row gap-4 mb-12'
-              >
-                <motion.button
-                  whileHover={{
-                    scale: 1.05,
-                    boxShadow: '0 20px 40px rgba(6, 182, 212, 0.3)',
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onBookingClick}
-                  className='group bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center space-x-3 relative overflow-hidden'
-                >
-                  <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000' />
-                  <Calendar className='w-6 h-6' />
-                  <span>Explore Collection</span>
-                </motion.button>
-              </motion.div>
             </motion.div>
 
             {/* Right Content - Modern Card */}

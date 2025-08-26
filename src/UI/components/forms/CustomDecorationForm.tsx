@@ -247,12 +247,6 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
       });
     }
 
-    if (!exactAddress.trim()) {
-      newErrors.exactAddress = t('forms.errors.addressRequired', {
-        fallback: 'Exact address is required',
-      });
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -664,35 +658,6 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
                       {errors.location}
                     </p>
                   )}
-                </div>
-
-                {/* Exact Address */}
-                <div>
-                  <label className='block text-gray-700 font-medium mb-3'>
-                    Exact Address <span className='text-red-500'>*</span>
-                  </label>
-                  <div className='relative'>
-                    <MapPin className='absolute left-4 top-4 text-gray-400 w-5 h-5' />
-                    <textarea
-                      value={exactAddress}
-                      onChange={(e) =>
-                        updateFormField('exactAddress', e.target.value)
-                      }
-                      rows={4}
-                      placeholder='Full address (hotel name, villa number, street, etc.)'
-                      className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl bg-white/80 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/20 resize-none ${
-                        errors.exactAddress
-                          ? 'border-red-300 focus:border-red-400'
-                          : 'border-gray-200 focus:border-purple-400'
-                      }`}
-                    />
-                    {errors.exactAddress && (
-                      <p className='mt-2 text-red-500 text-sm flex items-center'>
-                        <AlertCircle className='w-4 h-4 mr-1' />
-                        {errors.exactAddress}
-                      </p>
-                    )}
-                  </div>
                 </div>
               </motion.div>
             </div>

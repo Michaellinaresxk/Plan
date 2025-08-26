@@ -125,7 +125,7 @@ const ContactPage = () => {
               </p>
             </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10'>
+            <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-5'>
               {/* Contact Card 1 */}
               <motion.div
                 className='bg-gray-50 rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow duration-300'
@@ -168,8 +168,8 @@ const ContactPage = () => {
         </section>
 
         {/* Form and Information Section */}
-        <section className='py-20 bg-gray-50'>
-          <div className='container mx-auto px-6'>
+        <section className='py-10 bg-gray-50'>
+          <div className='container mx-auto px-2'>
             <div className='max-w-7xl mx-auto'>
               <div className='grid md:grid-cols-1 gap-12'>
                 {/* Contact Form */}

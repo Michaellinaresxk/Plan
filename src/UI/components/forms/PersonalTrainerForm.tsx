@@ -358,9 +358,9 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
             isPremium={isPremium}
             onCancel={handleClose}
             showCloseButton={true}
-            gradientFrom='blue-800'
-            gradientVia='via-blue-700'
-            gradientTo='cyan-800'
+            gradientFrom='blue-500'
+            gradientVia='blue-700'
+            gradientTo='blue-800'
           />
 
           {/* Form Body */}
@@ -905,7 +905,7 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
           </div>
 
           {/* Form Footer */}
-          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
+          <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
                 {t('services.personalTrainer.totalPrice', {

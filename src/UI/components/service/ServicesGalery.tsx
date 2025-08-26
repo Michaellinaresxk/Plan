@@ -394,7 +394,7 @@ const ServicesGallery = () => {
         </div>
 
         {/* Elegant CTA Section */}
-        <div className='px-6 mt-32'>
+        <div className='px-2 mt-32'>
           <div className=' mx-auto'>
             <div className='cta-card rounded-3xl p-12 md:p-20 text-center relative border border-slate-200'>
               {/* Subtle decorative elements */}
@@ -412,7 +412,7 @@ const ServicesGallery = () => {
                 </div>
 
                 <h2 className='text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent leading-tight'>
-                  Creemos Tu Experiencia Perfecta
+                  Creamos Tu Experiencia Perfecta
                 </h2>
 
                 <p className='text-xl md:text-2xl text-slate-700 leading-relaxed font-light mb-12 max-w-3xl mx-auto'>

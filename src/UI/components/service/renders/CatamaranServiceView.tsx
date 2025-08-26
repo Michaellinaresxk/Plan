@@ -338,7 +338,7 @@ const ExperienceGallery: React.FC = () => {
         </p>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {experiences.map((experience, index) => (
           <motion.div
             key={index}
@@ -485,7 +485,7 @@ const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
       />
 
       {/* Content sections with proper spacing */}
-      <div className='max-w-7xl mx-auto px-6 py-16 space-y-16'>
+      <div className='max-w-7xl mx-auto px-2 py-16 space-y-16'>
         {/* Catamaran Selection */}
         <section className='bg-white rounded-3xl p-10 shadow-xl'>
           <div className='text-center mb-12'>

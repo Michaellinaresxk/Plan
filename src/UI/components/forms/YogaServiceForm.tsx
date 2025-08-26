@@ -305,8 +305,8 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
             // icon={Yoga}
             onCancel={handleClose}
             showCloseButton={true}
-            gradientFrom='teal-800'
-            gradientVia='teal-700'
+            gradientFrom='green-800'
+            gradientVia='teal-800'
             gradientTo='teal-800'
           />
 
@@ -813,7 +813,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
           </div>
 
           {/* Form Footer */}
-          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
+          <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
                 {t('services.yoga.totalPrice', { fallback: 'Total Price' })}

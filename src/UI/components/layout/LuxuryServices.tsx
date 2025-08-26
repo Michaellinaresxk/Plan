@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import ServicePackagesCTA from '../service/ServicePackagesCTA';
+import { useTranslation } from '@/lib/i18n/client';
 
 const LuxuryServices = () => {
+  const { t } = useTranslation();
+
   return (
     <section className='py-24 bg-white relative overflow-hidden'>
       {/* Subtle Background Pattern */}
@@ -25,18 +28,14 @@ const LuxuryServices = () => {
           </div>
 
           <h2 className='text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent leading-tight'>
-            Servicios Exclusivos
+            {t('common.mainText.title')}
           </h2>
 
           <p className='text-xl md:text-2xl text-slate-700 leading-relaxed font-light'>
-            En Lux Punta Cana entendemos que los momentos más valiosos no se
-            improvisan… Se diseñan con intención. Por eso nuestros servicios,
-            desde recogidas en SUV, travesías en Yates privados hasta cenas
-            gourmet, no solo crean experiencias, sino recuerdos que perduran.
-            Porque el verdadero lujo no necesita mostrar exceso.
+            {t('common.mainText.subtitle')}
             <span className='text-blue-600 font-medium'>
               {' '}
-              Solo necesita tocar el alma.
+              {t('common.mainText.slogan')}
             </span>
           </p>
 

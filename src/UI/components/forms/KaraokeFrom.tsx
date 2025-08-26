@@ -330,7 +330,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
           icon={Mic}
           onCancel={handleClose}
           showCloseButton={true}
-          gradientFrom='purple-800'
+          gradientFrom='purple-500'
           gradientVia='purple-500'
           gradientTo='purple-600'
         />
@@ -691,7 +691,7 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
         </div>
 
         {/* Footer with Price and Actions */}
-        <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
+        <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
           <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
             <span className='text-gray-400 text-sm uppercase tracking-wide'>
               Total Price

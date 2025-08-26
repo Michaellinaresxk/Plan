@@ -30,6 +30,9 @@ import {
   Zap,
   Moon,
   Sun,
+  Info,
+  XCircle,
+  Gift,
 } from 'lucide-react';
 
 interface YogaServiceViewProps {
@@ -39,73 +42,32 @@ interface YogaServiceViewProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Enhanced data structures
+// Simple yoga styles matching PDF
 const YOGA_STYLES = [
   {
     id: 'hatha',
-    name: 'Hatha Yoga',
-    description: 'Gentle, slow-paced practice focusing on basic postures',
-    icon: <Mountain className='w-6 h-6' />,
-    level: 'Beginner',
-    duration: '60-75 min',
-    benefits: ['Flexibility', 'Balance', 'Stress Relief'],
-    accentColor: 'slate',
-    gradient: 'from-green-50 via-emerald-50 to-teal-50',
+    name: 'Hatha',
+    gradient: 'from-stone-100 via-stone-200 to-stone-300',
   },
   {
     id: 'vinyasa',
-    name: 'Vinyasa Flow',
-    description: 'Dynamic sequences linking breath with movement',
-    icon: <Wind className='w-6 h-6' />,
-    level: 'Intermediate',
-    duration: '60-90 min',
-    benefits: ['Strength', 'Cardio', 'Mindfulness'],
-    accentColor: 'stone',
-    gradient: 'from-slate-50 via-blue-50 to-indigo-50',
+    name: 'Vinyasa',
+    gradient: 'from-slate-100 via-slate-200 to-slate-300',
   },
   {
     id: 'ashtanga',
     name: 'Ashtanga',
-    description: 'Traditional, vigorous style with set sequences',
-    icon: <Zap className='w-6 h-6' />,
-    level: 'Advanced',
-    duration: '75-90 min',
-    benefits: ['Power', 'Discipline', 'Purification'],
-    accentColor: 'amber',
-    gradient: 'from-stone-50 via-amber-50 to-orange-50',
+    gradient: 'from-gray-100 via-gray-200 to-gray-300',
   },
   {
     id: 'yin',
-    name: 'Yin Yoga',
-    description: 'Passive poses held for extended periods',
-    icon: <Moon className='w-6 h-6' />,
-    level: 'All Levels',
-    duration: '60-75 min',
-    benefits: ['Deep Stretch', 'Relaxation', 'Meditation'],
-    accentColor: 'emerald',
-    gradient: 'from-neutral-50 via-stone-100 to-amber-50',
+    name: 'Yin (Estiramientos)',
+    gradient: 'from-neutral-100 via-neutral-200 to-neutral-300',
   },
   {
     id: 'restorative',
-    name: 'Restorative',
-    description: 'Deeply relaxing poses with props support',
-    icon: <Heart className='w-6 h-6' />,
-    level: 'All Levels',
-    duration: '60-75 min',
-    benefits: ['Recovery', 'Stress Relief', 'Sleep Quality'],
-    accentColor: 'slate',
-    gradient: 'from-green-50 via-emerald-50 to-teal-50',
-  },
-  {
-    id: 'sunrise',
-    name: 'Sunrise Session',
-    description: 'Energizing morning practice to start your day',
-    icon: <Sunrise className='w-6 h-6' />,
-    level: 'All Levels',
-    duration: '45-60 min',
-    benefits: ['Energy', 'Clarity', 'Vitality'],
-    accentColor: 'emerald',
-    gradient: 'from-green-50 via-emerald-50 to-teal-50',
+    name: 'Restaurativo',
+    gradient: 'from-zinc-100 via-zinc-200 to-zinc-300',
   },
 ];
 
@@ -214,16 +176,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
     setIsModalOpen(false);
   };
 
-  const getAccentColors = (color) => {
-    const colors = {
-      slate: 'ring-slate-300 bg-slate-50 text-slate-700 bg-slate-400',
-      stone: 'ring-stone-300 bg-stone-50 text-stone-700 bg-stone-400',
-      amber: 'ring-amber-300 bg-amber-50 text-amber-700 bg-amber-400',
-      emerald: 'ring-emerald-300 bg-emerald-50 text-emerald-700 bg-emerald-400',
-    };
-    return colors[color] || colors.emerald;
-  };
-
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-blue-50'>
       <div className='max-w-8xl mx-auto space-y-16 pb-16'>
@@ -235,7 +187,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
           variants={fadeInUp}
         >
           <div className='relative h-[70vh] sm:h-[80vh] lg:h-[85vh] bg-gradient-to-r from-emerald-900/80 via-teal-800/70 to-cyan-900/80'>
-            {/* Overlay adicional para mejor contraste */}
             <div className='absolute inset-0 bg-black/30 z-[1]' />
             <Image
               src='https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1200'
@@ -244,8 +195,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               className='object-cover mix-blend-overlay opacity-60'
               priority
             />
-
-            {/* Overlay adicional para mejor contraste */}
             <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 z-[2]' />
 
             {/* Floating Elements */}
@@ -254,11 +203,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               animate={{ y: [-10, 10, -10] }}
               transition={{ duration: 4, repeat: Infinity }}
             />
-            <motion.div
-              className='absolute bottom-16 left-4 sm:bottom-24 sm:left-8 lg:bottom-32 lg:left-16 w-12 h-12 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-emerald-500/20 rounded-full backdrop-blur-sm hidden sm:block'
-              animate={{ y: [10, -10, 10] }}
-              transition={{ duration: 6, repeat: Infinity }}
-            />
 
             <div className='relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16'>
               <div className='max-w-5xl w-full space-y-6 sm:space-y-8 lg:space-y-10'>
@@ -266,10 +210,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                   className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-bold text-white leading-tight'
                   variants={fadeInUp}
                 >
-                  Yoga
+                  Private Yoga
                   <br />
                   <span className='bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent'>
-                    Meditation
+                    Session
                   </span>
                 </motion.h1>
 
@@ -277,8 +221,8 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                   className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 max-w-4xl mx-auto leading-relaxed px-2'
                   variants={fadeInUp}
                 >
-                  Embark on a transformative journey of self-discovery through
-                  ancient practices in paradise settings
+                  Your Space. Your Flow. Personalized yoga practice in the
+                  comfort of your vacation rental.
                 </motion.p>
 
                 <motion.div
@@ -289,10 +233,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                     <Clock className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
                     <div className='text-left min-w-0'>
                       <div className='text-white font-semibold text-sm sm:text-base truncate'>
-                        60-90 Minutes
+                        60 Minutes
                       </div>
                       <div className='text-white/70 text-xs sm:text-sm truncate'>
-                        Flexible Duration
+                        Duration
                       </div>
                     </div>
                   </div>
@@ -300,10 +244,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                     <User className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
                     <div className='text-left min-w-0'>
                       <div className='text-white font-semibold text-sm sm:text-base truncate'>
-                        All Levels
+                        Age 9+
                       </div>
                       <div className='text-white/70 text-xs sm:text-sm truncate'>
-                        Personalized Practice
+                        All Levels Welcome
                       </div>
                     </div>
                   </div>
@@ -311,10 +255,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                     <MapPin className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
                     <div className='text-left min-w-0'>
                       <div className='text-white font-semibold text-sm sm:text-base truncate'>
-                        Your Choice
+                        Your Rental
                       </div>
                       <div className='text-white/70 text-xs sm:text-sm truncate'>
-                        Beach, Pool, Garden, Villa
+                        We Come to You
                       </div>
                     </div>
                   </div>
@@ -343,64 +287,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
           </div>
         </motion.div>
 
-        {/* Benefits Section */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={stagger}
-        >
-          <div className='text-center mb-16'>
-            <motion.h2
-              className='text-5xl font-bold text-gray-800 mb-6'
-              variants={fadeInUp}
-            >
-              Transform Your Well-Being
-            </motion.h2>
-            <motion.p
-              className='text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed'
-              variants={fadeInUp}
-            >
-              Discover the profound benefits of yoga practice in stunning
-              natural settings
-            </motion.p>
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-            {BENEFITS.map((benefit, index) => (
-              <motion.div
-                key={index}
-                className='group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 overflow-hidden'
-                variants={fadeInUp}
-              >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${benefit.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
-                />
-
-                <div
-                  className={`w-16 h-16 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 text-white`}
-                >
-                  {benefit.icon}
-                </div>
-
-                <h3 className='text-xl font-bold text-gray-800 mb-4'>
-                  {benefit.title}
-                </h3>
-                <p className='text-gray-600 leading-relaxed'>
-                  {benefit.description}
-                </p>
-
-                <div className='absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                  <div
-                    className={`w-3 h-3 bg-gradient-to-br ${benefit.color} rounded-full`}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Yoga Styles Showcase */}
+        {/* Yoga Styles - Simplified as requested */}
         <motion.div
           className='px-4'
           initial='hidden'
@@ -408,130 +295,221 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
           variants={fadeInUp}
         >
           <div className='text-center mb-16'>
-            <h2 className='text-5xl font-bold text-gray-800 mb-6'>
-              Choose Your Practice
+            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
+              Choose Your Practice Style
             </h2>
-            <p className='text-2xl text-gray-600 max-w-3xl mx-auto'>
-              From gentle Hatha to dynamic Vinyasa, find the perfect style for
-              your journey
+            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+              Select from these traditional yoga practices, each tailored to
+              your experience level
             </p>
           </div>
 
-          <div className='py-12 px-4 max-w-6xl mx-auto'>
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-              {YOGA_STYLES.map((service, index) => {
-                const accentColors = getAccentColors(service.accentColor);
-
-                return (
-                  <motion.div
-                    key={service.id}
-                    className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 cursor-pointer overflow-hidden ${
-                      selectedStyle === service.id
-                        ? `ring-2 ${accentColors.split(' ')[0]} shadow-lg`
-                        : ''
-                    }`}
-                    onClick={() =>
-                      setSelectedStyle(
-                        selectedStyle === service.id ? '' : service.id
-                      )
-                    }
-                    variants={fadeInUp}
-                    initial='hidden'
-                    animate='visible'
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ scale: 1.02 }}
+          {/* Simple grid of yoga styles */}
+          <div className='grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-8 max-w-6xl mx-auto'>
+            {YOGA_STYLES.map((style, index) => (
+              <motion.div
+                key={style.id}
+                className='group cursor-pointer'
+                variants={fadeInUp}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <div className='bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden'>
+                  {/* Hero Image with centered text */}
+                  <div
+                    className={`relative h-64 bg-gradient-to-br ${style.gradient} overflow-hidden`}
                   >
-                    {/* Header visual con gradiente */}
-                    <div
-                      className={`relative h-32 bg-gradient-to-r ${service.gradient} p-6 flex items-center justify-between`}
-                    >
-                      {/* Patrón decorativo sutil */}
-                      <div className='absolute inset-0 opacity-10'>
-                        <div className='absolute top-4 right-4 w-16 h-16 border border-gray-300/40 rounded-full'></div>
-                        <div className='absolute bottom-2 left-8 w-8 h-8 border border-gray-300/40 rounded-full'></div>
-                        <div className='absolute top-8 left-1/3 w-4 h-4 bg-gray-400/30 rounded-full'></div>
-                      </div>
+                    {/* Background pattern */}
+                    <div className='absolute inset-0 bg-gradient-to-br from-white/10 to-transparent'></div>
 
-                      {/* Icono principal */}
-                      <div className='relative z-10 text-gray-600 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-sm'>
-                        {service.icon}
-                      </div>
-
-                      {/* Precio */}
-                      <div className='relative z-10 bg-white/95 backdrop-blur-sm text-gray-800 font-bold px-4 py-2 rounded-full shadow-sm border border-gray-200/50'>
-                        {service.price}
-                      </div>
-                    </div>
-
-                    {/* Contenido */}
-                    <div className='p-6'>
-                      <div className='flex flex-wrap items-center gap-2 mb-3'>
-                        <h3 className='text-xl font-bold text-gray-800 flex-1'>
-                          {service.name}
+                    {/* Centered name */}
+                    <div className='absolute inset-0 flex items-center justify-center'>
+                      <div className='text-center'>
+                        <h3 className='text-3xl font-light text-gray-700 mb-2'>
+                          {style.name}
                         </h3>
-                        <div className='flex gap-2'>
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full font-medium ${
-                              accentColors.split(' ')[1]
-                            } ${accentColors.split(' ')[2]}`}
-                          >
-                            {service.level}
-                          </span>
-                          <span className='text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium flex items-center gap-1'>
-                            <Clock className='w-3 h-3' />
-                            {service.duration}
-                          </span>
-                        </div>
+                        <div className='w-12 h-px bg-gray-500 mx-auto'></div>
                       </div>
-
-                      <p className='text-gray-600 mb-4 leading-relaxed'>
-                        {service.description}
-                      </p>
-
-                      {/* Beneficios en formato compacto */}
-                      <div className='space-y-2 mb-6'>
-                        <h4 className='text-xs font-semibold text-gray-500 uppercase tracking-wide'>
-                          Benefits
-                        </h4>
-                        <div className='flex flex-wrap gap-1'>
-                          {service.benefits.map((benefit, idx) => (
-                            <span
-                              key={idx}
-                              className='text-xs bg-gray-50 text-gray-700 px-2 py-1 rounded-full border flex items-center gap-1'
-                            >
-                              <CheckCircle className='w-3 h-3 text-green-500' />
-                              {benefit}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* CTA */}
-                      <motion.button
-                        className={`w-full text-white px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
-                          accentColors.split(' ')[3]
-                        } hover:shadow-lg`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Sparkles className='w-4 h-4' />
-                        Book {service.name}
-                      </motion.button>
                     </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
 
-                    {/* Indicador de selección */}
-                    {selectedStyle === service.id && (
-                      <motion.div
-                        className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-20 rounded-2xl pointer-events-none border-2 border-gray-300/30`}
-                        initial={{ scale: 0.95, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    )}
-                  </motion.div>
-                );
-              })}
+          <div className='text-center mt-12'>
+            <p className='text-gray-600 max-w-2xl mx-auto'>
+              Whether you're new to yoga or deepening your practice, our
+              internationally certified instructors tailor each session to your
+              goals and preferred style.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* What's Included Section - Enhanced from PDF */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-white rounded-3xl shadow-2xl overflow-hidden'>
+            <div className='bg-gradient-to-r from-emerald-600 to-teal-600 p-12 text-white text-center'>
+              <h2 className='text-4xl font-bold mb-4'>What's Included</h2>
+              <p className='text-xl opacity-90 max-w-2xl mx-auto'>
+                Everything you need for a transformative practice is provided
+              </p>
             </div>
+
+            <div className='p-12'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
+                <div className='space-y-8'>
+                  <h3 className='text-2xl font-bold text-gray-800 mb-6'>
+                    Included:
+                  </h3>
+                  {[
+                    {
+                      icon: CheckCircle,
+                      text: 'Yoga Mats',
+                      desc: 'Premium, eco-friendly mats for your practice',
+                    },
+                    {
+                      icon: CheckCircle,
+                      text: 'Props & Supports',
+                      desc: 'Blocks, straps, and bolsters as needed',
+                    },
+                    {
+                      icon: Shield,
+                      text: 'Certified Instructor',
+                      desc: 'Internationally certified with personalized guidance',
+                    },
+                  ].map((item, index) => (
+                    <div key={index} className='flex items-start space-x-4'>
+                      <div className='w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
+                        <item.icon className='w-6 h-6 text-emerald-600' />
+                      </div>
+                      <div>
+                        <h4 className='text-lg font-bold text-gray-800 mb-1'>
+                          {item.text}
+                        </h4>
+                        <p className='text-gray-600'>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className='space-y-8'>
+                  <h3 className='text-2xl font-bold text-gray-800 mb-6'>
+                    Not Included:
+                  </h3>
+                  <div className='flex items-start space-x-4'>
+                    <div className='w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
+                      <Gift className='w-6 h-6 text-amber-600' />
+                    </div>
+                    <div>
+                      <h4 className='text-lg font-bold text-gray-800 mb-1'>
+                        Gratuity
+                      </h4>
+                      <p className='text-gray-600'>
+                        Optional but appreciated by our instructors
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className='bg-gray-50 rounded-2xl p-6'>
+                    <h4 className='text-lg font-semibold text-gray-800 mb-3'>
+                      Good to Know:
+                    </h4>
+                    <ul className='space-y-2 text-gray-600 text-sm'>
+                      <li>
+                        • <strong>Start & End Time:</strong> Promptly at
+                        scheduled hour
+                      </li>
+                      <li>
+                        • <strong>What to Wear:</strong> Stretch-friendly
+                        clothing
+                      </li>
+                      <li>
+                        • <strong>Adaptability:</strong> Sessions can be adapted
+                        for pregnancy or mobility needs
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* What to Expect Section - From PDF */}
+        <motion.div
+          className='px-2'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='text-center mb-16'>
+            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
+              What to Expect
+            </h2>
+            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+              Your personalized yoga journey in four simple steps
+            </p>
+          </div>
+
+          <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            {[
+              {
+                step: '1',
+                title: 'Setup & Arrival',
+                description: 'Instructor arrives & sets the space',
+                icon: <Sparkles className='w-8 h-8' />,
+                color: 'from-emerald-500 to-teal-500',
+              },
+              {
+                step: '2',
+                title: 'Welcome Discussion',
+                description: 'Quick welcome and goal discussion',
+                icon: <Heart className='w-8 h-8' />,
+                color: 'from-teal-500 to-cyan-500',
+              },
+              {
+                step: '3',
+                title: 'Practice Time',
+                description: 'Move, breathe, and flow',
+                icon: <Wind className='w-8 h-8' />,
+                color: 'from-cyan-500 to-blue-500',
+              },
+              {
+                step: '4',
+                title: 'Grounding Relaxation',
+                description: 'Finish with a grounding relaxation',
+                icon: <Moon className='w-8 h-8' />,
+                color: 'from-blue-500 to-indigo-500',
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                className='text-center'
+                variants={fadeInUp}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div
+                  className={`w-20 h-20 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center mx-auto mb-6 text-white shadow-lg`}
+                >
+                  {item.icon}
+                </div>
+                <div className='mb-3'>
+                  <span className='text-3xl font-bold text-gray-300 mr-2'>
+                    {item.step}
+                  </span>
+                  <h3 className='text-xl font-bold text-gray-800 inline'>
+                    {item.title}
+                  </h3>
+                </div>
+                <p className='text-gray-600'>{item.description}</p>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
@@ -544,11 +522,12 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
         >
           <div className='bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-12'>
             <div className='text-center mb-16'>
-              <h2 className='text-5xl font-bold text-gray-800 mb-6'>
+              <h2 className='text-4xl font-bold text-gray-800 mb-6'>
                 Sacred Spaces
               </h2>
-              <p className='text-2xl text-gray-600 max-w-3xl mx-auto'>
-                Choose your perfect sanctuary for practice and meditation
+              <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+                Choose your perfect sanctuary for practice within your vacation
+                rental
               </p>
             </div>
 
@@ -598,15 +577,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                         {location.ambiance}
                       </div>
                     </div>
-
-                    {selectedLocation === location.id && (
-                      <motion.div
-                        className='absolute inset-0 border-4 border-emerald-500 rounded-3xl'
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    )}
                   </div>
                 </motion.div>
               ))}
@@ -614,86 +584,90 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
           </div>
         </motion.div>
 
-        {/* What's Included Section */}
+        {/* Service Overview Section - From PDF */}
         <motion.div
           className='px-4'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
         >
-          <div className='bg-white rounded-3xl shadow-2xl overflow-hidden'>
-            <div className='bg-gradient-to-r from-emerald-600 to-teal-600 p-12 text-white text-center'>
-              <h2 className='text-4xl font-bold mb-4'>
-                Complete Yoga Experience
+          <div className='bg-white rounded-3xl shadow-xl p-8 md:p-12'>
+            <div className='text-center mb-12'>
+              <h2 className='text-4xl font-bold text-gray-800 mb-4'>
+                Service Overview
               </h2>
-              <p className='text-xl opacity-90 max-w-2xl mx-auto'>
-                Everything you need for a transformative practice is provided
+              <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+                Enjoy a 60-minute private yoga class in the serene comfort of
+                your vacation rental
               </p>
             </div>
 
-            <div className='p-12'>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
-                <div className='space-y-8'>
-                  {[
-                    {
-                      icon: Shield,
-                      text: 'Certified Yoga Instructor',
-                      desc: 'Experienced practitioners with 500+ hour certifications',
-                    },
-                    {
-                      icon: Sparkles,
-                      text: 'Premium Equipment',
-                      desc: 'Eco-friendly mats, blocks, straps, and meditation cushions',
-                    },
-                    {
-                      icon: Heart,
-                      text: 'Breathwork & Meditation',
-                      desc: 'Guided pranayama and mindfulness practices',
-                    },
-                    {
-                      icon: Leaf,
-                      text: 'Essential Oils & Aromatherapy',
-                      desc: 'Natural scents to enhance your practice experience',
-                    },
-                  ].map((item, index) => (
-                    <div key={index} className='flex items-start space-x-4'>
-                      <div className='w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
-                        <item.icon className='w-6 h-6 text-emerald-600' />
-                      </div>
-                      <div>
-                        <h4 className='text-lg font-bold text-gray-800 mb-1'>
-                          {item.text}
-                        </h4>
-                        <p className='text-gray-600'>{item.desc}</p>
-                      </div>
-                    </div>
-                  ))}
+            <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+              <div className='text-center'>
+                <div className='w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                  <Clock className='w-8 h-8 text-emerald-600' />
                 </div>
+                <h3 className='text-lg font-semibold text-gray-800 mb-2'>
+                  Duration
+                </h3>
+                <p className='text-gray-600'>60 minutes</p>
+              </div>
 
-                <div className='relative h-96 rounded-3xl overflow-hidden'>
-                  <Image
-                    src='https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&q=80&w=800'
-                    alt='Premium yoga equipment and setup'
-                    fill
-                    className='object-cover'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end'>
-                    <div className='p-6 text-white'>
-                      <h4 className='text-xl font-bold mb-2'>Premium Setup</h4>
-                      <p className='text-white/90'>
-                        All equipment sanitized and prepared for your exclusive
-                        use
-                      </p>
-                    </div>
-                  </div>
+              <div className='text-center'>
+                <div className='w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                  <MapPin className='w-8 h-8 text-emerald-600' />
+                </div>
+                <h3 className='text-lg font-semibold text-gray-800 mb-2'>
+                  Meeting Point
+                </h3>
+                <p className='text-gray-600'>Your Vacation Rental</p>
+              </div>
+
+              <div className='text-center'>
+                <div className='w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                  <User className='w-8 h-8 text-emerald-600' />
+                </div>
+                <h3 className='text-lg font-semibold text-gray-800 mb-2'>
+                  Age
+                </h3>
+                <p className='text-gray-600'>
+                  9+ (Minors with adult supervision)
+                </p>
+              </div>
+
+              <div className='text-center'>
+                <div className='w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                  <XCircle className='w-8 h-8 text-emerald-600' />
+                </div>
+                <h3 className='text-lg font-semibold text-gray-800 mb-2'>
+                  Cancellations
+                </h3>
+                <p className='text-gray-600'>24+ hours allowed</p>
+              </div>
+            </div>
+
+            {/* Cancellation Policy Details */}
+            <div className='bg-amber-50 border border-amber-200 rounded-2xl p-6 mt-8'>
+              <div className='flex items-start'>
+                <Info className='w-5 h-5 text-amber-600 mr-3 mt-0.5 flex-shrink-0' />
+                <div>
+                  <h4 className='font-semibold text-amber-800 mb-2'>
+                    Cancellation Policy
+                  </h4>
+                  <p className='text-amber-700 text-sm'>
+                    Cancellations made more than 24 hours before the start time
+                    are allowed. However, during the holiday season (Dec 20th -
+                    Jan 4th), all bookings are final and non-refundable.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </motion.div>
+
         {/* Final CTA */}
         <motion.div
-          className='px-4'
+          className='px-2'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
@@ -720,8 +694,8 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                 className='text-2xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
                 variants={fadeInUp}
               >
-                Begin your journey to inner peace, strength, and vitality in
-                paradise. Your transformation awaits.
+                Begin your journey to inner peace, strength, and vitality. Your
+                personalized transformation awaits in your own space.
               </motion.p>
 
               <motion.div
@@ -733,27 +707,12 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                   className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
                 >
                   <Sparkles className='w-6 h-6' />
-                  Book Your Experience
+                  Book Your Private Session
                   <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
                 </button>
               </motion.div>
             </div>
           </div>
-        </motion.div>
-
-        {/* Floating Action Elements */}
-        <motion.div
-          className='fixed bottom-8 right-8 z-50'
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 2, duration: 0.5 }}
-        >
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white p-4 rounded-full shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 hover:scale-110'
-          >
-            <Heart className='w-6 h-6 group-hover:scale-110 transition-transform' />
-          </button>
         </motion.div>
 
         {/* Mindfulness Quote Banner */}
@@ -764,13 +723,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
           variants={fadeInUp}
         >
           <div className='bg-gradient-to-r from-emerald-100 via-teal-50 to-cyan-100 rounded-3xl p-12 text-center relative overflow-hidden'>
-            <motion.div
-              className='absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500'
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 2, delay: 0.5 }}
-            />
-
             <Quote className='w-12 h-12 text-emerald-500 mx-auto mb-6' />
             <blockquote className='text-3xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
               "Yoga is not about touching your toes. It is about what you learn
@@ -781,53 +733,66 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
             </cite>
           </div>
         </motion.div>
+      </div>
 
-        {/* Health & Safety Information */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='bg-amber-50 border border-amber-200 rounded-3xl p-8'>
-            <div className='flex items-start'>
-              <Shield className='w-8 h-8 text-amber-600 mr-4 flex-shrink-0 mt-1' />
-              <div>
-                <h3 className='font-bold text-amber-800 mb-4 text-xl'>
-                  Health & Wellness Guidelines
-                </h3>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6 text-amber-700'>
-                  <div>
-                    <h4 className='font-semibold mb-2'>Before Your Session:</h4>
-                    <ul className='space-y-1 text-sm'>
-                      <li>
-                        • Inform instructor of any injuries or limitations
-                      </li>
-                      <li>• Avoid heavy meals 2-3 hours before practice</li>
-                      <li>• Stay hydrated throughout the day</li>
-                      <li>• Wear comfortable, breathable clothing</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className='font-semibold mb-2'>During Practice:</h4>
-                    <ul className='space-y-1 text-sm'>
-                      <li>• Listen to your body and honor its limits</li>
-                      <li>• Breathe deeply and stay present</li>
-                      <li>• Communicate with your instructor</li>
-                      <li>• Focus on your own practice, not others</li>
-                    </ul>
-                  </div>
+      {/* Health & Safety Information - Enhanced */}
+      <motion.div
+        className='px-4'
+        initial='hidden'
+        animate='visible'
+        variants={fadeInUp}
+      >
+        <div className='bg-amber-50 border border-amber-200 rounded-3xl p-8'>
+          <div className='flex items-start'>
+            <Shield className='w-8 h-8 text-amber-600 mr-4 flex-shrink-0 mt-1' />
+            <div className='flex-1'>
+              <h3 className='font-bold text-amber-800 mb-6 text-2xl'>
+                Health & Wellness Guidelines
+              </h3>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-8 text-amber-700'>
+                <div>
+                  <h4 className='font-semibold mb-3 text-lg'>
+                    Before Your Session:
+                  </h4>
+                  <ul className='space-y-2'>
+                    <li>• Inform instructor of any injuries or limitations</li>
+                    <li>• Avoid heavy meals 2-3 hours before practice</li>
+                    <li>• Stay hydrated throughout the day</li>
+                    <li>• Wear comfortable, breathable clothing</li>
+                  </ul>
                 </div>
-                <p className='text-amber-700 mt-4 text-sm'>
-                  <strong>Note:</strong> Please consult your healthcare provider
-                  before beginning any new exercise program, especially if you
-                  have medical conditions or concerns.
+                <div>
+                  <h4 className='font-semibold mb-3 text-lg'>
+                    During Practice:
+                  </h4>
+                  <ul className='space-y-2'>
+                    <li>• Listen to your body and honor its limits</li>
+                    <li>• Breathe deeply and stay present</li>
+                    <li>• Communicate with your instructor</li>
+                    <li>• Focus on your own practice, not others</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className='bg-amber-100 rounded-2xl p-6 mt-6'>
+                <h4 className='font-bold text-amber-800 mb-3'>DISCLAIMER</h4>
+                <p className='text-amber-700'>
+                  <strong>For your safety and peace of mind,</strong> we
+                  recommend consulting with your physician before beginning any
+                  new physical activity—especially if pregnant, recovering from
+                  an injury, or managing a health condition. Participation is at
+                  your own discretion.
+                </p>
+                <p className='text-amber-700 mt-3 italic'>
+                  <strong>Listen to your body.</strong>
+                  <br />
+                  This is your time. Your space. Your pace.
                 </p>
               </div>
             </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
       {/* Booking Modal */}
       {isModalOpen && (

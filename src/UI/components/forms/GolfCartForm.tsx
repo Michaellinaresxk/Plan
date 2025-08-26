@@ -96,7 +96,7 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     seats: 4,
     basePrice: 60,
     image:
-      'https://images.unsplash.com/photo-1551058622-5d7b4f0c6e6a?w=800&h=600&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756102920/14_l4wro8.jpg',
     features: [
       'Free delivery & pickup',
       '24/7 support included',
@@ -114,7 +114,7 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
     seats: 6,
     basePrice: 80,
     image:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756103011/IMG_3217_ep7kyr.jpg',
     features: [
       'Free delivery & pickup',
       '24/7 support included',
@@ -798,9 +798,9 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           icon={Car}
           onCancel={handleClose}
           showCloseButton={true}
-          gradientFrom='blue-800'
-          gradientVia='via-blue-700'
-          gradientTo='cyan-800'
+          gradientFrom='blue-500'
+          gradientVia='green-700'
+          gradientTo='blue-800'
         />
 
         {/* Form Body */}
@@ -1044,7 +1044,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
         </div>
 
         {/* Footer with Price and Actions */}
-        <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
+        <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
           <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
             <span className='text-gray-400 text-sm uppercase tracking-wide'>
               Total Price

@@ -317,7 +317,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
           </div>
 
           <div className='relative'>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+            <div className='grid grid-cols-2 md:grid-cols-3 gap-2 mb-10'>
               {PARTY_MOMENTS.map((moment, index) => (
                 <motion.div
                   key={index}
@@ -406,7 +406,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
         {/* Pricing & CTA */}
         <motion.div
-          className='px-4 mt-20'
+          className='px-2 mt-20'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
@@ -424,7 +424,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
             <div className='relative z-10 p-16 text-center text-white'>
               <motion.h2
-                className='text-5xl md:text-6xl font-bold mb-6'
+                className='text-4xl md:text-5xl font-bold mb-6'
                 variants={fadeInUp}
               >
                 Let's Get This Party Started!
@@ -460,7 +460,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
               </motion.div>
 
               <motion.div
-                className='grid grid-cols-1 md:grid-cols-4 gap-6 text-center'
+                className='grid grid-cols-2 md:grid-cols-4 gap-6 text-center'
                 variants={stagger}
               >
                 <motion.div
@@ -635,7 +635,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
 
         {/* Inspirational Quote */}
         <motion.div
-          className='px-4'
+          className='px-2'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
