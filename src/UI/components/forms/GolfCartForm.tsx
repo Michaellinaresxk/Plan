@@ -5,24 +5,14 @@ import { useReservation } from '@/context/BookingContext';
 import { Service } from '@/types/type';
 import {
   Calendar,
-  MapPin,
-  Clock,
   AlertTriangle,
   Info,
   Car,
-  Users,
-  Battery,
-  Shield,
-  Star,
   Check,
   FileText,
-  Truck,
   CheckCircle,
-  Phone,
-  CreditCard,
   Plus,
   Minus,
-  ShoppingCart,
 } from 'lucide-react';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
@@ -728,7 +718,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
       </div>
 
       {/* Confirmations */}
-      <div className='space-y-3'>
+      <div className='px-2 space-y-3 mt-10 mb-10'>
         <div className='flex items-start'>
           <input
             type='checkbox'
@@ -804,7 +794,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
         />
 
         {/* Form Body */}
-        <div className='p-8 space-y-8'>
+        <div className='mt-10 p-2 space-y-8'>
           {/* Golf Cart Selection */}
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
@@ -905,7 +895,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
             </h3>
 
             <div>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
+              <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3'>
                 {DELIVERY_LOCATIONS.map((location) => (
                   <div
                     key={location.id}
@@ -934,7 +924,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                           <Check className='w-3 h-3 text-white' />
                         )}
                       </div>
-                      <span className='font-medium text-gray-800'>
+                      <span className='text-xl-1 text-xl-2  text-gray-800'>
                         {location.name}
                       </span>
                     </div>

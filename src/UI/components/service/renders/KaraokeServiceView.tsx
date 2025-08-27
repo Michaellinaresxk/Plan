@@ -422,15 +422,15 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
               <div className='absolute inset-0 bg-gradient-to-r from-purple-900/90 via-pink-800/80 to-blue-900/90' />
             </div>
 
-            <div className='relative z-10 p-16 text-center text-white'>
+            <div className='relative z-10 mt-10 px-5 text-center text-white'>
               <motion.h2
-                className='text-4xl md:text-5xl font-bold mb-6'
+                className='text-2xl text md:text-5xl font-bold mb-6'
                 variants={fadeInUp}
               >
                 Let's Get This Party Started!
               </motion.h2>
               <motion.p
-                className='text-2xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
+                className='md:text-2xl  opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
                 variants={fadeInUp}
               >
                 Don't just have a party, create an experience! Book your
@@ -445,7 +445,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
                 <button
                   onClick={() => setIsModalOpen(true)}
                   disabled={isLoading}
-                  className='group bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
+                  className='group bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white px-12 py-5 rounded-2xl font-bold text-xl-1 md:text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
                 >
                   {isLoading ? (
                     <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-white' />
@@ -460,7 +460,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
               </motion.div>
 
               <motion.div
-                className='grid grid-cols-2 md:grid-cols-4 gap-6 text-center'
+                className='grid grid-cols-2 md:grid-cols-4 gap-6 text-center mb-10'
                 variants={stagger}
               >
                 <motion.div
@@ -514,7 +514,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
           variants={fadeInUp}
         >
           <div className='text-center mb-16'>
-            <h2 className='text-5xl font-bold text-gray-800 mb-6'>
+            <h2 className='text-2xl md:text-5xl font-bold text-gray-800 mb-6'>
               Party Success Stories
             </h2>
             <div className='flex items-center justify-center gap-3 text-2xl text-gray-600'>
@@ -526,7 +526,9 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
                   />
                 ))}
               </div>
-              <span>{averageRating.toFixed(1)} stars from amazing parties</span>
+              <span className='text-xl md:text-3xl text-gray-800 mb-6'>
+                {averageRating.toFixed(1)} stars from amazing parties
+              </span>
             </div>
           </div>
 
@@ -585,8 +587,8 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
           animate='visible'
           variants={fadeInUp}
         >
-          <div className='bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl p-12'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-12 text-center'>
+          <div className='bg-gradient-to-r mt-10 from-purple-50 to-pink-50 rounded-3xl p-2 mb-10'>
+            <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-12 text-center'>
               Frequently Asked Questions
             </h2>
 
@@ -649,7 +651,7 @@ const KaraokeServiceView: React.FC<KaraokeServiceViewProps> = ({
             />
 
             <Quote className='w-12 h-12 text-purple-500 mx-auto mb-6' />
-            <blockquote className='text-3xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
+            <blockquote className='text-2xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
               "Life is like karaoke - it's not about having a perfect voice,
               it's about having the courage to sing your heart out!"
             </blockquote>

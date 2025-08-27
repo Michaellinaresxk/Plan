@@ -940,7 +940,7 @@ const BannersSection: React.FC<{
 
   return (
     <motion.section
-      className='py-20 px-6'
+      className='py-20 px-2'
       initial='hidden'
       whileInView='visible'
       viewport={{ once: true }}
@@ -991,7 +991,7 @@ const SaonaIslandTourServiceView: React.FC = ({ service }) => {
       <IslandHero onBookClick={handleBookNow} />
 
       {/* Main content - Full width responsive */}
-      <div className='w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12 mx-auto'>
+      <div className='w-full px-2 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12 mx-auto'>
         {/* Compact Gallery */}
         <SimpleGallery />
 
