@@ -332,7 +332,7 @@ const TripOptionsSection: React.FC<{
   t: any;
 }> = ({ tripOptions, isPremium, formatTripOptionName, onBookClick, t }) => (
   <motion.section
-    className='py-24 px-6'
+    className='py-24 px-2'
     initial='hidden'
     whileInView='visible'
     viewport={{ once: true }}
@@ -436,7 +436,7 @@ const TripOptionsSection: React.FC<{
 // Gallery Section - Responsive 4 photos, 2 columns on mobile
 const GallerySection: React.FC = () => (
   <motion.section
-    className='py-24 px-6'
+    className='px-2'
     initial='hidden'
     whileInView='visible'
     viewport={{ once: true }}
@@ -444,10 +444,10 @@ const GallerySection: React.FC = () => (
   >
     <div className='max-w-6xl mx-auto'>
       <motion.div variants={fadeInUp} className='text-center mb-16'>
-        <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+        <h2 className='text-2xl md:text-4xl font-bold text-gray-900 mb-4'>
           Our Transfer Experience
         </h2>
-        <p className='text-xl text-gray-600'>
+        <p className='text-xl-1 text-gray-600'>
           See what makes our airport transfer service exceptional
         </p>
       </motion.div>
@@ -689,13 +689,15 @@ const GoodToKnowSection: React.FC<{
   >
     <div className='max-w-6xl mx-auto'>
       <div className='text-center mb-16'>
-        <h2 className='text-4xl font-bold text-gray-900 mb-4'>Good to Know</h2>
-        <p className='text-xl text-gray-600'>
+        <h2 className='text-2xl md:text-4xl font-bold text-gray-900 mb-4'>
+          Good to Know
+        </h2>
+        <p className='text-xl-1 md:text-xl-2 px-5 text-gray-600'>
           Essential information about your transfer service
         </p>
       </div>
 
-      <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+      <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2'>
         <div className='bg-white p-6 rounded-xl shadow-lg text-center'>
           <Plane className='w-12 h-12 text-blue-600 mx-auto mb-4' />
           <h3 className='font-bold text-gray-900 mb-2'>Flight Tracking</h3>

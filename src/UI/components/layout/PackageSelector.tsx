@@ -1,22 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   CheckCircle,
   Star,
-  PlaneTakeoff,
-  Sailboat,
-  ChefHat,
-  Users,
   Crown,
   Diamond,
-  Sparkles,
   ArrowRight,
-  Award,
   Gem,
   Zap,
-  Globe,
   Anchor,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -392,7 +385,7 @@ const PackageSelector = () => {
   return (
     <section
       id='packages'
-      className='py-32 bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden'
+      className='py-20 bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden'
     >
       {/* Background Effects */}
       <div className='absolute inset-0'>
@@ -452,7 +445,7 @@ const PackageSelector = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className='text-5xl md:text-7xl font-thin text-white mb-8 tracking-tight'
+            className='text-3xl md:text-7xl font-thin text-white mb-8 tracking-tight'
           >
             {t('home.packages.title')}
           </motion.h2>
@@ -462,7 +455,7 @@ const PackageSelector = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.7, duration: 0.8 }}
-            className='text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed'
+            className='text-xl md:text-x2 text-gray-300 max-w-3xl mx-auto leading-relaxed'
           >
             {t('home.packages.subtitle')}
           </motion.p>

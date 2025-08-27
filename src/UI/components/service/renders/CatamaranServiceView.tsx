@@ -328,7 +328,7 @@ const ExperienceGallery: React.FC = () => {
   ];
 
   return (
-    <section className='bg-white rounded-3xl p-10 shadow-xl'>
+    <section className='bg-white rounded-3xl p-2 shadow-xl'>
       <div className='text-center mb-12'>
         <h2 className='text-4xl font-bold text-slate-800 mb-4'>
           Experience Gallery
@@ -338,7 +338,7 @@ const ExperienceGallery: React.FC = () => {
         </p>
       </div>
 
-      <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {experiences.map((experience, index) => (
           <motion.div
             key={index}
@@ -377,9 +377,9 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
   onSelect,
 }) => {
   return (
-    <section className='bg-white rounded-3xl p-10 shadow-xl'>
+    <section className='bg-white rounded-3xl p-4 shadow-xl'>
       <div className='text-center mb-12'>
-        <h2 className='text-4xl font-bold text-slate-800 mb-4'>
+        <h2 className='text-2xl  md:text-4xl mt-5 font-bold text-slate-800 mb-4'>
           Choose Your Departure Time
         </h2>
         <p className='text-xl text-slate-600'>
@@ -485,14 +485,14 @@ const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
       />
 
       {/* Content sections with proper spacing */}
-      <div className='max-w-7xl mx-auto px-2 py-16 space-y-16'>
+      <div className='max-w-7xl mx-auto px-2 py-10 space-y-16'>
         {/* Catamaran Selection */}
-        <section className='bg-white rounded-3xl p-10 shadow-xl'>
+        <section className='bg-white rounded-3xl p-2 shadow-xl'>
           <div className='text-center mb-12'>
-            <h2 className='text-4xl font-bold text-slate-800 mb-4'>
+            <h2 className='text-2xl md:text-4xl font-bold text-slate-800 mb-4'>
               Choose Your Adventure
             </h2>
-            <p className='text-xl text-slate-600'>
+            <p className='text-xl-1 text-xl text-slate-600'>
               Select the perfect catamaran experience for your group
             </p>
           </div>
@@ -591,12 +591,12 @@ const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
           />
           <div className='absolute inset-0 bg-gradient-to-r from-slate-900/80 to-blue-900/60' />
 
-          <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
+          <div className='absolute inset-0 flex items-center justify-center text-center text-white py-5'>
             <div className='max-w-3xl'>
               <motion.h2
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                className='text-5xl font-bold mb-6'
+                className='text-3xl md:text-4xl font-bold mb-6 p-2'
               >
                 Ready for Paradise?
               </motion.h2>
@@ -604,7 +604,7 @@ const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className='text-xl text-white/90 mb-8'
+                className='text-xl-1 px-2 md:text-4xl  text-white/90 mb-8'
               >
                 Book your catamaran adventure today and create memories that
                 will last a lifetime. Limited spots available!

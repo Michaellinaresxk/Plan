@@ -317,7 +317,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                 <div className='bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden'>
                   {/* Hero Image with centered text */}
                   <div
-                    className={`relative h-64 bg-gradient-to-br ${style.gradient} overflow-hidden`}
+                    className={`relative h-30 :h-50 bg-gradient-to-br ${style.gradient} overflow-hidden`}
                   >
                     {/* Background pattern */}
                     <div className='absolute inset-0 bg-gradient-to-br from-white/10 to-transparent'></div>
@@ -325,7 +325,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
                     {/* Centered name */}
                     <div className='absolute inset-0 flex items-center justify-center'>
                       <div className='text-center'>
-                        <h3 className='text-3xl font-light text-gray-700 mb-2'>
+                        <h3 className='text-1xl md:text-2xl font-light text-gray-700 mb-2'>
                           {style.name}
                         </h3>
                         <div className='w-12 h-px bg-gray-500 mx-auto'></div>
@@ -602,7 +602,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               </p>
             </div>
 
-            <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
               <div className='text-center'>
                 <div className='w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4'>
                   <Clock className='w-8 h-8 text-emerald-600' />
