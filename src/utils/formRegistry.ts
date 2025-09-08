@@ -125,7 +125,7 @@ const createStandardPropsMapper = (
   };
 };
 
-// ✅ FIXED: Airport Transfer Form - Parámetros corregidos
+// ✅ Airport Transfer Form
 registerForm({
   name: 'AirportTransferForm',
   component: () => import('@/UI/components/forms/AirportTransferForm'),
@@ -137,6 +137,20 @@ registerForm({
     'transport',
   ],
   propsMapper: createStandardPropsMapper('AirportTransferForm'),
+});
+
+// ✅  Point to point Transfer Form
+registerForm({
+  name: 'PointToPointTransferForm',
+  component: () => import('@/UI/components/forms/PointToPointTransferForm'),
+  servicePatterns: [
+    'point-to-point-transfers',
+    'luxe-arrival',
+    'airport',
+    'transfer',
+    'transport',
+  ],
+  propsMapper: createStandardPropsMapper('PointToPointTransferForm'),
 });
 
 // ✅ HorseBack Riding Form
@@ -293,11 +307,19 @@ registerForm({
   propsMapper: createStandardPropsMapper('KaraokeForm'),
 });
 
+// ✅ Lux Catamaran Form
+registerForm({
+  name: 'LuxCatamaranForm',
+  component: () => import('@/UI/components/forms/LuxCatamaranForm'),
+  servicePatterns: ['private-catamaran'],
+  propsMapper: createStandardPropsMapper('LuxCatamaranForm'),
+});
+
 // ✅ Catamaran Form
 registerForm({
   name: 'CatamaranForm',
   component: () => import('@/UI/components/forms/CatamaranForm'),
-  servicePatterns: ['private-catamaran'],
+  servicePatterns: ['catamaran'],
   propsMapper: createStandardPropsMapper('CatamaranForm'),
 });
 

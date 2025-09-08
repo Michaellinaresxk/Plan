@@ -561,10 +561,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       'services.saonaTour.itinerary.6', // Drop-off at villa
     ],
     specialRender: 'special',
-    relatedServices: [
-      SERVICE_IDS.PRIVATE_CATAMARAN,
-      SERVICE_IDS.DEEP_SEA_FISHING,
-    ],
+    relatedServices: [SERVICE_IDS.LUX_CATAMARAN, SERVICE_IDS.DEEP_SEA_FISHING],
     tags: ['tour', 'island', 'boat', 'beach', 'swimming'],
     metaData: {
       pickupTime: '7:30 AM',
@@ -655,7 +652,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     titleKey: 'services.standard.personalTraining.name',
     descriptionKey: 'services.standard.personalTraining.short',
     fullDescriptionKey: 'services.standard.personalTraining.full',
-    basePrice: 80,
+    basePrice: 30,
     priceUnit: 'services.priceUnits.perSession',
     category: 'wellness',
     packageType: ['standard'],
@@ -871,6 +868,145 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       flightTracking: true,
       childSeats: true,
       providerChoice: true,
+      providers: ['Provider 1', 'Provider 2'],
+    },
+  },
+
+  // POINT_TO_POINT_TRANSFER
+  [SERVICE_IDS.POINT_TO_POINT_TRANSFER]: {
+    id: SERVICE_IDS.POINT_TO_POINT_TRANSFER,
+    titleKey: 'services.standard.pointToPointTransfer.name',
+    descriptionKey: 'services.standard.pointToPointTransfer.description',
+    fullDescriptionKey: 'services.standard.pointToPointTransfer.full',
+    basePrice: 25, // Starting price for short routes
+    priceUnit: 'services.priceUnits.perTrip',
+    category: 'transportation',
+    packageType: ['standard'],
+    imageUrl:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756210030/4_f3ola3.jpg',
+    duration: 1, // Variable duration
+    specialRender: 'pointToPoint',
+    options: {
+      vehicleType: {
+        id: 'vehicleType',
+        nameKey: 'services.pointToPointTransfer.options.vehicleType.title',
+        subOptions: {
+          suv: {
+            id: 'suv',
+            nameKey:
+              'services.pointToPointTransfer.options.vehicleType.options.suv',
+            price: 25, // +$25
+            descriptionKey:
+              'services.pointToPointTransfer.options.vehicleType.options.suvDesc',
+            capacityInfo: {
+              min: 1,
+              max: 6,
+              suitcases: 4,
+            },
+          },
+          van: {
+            id: 'van',
+            nameKey:
+              'services.pointToPointTransfer.options.vehicleType.options.van',
+            price: 50, // +$50
+            descriptionKey:
+              'services.pointToPointTransfer.options.vehicleType.options.vanDesc',
+            capacityInfo: {
+              min: 7,
+              max: 15,
+              suitcases: 8,
+            },
+          },
+          two_suvs: {
+            id: 'two_suvs',
+            nameKey:
+              'services.pointToPointTransfer.options.vehicleType.options.twoSuvs',
+            price: 75, // +$75
+            descriptionKey:
+              'services.pointToPointTransfer.options.vehicleType.options.twoSuvsDesc',
+            capacityInfo: {
+              min: 10,
+              max: 12,
+              suitcases: 8,
+              features: ['flexibility', 'comfort'],
+            },
+          },
+        },
+      },
+      isRoundTrip: {
+        id: 'isRoundTrip',
+        nameKey: 'services.pointToPointTransfer.options.isRoundTrip.title',
+        subOptions: {
+          oneWay: {
+            id: 'oneWay',
+            nameKey:
+              'services.pointToPointTransfer.options.isRoundTrip.options.oneWay',
+            price: 0,
+          },
+          roundTrip: {
+            id: 'roundTrip',
+            nameKey:
+              'services.pointToPointTransfer.options.isRoundTrip.options.roundTrip',
+            price: 'multiply_1.8', // 80% of double price
+          },
+        },
+      },
+      routeType: {
+        id: 'routeType',
+        nameKey: 'services.pointToPointTransfer.options.routeType.title',
+        subOptions: {
+          local: {
+            id: 'local',
+            nameKey:
+              'services.pointToPointTransfer.options.routeType.options.local',
+            price: 0,
+            description: 'Within Punta Cana/Bavaro area (15-30 min)',
+          },
+          regional: {
+            id: 'regional',
+            nameKey:
+              'services.pointToPointTransfer.options.routeType.options.regional',
+            price: 'zone_based',
+            description: 'Between different resort areas (30-90 min)',
+          },
+          longDistance: {
+            id: 'longDistance',
+            nameKey:
+              'services.pointToPointTransfer.options.routeType.options.longDistance',
+            price: 'zone_based',
+            description: 'To Santo Domingo, La Romana, or Samaná (2-4 hours)',
+          },
+        },
+      },
+    },
+    includes: [
+      'services.pointToPointTransfer.includes.1', // Professional driver
+      'services.pointToPointTransfer.includes.2', // Door-to-door service
+      'services.pointToPointTransfer.includes.3', // Air-conditioned vehicle
+      'services.pointToPointTransfer.includes.4', // Luggage assistance
+      'services.pointToPointTransfer.includes.5', // Route planning
+      'services.pointToPointTransfer.includes.6', // Real-time tracking
+    ],
+    notIncluded: [
+      'services.pointToPointTransfer.notIncluded.1', // Gratuity
+      'services.pointToPointTransfer.notIncluded.2', // Waiting time
+      'services.pointToPointTransfer.notIncluded.3', // Additional stops
+    ],
+    itinerary: [
+      'services.pointToPointTransfer.itinerary.1', // Driver arrives at pickup
+      'services.pointToPointTransfer.itinerary.2', // Assistance with luggage
+      'services.pointToPointTransfer.itinerary.3', // Comfortable journey
+      'services.pointToPointTransfer.itinerary.4', // Safe arrival
+    ],
+    relatedServices: [SERVICE_IDS.AIRPORT_TRANSFER, SERVICE_IDS.GOLF_CART],
+    tags: ['transport', 'point-to-point', 'private'],
+    metaData: {
+      travelTime: '15-45 min (zone dependent)',
+      availability: '24/7',
+      childSeats: true,
+      routePlanning: true,
+      realTimeTracking: true,
+      zoneBased: true,
       providers: ['Provider 1', 'Provider 2'],
     },
   },
@@ -1347,10 +1483,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       'services.luxeYacht.includes.4',
     ],
     notIncluded: ['services.luxeYacht.notIncluded.1'],
-    relatedServices: [
-      SERVICE_IDS.PRIVATE_CATAMARAN,
-      SERVICE_IDS.PRIVATE_FISHING,
-    ],
+    relatedServices: [SERVICE_IDS.LUX_CATAMARAN, SERVICE_IDS.PRIVATE_FISHING],
     tags: ['luxury', 'water', 'private'],
     metaData: {
       size: '50 Feet',
@@ -1445,8 +1578,84 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
-  [SERVICE_IDS.PRIVATE_CATAMARAN]: {
-    id: SERVICE_IDS.PRIVATE_CATAMARAN,
+  [SERVICE_IDS.LUX_CATAMARAN]: {
+    id: SERVICE_IDS.LUX_CATAMARAN,
+    titleKey: 'services.standard.privateCatamaran.name',
+    descriptionKey: 'services.standard.privateCatamaran.short',
+    fullDescriptionKey: 'services.standard.privateCatamaran.full',
+    basePrice: 450,
+    priceUnit: 'services.priceUnits.perTrip',
+    category: 'water-activities',
+    packageType: ['premium'],
+    imageUrl:
+      'https://moonshadow-tqc.com.au/wp-content/uploads/sites/5204/2022/01/MSTQC-Boats-slide-into-clear-waters.png?resize=360%2C240&zoom=2',
+    duration: 3,
+    bookingDuration: {
+      min: 3,
+      max: 6,
+      unit: 'hours',
+    },
+    options: {
+      catering: {
+        id: 'catering',
+        nameKey: 'services.privateCatamaran.options.catering.title',
+        subOptions: {
+          standard: {
+            id: 'standard',
+            nameKey:
+              'services.privateCatamaran.options.catering.options.standard',
+            price: 0,
+          },
+          premium: {
+            id: 'premium',
+            nameKey:
+              'services.privateCatamaran.options.catering.options.premium',
+            price: 150,
+          },
+        },
+      },
+      openBar: {
+        id: 'openBar',
+        nameKey: 'services.privateCatamaran.options.openBar.title',
+        subOptions: {
+          soft: {
+            id: 'soft',
+            nameKey: 'services.privateCatamaran.options.openBar.options.soft',
+            price: 0,
+          },
+          standard: {
+            id: 'standard',
+            nameKey:
+              'services.privateCatamaran.options.openBar.options.standard',
+            price: 100,
+          },
+          premium: {
+            id: 'premium',
+            nameKey:
+              'services.privateCatamaran.options.openBar.options.premium',
+            price: 200,
+          },
+        },
+      },
+    },
+    specialRender: 'special',
+    includes: [
+      'services.privateCatamaran.includes.1',
+      'services.privateCatamaran.includes.2',
+      'services.privateCatamaran.includes.3',
+    ],
+    relatedServices: [SERVICE_IDS.CATAMARAN, SERVICE_IDS.PRIVATE_YACHT],
+    tags: ['water', 'activity', 'group'],
+    metaData: {
+      capacity: '20 people',
+      waterSlide: true,
+      snorkelIncluded: true,
+      privateGroup: true,
+    },
+  },
+
+  [SERVICE_IDS.CATAMARAN]: {
+    id: SERVICE_IDS.CATAMARAN,
     titleKey: 'services.standard.privateCatamaran.name',
     descriptionKey: 'services.standard.privateCatamaran.short',
     fullDescriptionKey: 'services.standard.privateCatamaran.full',

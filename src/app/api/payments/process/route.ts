@@ -1,5 +1,6 @@
 // src/app/api/payments/process/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { reservationService } from '@/primary/Reservation/useCases';
 
 export async function POST(request: NextRequest) {
   console.log('🎯 Process Payment API called');
@@ -25,34 +26,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🔄 Creating reservation...');
+    console.log('📄 Creating reservation with service...');
 
-    // Create mock reservation (you can integrate your ReservationService later)
-    const reservation = {
-      bookingId: `booking_${Date.now()}_${Math.random()
-        .toString(36)
-        .substr(2, 9)}`,
+    // Usar el servicio real en lugar de mock
+    const reservation = await reservationService.createReservation({
       serviceId: reservationData.service.id,
       serviceName: reservationData.service.name,
       totalPrice: reservationData.totalPrice,
       clientName: reservationData.clientInfo.name,
       clientEmail: reservationData.clientInfo.email,
       clientPhone: reservationData.clientInfo.phone,
-      status: 'confirmed',
-      createdAt: new Date().toISOString(),
-      paymentMethodId,
       formData: reservationData.formData || {},
-      properties: {
-        serviceId: reservationData.service.id,
-        serviceName: reservationData.service.name,
-        totalPrice: reservationData.totalPrice,
-        clientName: reservationData.clientInfo.name,
-        clientEmail: reservationData.clientInfo.email,
-        clientPhone: reservationData.clientInfo.phone,
-        status: 'confirmed',
-        formData: reservationData.formData || {},
-      },
-    };
+      notes: reservationData.notes,
+    });
 
     console.log('✅ Reservation created:', reservation.bookingId);
 
@@ -60,7 +46,14 @@ export async function POST(request: NextRequest) {
       success: true,
       reservation: {
         bookingId: reservation.bookingId,
-        ...reservation.properties,
+        serviceId: reservation.serviceId,
+        serviceName: reservation.serviceName,
+        totalPrice: reservation.totalPrice,
+        clientName: reservation.clientName,
+        clientEmail: reservation.clientEmail,
+        clientPhone: reservation.clientPhone,
+        status: reservation.status,
+        formData: reservation.formData,
       },
     });
   } catch (error: any) {
@@ -73,12 +66,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  return NextResponse.json({
-    message: 'Process Payment API is working',
-    timestamp: new Date().toISOString(),
-    methods: ['POST'],
-  });
 }

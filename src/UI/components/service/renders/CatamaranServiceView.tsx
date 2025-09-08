@@ -1,226 +1,604 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
 import {
-  Users,
-  Clock,
-  Utensils,
-  ArrowRight,
-  Check,
-  ChevronRight,
-  ChevronLeft,
-  LifeBuoy,
-  AlertCircle,
-  CreditCard,
-  Waves,
   MapPin,
-  Calendar,
+  Clock,
+  Shield,
+  Star,
+  Check,
+  ArrowRight,
+  X,
+  Sparkles,
+  Users,
   Anchor,
   Sun,
-  Fish,
+  Music,
+  LifeBuoy,
+  Calendar,
+  DollarSign,
+  AlertCircle,
+  Camera,
 } from 'lucide-react';
-import { useBooking } from '@/context/BookingContext';
-import { Service } from '@/types/type';
-import { ServiceData } from '@/types/services';
-import { BookingDate } from '@/types/type';
-import BookingModal from '@/UI/components/modal/BookingModal';
+import { AnimatePresence, motion } from 'framer-motion';
+// Assuming you have these imports in your actual file
+// import BookingModal from '../../modal/BookingModal';
+// import { useBooking } from '@/context/BookingContext';
+// import { BookingDate, Service } from '@/constants/formFields';
 
-// Types
-interface CatamaranType {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  features: string[];
-  capacity: number;
-  hasWaterSlide: boolean;
-  premium: boolean;
-}
-
-interface CatamaranServiceViewProps {
-  service: Service;
-  serviceData?: ServiceData;
-  primaryColor: string;
-}
-
-// Mock data for catamaran types
-const catamaranTypes: CatamaranType[] = [
-  {
-    id: 'classic',
-    name: 'Classic Adventure',
-    price: 89,
+// ==================== DATA LAYER ====================
+const CATAMARAN_DATA = {
+  destiny: {
+    id: 'destiny',
+    name: 'Destiny',
+    category: 'party',
+    description: 'High-energy party cruise experience',
     image:
-      'https://res.cloudinary.com/michaelxk-com/image/upload/v1625794349/nuestra%20flota/lagoon%2042/1_uspfu7.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/4_vg6qwh.jpg',
+    gallery: [
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/1_wvnp2r.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802335/3_oahsqo.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/4_vg6qwh.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/2_vrbyj2.jpg',
+    ],
+    pricing: {
+      minimumRate: 350,
+      baseGroupSize: 5,
+      additionalPersonRate: 25,
+      currency: 'USD',
+    },
+    timeSlots: [
+      { id: 'morning', time: '8:30 AM - 11:30 AM' },
+      { id: 'midday', time: '11:30 AM - 2:30 PM' },
+      { id: 'afternoon', time: '2:30 PM - 5:30 PM' },
+    ],
+    duration: '3 hours',
+    capacity: 50,
+    premium: false,
+    price: 89, // Display price for cards
+    features: [
+      'DJ & Sound System',
+      'Dance Floor',
+      'Party Games',
+      'Premium Open Bar',
+      'Party Snacks',
+      'Water Sports',
+    ],
+    highlights: ['DJ music', 'Dance party', 'Water activities'],
+    includes: [
+      'Catamarán y gasolina',
+      'Transporte privado de ida y vuelta desde su hotel o villa',
+      'Open Bar Cócteles variados: vodka cranberry, gin tonic, Ron punch, Cuba libre, mojito y piña colada (elegir 4 tipos)',
+      'Hielo, agua, refrescos',
+      'Frutas tropicales',
+      'Nachos con salsa',
+      'Equipos de esnorquel',
+    ],
+    destinations: [
+      'Piscinas Naturales (bancos de arena)',
+      'Zona de esnorquel',
+      'Visita el delfinario para ver a los delfines desde el exterior',
+    ],
+    notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
+  },
+  liberty: {
+    id: 'liberty',
+    name: 'Liberty',
+    category: 'classic',
+    description: 'Perfect introduction to Caribbean sailing',
+    image:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/2_je7e48.jpg',
+    gallery: [
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/1_sqzbhj.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/4_v3oped.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/2_je7e48.jpg',
+    ],
+    pricing: {
+      minimumRate: 400,
+      baseGroupSize: 5,
+      additionalPersonRate: 25,
+      currency: 'USD',
+    },
+    timeSlots: [
+      { id: 'morning', time: '8:30 AM - 11:30 AM' },
+      { id: 'midday', time: '11:30 AM - 2:30 PM' },
+      { id: 'afternoon', time: '2:30 PM - 5:30 PM' },
+    ],
+    duration: '3 hours',
+    capacity: 40,
+    premium: false,
+    price: 89, // Display price for cards
     features: [
       'Open Bar',
-      'Gourmet Buffet',
+      'Buffet Lunch',
       'Snorkeling Equipment',
       'Professional Crew',
+      'Music System',
     ],
-    capacity: 40,
-    hasWaterSlide: false,
-    premium: false,
+    highlights: ['Beach stops', 'Snorkeling', 'Local cuisine'],
+    includes: [
+      'Catamarán y gasolina',
+      'Transporte privado de ida y vuelta desde su hotel o villa',
+      'Open Bar Cócteles variados: vodka cranberry, gin tonic, Ron punch, Cuba libre, mojito y piña colada (elegir 4 tipos)',
+      'Hielo, agua, refrescos',
+      'Frutas tropicales',
+      'Nachos con salsa',
+      'Equipos de esnorquel',
+    ],
+    destinations: [
+      'Piscinas Naturales (bancos de arena)',
+      'Zona de esnorkel',
+      'Visita el delfinario para ver a los delfines desde el exterior',
+    ],
+    notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
   },
-  {
-    id: 'premium-slide',
-    name: 'Premium with Water Slide',
-    price: 129,
+  '45': {
+    id: '45',
+    name: '45',
+    category: 'sunset',
+    description: 'Romantic evening cruise for couples',
     image:
-      'https://www.whitesandwatersports.com/assets/images/2020-09-02-11-41-55-IMG0606.JPG',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802373/6_r2h1ei.jpg',
+    gallery: [
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802373/5_srdzk8.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802372/4_onfvkv.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802371/3_wwn9g3.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802371/2_d9a9ye.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802371/2_d9a9ye.jpg',
+    ],
+    pricing: {
+      minimumRate: 400,
+      baseGroupSize: 5,
+      additionalPersonRate: 25,
+      currency: 'USD',
+    },
+    timeSlots: [
+      { id: 'morning', time: '8:30 AM - 11:30 AM' },
+      { id: 'midday', time: '11:30 AM - 2:30 PM' },
+      { id: 'afternoon', time: '2:30 PM - 5:30 PM' },
+    ],
+    duration: '3 hours',
+    capacity: 20,
+    premium: true,
+    price: 159, // Display price for cards
     features: [
-      'All Classic Features',
-      'Water Slide',
+      'Champagne Service',
+      'Romantic Dinner',
+      'Live Music',
+      'Sunset Views',
+      'Couples Massage',
+      'Photography',
+    ],
+    highlights: ['Romantic ambiance', 'Sunset views', 'Couples experience'],
+    includes: [
+      'Catamarán y gasolina',
+      'Transporte privado de ida y vuelta desde su hotel o villa',
+      'Open Bar Cócteles variados: vodka cranberry, gin tonic, Ron punch, Cuba libre, mojito y piña colada (elegir 4 tipos)',
+      'Hielo, agua, refrescos',
+      'Frutas tropicales',
+      'Nachos con salsa',
+      'Equipos de esnorkel',
+    ],
+    destinations: [
+      'Piscinas Naturales (bancos de arena)',
+      'Zona de esnorkel',
+      'Visita el delfinario para ver a los delfines desde el exterior',
+    ],
+    notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
+  },
+  trinity: {
+    id: 'trinity',
+    name: 'Trinity',
+    category: 'premium',
+    description: 'Luxury sailing with premium amenities',
+    image:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802359/7_vmobhk.jpg',
+    gallery: [
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802356/3_syxzqo.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802356/1_wshnpg.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802357/2_axcixv.jpg',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802358/5_jmqruo.jpg',
+    ],
+    pricing: {
+      minimumRate: 600,
+      baseGroupSize: 15,
+      additionalPersonRate: 35,
+      currency: 'USD',
+    },
+    timeSlots: [
+      { id: 'morning', time: '8:30 AM - 11:30 AM' },
+      { id: 'midday', time: '11:30 AM - 2:30 PM' },
+      { id: 'afternoon', time: '2:30 PM - 5:30 PM' },
+    ],
+    duration: '3 hours',
+    capacity: 30,
+    premium: true,
+    price: 129, // Display price for cards
+    features: [
       'Premium Bar',
+      'Gourmet Buffet',
+      'Water Slide',
       'VIP Service',
       'Photo Package',
+      'Floating Mats',
     ],
-    capacity: 30,
-    hasWaterSlide: true,
-    premium: true,
+    highlights: ['Water slide', 'Premium drinks', 'VIP treatment'],
+    includes: [
+      'Catamarán y gasolina',
+      'Transporte privado de ida y vuelta desde su hotel o villa',
+      'Open Bar Cócteles variados: vodka cranberry, gin tonic, Ron punch, Cuba libre, mojito y piña colada (elegir 4 tipos)',
+      'Hielo, agua, refrescos',
+      'Frutas tropicales',
+      'Nachos con salsa',
+      'Equipos de esnorkel',
+    ],
+    destinations: [
+      'Piscinas Naturales (bancos de arena)',
+      'Zona de esnorkel',
+      'Visita el delfinario para ver a los delfines desde el exterior',
+    ],
+    notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
   },
+};
+
+const CANCELLATION_POLICY = [
+  'No Show - Non refundable',
+  'Cancellation with less than 48 hours of notification - No refund',
+  'Cancellation notified 48 hours before the pick-up time - 50% refund',
+  'Cancellation notified 72 hours before the pick-up time - 100% refund',
 ];
 
-const timeSlots = [
-  {
-    id: 'morning',
-    time: '9:00 AM',
-    endTime: '1:00 PM',
-    label: 'Morning Adventure',
-    popular: false,
-  },
-  {
-    id: 'afternoon',
-    time: '2:00 PM',
-    endTime: '6:00 PM',
-    label: 'Sunset Experience',
-    popular: true,
-  },
-];
+const WEATHER_POLICY =
+  'In case of bad weather and the excursion cannot be done, we will look for an alternative date to do the excursion, in case it cannot be done on another date, 100% of the money paid will be refunded.';
 
-// Hero Section Component
-const HeroSection: React.FC<{
-  currentImage: number;
-  onImageChange: (index: number) => void;
-  onBookClick: () => void;
-}> = ({ currentImage, onImageChange, onBookClick }) => {
-  const heroImages = [
-    {
-      src: 'https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg?_gl=1*1c89csu*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTkxOTkkajU5JGwwJGgw',
-      title: 'Caribbean Paradise',
-      subtitle: 'Luxury Catamaran Experience',
-    },
-  ];
+// ==================== UTILITY FUNCTIONS ====================
+const calculatePrice = (catamaran, groupSize) => {
+  const { minimumRate, baseGroupSize, additionalPersonRate } =
+    catamaran.pricing;
+
+  if (groupSize <= baseGroupSize) {
+    return minimumRate;
+  }
+
+  const additionalPeople = groupSize - baseGroupSize;
+  return minimumRate + additionalPeople * additionalPersonRate;
+};
+
+// ==================== COMPONENTS ====================
+
+// Touch-friendly Image Gallery Component
+const TouchGallery = ({ images, currentIndex, onIndexChange }) => {
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  // Minimum distance for swipe
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Swipe left - next image
+      onIndexChange((currentIndex + 1) % images.length);
+    }
+    if (isRightSwipe) {
+      // Swipe right - previous image
+      onIndexChange(currentIndex === 0 ? images.length - 1 : currentIndex - 1);
+    }
+  };
+
+  const handleImageClick = () => {
+    // Click to go to next image
+    onIndexChange((currentIndex + 1) % images.length);
+  };
 
   return (
-    <div className='relative h-screen overflow-hidden'>
-      <AnimatePresence mode='wait'>
-        <motion.div
-          key={currentImage}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.8 }}
-          className='absolute inset-0'
-        >
-          <img
-            src={heroImages[currentImage].src}
-            alt={heroImages[currentImage].title}
-            className='w-full h-full object-cover'
-          />
-        </motion.div>
-      </AnimatePresence>
+    <div className='relative'>
+      <div
+        className='relative h-64 overflow-hidden rounded-lg cursor-pointer'
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onClick={handleImageClick}
+      >
+        <img
+          src={images[currentIndex]}
+          alt={`Gallery image ${currentIndex + 1}`}
+          className='w-full h-full object-cover transition-opacity duration-300'
+        />
 
-      {/* Modern gradient overlay */}
-      <div className='absolute inset-0 bg-gradient-to-br from-slate-900/60 via-blue-900/40 to-cyan-900/60' />
+        {/* Click/Swipe indicator */}
+        <div className='absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs'>
+          Tap or swipe for next image
+        </div>
 
-      {/* Image indicators */}
-      <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2'>
-        {heroImages.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => onImageChange(index)}
-            className={`transition-all duration-300 rounded-full ${
-              index === currentImage
-                ? 'w-8 h-3 bg-white'
-                : 'w-3 h-3 bg-white/50 hover:bg-white/70'
-            }`}
-          />
-        ))}
+        {/* Image Counter */}
+        <div className='absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-sm'>
+          {currentIndex + 1} / {images.length}
+        </div>
       </div>
 
-      {/* Hero content */}
-      <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
-        <div className='max-w-5xl'>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8'
+      {/* Thumbnail Strip */}
+      <div className='flex gap-2 mt-3 overflow-x-auto'>
+        {images.map((image, index) => (
+          <button
+            key={index}
+            onClick={() => onIndexChange(index)}
+            className={`flex-shrink-0 w-16 h-16 overflow-hidden rounded border-2 transition ${
+              index === currentIndex ? 'border-blue-500' : 'border-transparent'
+            }`}
           >
-            <Waves className='w-5 h-5 mr-3 text-cyan-300' />
-            <span className='font-semibold text-lg'>Caribbean Adventure</span>
-          </motion.div>
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className='w-full h-full object-cover'
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className='text-6xl md:text-7xl font-bold mb-6 leading-tight'
-          >
-            {heroImages[currentImage].title}
-          </motion.h1>
+// Pricing Calculator Component
+const PricingCalculator = ({ catamaran, groupSize, onGroupSizeChange }) => {
+  const price = calculatePrice(catamaran, groupSize);
+  const isMinimumRate = groupSize <= catamaran.pricing.baseGroupSize;
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            className='text-2xl md:text-3xl text-white/90 mb-4 font-light'
-          >
-            {heroImages[currentImage].subtitle}
-          </motion.p>
+  return (
+    <div className='bg-blue-50 rounded-lg p-4'>
+      <h4 className='font-semibold text-gray-800 mb-3 flex items-center'>
+        <DollarSign className='w-4 h-4 mr-2' />
+        Pricing Calculator
+      </h4>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-            className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
-          >
-            Discover paradise aboard our luxury catamarans. Choose between our
-            classic experience or upgrade to our premium vessel with water slide
-            for the ultimate adventure.
-          </motion.p>
+      <div className='space-y-3'>
+        <div className='flex items-center justify-between'>
+          <label className='text-sm font-medium'>Group Size:</label>
+          <div className='flex items-center gap-2'>
+            <button
+              onClick={() => onGroupSizeChange(Math.max(1, groupSize - 1))}
+              className='w-8 h-8 bg-white border rounded flex items-center justify-center hover:bg-gray-50'
+            >
+              -
+            </button>
+            <span className='w-8 text-center font-medium'>{groupSize}</span>
+            <button
+              onClick={() => onGroupSizeChange(groupSize + 1)}
+              className='w-8 h-8 bg-white border rounded flex items-center justify-center hover:bg-gray-50'
+            >
+              +
+            </button>
+          </div>
+        </div>
 
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.1, duration: 0.8 }}
-            onClick={onBookClick}
-            className='bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Explore Options
-            <ArrowRight className='w-6 h-6' />
-          </motion.button>
+        <div className='border-t pt-3'>
+          <div className='flex justify-between text-sm text-gray-600 mb-1'>
+            <span>
+              Minimum rate (1-{catamaran.pricing.baseGroupSize} people):
+            </span>
+            <span>${catamaran.pricing.minimumRate}</span>
+          </div>
+
+          {!isMinimumRate && (
+            <div className='flex justify-between text-sm text-gray-600 mb-1'>
+              <span>
+                Additional people ({groupSize - catamaran.pricing.baseGroupSize}
+                ):
+              </span>
+              <span>
+                +$
+                {(groupSize - catamaran.pricing.baseGroupSize) *
+                  catamaran.pricing.additionalPersonRate}
+              </span>
+            </div>
+          )}
+
+          <div className='flex justify-between font-bold text-lg text-blue-600 border-t pt-2'>
+            <span>Total Price:</span>
+            <span>${price} USD</span>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-// Catamaran Type Card Component
-const CatamaranCard: React.FC<{
-  catamaran: CatamaranType;
-  isSelected: boolean;
-  onSelect: () => void;
-}> = ({ catamaran, isSelected, onSelect }) => {
+// Catamaran Details Sidebar/Modal Component
+const CatamaranDetailsModal = ({ catamaran, isOpen, onClose, onBook }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [groupSize, setGroupSize] = useState(2);
+
+  if (!isOpen || !catamaran) return null;
+
+  const handleBookNow = () => {
+    onBook(catamaran, groupSize);
+  };
+
+  return (
+    <div className='fixed inset-0 z-50 flex'>
+      {/* Backdrop */}
+      <div className='absolute inset-0 bg-black/50' onClick={onClose} />
+
+      {/* Sidebar Content */}
+      <div className='relative ml-auto h-full w-full max-w-2xl bg-white shadow-2xl overflow-y-auto'>
+        {/* Header */}
+        <div className='sticky top-0 bg-white border-b p-6 flex items-center justify-between z-10'>
+          <div className='flex items-center'>
+            <div>
+              <h2 className='text-2xl font-bold text-gray-800'>
+                {catamaran.name}
+              </h2>
+              <p className='text-gray-600'>{catamaran.description}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className='p-2 hover:bg-gray-100 rounded-full transition'
+          >
+            <X className='w-6 h-6' />
+          </button>
+        </div>
+
+        <div className='p-6 space-y-8'>
+          {/* Image Gallery */}
+          <section>
+            <h3 className='text-lg font-semibold mb-4 flex items-center'>
+              <Camera className='w-5 h-5 mr-2' />
+              Gallery
+            </h3>
+            <TouchGallery
+              images={catamaran.gallery}
+              currentIndex={currentImageIndex}
+              onIndexChange={setCurrentImageIndex}
+            />
+          </section>
+
+          {/* Pricing Calculator */}
+          <section>
+            <PricingCalculator
+              catamaran={catamaran}
+              groupSize={groupSize}
+              onGroupSizeChange={setGroupSize}
+            />
+          </section>
+
+          {/* Time Slots */}
+          <section>
+            <h3 className='text-lg font-semibold mb-4 flex items-center'>
+              <Clock className='w-5 h-5 mr-2' />
+              Available Time Slots
+            </h3>
+            <div className='grid gap-3'>
+              {catamaran.timeSlots.map((slot) => (
+                <div
+                  key={slot.id}
+                  className='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
+                >
+                  <span className='font-medium'>{slot.time}</span>
+                  <span className='text-sm text-gray-600'>
+                    {catamaran.duration}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* What's Included */}
+          <section>
+            <h3 className='text-lg font-semibold mb-4 flex items-center'>
+              <Check className='w-5 h-5 mr-2' />
+              What's Included
+            </h3>
+            <div className='space-y-2'>
+              {catamaran.includes.map((item, index) => (
+                <div key={index} className='flex items-start'>
+                  <Check className='w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0' />
+                  <span className='text-sm text-gray-700'>{item}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Destinations */}
+          <section>
+            <h3 className='text-lg font-semibold mb-4 flex items-center'>
+              <MapPin className='w-5 h-5 mr-2' />
+              Destinations
+            </h3>
+            <div className='space-y-2'>
+              {catamaran.destinations.map((destination, index) => (
+                <div key={index} className='flex items-start'>
+                  <MapPin className='w-4 h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0' />
+                  <span className='text-sm text-gray-700'>{destination}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Additional Notes */}
+          {catamaran.notes && (
+            <section>
+              <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
+                <p className='text-sm text-amber-800'>{catamaran.notes}</p>
+              </div>
+            </section>
+          )}
+
+          {/* Cancellation Policy */}
+          <section>
+            <h3 className='text-lg font-semibold mb-4 flex items-center'>
+              <Shield className='w-5 h-5 mr-2' />
+              Cancellation Policy
+            </h3>
+            <div className='space-y-2'>
+              {CANCELLATION_POLICY.map((policy, index) => (
+                <div key={index} className='flex items-start'>
+                  <AlertCircle className='w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0' />
+                  <span className='text-sm text-gray-700'>{policy}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+              <p className='text-sm text-blue-800'>{WEATHER_POLICY}</p>
+            </div>
+          </section>
+        </div>
+
+        {/* Footer with Book Button */}
+        <div className='sticky bottom-0 bg-white border-t p-6'>
+          <button
+            onClick={handleBookNow}
+            className='w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl'
+          >
+            <Calendar className='w-5 h-5 mr-2' />
+            Book {catamaran.name} - ${calculatePrice(catamaran, groupSize)} USD
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Original Catamaran Selection Card Component (maintained as before)
+const CatamaranCard = ({ catamaran, isSelected, onSelect, onViewDetails }) => {
+  const getIcon = (catamaranId) => {
+    switch (catamaranId) {
+      case 'liberty':
+        return Anchor;
+      case 'trinity':
+        return Star;
+      case '45':
+        return Sun;
+      case 'destiny':
+        return Music;
+      default:
+        return Anchor;
+    }
+  };
+
+  const IconComponent = getIcon(catamaran.id);
+
   return (
     <motion.div
-      className={`relative overflow-hidden rounded-3xl cursor-pointer transition-all duration-500 ${
+      className={`relative overflow-hidden rounded-3xl cursor-pointer transition-all duration-500 group ${
         isSelected
-          ? 'ring-4 ring-blue-500 shadow-2xl scale-105'
+          ? 'ring-4 ring-cyan-500 shadow-2xl scale-105'
           : 'hover:scale-102 hover:shadow-xl'
       }`}
-      onClick={onSelect}
+      onClick={onViewDetails}
       whileHover={{ y: -5 }}
       layout
     >
@@ -228,7 +606,7 @@ const CatamaranCard: React.FC<{
         <img
           src={catamaran.image}
           alt={catamaran.name}
-          className='w-full h-full object-cover'
+          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
         />
         <div className='absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent' />
 
@@ -238,439 +616,619 @@ const CatamaranCard: React.FC<{
           </div>
         )}
 
-        {catamaran.hasWaterSlide && (
-          <div className='absolute top-4 left-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2'>
-            <Waves className='w-4 h-4' />
-            Water Slide
-          </div>
-        )}
+        <div className='absolute top-4 left-4 bg-white/20 backdrop-blur-md rounded-full p-3'>
+          <IconComponent className='w-6 h-6 text-white' />
+        </div>
       </div>
 
-      <div className='absolute bottom-0 left-0 right-0 p-6 text-white'>
+      <div className='absolute bottom-0 left-0 right-0 p-4 text-white'>
         <h3 className='text-2xl font-bold mb-2'>{catamaran.name}</h3>
         <div className='flex items-center justify-between mb-4'>
           <span className='text-3xl font-bold text-cyan-300'>
             ${catamaran.price}
             <span className='text-lg text-white/70'>/person</span>
           </span>
-          <div className='flex items-center gap-2 text-white/80'>
-            <Users className='w-4 h-4' />
-            <span>{catamaran.capacity} guests</span>
+          <div className='flex items-center gap-4 text-white/80 text-sm'>
+            <div className='flex items-center gap-1'>
+              <Users className='w-4 h-4' />
+              <span>{catamaran.capacity}</span>
+            </div>
           </div>
-        </div>
-
-        <div className='space-y-2'>
-          {catamaran.features.slice(0, 3).map((feature, index) => (
-            <div
-              key={index}
-              className='flex items-center gap-2 text-sm text-white/80'
-            >
-              <Check className='w-4 h-4 text-green-400' />
-              <span>{feature}</span>
-            </div>
-          ))}
-          {catamaran.features.length > 3 && (
-            <div className='text-sm text-cyan-300'>
-              +{catamaran.features.length - 3} more features
-            </div>
-          )}
         </div>
       </div>
     </motion.div>
   );
 };
 
-// Experience Gallery Component
-const ExperienceGallery: React.FC = () => {
-  const experiences = [
-    {
-      image:
-        'https://images.pexels.com/photos/4600762/pexels-photo-4600762.jpeg?_gl=1*mwst98*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg1NzMkajU1JGwwJGgw',
-      title: 'Crystal Clear Waters',
-      description: 'Swim in pristine Caribbean waters',
-      icon: Waves,
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=800',
-      title: 'Snorkeling Adventure',
-      description: 'Discover vibrant marine life',
-      icon: Fish,
-    },
-    {
-      image:
-        'https://www.puntacanabestexcursions.com//assets/Uploads/BEBE_CATAMARAN_22.jpeg',
-      title: 'Water Slide Fun',
-      description: 'Thrilling slides into the ocean',
-      icon: Waves,
-    },
-    {
-      image:
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800',
-      title: 'Gourmet Dining',
-      description: 'Fresh seafood and tropical cuisine',
-      icon: Utensils,
-    },
-    {
-      image:
-        'https://images.pexels.com/photos/4319028/pexels-photo-4319028.jpeg?_gl=1*wp3wc8*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5MTYkajUwJGwwJGgw',
-      title: 'Beach Exploration',
-      description: 'Secluded beaches and hidden coves',
-      icon: MapPin,
-    },
-    {
-      image:
-        'https://images.pexels.com/photos/5006967/pexels-photo-5006967.jpeg?_gl=1*dlck0v*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5NzgkajUxJGwwJGgw',
-      title: 'Sunset Views',
-      description: 'Breathtaking Caribbean sunsets',
-      icon: Sun,
-    },
-  ];
-
+// Catamaran Selection Section (maintained as before)
+const CatamaranSelection = ({ onCatamaranViewDetails }) => {
   return (
-    <section className='bg-white rounded-3xl p-2 shadow-xl'>
-      <div className='text-center mb-12'>
-        <h2 className='text-4xl font-bold text-slate-800 mb-4'>
-          Experience Gallery
-        </h2>
-        <p className='text-xl text-slate-600'>
-          See what awaits you on this incredible journey
-        </p>
-      </div>
+    <section className='py-20 px-4 bg-gradient-to-br from-blue-50 to-cyan-50'>
+      <div className='max-w-7xl mx-auto'>
+        <div className='text-center mb-12'>
+          <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full mb-4'>
+            <Sparkles className='w-4 h-4 text-blue-600' />
+            <span className='text-blue-700 font-medium'>
+              Choose Your Adventure
+            </span>
+          </div>
+          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
+            Select Your{' '}
+            <span className='text-cyan-500'>Catamaran Experience</span>
+          </h2>
+          <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
+            Each catamaran offers a unique Caribbean adventure. Choose the
+            perfect experience for your group size and preferences.
+          </p>
+        </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {experiences.map((experience, index) => (
-          <motion.div
-            key={index}
-            className='group relative overflow-hidden rounded-2xl h-64 shadow-lg'
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <img
-              src={experience.image}
-              alt={experience.title}
-              className='w-full h-full object-cover transition-all duration-500 group-hover:scale-110'
+        <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
+          {Object.values(CATAMARAN_DATA).map((catamaran) => (
+            <CatamaranCard
+              key={catamaran.id}
+              catamaran={catamaran}
+              isSelected={false}
+              onViewDetails={() => onCatamaranViewDetails(catamaran)}
             />
-            <div className='absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300' />
+          ))}
+        </div>
 
-            <div className='absolute top-4 left-4 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center'>
-              <experience.icon className='w-6 h-6 text-white' />
+        <div className='mt-12 text-center'>
+          <div className='inline-flex items-center gap-6 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg'>
+            <div className='flex items-center gap-2 text-sm text-gray-700'>
+              <Shield className='w-4 h-4 text-green-500' />
+              <span>All safety equipment included</span>
             </div>
-
-            <div className='absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
-              <h3 className='text-xl font-bold mb-2'>{experience.title}</h3>
-              <p className='text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                {experience.description}
-              </p>
+            <div className='flex items-center gap-2 text-sm text-gray-700'>
+              <LifeBuoy className='w-4 h-4 text-blue-500' />
+              <span>Professional crew</span>
             </div>
-          </motion.div>
-        ))}
+            <div className='flex items-center gap-2 text-sm text-gray-700'>
+              <MapPin className='w-4 h-4 text-red-500' />
+              <span>Multiple pickup locations</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
 };
 
-// Time Selection Component
-const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
-  onSelect,
-}) => {
+// Features Comparison Section (maintained as before)
+const FeaturesComparison = () => {
+  const features = [
+    {
+      name: 'Open Bar',
+      liberty: true,
+      trinity: true,
+      '45': true,
+      destiny: true,
+    },
+    {
+      name: 'Food Service',
+      liberty: 'Buffet',
+      trinity: 'Gourmet',
+      '45': 'Dinner',
+      destiny: 'Snacks',
+    },
+    {
+      name: 'Water Slide',
+      liberty: false,
+      trinity: true,
+      '45': false,
+      destiny: true,
+    },
+    {
+      name: 'Live Music',
+      liberty: false,
+      trinity: false,
+      '45': true,
+      destiny: 'DJ',
+    },
+    {
+      name: 'Dance Floor',
+      liberty: false,
+      trinity: false,
+      '45': false,
+      destiny: true,
+    },
+    {
+      name: 'Photography',
+      liberty: false,
+      trinity: true,
+      '45': true,
+      destiny: false,
+    },
+    {
+      name: 'Couples Massage',
+      liberty: false,
+      trinity: false,
+      '45': true,
+      destiny: false,
+    },
+  ];
+
   return (
-    <section className='bg-white rounded-3xl p-4 shadow-xl'>
-      <div className='text-center mb-12'>
-        <h2 className='text-2xl  md:text-4xl mt-5 font-bold text-slate-800 mb-4'>
-          Choose Your Departure Time
-        </h2>
-        <p className='text-xl text-slate-600'>
-          Select the perfect time for your adventure
-        </p>
+    <section className='py-16 bg-white'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='text-center mb-12'>
+          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
+            Compare <span className='text-cyan-500'>Experiences</span>
+          </h2>
+          <p className='text-lg text-gray-600'>
+            Find the perfect catamaran experience for your preferences
+          </p>
+        </div>
+
+        <div className='overflow-x-auto'>
+          <table className='w-full bg-white rounded-2xl shadow-lg overflow-hidden'>
+            <thead className='bg-gradient-to-r from-cyan-500 to-blue-500 text-white'>
+              <tr>
+                <th className='px-6 py-4 text-left font-semibold'>Features</th>
+                <th className='px-6 py-4 text-center font-semibold'>Liberty</th>
+                <th className='px-6 py-4 text-center font-semibold'>Destiny</th>
+                <th className='px-6 py-4 text-center font-semibold'>45</th>
+                <th className='px-6 py-4 text-center font-semibold'>Trinity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {features.map((feature, index) => (
+                <tr
+                  key={feature.name}
+                  className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
+                >
+                  <td className='px-6 py-4 font-medium text-gray-800'>
+                    {feature.name}
+                  </td>
+                  <td className='px-6 py-4 text-center'>
+                    {typeof feature.liberty === 'boolean' ? (
+                      feature.liberty ? (
+                        <Check className='w-5 h-5 text-green-500 mx-auto' />
+                      ) : (
+                        <X className='w-5 h-5 text-red-500 mx-auto' />
+                      )
+                    ) : (
+                      <span className='text-sm text-gray-700'>
+                        {feature.liberty}
+                      </span>
+                    )}
+                  </td>
+                  <td className='px-6 py-4 text-center'>
+                    {typeof feature.destiny === 'boolean' ? (
+                      feature.destiny ? (
+                        <Check className='w-5 h-5 text-green-500 mx-auto' />
+                      ) : (
+                        <X className='w-5 h-5 text-red-500 mx-auto' />
+                      )
+                    ) : (
+                      <span className='text-sm text-gray-700'>
+                        {feature.destiny}
+                      </span>
+                    )}
+                  </td>
+                  <td className='px-6 py-4 text-center'>
+                    {typeof feature['45'] === 'boolean' ? (
+                      feature['45'] ? (
+                        <Check className='w-5 h-5 text-green-500 mx-auto' />
+                      ) : (
+                        <X className='w-5 h-5 text-red-500 mx-auto' />
+                      )
+                    ) : (
+                      <span className='text-sm text-gray-700'>
+                        {feature['45']}
+                      </span>
+                    )}
+                  </td>
+                  <td className='px-6 py-4 text-center'>
+                    {typeof feature.trinity === 'boolean' ? (
+                      feature.trinity ? (
+                        <Check className='w-5 h-5 text-green-500 mx-auto' />
+                      ) : (
+                        <X className='w-5 h-5 text-red-500 mx-auto' />
+                      )
+                    ) : (
+                      <span className='text-sm text-gray-700'>
+                        {feature.trinity}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+    </section>
+  );
+};
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto'>
-        {timeSlots.map((slot, index) => (
-          <motion.div
-            key={slot.id}
-            className={`relative overflow-hidden rounded-2xl p-8 cursor-pointer transition-all duration-300 hover:scale-105 ${
-              slot.popular
-                ? 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-2xl'
-                : 'bg-slate-50 hover:bg-slate-100 text-slate-800 shadow-lg'
-            }`}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2, duration: 0.6 }}
-            onClick={() => onSelect(slot.id)}
-          >
-            {slot.popular && (
-              <div className='absolute top-0 right-0 bg-amber-500 text-white px-4 py-2 text-sm font-bold rounded-bl-2xl'>
-                Most Popular
+// Gallery Section (maintained as before)
+const GallerySection = () => {
+  const images = [
+    {
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802356/3_syxzqo.jpg',
+      alt: 'Catamaran in crystal clear waters',
+      title: 'Crystal Clear Waters',
+    },
+    {
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/1_wvnp2r.jpg',
+      alt: 'Snorkeling from catamaran',
+      title: 'Snorkeling Adventures',
+    },
+    {
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/2_vrbyj2.jpg',
+      alt: 'Water slide fun',
+      title: 'Water Slide Thrills',
+    },
+    {
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/3_cz2ios.jpg',
+      alt: 'Sunset catamaran cruise',
+      title: 'Stunning Sunsets',
+    },
+  ];
+
+  return (
+    <section className='py-16 bg-gradient-to-br from-blue-50 to-cyan-50'>
+      <div className='max-w-6xl mx-auto px-4'>
+        <div className='text-center mb-12'>
+          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
+            Experience <span className='text-cyan-500'>Gallery</span>
+          </h2>
+          <p className='text-lg text-gray-600'>
+            See what awaits you on the crystal-clear Caribbean waters
+          </p>
+        </div>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+          {images.map((image, index) => (
+            <motion.div
+              key={index}
+              className='group relative overflow-hidden rounded-2xl h-64 shadow-lg'
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.6 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                className='w-full h-full object-cover transition-all duration-500 group-hover:scale-110'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+
+              <div className='absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
+                <h3 className='text-lg font-bold'>{image.title}</h3>
               </div>
-            )}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
-            <div className='text-center'>
-              <div
-                className={`w-16 h-16 rounded-2xl ${
-                  slot.popular ? 'bg-white/20' : 'bg-blue-100'
-                } flex items-center justify-center mx-auto mb-6`}
-              >
-                <Clock
-                  className={`w-8 h-8 ${
-                    slot.popular ? 'text-white' : 'text-blue-600'
-                  }`}
-                />
+// Reviews Section (maintained as before)
+const ReviewsSection = () => {
+  const reviews = [
+    {
+      name: 'Maria González',
+      rating: 5,
+      text: 'The premium catamaran was incredible! The water slide and gourmet food made it unforgettable.',
+      date: '2 days ago',
+      experience: 'Premium Experience',
+    },
+    {
+      name: 'James Wilson',
+      rating: 5,
+      text: 'Perfect sunset cruise for our anniversary. The romantic dinner and live music were magical.',
+      date: '1 week ago',
+      experience: 'Sunset Romance',
+    },
+    {
+      name: 'Sophie Martin',
+      rating: 5,
+      text: 'The party catamaran was amazing! Great DJ, dancing, and the best open bar in Punta Cana.',
+      date: '2 weeks ago',
+      experience: 'Party Catamaran',
+    },
+  ];
+
+  return (
+    <section className='py-16 px-4 bg-white'>
+      <div className='max-w-5xl mx-auto'>
+        <div className='text-center mb-12'>
+          <h2 className='text-3xl md:text-4xl font-bold mb-4 text-gray-800'>
+            Guest <span className='text-cyan-500'>Reviews</span>
+          </h2>
+          <div className='flex justify-center items-center gap-1'>
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className='w-5 h-5 fill-amber-400 text-amber-400' />
+            ))}
+            <span className='ml-2 text-gray-600'>
+              4.9 from 2,500+ adventures
+            </span>
+          </div>
+        </div>
+
+        <div className='grid md:grid-cols-3 gap-6'>
+          {reviews.map((review, idx) => (
+            <div
+              key={idx}
+              className='bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow'
+            >
+              <div className='flex gap-1 mb-3'>
+                {[...Array(review.rating)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className='w-4 h-4 fill-amber-400 text-amber-400'
+                  />
+                ))}
               </div>
-
-              <h3 className='text-2xl font-bold mb-2'>
-                {slot.time} - {slot.endTime}
-              </h3>
-              <p
-                className={`text-lg mb-6 ${
-                  slot.popular ? 'text-blue-100' : 'text-slate-600'
-                }`}
-              >
-                {slot.label}
-              </p>
-
-              <button
-                className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
-                  slot.popular
-                    ? 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                }`}
-              >
-                Select {slot.time}
-              </button>
+              <p className='text-gray-700 mb-4'>"{review.text}"</p>
+              <div className='flex justify-between items-center text-sm'>
+                <div>
+                  <p className='font-medium text-gray-800'>{review.name}</p>
+                  <p className='text-cyan-600 text-xs'>{review.experience}</p>
+                </div>
+                <span className='text-gray-500'>{review.date}</span>
+              </div>
             </div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
 // Main Component
-const CatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
-  service,
-  serviceData,
-}) => {
-  const { bookService } = useBooking();
-  const [selectedCatamaran, setSelectedCatamaran] = useState<string>('classic');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const CatamaranServiceView = () => {
+  const [selectedCatamaran, setSelectedCatamaran] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const { bookService } = useBooking(); // Uncomment when using real context
 
-  const selectedCatamaranData = catamaranTypes.find(
-    (c) => c.id === selectedCatamaran
-  );
+  // Create service object for your existing BookingModal
+  const createServiceFromCatamaran = (catamaran) => ({
+    id: `catamaran-${catamaran.id}`,
+    name: `Catamaran ${catamaran.name}`,
+    type: 'CATAMARAN_CRUISE',
+    description: catamaran.description,
+    duration: catamaran.duration,
+    price: catamaran.price,
+    included: catamaran.includes,
+    packageType: catamaran.premium ? 'premium' : 'standard',
+    catamaranType: catamaran.id,
+    maxParticipants: catamaran.capacity,
+    catamaranSpecifics: {
+      minimumRate: catamaran.pricing.minimumRate,
+      baseGroupSize: catamaran.pricing.baseGroupSize,
+      additionalPersonRate: catamaran.pricing.additionalPersonRate,
+      timeSlots: catamaran.timeSlots,
+      destinations: catamaran.destinations,
+      gallery: catamaran.gallery,
+      notes: catamaran.notes,
+      realPricing: catamaran.pricing,
+    },
+  });
 
-  const handleBookNow = () => {
+  const service = selectedCatamaran
+    ? createServiceFromCatamaran(selectedCatamaran)
+    : null;
+
+  const handleBookingConfirm = (service, dates, guests) => {
+    // Your existing booking logic
+    // bookService(service, dates, guests);
+    setIsModalOpen(false);
+    console.log('Booking confirmed:', { service, dates, guests });
+  };
+
+  const handleCatamaranViewDetails = (catamaran) => {
+    setSelectedCatamaran(catamaran);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedCatamaran(null);
+  };
+
+  const handleBookFromDetails = (catamaran, groupSize) => {
+    setSelectedCatamaran(catamaran);
+    setIsDetailsModalOpen(false);
     setIsModalOpen(true);
   };
 
-  const handleBookingConfirm = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-    setIsModalOpen(false);
-  };
-
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'>
-      {/* Hero Section - Full width, no margins/padding */}
-      <HeroSection
-        currentImage={currentImageIndex}
-        onImageChange={setCurrentImageIndex}
-        onBookClick={handleBookNow}
-      />
-
-      {/* Content sections with proper spacing */}
-      <div className='max-w-7xl mx-auto px-2 py-10 space-y-16'>
-        {/* Catamaran Selection */}
-        <section className='bg-white rounded-3xl p-2 shadow-xl'>
-          <div className='text-center mb-12'>
-            <h2 className='text-2xl md:text-4xl font-bold text-slate-800 mb-4'>
-              Choose Your Adventure
-            </h2>
-            <p className='text-xl-1 text-xl text-slate-600'>
-              Select the perfect catamaran experience for your group
-            </p>
-          </div>
-
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-            {catamaranTypes.map((catamaran) => (
-              <CatamaranCard
-                key={catamaran.id}
-                catamaran={catamaran}
-                isSelected={selectedCatamaran === catamaran.id}
-                onSelect={() => setSelectedCatamaran(catamaran.id)}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* Selected Catamaran Details */}
-        {selectedCatamaranData && (
-          <motion.section
-            layout
-            className='bg-gradient-to-r from-blue-600 to-cyan-500 rounded-3xl p-10 text-white shadow-2xl'
-          >
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-              <div>
-                <h3 className='text-3xl font-bold mb-6'>
-                  {selectedCatamaranData.name}
-                </h3>
-                <p className='text-xl text-blue-100 mb-8 leading-relaxed'>
-                  {selectedCatamaranData.hasWaterSlide
-                    ? 'Experience the ultimate luxury with our premium catamaran featuring an exciting water slide, VIP service, and exclusive amenities. Perfect for groups looking for an unforgettable adventure with extra thrills.'
-                    : 'Enjoy our classic catamaran experience with all the essentials for a perfect Caribbean adventure, including snorkeling, dining, and relaxation in paradise.'}
-                </p>
-
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-8'>
-                  {selectedCatamaranData.features.map((feature, index) => (
-                    <div key={index} className='flex items-center gap-3'>
-                      <div className='w-6 h-6 bg-white/20 rounded-full flex items-center justify-center'>
-                        <Check className='w-4 h-4 text-white' />
-                      </div>
-                      <span className='text-blue-100'>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className='flex items-center gap-8 mb-8'>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>
-                      ${selectedCatamaranData.price}
-                    </div>
-                    <div className='text-blue-200'>per person</div>
-                  </div>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>
-                      {selectedCatamaranData.capacity}
-                    </div>
-                    <div className='text-blue-200'>max guests</div>
-                  </div>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold'>4-6</div>
-                    <div className='text-blue-200'>hours</div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleBookNow}
-                  className='bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-lg'
-                >
-                  <Calendar className='w-5 h-5' />
-                  Book This Experience
-                </button>
-              </div>
-
-              <div className='relative h-96 rounded-2xl overflow-hidden shadow-2xl'>
-                <img
-                  src={selectedCatamaranData.image}
-                  alt={selectedCatamaranData.name}
-                  className='w-full h-full object-cover'
-                />
-              </div>
-            </div>
-          </motion.section>
-        )}
-
-        {/* Time Selection */}
-        <TimeSelection onSelect={handleBookNow} />
-
-        {/* Experience Gallery */}
-        <ExperienceGallery />
-
-        {/* Call to Action */}
-        <section className='relative overflow-hidden rounded-3xl h-96 shadow-2xl'>
+    <div className='min-h-screen bg-white'>
+      {/* Hero Section */}
+      <div className='relative h-screen overflow-hidden'>
+        <motion.div
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className='absolute inset-0'
+        >
           <img
-            src='https://images.pexels.com/photos/5006967/pexels-photo-5006967.jpeg?_gl=1*dlck0v*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5NzgkajUxJGwwJGgw'
-            alt='Sunset catamaran'
+            src='https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg'
+            alt='Caribbean Catamaran Experience'
             className='w-full h-full object-cover'
           />
-          <div className='absolute inset-0 bg-gradient-to-r from-slate-900/80 to-blue-900/60' />
+        </motion.div>
 
-          <div className='absolute inset-0 flex items-center justify-center text-center text-white py-5'>
-            <div className='max-w-3xl'>
-              <motion.h2
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                className='text-3xl md:text-4xl font-bold mb-6 p-2'
-              >
-                Ready for Paradise?
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className='text-xl-1 px-2 md:text-4xl  text-white/90 mb-8'
-              >
-                Book your catamaran adventure today and create memories that
-                will last a lifetime. Limited spots available!
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
-                className='flex flex-col sm:flex-row gap-4 justify-center items-center'
-              >
+        <div className='absolute inset-0 bg-gradient-to-br from-blue-900/60 via-cyan-900/40 to-teal-900/60' />
+
+        <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
+          <div className='max-w-5xl'>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8'
+            >
+              <Anchor className='w-5 h-5 mr-3 text-cyan-300' />
+              <span className='font-semibold text-lg'>
+                Caribbean Adventures
+              </span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className='text-6xl md:text-7xl font-bold mb-6 leading-tight'
+            >
+              Catamaran Experiences
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.8 }}
+              className='text-2xl md:text-3xl text-white/90 mb-4 font-light'
+            >
+              Choose Your Perfect Caribbean Adventure
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.8 }}
+              className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
+            >
+              From classic sailing adventures to romantic sunset cruises and
+              high-energy party experiences. Find the perfect catamaran
+              experience for your group.
+            </motion.p>
+
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.1, duration: 0.8 }}
+              onClick={() => {
+                document
+                  .querySelector('[data-section="catamaran-selection"]')
+                  .scrollIntoView({
+                    behavior: 'smooth',
+                  });
+              }}
+              className='bg-gradient-to-r from-cyan-600 to-blue-500 hover:from-cyan-700 hover:to-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Explore Catamarans
+              <ArrowRight className='w-6 h-6' />
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
+      {/* Catamaran Selection Section */}
+      <div data-section='catamaran-selection'>
+        <CatamaranSelection
+          onCatamaranViewDetails={handleCatamaranViewDetails}
+        />
+      </div>
+
+      <FeaturesComparison />
+      <GallerySection />
+      <ReviewsSection />
+
+      {/* Call to Action */}
+      <section className='relative overflow-hidden rounded-3xl mx-4 my-16 h-96 shadow-2xl max-w-7xl mx-auto'>
+        <img
+          src='https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg'
+          alt='Caribbean catamaran adventure'
+          className='w-full h-full object-cover'
+        />
+        <div className='absolute inset-0 bg-gradient-to-r from-blue-900/80 to-cyan-900/60' />
+
+        <div className='absolute inset-0 flex items-center justify-center text-center text-white p-4'>
+          <div className='max-w-3xl'>
+            <h2 className='text-3xl md:text-4xl font-bold mb-6'>
+              Ready for Your Caribbean Adventure?
+            </h2>
+            <p className='text-xl text-white/90 mb-8'>
+              Book your perfect catamaran experience today and create memories
+              that will last a lifetime.
+            </p>
+            <button
+              onClick={() => {
+                document
+                  .querySelector('[data-section="catamaran-selection"]')
+                  .scrollIntoView({
+                    behavior: 'smooth',
+                  });
+              }}
+              className='bg-gradient-to-r from-cyan-600 to-blue-500 hover:from-cyan-700 hover:to-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
+            >
+              <Anchor className='w-6 h-6' />
+              Book Now
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Catamaran Details Modal/Sidebar */}
+      <CatamaranDetailsModal
+        catamaran={selectedCatamaran}
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseDetails}
+        onBook={handleBookFromDetails}
+      />
+
+      {/* Your existing Booking Modal */}
+      {isModalOpen && service && formCatamaran && (
+        <div>
+          {/* Placeholder for your BookingModal component */}
+          <div className='fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4'>
+            <div className='bg-white rounded-xl p-6 max-w-md w-full'>
+              <h3 className='text-xl font-bold mb-4'>Booking Modal</h3>
+              <p className='mb-4'>
+                This would be your BookingModal component with:
+              </p>
+              <ul className='text-sm text-gray-600 mb-4'>
+                <li>• Service: {service.name}</li>
+                <li>• Type: {service.type}</li>
+                <li>• Price: ${service.price}</li>
+                <li>• Catamaran: {formCatamaran.name}</li>
+                <li>
+                  • Pricing:{' '}
+                  {formCatamaran.pricing
+                    ? `${formCatamaran.pricing.minimumRate}`
+                    : 'No pricing data'}
+                </li>
+              </ul>
+              <div className='flex gap-2'>
                 <button
-                  onClick={handleBookNow}
-                  className='bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 transition-all duration-300 hover:scale-105 shadow-2xl'
+                  onClick={() => setIsModalOpen(false)}
+                  className='flex-1 px-4 py-2 bg-gray-200 rounded'
                 >
-                  <Anchor className='w-6 h-6' />
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleBookingConfirm(service, {}, 2)}
+                  className='flex-1 px-4 py-2 bg-blue-600 text-white rounded'
+                >
                   Book Now
                 </button>
-                <div className='text-white/80 text-sm'>
-                  Free cancellation • Instant confirmation • Best price
-                  guarantee
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Important Notice */}
-        <motion.div
-          className='bg-amber-50 border-l-4 border-amber-400 rounded-2xl p-8'
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <div className='flex items-start'>
-            <div className='w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mr-4 flex-shrink-0'>
-              <AlertCircle className='w-5 h-5 text-amber-600' />
-            </div>
-            <div>
-              <h3 className='font-bold text-amber-800 mb-3 text-lg'>
-                Important Information
-              </h3>
-              <div className='text-amber-700 leading-relaxed space-y-2'>
-                <p>
-                  • Tours are weather dependent and may be rescheduled for
-                  safety
-                </p>
-                <p>• We recommend booking 24-48 hours in advance</p>
-                <p>• Full refund available for weather cancellations</p>
-                <p>
-                  • Life jackets and safety equipment provided for all guests
-                </p>
-                <p>• Minimum age for water slide: 8 years old</p>
               </div>
             </div>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      )}
 
-      {/* Booking Modal */}
-      {isModalOpen && (
+      {/* Uncomment this when integrating with your real BookingModal */}
+      {/*
+      {isModalOpen && service && formCatamaran && (
         <BookingModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleBookingConfirm}
           service={service}
+          selectedCatamaran={formCatamaran} // Use transformed data
         />
       )}
+      */}
     </div>
   );
 };

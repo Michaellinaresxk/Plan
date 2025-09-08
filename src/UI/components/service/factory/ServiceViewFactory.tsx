@@ -6,6 +6,7 @@ import ChefServiceView from '../renders/ChefServiceView';
 import BabysitterServiceView from '../renders/BabysitterServiceView';
 import AirportServiceView from '../renders/AirportServiceView';
 import LuxYogaExperience from '../renders/LuxeYogaExperience';
+import LuxCatamaranServiceView from '../renders/LuxCatamaranServiceView';
 import CatamaranServiceView from '../renders/CatamaranServiceView';
 import LiveMusicServiceView from '../renders/LiveMusicServiceView';
 import KaraokeServiceView from '../renders/KaraokeServiceView';
@@ -19,6 +20,7 @@ import LuxeYachtServiceView from '../renders/LuxeYachtServiceView';
 import GolfCartServiceView from '../renders/GolfCartServiceView';
 import HorseBackRidingServiceView from '../renders/HorseBackRidingServiceView';
 import AtvRideServiceView from '../renders/AtvRideServiceView';
+import PointToPointServiceView from '../renders/PointToPointServiceView';
 
 interface ServiceViewFactoryProps {
   service: Service;
@@ -44,9 +46,10 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'yoga-standard': YogaServiceView,
     'private-chef': ChefServiceView,
     babysitter: BabysitterServiceView,
+    'point-to-point-transfers': PointToPointServiceView,
     'airport-transfers': AirportServiceView,
     'catamaran-trips': CatamaranServiceView,
-    'private-catamaran': CatamaranServiceView,
+    'private-catamaran': LuxCatamaranServiceView,
     'saona-island-tour': SaonaIslandTourServiceView,
     'live-music': LiveMusicServiceView,
     karaoke: KaraokeServiceView,
@@ -63,6 +66,7 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'luxe-culinary': ChefServiceView,
     'luxe-arrival': AirportServiceView,
     'private-yacht': CatamaranServiceView,
+    privateCatamaran: LuxCatamaranServiceView,
     'luxe-yacht': LuxeYachtServiceView,
   };
 

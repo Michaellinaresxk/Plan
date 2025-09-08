@@ -15,7 +15,7 @@ export type ServiceCategory =
 const SERVICE_CATEGORY_MAP: Record<ServiceId, ServiceCategory> = {
   // Water Activities
   [SERVICE_IDS.CATAMARAN]: 'water-activities',
-  [SERVICE_IDS.PRIVATE_CATAMARAN]: 'water-activities',
+  [SERVICE_IDS.LUX_CATAMARAN]: 'water-activities',
   [SERVICE_IDS.PRIVATE_YACHT]: 'water-activities',
   [SERVICE_IDS.LUXE_YACHT]: 'water-activities',
   [SERVICE_IDS.DEEP_SEA_FISHING]: 'water-activities',
@@ -29,6 +29,7 @@ const SERVICE_CATEGORY_MAP: Record<ServiceId, ServiceCategory> = {
 
   // Transportation
   [SERVICE_IDS.AIRPORT_TRANSFER]: 'transportation',
+  [SERVICE_IDS.POINT_TO_POINT_TRANSFER]: 'transportation',
   [SERVICE_IDS.GOLF_CART]: 'transportation',
   [SERVICE_IDS.BIKE_RENTALS]: 'transportation',
   [SERVICE_IDS.LUXE_GOLF_CART]: 'transportation',
