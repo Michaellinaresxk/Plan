@@ -8,11 +8,18 @@ import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from '@/UI/components/payment/PaymentForm';
 import { useReservation } from '@/hooks/useReservation';
 import type { ReservationData } from '@/context/BookingContext';
+// Initialize Stripe with validation
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
-// Initialize Stripe
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+if (!stripePublishableKey) {
+  console.error('❌ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY not found');
+  console.error('❌ Make sure you have this variable in your .env.local file');
+  console.error('❌ Format: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...');
+}
+
+const stripePromise = stripePublishableKey
+  ? loadStripe(stripePublishableKey)
+  : null;
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -33,7 +40,35 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [currentStep, setCurrentStep] = useState<'payment' | 'success'>(
     'payment'
   );
+
   const { createReservation } = useReservation();
+
+  // Early return if Stripe is not configured
+  if (!stripePromise) {
+    return isOpen ? (
+      <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50'>
+        <div className='bg-white rounded-xl shadow-2xl max-w-md w-full p-6'>
+          <div className='text-center'>
+            <div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+              <CreditCard className='w-8 h-8 text-red-600' />
+            </div>
+            <h3 className='text-xl font-bold text-red-900 mb-2'>
+              Payment System Error
+            </h3>
+            <p className='text-red-700 mb-4'>
+              Payment system is not properly configured. Please contact support.
+            </p>
+            <button
+              onClick={onClose}
+              className='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors'
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : null;
+  }
 
   const handlePaymentSuccess = (reservation: any) => {
     console.log('✅ Payment successful in modal:', reservation);

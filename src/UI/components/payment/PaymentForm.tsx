@@ -1,4 +1,3 @@
-// UI/components/payment/PaymentForm.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -19,18 +18,18 @@ const cardElementOptions = {
     base: {
       fontSize: '16px',
       color: '#374151',
+      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontSmoothing: 'antialiased',
       '::placeholder': {
         color: '#9CA3AF',
       },
-      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-      padding: '10px 12px',
     },
     invalid: {
       color: '#EF4444',
       iconColor: '#EF4444',
     },
   },
-  hidePostalCode: true,
+  hidePostalCode: false,
 };
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
@@ -43,11 +42,80 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const elements = useElements();
   const { createPaymentIntent, processCompletePayment } = usePayment();
 
+  // Debug logs
+  console.log('🔧 PaymentForm render:', {
+    stripe: !!stripe,
+    elements: !!elements,
+    reservationData: !!reservationData,
+    clientInfo: !!reservationData?.clientInfo,
+  });
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<
     'ready' | 'processing' | 'success'
   >('ready');
+
+  // AGREGAR ESTOS ESTADOS para debugging
+  const [cardReady, setCardReady] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+
+  // AGREGAR estas funciones para debugging
+  const handleCardReady = () => {
+    console.log('✅ Card Element is ready');
+    setCardReady(true);
+  };
+
+  const handleCardChange = (event: any) => {
+    console.log('💳 Card change event:', event);
+    if (event.error) {
+      setCardError(event.error.message);
+      console.error('❌ Card error:', event.error.message);
+    } else {
+      setCardError(null);
+      if (event.complete) {
+        console.log('✅ Card input is complete');
+      }
+    }
+  };
+
+  if (!stripe || !elements) {
+    console.log('🔄 Stripe/Elements not ready:', {
+      stripe: !!stripe,
+      elements: !!elements,
+    });
+    return (
+      <div className='flex items-center justify-center p-8'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
+          <p className='text-gray-600'>Loading payment system...</p>
+          <p className='text-xs text-gray-500 mt-2'>
+            {!stripe && '• Stripe not loaded'}
+            {!elements && '• Elements not ready'}
+          </p>
+          <div className='mt-4 p-2 bg-yellow-100 rounded text-xs'>
+            Debug: stripe={String(!!stripe)}, elements={String(!!elements)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ VALIDACIÓN INICIAL
+  if (!stripe || !elements) {
+    return (
+      <div className='flex items-center justify-center p-8'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
+          <p className='text-gray-600'>Loading payment system...</p>
+          <p className='text-xs text-gray-500 mt-2'>
+            {!stripe && '• Stripe not loaded'}
+            {!elements && '• Elements not ready'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -178,6 +246,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className='space-y-6'>
+      {/* DEBUG INFO TEMPORAL */}
+      <div className='bg-yellow-100 border border-yellow-300 rounded p-3 text-xs'>
+        <strong>Debug Info:</strong>
+        <br />
+        Stripe: {stripe ? '✅' : '❌'} | Elements: {elements ? '✅' : '❌'} |
+        Card Ready: {cardReady ? '✅' : '❌'} | Card Error:{' '}
+        {cardError || 'None'}
+      </div>
+
       {/* Payment Amount Summary */}
       <div className='bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200'>
         <div className='flex justify-between items-center mb-4'>
@@ -228,14 +305,39 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-3'>
             <CreditCard className='inline w-4 h-4 mr-2' />
-            Card Information
+            Card Information{' '}
+            {!cardReady && <span className='text-red-500'>(Loading...)</span>}
           </label>
-          <div className='border border-gray-300 rounded-lg p-4 bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all'>
-            <CardElement options={cardElementOptions} />
+
+          <div
+            className={`
+            border rounded-lg p-4 bg-white transition-all
+            ${
+              cardError
+                ? 'border-red-300 ring-2 ring-red-100'
+                : 'border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500'
+            }
+          `}
+          >
+            <CardElement
+              options={cardElementOptions}
+              onReady={handleCardReady}
+              onChange={handleCardChange}
+            />
           </div>
-          <p className='text-xs text-gray-500 mt-2'>
-            Test card: 4242 4242 4242 4242, any future date, any 3-digit CVC
-          </p>
+
+          {/* Debug Info */}
+          <div className='mt-2 space-y-1'>
+            <p className='text-xs text-gray-500'>
+              Status: {cardReady ? '✅ Ready' : '⏳ Loading...'}
+            </p>
+            {cardError && (
+              <p className='text-xs text-red-600'>❌ {cardError}</p>
+            )}
+            <p className='text-xs text-blue-600'>
+              Test card: 4242 4242 4242 4242, any future date, any 3-digit CVC
+            </p>
+          </div>
         </div>
       </div>
 
@@ -286,12 +388,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
         <button
           type='submit'
-          disabled={!stripe || isProcessing}
+          disabled={!stripe || !cardReady || isProcessing}
           className={`
             flex-1 px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium text-lg
             ${
-              !stripe || isProcessing
-                ? 'bg-green-400 cursor-not-allowed'
+              !stripe || !cardReady || isProcessing
+                ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-green-600 hover:bg-green-700'
             } text-white
           `}
@@ -303,6 +405,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 ? 'Processing Payment...'
                 : 'Creating Reservation...'}
             </>
+          ) : !stripe ? (
+            'Stripe Loading...'
+          ) : !cardReady ? (
+            'Card Loading...'
           ) : (
             <>
               <Lock className='w-4 h-4 mr-2' />
