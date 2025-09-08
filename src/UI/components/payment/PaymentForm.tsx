@@ -1,7 +1,7 @@
 // UI/components/payment/PaymentForm.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { CreditCard, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { usePayment } from '@/hooks/usePayment';
@@ -45,62 +45,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [isReady, setIsReady] = useState(false);
   const [currentStep, setCurrentStep] = useState<
-    'initializing' | 'ready' | 'processing' | 'success'
-  >('initializing');
-
-  // Initialize payment intent when component mounts
-  useEffect(() => {
-    const initializePayment = async () => {
-      try {
-        console.log('💳 Initializing payment for reservation...');
-        setCurrentStep('initializing');
-
-        if (!reservationData.clientInfo) {
-          throw new Error('Client information is required');
-        }
-
-        const paymentIntentData = {
-          reservationId: `temp_${Date.now()}`,
-          amount: Math.round(reservationData.totalPrice * 100), // Convert to cents
-          currency: 'usd',
-          metadata: {
-            serviceName: reservationData.service.name,
-            clientEmail: reservationData.clientInfo.email,
-            clientName: reservationData.clientInfo.name,
-          },
-        };
-
-        const result = await createPaymentIntent(paymentIntentData);
-
-        setClientSecret(result.clientSecret);
-        setIsReady(true);
-        setCurrentStep('ready');
-        console.log('✅ Payment intent created successfully');
-      } catch (error) {
-        console.error('❌ Error creating payment intent:', error);
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : 'Failed to initialize payment';
-        setPaymentError(errorMessage);
-        setCurrentStep('ready'); // Allow retry
-        onError(errorMessage);
-      }
-    };
-
-    if (reservationData?.clientInfo) {
-      initializePayment();
-    }
-  }, [reservationData, createPaymentIntent, onError]);
+    'ready' | 'processing' | 'success'
+  >('ready');
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!stripe || !elements || !clientSecret) {
-      console.error('❌ Stripe not loaded or payment intent not created');
+    if (!stripe || !elements) {
+      console.error('❌ Stripe not loaded');
+      onError('Payment system not ready. Please refresh the page.');
       return;
     }
 
@@ -119,12 +73,27 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error('Card element not found');
       }
 
-      console.log('💳 Step 1: Confirming payment with Stripe...');
+      console.log('💳 Step 1: Creating payment intent...');
 
-      // Confirm payment with Stripe
-      const { error, paymentIntent } = await stripe.confirmCardPayment(
-        clientSecret,
-        {
+      // CREAR PAYMENT INTENT SOLO CUANDO SE NECESITA
+      const paymentIntentData = {
+        reservationId: `temp_${Date.now()}`,
+        amount: Math.round(reservationData.totalPrice * 100), // Convert to cents
+        currency: 'usd',
+        metadata: {
+          serviceName: reservationData.service.name,
+          clientEmail: reservationData.clientInfo.email,
+          clientName: reservationData.clientInfo.name,
+        },
+      };
+
+      const paymentIntent = await createPaymentIntent(paymentIntentData);
+
+      console.log('💳 Step 2: Confirming payment with Stripe...');
+
+      // Confirmar payment con Stripe
+      const { error, paymentIntent: confirmedPayment } =
+        await stripe.confirmCardPayment(paymentIntent.clientSecret, {
           payment_method: {
             card: cardElement,
             billing_details: {
@@ -133,8 +102,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               phone: reservationData.clientInfo.phone,
             },
           },
-        }
-      );
+        });
 
       if (error) {
         console.error('❌ Payment confirmation failed:', error);
@@ -145,19 +113,19 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         return;
       }
 
-      if (paymentIntent?.status === 'succeeded') {
-        console.log('✅ Step 1 complete: Payment confirmed with Stripe!');
-        console.log('📋 Step 2: Creating reservation...');
+      if (confirmedPayment?.status === 'succeeded') {
+        console.log('✅ Step 2 complete: Payment confirmed!');
+        console.log('📋 Step 3: Creating reservation...');
 
-        // Process complete payment and create reservation
+        // Crear reservación
         const result = await processCompletePayment({
           reservationData,
-          paymentMethodId: paymentIntent.payment_method as string,
-          clientSecret,
+          paymentMethodId: confirmedPayment.payment_method as string,
+          clientSecret: paymentIntent.clientSecret,
         });
 
         if (result.success) {
-          console.log('✅ Step 2 complete: Reservation created successfully');
+          console.log('✅ Step 3 complete: Reservation created successfully');
           setCurrentStep('success');
 
           // Small delay to show success state
@@ -203,18 +171,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           <p className='text-sm text-green-700'>
             🎉 Redirecting to confirmation page...
           </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Loading state
-  if (currentStep === 'initializing' || !isReady) {
-    return (
-      <div className='flex items-center justify-center py-12'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
-          <p className='text-gray-600'>Initializing secure payment...</p>
         </div>
       </div>
     );
@@ -330,13 +286,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
         <button
           type='submit'
-          disabled={
-            !stripe || isProcessing || !isReady || currentStep !== 'ready'
-          }
+          disabled={!stripe || isProcessing}
           className={`
             flex-1 px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium text-lg
             ${
-              !stripe || isProcessing || !isReady || currentStep !== 'ready'
+              !stripe || isProcessing
                 ? 'bg-green-400 cursor-not-allowed'
                 : 'bg-green-600 hover:bg-green-700'
             } text-white

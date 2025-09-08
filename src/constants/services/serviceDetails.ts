@@ -422,6 +422,106 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
   },
 
+  // POINT_TO_POINT_TRANSFER  TRANSFERS
+  [SERVICE_IDS.POINT_TO_POINT_TRANSFER]: {
+    title: 'GO ANYWHERE IN COMFORT',
+    description:
+      "Professional point-to-point transportation between any locations in Punta Cana and surrounding areas. From hotels to attractions, restaurants to beaches - we'll get you there safely and on time.",
+    priceUnit: 'per trip (zone-dependent)',
+    timeSlots: ['Sedan', 'SUV', 'Van', 'Luxury SUV'],
+    travelTime: 'Varies by route (15 min - 4 hours)',
+    includes: [
+      'Professional driver service',
+      'Door-to-door pickup & dropoff',
+      'Air-conditioned vehicle',
+      'Luggage assistance',
+      'Route planning & navigation',
+      'Real-time trip tracking',
+    ],
+    notIncluded: [
+      'Gratuity (optional, appreciated)',
+      'Waiting time beyond 15 minutes',
+      'Additional stops (can be arranged)',
+    ],
+    itinerary: [
+      'Driver arrives at your specified pickup location',
+      'Assistance with luggage and comfortable boarding',
+      'Direct, efficient journey with optimal routing',
+      'Safe drop-off at your exact destination',
+    ],
+    safetyStandards: [
+      'Licensed professional drivers',
+      'Child seats available upon request',
+      'Real-time trip monitoring',
+      'Emergency contact support',
+    ],
+    availability: '24/7 service with advance reservation',
+    disclaimer:
+      'Please provide accurate pickup and destination addresses. Routes outside standard coverage may require custom pricing.',
+    tagline: 'Professional Transport. Anywhere You Need To Go',
+    popularRoutes: [
+      {
+        from: 'Punta Cana Center',
+        to: 'Cap Cana',
+        time: '25-30 min',
+        price: 35,
+        description: 'Popular route to luxury resort area',
+      },
+      {
+        from: 'Bavaro',
+        to: 'Saona Island Port',
+        time: '1.5-2 hours',
+        price: 90,
+        description: 'Perfect for Saona Island excursions',
+      },
+      {
+        from: 'Punta Cana Center',
+        to: 'La Romana',
+        time: '1.5-2 hours',
+        price: 85,
+        description: 'Historic town and Casa de Campo',
+      },
+    ],
+    vehicleFeatures: {
+      standard: ['Air conditioning', 'Professional driver', 'Luggage space'],
+      premium: ['WiFi', 'Refreshments', 'Premium interior', 'Phone chargers'],
+    },
+    coverageAreas: [
+      'Punta Cana Center',
+      'Bavaro',
+      'Cap Cana',
+      'Uvero Alto',
+      'La Romana',
+      'Santo Domingo',
+      'Samaná Peninsula',
+    ],
+    gallery: {
+      title: 'Professional Point-to-Point Transport',
+      images: [
+        {
+          src: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2969&auto=format&fit=crop&ixlib=rb-4.0.3',
+          alt: 'Luxury sedan transfer',
+          caption: 'Professional drivers with luxury vehicles',
+        },
+        {
+          src: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3',
+          alt: 'SUV family transport',
+          caption: 'Spacious SUVs perfect for families and groups',
+        },
+        {
+          src: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2948&auto=format&fit=crop&ixlib=rb-4.0.3',
+          alt: 'Scenic route in Punta Cana',
+          caption: 'Enjoy beautiful scenery during your journey',
+        },
+        {
+          src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+          alt: 'Resort destination',
+          caption: 'Door-to-door service to any destination',
+        },
+      ],
+    },
+  },
+
   // BABYSITTER SERVICE
   [SERVICE_IDS.BABYSITTER]: {
     priceUnit: 'per hour',
@@ -643,7 +743,57 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
   },
 
-  [SERVICE_IDS.PRIVATE_CATAMARAN]: {
+  [SERVICE_IDS.LUX_CATAMARAN]: {
+    priceUnit: 'per group',
+    gallery: {
+      title: 'Experience the Beauty of Catamaran Sailing',
+      images: [
+        {
+          src: '/images/services/catamaran-1.jpg',
+          alt: 'Catamaran sailing in crystal clear waters',
+          caption: 'Sail through turquoise waters of Punta Cana',
+        },
+        {
+          src: '/images/services/catamaran-2.jpg',
+          alt: 'Snorkeling from the catamaran',
+          caption: 'Snorkel in pristine coral reefs',
+        },
+        {
+          src: '/images/services/catamaran-3.jpg',
+          alt: 'Sunset view from catamaran',
+          caption: 'Enjoy spectacular sunsets from the deck',
+        },
+      ],
+    },
+    includes: [
+      'Private catamaran with water slide',
+      'Private round-trip transportation from your villa',
+      'Snorkeling equipment',
+      'Ice, water, and soft drinks',
+      'Tropical fruits',
+      'Nachos with salsa',
+    ],
+    openBarOptions: [
+      'Mojito',
+      'Cuba Libre',
+      'Rum Punch',
+      'Piña Colada',
+      'Gin & Tonic',
+      'Vodka with cranberry',
+    ],
+    places: [
+      'Snorkeling area',
+      'Natural sandbanks (Natural Pools)',
+      'View of the dolphin habitat from the boat',
+    ],
+    timeSlots: [
+      '8:30 AM – 11:30 AM',
+      '11:30 AM – 2:30 PM',
+      '2:30 PM – 5:30 PM',
+    ],
+  },
+
+  [SERVICE_IDS.CATAMARAN]: {
     priceUnit: 'per group',
     gallery: {
       title: 'Experience the Beauty of Catamaran Sailing',

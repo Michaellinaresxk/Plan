@@ -1,5 +1,6 @@
 // src/app/api/payments/create-intent/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { paymentService } from '@/primary/payment'; // Usar el servicio
 
 export async function POST(request: NextRequest) {
   console.log('🎯 Payment Intent API called');
@@ -25,42 +26,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check environment variables
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('❌ STRIPE_SECRET_KEY not found');
-      return NextResponse.json(
-        { error: 'Stripe configuration missing' },
-        { status: 500 }
-      );
-    }
+    console.log('📄 Creating payment intent with service...');
 
-    console.log('🔄 Creating payment intent with Stripe...');
-
-    // Import Stripe directly
-    const Stripe = (await import('stripe')).default;
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16',
-    });
-
-    const paymentIntent = await stripe.paymentIntents.create({
+    // Usar el servicio en lugar de Stripe directamente
+    const result = await paymentService.createPaymentIntent({
+      reservationId,
       amount: Math.round(amount),
       currency: currency.toLowerCase(),
-      automatic_payment_methods: { enabled: true },
-      metadata: {
-        reservationId,
-        ...metadata,
-      },
+      metadata,
     });
 
-    if (!paymentIntent.client_secret) {
-      throw new Error('Failed to create payment intent - no client secret');
-    }
-
-    console.log('✅ Payment intent created:', paymentIntent.id);
+    console.log('✅ Payment intent created:', result.paymentIntentId);
 
     return NextResponse.json({
-      clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id,
+      clientSecret: result.clientSecret,
+      paymentIntentId: result.paymentIntentId,
     });
   } catch (error: any) {
     console.error('❌ Payment intent error:', error);
@@ -75,12 +55,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  return NextResponse.json({
-    message: 'Payment Intent API is working',
-    timestamp: new Date().toISOString(),
-    methods: ['POST'],
-  });
 }

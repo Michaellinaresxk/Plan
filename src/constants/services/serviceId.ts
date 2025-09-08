@@ -7,6 +7,7 @@ export const SERVICE_IDS = {
   CHEF: 'private-chef',
   GOLF_CART: 'golf-cart-rentals',
   AIRPORT_TRANSFER: 'airport-transfers',
+  POINT_TO_POINT_TRANSFER: 'point-to-point-transfers',
   YOGA: 'yoga-standard',
   PERSONAL_TRAINER: 'personal-training',
   KARAOKE: 'karaoke',
@@ -27,7 +28,7 @@ export const SERVICE_IDS = {
   // Premium services
   LUXE_GOLF_CART: 'luxe-golf-cart',
   LUXE_YOGA: 'luxe-yoga',
-  PRIVATE_CATAMARAN: 'private-catamaran',
+  LUX_CATAMARAN: 'private-catamaran',
   LUXE_FITNESS: 'luxe-fitness',
   LUXE_EBIKES: 'luxe-e-bikes',
   LUXE_YACHT: 'luxe-yacht',

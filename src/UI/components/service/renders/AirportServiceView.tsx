@@ -58,12 +58,12 @@ const TRANSFER_GALLERY = [
     caption: 'Professional drivers with personalized meet & greet',
   },
   {
-    src: 'https://images.unsplash.com/photo-1577435213005-1acb8929ad3e?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1757095741/5_gj861l.jpg',
     alt: 'Airport terminal arrival',
     caption: 'Seamless pickup at airport arrivals area',
   },
   {
-    src: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2942&auto=format&fit=crop&ixlib=rb-4.0.3',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1757095756/7_nsflgz.jpg',
     alt: 'Punta Cana destination',
     caption: 'Direct transfer to your accommodation in paradise',
   },
@@ -79,33 +79,6 @@ const WHATS_INCLUDED = [
 ];
 
 const WHATS_NOT_INCLUDED = ['Gratuity (optional, appreciated)'];
-
-const TRANSFER_PROCESS = [
-  {
-    step: 1,
-    icon: UserCheck,
-    title: 'Driver meets you',
-    description: 'At the arrivals area with your name sign',
-  },
-  {
-    step: 2,
-    icon: Luggage,
-    title: 'Bag assistance',
-    description: 'Help with luggage and comfortable boarding',
-  },
-  {
-    step: 3,
-    icon: CarFront,
-    title: 'Comfortable ride',
-    description: 'Direct, air-conditioned journey to destination',
-  },
-  {
-    step: 4,
-    icon: MapPin,
-    title: 'Safe arrival',
-    description: 'Smooth drop-off right at your door',
-  },
-];
 
 // Animation variants
 const fadeInUp = {

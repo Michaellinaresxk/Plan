@@ -35,9 +35,9 @@ export interface ServiceData {
   duration?: number; // en horas
   isPopular?: boolean;
   bookingDuration?: {
-    min: number;
-    max: number;
-    unit: 'hours' | 'days' | 'weeks';
+    unit: 'hours';
+    min?: number;
+    max?: number;
   };
   options?: Record<string, ServiceOption>;
   additionalInfoKeys?: string[];
