@@ -28,7 +28,6 @@ export async function POST(request: NextRequest) {
 
     console.log('📄 Creating payment intent with service...');
 
-    // Usar el servicio en lugar de Stripe directamente
     const result = await paymentService.createPaymentIntent({
       reservationId,
       amount: Math.round(amount),
