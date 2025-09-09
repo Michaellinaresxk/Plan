@@ -56,6 +56,7 @@ interface SelectedCatamaran {
   features?: string[];
   highlights?: string[];
   notes?: string;
+  capacity?: number;
 }
 
 interface FormData {
@@ -79,7 +80,7 @@ interface FormErrors {
 
 interface CatamaranFormProps {
   service: Service;
-  selectedCatamaran: SelectedCatamaran; // Now required
+  selectedCatamaran: SelectedCatamaran;
   onSubmit?: (
     formData: FormData & {
       totalPrice: number;
@@ -94,6 +95,11 @@ const calculateRealPrice = (
   catamaran: SelectedCatamaran,
   groupSize: number
 ): number => {
+  if (!catamaran?.pricing) {
+    console.warn('CatamaranForm: Pricing data missing, using fallback');
+    return groupSize * 89; // Fallback price
+  }
+
   const { minimumRate, baseGroupSize, additionalPersonRate } =
     catamaran.pricing;
 
@@ -107,7 +113,6 @@ const calculateRealPrice = (
 
 // Time slots - using real catamaran time slots or fallback
 const getTimeSlots = (catamaran: SelectedCatamaran) => {
-  // Check if catamaran exists and has timeSlots
   if (
     catamaran &&
     catamaran.timeSlots &&
@@ -135,6 +140,7 @@ const getTimeSlots = (catamaran: SelectedCatamaran) => {
 
 // Tour information
 const TOUR_INFO = {
+  DURATION: '3 hours',
   RESTRICTIONS: [
     'Not recommended for pregnant women',
     'Children under 8 cannot use the water slide (Premium options)',
@@ -165,7 +171,7 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
   const [formData, setFormData] = useState<FormData>({
     tourDate: '',
     location: '',
-    timeSlot: timeSlots[0]?.id || 'morning', // Default to first available slot
+    timeSlot: timeSlots[0]?.id || 'morning',
     adultCount: 2,
     childCount: 0,
     children: [],
@@ -211,12 +217,13 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
     if (age <= AGE_CONFIG.FREE_AGE_LIMIT) {
       return AGE_CONFIG.FREE_PRICE;
     } else if (age <= AGE_CONFIG.CHILD_PRICE_LIMIT) {
-      // Child price is based on the real minimum rate, not the display price
+      if (!selectedCatamaran?.pricing?.minimumRate) {
+        return Math.round(89 * (1 - AGE_CONFIG.CHILD_DISCOUNT)); // Fallback
+      }
       return Math.round(
         selectedCatamaran.pricing.minimumRate * (1 - AGE_CONFIG.CHILD_DISCOUNT)
       );
     } else {
-      // Teenagers pay adult price - calculate real adult price based on group size
       return Math.round(calculateRealPrice(selectedCatamaran, 1));
     }
   };
@@ -259,6 +266,11 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
+    // Catamaran validation
+    if (!selectedCatamaran) {
+      newErrors.selectedCatamaran = 'Catamaran selection is required';
+    }
+
     // Required fields validation
     if (!formData.tourDate) {
       newErrors.tourDate = 'Tour date is required';
@@ -286,8 +298,8 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
       newErrors.adultCount = 'At least one participant is required';
     }
 
-    // Capacity validation - use a reasonable max (50 for now, can be adjusted)
-    const maxCapacity = 50;
+    // Capacity validation
+    const maxCapacity = selectedCatamaran?.capacity || 50;
     if (totalParticipants > maxCapacity) {
       newErrors.adultCount = `Maximum capacity is ${maxCapacity} people. Please reduce participants.`;
     }
@@ -302,9 +314,16 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
     return newErrors;
   };
 
-  // Handle form submission
+  // Handle form submission - Fixed version based on LuxCatamaranForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Debug logging
+    console.log('🛥️ CatamaranForm - Submit started with:', {
+      selectedCatamaran,
+      formData,
+      totalPrice: calculatePrice,
+    });
 
     const validationErrors = validateForm();
     setErrors(validationErrors);
@@ -339,15 +358,30 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
       // Create booking date properly
       const selectedDate = new Date(formData.tourDate);
 
-      // Set pickup time (simplified - use the time string as is)
+      // Set pickup time - improved parsing
+      const timeString = pickupTime.split(' - ')[0] || pickupTime; // Get start time only
+      const [time, period] = timeString.split(' ');
+      const [hours, minutes] = time.split(':').map(Number);
+
       const bookingStartDate = new Date(selectedDate);
-      bookingStartDate.setHours(9, 0, 0, 0); // Default to 9 AM, can be enhanced
+      bookingStartDate.setHours(
+        period === 'PM' && hours !== 12
+          ? hours + 12
+          : hours === 12 && period === 'AM'
+          ? 0
+          : hours,
+        minutes || 0,
+        0,
+        0
+      );
 
       // Set end time
       const bookingEndDate = new Date(bookingStartDate);
-      bookingEndDate.setHours(bookingStartDate.getHours() + 3); // 3 hours as per real data
+      const duration = selectedCatamaran?.duration || TOUR_INFO.DURATION;
+      const durationHours = duration.includes('3') ? 3 : 4; // Parse duration
+      bookingEndDate.setHours(bookingStartDate.getHours() + durationHours);
 
-      // Create reservation data
+      // Create reservation data - Simplified structure like LuxCatamaranForm
       const reservationData = {
         service: service,
         formData: {
@@ -368,35 +402,33 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
         selectedItems: [
           {
             id: `catamaran-${selectedCatamaran.id}`,
-            name: selectedCatamaran.name,
+            name: selectedCatamaran?.name || 'Catamaran Experience',
             quantity: 1,
             price: calculatePrice,
             totalPrice: calculatePrice,
             pickupTime: pickupTime,
-            duration: selectedCatamaran.duration,
+            duration: selectedCatamaran?.duration || TOUR_INFO.DURATION,
           },
         ],
         clientInfo: undefined,
-        // Catamaran-specific data with REAL pricing
+        // Simplified catamaran-specific data
         catamaranSpecifics: {
           catamaranType: selectedCatamaran.id,
-          catamaranName: selectedCatamaran.name,
-          category: selectedCatamaran.category,
+          catamaranName: selectedCatamaran?.name || 'Catamaran',
+          category: selectedCatamaran?.category,
+          hasWaterSlide:
+            selectedCatamaran?.features?.includes('Water Slide') || false,
+          capacity: selectedCatamaran?.capacity || 50,
+          basePrice: selectedCatamaran?.pricing?.minimumRate || 89,
           pickupTime: pickupTime,
           timeSlot: formData.timeSlot,
-          duration: selectedCatamaran.duration,
+          duration: selectedCatamaran?.duration || TOUR_INFO.DURATION,
           adultCount: formData.adultCount,
           childCount: formData.childCount,
           children: formData.children,
           specialRequests: formData.specialRequests,
-          includes: selectedCatamaran.includes,
-          destinations: selectedCatamaran.destinations,
+          features: selectedCatamaran?.includes || [],
           restrictions: TOUR_INFO.RESTRICTIONS,
-          // Real pricing data
-          realPricing: selectedCatamaran.pricing,
-          minimumRate: selectedCatamaran.pricing.minimumRate,
-          baseGroupSize: selectedCatamaran.pricing.baseGroupSize,
-          additionalPersonRate: selectedCatamaran.pricing.additionalPersonRate,
         },
       };
 
@@ -416,6 +448,8 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
           catamaranDetails: selectedCatamaran,
         });
       }
+
+      console.log('🛥️ CatamaranForm - Navigating to confirmation...');
 
       // Navigate to confirmation page
       router.push('/reservation-confirmation');
@@ -569,15 +603,17 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
 
   // Selected Catamaran Summary Component
   const SelectedCatamaranSummary = () => {
-    const CategoryIcon = getCategoryIcon(selectedCatamaran.category);
+    const CategoryIcon = getCategoryIcon(
+      selectedCatamaran?.category || 'classic'
+    );
 
     return (
       <div className='bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200'>
         <div className='flex items-start space-x-4'>
           <div className='flex-shrink-0'>
             <img
-              src={selectedCatamaran.image}
-              alt={selectedCatamaran.name}
+              src={selectedCatamaran?.image || '/default-catamaran.jpg'}
+              alt={selectedCatamaran?.name || 'Catamaran'}
               className='w-20 h-20 rounded-lg object-cover'
             />
           </div>
@@ -585,27 +621,27 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
             <div className='flex items-center space-x-2 mb-2'>
               <CategoryIcon className='w-5 h-5 text-blue-600' />
               <h3 className='text-xl font-bold text-gray-800'>
-                {selectedCatamaran.name}
+                {selectedCatamaran?.name || 'Catamaran'}
               </h3>
             </div>
             <p className='text-gray-600 text-sm mb-3'>
-              {selectedCatamaran.description}
+              {selectedCatamaran?.description || 'Caribbean adventure'}
             </p>
 
             <div className='grid grid-cols-2 gap-4 text-sm'>
               <div className='bg-white rounded-lg p-3'>
                 <div className='font-semibold text-gray-700'>Duration</div>
                 <div className='text-blue-600'>
-                  {selectedCatamaran.duration}
+                  {selectedCatamaran?.duration || '3 hours'}
                 </div>
               </div>
               <div className='bg-white rounded-lg p-3'>
                 <div className='font-semibold text-gray-700'>Base Rate</div>
                 <div className='text-blue-600'>
-                  ${selectedCatamaran.pricing.minimumRate} USD
+                  ${selectedCatamaran?.pricing?.minimumRate || 89} USD
                 </div>
                 <div className='text-xs text-gray-500'>
-                  (1-{selectedCatamaran.pricing.baseGroupSize} people)
+                  (1-{selectedCatamaran?.pricing?.baseGroupSize || 5} people)
                 </div>
               </div>
             </div>
@@ -638,7 +674,7 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
     <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
       <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
         <FormHeader
-          title={`Book ${selectedCatamaran.name}`}
+          title={`Book ${selectedCatamaran?.name || 'Catamaran'}`}
           subtitle='Complete your Caribbean catamaran adventure booking'
           onCancel={handleClose}
           showCloseButton={true}
@@ -827,7 +863,8 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
                     const priceLabel =
                       price === 0
                         ? 'Free'
-                        : price < selectedCatamaran.pricing.minimumRate
+                        : price <
+                          (selectedCatamaran?.pricing?.minimumRate || 89)
                         ? 'Child Price'
                         : 'Adult Price';
 
@@ -841,7 +878,9 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
                             className={`text-xs px-2 py-1 rounded ${
                               price === 0
                                 ? 'bg-green-100 text-green-800'
-                                : price < selectedCatamaran.pricing.minimumRate
+                                : price <
+                                  (selectedCatamaran?.pricing?.minimumRate ||
+                                    89)
                                 ? 'bg-orange-100 text-orange-800'
                                 : 'bg-blue-100 text-blue-800'
                             }`}
@@ -888,7 +927,7 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
               What's Included
             </h3>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-              {selectedCatamaran.includes.map((item, index) => (
+              {selectedCatamaran?.includes?.map((item, index) => (
                 <div
                   key={index}
                   className='flex items-center text-sm text-gray-700'
@@ -896,7 +935,11 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
                   <Star className='w-4 h-4 text-yellow-500 mr-2 flex-shrink-0' />
                   {item}
                 </div>
-              ))}
+              )) || (
+                <div className='text-gray-500 italic'>
+                  Caribbean adventure with all amenities
+                </div>
+              )}
             </div>
           </div>
 
@@ -952,9 +995,9 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
             {/* Price breakdown using REAL pricing */}
             <div className='text-xs text-gray-400 mt-2 space-y-1'>
               <div className='text-blue-400 font-medium'>
-                {selectedCatamaran.name}
+                {selectedCatamaran?.name || 'Catamaran Experience'}
               </div>
-              {selectedCatamaran.pricing ? (
+              {selectedCatamaran?.pricing ? (
                 <>
                   <div>
                     Base rate (1-{selectedCatamaran.pricing.baseGroupSize}{' '}
@@ -989,9 +1032,9 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
               })}
               <div className='text-cyan-400'>
                 Includes:{' '}
-                {selectedCatamaran.includes?.slice(0, 2).join(', ') ||
+                {selectedCatamaran?.includes?.slice(0, 2).join(', ') ||
                   'Caribbean adventure'}
-                {selectedCatamaran.includes &&
+                {selectedCatamaran?.includes &&
                   selectedCatamaran.includes.length > 2 &&
                   ' & more'}
               </div>
@@ -1014,7 +1057,9 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
               className='px-8 py-3 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
             >
               <Ship className='h-4 w-4 mr-2' />
-              {isSubmitting ? 'Booking...' : `Book ${selectedCatamaran.name}`}
+              {isSubmitting
+                ? 'Booking...'
+                : `Book ${selectedCatamaran?.name || 'Catamaran'}`}
             </button>
           </div>
         </div>

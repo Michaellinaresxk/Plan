@@ -1,16 +1,17 @@
-// infra/payment/StripeCaller.ts
+// infra/payment/StripeCaller.ts - VERSIÓN PRODUCCIÓN
 import Stripe from 'stripe';
 
 export class StripeCaller {
   private stripe: Stripe;
+  private isLiveMode: boolean;
 
   constructor() {
-    // VERIFICAR QUE ESTAMOS EN EL SERVIDOR
+    // 🚨 VERIFICAR QUE ESTAMOS EN EL SERVIDOR
     if (typeof window !== 'undefined') {
       throw new Error('StripeCaller can only be used on the server side');
     }
 
-    // VERIFICAR VARIABLES DE ENTORNO CON MEJOR MANEJO DE ERRORES
+    // 🔑 OBTENER Y VALIDAR CLAVES
     const secretKey = process.env.STRIPE_SECRET_KEY;
 
     if (!secretKey) {
@@ -19,60 +20,67 @@ export class StripeCaller {
         '❌ Available env vars:',
         Object.keys(process.env).filter((key) => key.includes('STRIPE'))
       );
-      console.error('❌ Make sure you have:');
-      console.error('   1. .env.local file in project root');
-      console.error('   2. STRIPE_SECRET_KEY=sk_test_... in .env.local');
-      console.error('   3. Server restarted after adding the variable');
-      throw new Error(
-        'STRIPE_SECRET_KEY environment variable is required. Check your .env.local file.'
-      );
+      throw new Error('STRIPE_SECRET_KEY environment variable is required');
     }
 
-    // VERIFICAR FORMATO DE CLAVE CON MEJOR ERROR MESSAGE
+    // 🔍 VERIFICAR FORMATO DE CLAVE
     if (!secretKey.startsWith('sk_')) {
-      console.error('❌ Invalid STRIPE_SECRET_KEY format');
-      console.error(
-        '❌ Current key starts with:',
-        secretKey.substring(0, 10) + '...'
-      );
-      console.error('❌ Expected format: sk_test_... or sk_live_...');
-      console.error(
-        '❌ Please check your Stripe dashboard for the correct secret key'
-      );
       throw new Error(
-        `STRIPE_SECRET_KEY must start with "sk_". Current key: ${secretKey.substring(
+        `STRIPE_SECRET_KEY must start with "sk_". Current: ${secretKey.substring(
           0,
           10
         )}...`
       );
     }
 
-    // LOG PARA DEBUGGING (más informativo)
-    console.log('🔑 StripeCaller initializing...');
-    console.log('🔑 Secret key found:', secretKey.substring(0, 15) + '...');
-    console.log('🔑 Mode:', secretKey.includes('_test_') ? 'TEST' : 'LIVE');
-    console.log('🔑 Environment:', process.env.NODE_ENV);
+    // 🎯 DETERMINAR MODO (TEST vs LIVE)
+    this.isLiveMode = secretKey.includes('_live_');
+    const mode = this.isLiveMode ? 'LIVE' : 'TEST';
+
+    // 🚨 ADVERTENCIA PARA PRODUCCIÓN
+    if (process.env.NODE_ENV === 'production' && !this.isLiveMode) {
+      console.warn('⚠️ WARNING: Using TEST keys in PRODUCTION environment!');
+      console.warn('⚠️ This will NOT process real payments!');
+      console.warn('⚠️ Switch to LIVE keys for real transactions');
+    }
+
+    // ✅ LOGS DE CONFIGURACIÓN
+    console.log('🔧 StripeCaller Configuration:');
+    console.log(`🔧 Mode: ${mode}`);
+    console.log(`🔧 Environment: ${process.env.NODE_ENV}`);
+    console.log(`🔧 Key type: ${secretKey.substring(0, 15)}...`);
+
+    if (this.isLiveMode) {
+      console.log('💰 LIVE MODE ENABLED - Real payments will be processed!');
+    } else {
+      console.log('🧪 TEST MODE - No real money will be charged');
+    }
 
     try {
       this.stripe = new Stripe(secretKey, {
         apiVersion: '2023-10-16',
-        typescript: true, // Mejor soporte para TypeScript
+        typescript: true,
       });
 
-      console.log('✅ StripeCaller initialized successfully');
+      console.log('✅ Stripe initialized successfully');
     } catch (error) {
-      console.error('❌ Failed to initialize Stripe instance:', error);
-      console.error('❌ This usually indicates:');
-      console.error('   1. Invalid secret key format');
-      console.error('   2. Network connectivity issues');
-      console.error('   3. Stripe SDK version conflicts');
-
+      console.error('❌ Failed to initialize Stripe:', error);
       throw new Error(
         `Failed to initialize Stripe: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`
       );
     }
+  }
+
+  // 🔍 MÉTODO PÚBLICO PARA VERIFICAR MODO
+  getMode(): 'test' | 'live' {
+    return this.isLiveMode ? 'live' : 'test';
+  }
+
+  // 🔍 MÉTODO PARA VERIFICAR SI ES PRODUCCIÓN
+  isProductionReady(): boolean {
+    return this.isLiveMode && process.env.NODE_ENV === 'production';
   }
 
   async createPaymentIntent(data: {
@@ -85,17 +93,23 @@ export class StripeCaller {
     paymentIntentId: string;
   }> {
     try {
-      console.log('💳 StripeCaller - Creating payment intent...');
-      console.log('💳 Amount:', data.amount, 'Currency:', data.currency);
-      console.log('💳 Reservation ID:', data.reservationId);
+      console.log(
+        `💳 Creating payment intent in ${this.getMode().toUpperCase()} mode`
+      );
 
-      // Validación de datos de entrada
-      if (data.amount < 50) {
-        throw new Error('Amount must be at least 50 cents');
+      // 🚨 ADVERTENCIA FINAL PARA LIVE MODE
+      if (this.isLiveMode) {
+        console.log('🚨 LIVE MODE PAYMENT - Real money will be charged!');
+        console.log(
+          `🚨 Amount: $${(data.amount / 100).toFixed(
+            2
+          )} ${data.currency.toUpperCase()}`
+        );
       }
 
-      if (!['usd', 'eur', 'gbp'].includes(data.currency.toLowerCase())) {
-        console.warn('⚠️ Unusual currency detected:', data.currency);
+      // ✅ VALIDACIÓN DE DATOS
+      if (data.amount < 50) {
+        throw new Error('Amount must be at least 50 cents');
       }
 
       const paymentIntent = await this.stripe.paymentIntents.create({
@@ -107,76 +121,55 @@ export class StripeCaller {
         metadata: {
           reservationId: data.reservationId,
           source: 'webapp',
+          mode: this.getMode(),
+          environment: process.env.NODE_ENV || 'unknown',
           timestamp: new Date().toISOString(),
           ...data.metadata,
         },
       });
 
       if (!paymentIntent.client_secret) {
-        console.error('❌ No client secret returned from Stripe');
-        console.error(
-          '❌ Payment Intent object:',
-          JSON.stringify(paymentIntent, null, 2)
-        );
         throw new Error(
           'Failed to create payment intent - no client secret returned'
         );
       }
 
-      console.log(
-        '✅ StripeCaller - Payment intent created:',
-        paymentIntent.id
-      );
-      console.log(
-        '✅ Client secret length:',
-        paymentIntent.client_secret.length
-      );
+      console.log(`✅ Payment intent created: ${paymentIntent.id}`);
+      console.log(`✅ Mode: ${this.getMode()}`);
 
       return {
         clientSecret: paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id,
       };
     } catch (error: any) {
-      console.error('❌ StripeCaller - Error creating payment intent:', error);
-      console.error('❌ Error type:', error.type);
-      console.error('❌ Error code:', error.code);
+      console.error('❌ Error creating payment intent:', error);
 
+      // 🔍 MEJOR MANEJO DE ERRORES ESPECÍFICOS
       let userFriendlyMessage = 'Failed to create payment intent';
 
-      // Mejor manejo de errores específicos de Stripe
       switch (error.type) {
-        case 'StripeCardError':
-          userFriendlyMessage =
-            'Your card was declined. Please try a different payment method.';
-          break;
         case 'StripeInvalidRequestError':
-          userFriendlyMessage =
-            'Invalid payment request. Please check your information.';
-          console.error('❌ Invalid request details:', {
-            amount: data.amount,
-            currency: data.currency,
-            reservationId: data.reservationId,
-          });
-          break;
-        case 'StripeAPIError':
-          userFriendlyMessage =
-            'Payment service temporarily unavailable. Please try again.';
-          break;
-        case 'StripeConnectionError':
-          userFriendlyMessage =
-            'Network error. Please check your connection and try again.';
+          if (error.message.includes('similar object exists in test mode')) {
+            userFriendlyMessage =
+              'Payment system configuration error. Please contact support.';
+            console.error(
+              '🚨 KEY MODE MISMATCH: You are mixing test and live keys!'
+            );
+            console.error('🚨 Current mode:', this.getMode());
+            console.error('🚨 Check your environment variables');
+          } else {
+            userFriendlyMessage =
+              'Invalid payment request. Please check your information.';
+          }
           break;
         case 'StripeAuthenticationError':
           userFriendlyMessage =
-            'Authentication failed. Please contact support.';
-          console.error('❌ Authentication error - check your Stripe keys');
+            'Payment authentication failed. Please contact support.';
+          console.error('🚨 Authentication error - check your Stripe keys');
           break;
         default:
           if (error.message.includes('Amount must be at least')) {
             userFriendlyMessage = 'Minimum payment amount is $0.50';
-          } else if (error.message.includes('Invalid currency')) {
-            userFriendlyMessage =
-              'Currency not supported. Please contact support.';
           }
       }
 
@@ -190,10 +183,9 @@ export class StripeCaller {
   }): Promise<Stripe.PaymentIntent> {
     try {
       console.log(
-        '💳 StripeCaller - Confirming payment intent:',
+        `💳 Confirming payment in ${this.getMode().toUpperCase()} mode:`,
         data.paymentIntentId
       );
-      console.log('💳 Payment method:', data.paymentMethodId);
 
       const paymentIntent = await this.stripe.paymentIntents.confirm(
         data.paymentIntentId,
@@ -202,14 +194,28 @@ export class StripeCaller {
         }
       );
 
-      console.log('✅ StripeCaller - Payment confirmed:', paymentIntent.status);
-      console.log('✅ Payment Intent ID:', paymentIntent.id);
+      console.log(`✅ Payment confirmed: ${paymentIntent.status}`);
+
+      if (this.isLiveMode && paymentIntent.status === 'succeeded') {
+        console.log('💰 REAL PAYMENT SUCCESSFUL! Money has been charged.');
+      }
 
       return paymentIntent;
     } catch (error: any) {
-      console.error('❌ StripeCaller - Error confirming payment:', error);
-      console.error('❌ Payment Intent ID:', data.paymentIntentId);
-      console.error('❌ Payment Method ID:', data.paymentMethodId);
+      console.error('❌ Error confirming payment:', error);
+
+      // 🔍 DETECTAR ERRORES DE MODO MIXTO
+      if (error.message?.includes('similar object exists in test mode')) {
+        console.error(
+          '🚨 CRITICAL: Payment Intent was created in test mode but you are using live keys!'
+        );
+        console.error(
+          '🚨 Solution: Use consistent keys (both test or both live)'
+        );
+        throw new Error(
+          'Payment configuration error: Key mode mismatch. Please contact support.'
+        );
+      }
 
       let userFriendlyMessage = 'Failed to confirm payment';
 
@@ -231,123 +237,118 @@ export class StripeCaller {
             userFriendlyMessage =
               'Incorrect security code. Please check and try again.';
             break;
-          case 'processing_error':
-            userFriendlyMessage = 'Payment processing error. Please try again.';
-            break;
-          case 'incorrect_number':
-            userFriendlyMessage =
-              'Invalid card number. Please check and try again.';
-            break;
           default:
             userFriendlyMessage =
               'Payment failed. Please try a different payment method.';
         }
-      } else if (error.type === 'StripeInvalidRequestError') {
-        if (error.message.includes('payment_intent')) {
-          userFriendlyMessage = 'Payment session expired. Please start over.';
-        }
       }
 
       throw new Error(`${userFriendlyMessage}: ${error.message}`);
     }
   }
 
-  async refundPayment(
-    paymentIntentId: string,
-    amount?: number,
-    reason?: string
-  ): Promise<Stripe.Refund> {
+  async testConnection(): Promise<{
+    connected: boolean;
+    mode: 'test' | 'live';
+    environment: string;
+    accountId?: string;
+    error?: string;
+  }> {
     try {
-      console.log(
-        '💳 StripeCaller - Creating refund for payment:',
-        paymentIntentId
-      );
-      console.log('💳 Refund amount:', amount || 'full');
-      console.log('💳 Refund reason:', reason || 'none specified');
-
-      const refundData: Stripe.RefundCreateParams = {
-        payment_intent: paymentIntentId,
-      };
-
-      if (amount) {
-        refundData.amount = amount;
-      }
-
-      if (reason) {
-        refundData.reason = reason as Stripe.RefundCreateParams.Reason;
-      }
-
-      const refund = await this.stripe.refunds.create(refundData);
-
-      console.log('✅ StripeCaller - Refund created:', refund.id);
-      console.log('✅ Refund status:', refund.status);
-
-      return refund;
-    } catch (error: any) {
-      console.error('❌ StripeCaller - Error creating refund:', error);
-      console.error('❌ Payment Intent ID:', paymentIntentId);
-
-      let userFriendlyMessage = 'Failed to create refund';
-
-      if (error.type === 'StripeInvalidRequestError') {
-        if (error.message.includes('has already been refunded')) {
-          userFriendlyMessage = 'This payment has already been refunded.';
-        } else if (error.message.includes('amount')) {
-          userFriendlyMessage = 'Invalid refund amount.';
-        }
-      }
-
-      throw new Error(`${userFriendlyMessage}: ${error.message}`);
-    }
-  }
-
-  async testConnection(): Promise<boolean> {
-    try {
-      console.log('🧪 Testing Stripe connection...');
-      console.log('🧪 Using API version: 2023-10-16');
+      console.log(`🧪 Testing Stripe connection in ${this.getMode()} mode...`);
 
       const account = await this.stripe.accounts.retrieve();
 
-      console.log('✅ Stripe connection successful');
-      console.log('✅ Account ID:', account.id);
-      console.log('✅ Account type:', account.type);
-      console.log('✅ Country:', account.country);
-      console.log('✅ Default currency:', account.default_currency);
+      const result = {
+        connected: true,
+        mode: this.getMode(),
+        environment: process.env.NODE_ENV || 'unknown',
+        accountId: account.id,
+      };
 
-      return true;
+      console.log('✅ Stripe connection successful:', result);
+      return result;
     } catch (error: any) {
       console.error('❌ Stripe connection test failed:', error);
-      console.error('❌ Error type:', error.type);
-      console.error('❌ Error code:', error.code);
 
-      if (error.type === 'StripeAuthenticationError') {
-        console.error('❌ Authentication failed - check your secret key');
-      } else if (error.type === 'StripeConnectionError') {
-        console.error('❌ Network connection failed');
-      }
-
-      return false;
+      return {
+        connected: false,
+        mode: this.getMode(),
+        environment: process.env.NODE_ENV || 'unknown',
+        error: error.message,
+      };
     }
   }
 
-  // Método para validar configuración sin hacer llamadas a la API
-  static validateConfiguration(): { valid: boolean; errors: string[] } {
+  // 🔍 MÉTODO ESTÁTICO PARA VALIDAR CONFIGURACIÓN
+  static validateConfiguration(): {
+    valid: boolean;
+    errors: string[];
+    warnings: string[];
+    mode?: 'test' | 'live';
+  } {
     const errors: string[] = [];
+    const warnings: string[] = [];
 
     if (typeof window !== 'undefined') {
       errors.push('StripeCaller should only be used on the server side');
     }
 
     const secretKey = process.env.STRIPE_SECRET_KEY;
+    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+    // Validar secret key
     if (!secretKey) {
       errors.push('STRIPE_SECRET_KEY environment variable is missing');
     } else if (!secretKey.startsWith('sk_')) {
       errors.push('STRIPE_SECRET_KEY must start with "sk_"');
     }
 
+    // Validar publishable key
+    if (!publishableKey) {
+      errors.push(
+        'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is missing'
+      );
+    } else if (!publishableKey.startsWith('pk_')) {
+      errors.push('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY must start with "pk_"');
+    }
+
+    // Verificar consistencia de modo
+    if (secretKey && publishableKey) {
+      const secretIsLive = secretKey.includes('_live_');
+      const publishableIsLive = publishableKey.includes('_live_');
+
+      if (secretIsLive !== publishableIsLive) {
+        errors.push(
+          'Secret key and publishable key must be in the same mode (both test or both live)'
+        );
+      }
+
+      const mode = secretIsLive ? 'live' : 'test';
+
+      // Advertencias para producción
+      if (process.env.NODE_ENV === 'production' && !secretIsLive) {
+        warnings.push(
+          'Using TEST keys in PRODUCTION environment - no real payments will be processed'
+        );
+      }
+
+      if (mode === 'live') {
+        warnings.push('LIVE MODE ENABLED - Real money will be charged!');
+      }
+
+      return {
+        valid: errors.length === 0,
+        errors,
+        warnings,
+        mode,
+      };
+    }
+
     return {
       valid: errors.length === 0,
       errors,
+      warnings,
     };
   }
 }

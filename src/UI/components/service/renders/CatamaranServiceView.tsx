@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   MapPin,
   Clock,
@@ -17,12 +17,19 @@ import {
   DollarSign,
   AlertCircle,
   Camera,
+  Waves,
+  Play,
+  Heart,
+  Award,
+  ChevronDown,
+  Phone,
+  Mail,
+  Instagram,
+  Facebook,
+  Twitter,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-// Assuming you have these imports in your actual file
-// import BookingModal from '../../modal/BookingModal';
-// import { useBooking } from '@/context/BookingContext';
-// import { BookingDate, Service } from '@/constants/formFields';
+import BookingModal from '../../modal/BookingModal';
 
 // ==================== DATA LAYER ====================
 const CATAMARAN_DATA = {
@@ -31,6 +38,12 @@ const CATAMARAN_DATA = {
     name: 'Destiny',
     category: 'party',
     description: 'High-energy party cruise experience',
+    mood: 'Energetic & Fun',
+    vibe: 'Party all day on crystal waters',
+    heroImage:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/4_vg6qwh.jpg',
+    videoUrl:
+      'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
     image:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/4_vg6qwh.jpg',
     gallery: [
@@ -53,7 +66,7 @@ const CATAMARAN_DATA = {
     duration: '3 hours',
     capacity: 50,
     premium: false,
-    price: 89, // Display price for cards
+    price: 89,
     features: [
       'DJ & Sound System',
       'Dance Floor',
@@ -78,12 +91,18 @@ const CATAMARAN_DATA = {
       'Visita el delfinario para ver a los delfines desde el exterior',
     ],
     notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
+    primaryColor: 'from-purple-600 to-pink-600',
+    accentColor: 'purple-500',
   },
   liberty: {
     id: 'liberty',
     name: 'Liberty',
     category: 'classic',
     description: 'Perfect introduction to Caribbean sailing',
+    mood: 'Classic & Adventurous',
+    vibe: 'Discover paradise with authentic Caribbean vibes',
+    heroImage:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/2_je7e48.jpg',
     image:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/2_je7e48.jpg',
     gallery: [
@@ -105,7 +124,7 @@ const CATAMARAN_DATA = {
     duration: '3 hours',
     capacity: 40,
     premium: false,
-    price: 89, // Display price for cards
+    price: 89,
     features: [
       'Open Bar',
       'Buffet Lunch',
@@ -129,19 +148,24 @@ const CATAMARAN_DATA = {
       'Visita el delfinario para ver a los delfines desde el exterior',
     ],
     notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
+    primaryColor: 'from-blue-600 to-cyan-600',
+    accentColor: 'blue-500',
   },
   '45': {
     id: '45',
     name: '45',
     category: 'sunset',
     description: 'Romantic evening cruise for couples',
+    mood: 'Romantic & Intimate',
+    vibe: 'Fall in love with Caribbean sunsets',
+    heroImage:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802373/6_r2h1ei.jpg',
     image:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802373/6_r2h1ei.jpg',
     gallery: [
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802373/5_srdzk8.jpg',
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802372/4_onfvkv.jpg',
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802371/3_wwn9g3.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802371/2_d9a9ye.jpg',
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802371/2_d9a9ye.jpg',
     ],
     pricing: {
@@ -158,7 +182,7 @@ const CATAMARAN_DATA = {
     duration: '3 hours',
     capacity: 20,
     premium: true,
-    price: 159, // Display price for cards
+    price: 159,
     features: [
       'Champagne Service',
       'Romantic Dinner',
@@ -183,12 +207,18 @@ const CATAMARAN_DATA = {
       'Visita el delfinario para ver a los delfines desde el exterior',
     ],
     notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
+    primaryColor: 'from-orange-600 to-red-600',
+    accentColor: 'orange-500',
   },
   trinity: {
     id: 'trinity',
     name: 'Trinity',
     category: 'premium',
     description: 'Luxury sailing with premium amenities',
+    mood: 'Luxury & Exclusive',
+    vibe: 'Experience the ultimate Caribbean luxury',
+    heroImage:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802359/7_vmobhk.jpg',
     image:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802359/7_vmobhk.jpg',
     gallery: [
@@ -211,7 +241,7 @@ const CATAMARAN_DATA = {
     duration: '3 hours',
     capacity: 30,
     premium: true,
-    price: 129, // Display price for cards
+    price: 129,
     features: [
       'Premium Bar',
       'Gourmet Buffet',
@@ -236,6 +266,8 @@ const CATAMARAN_DATA = {
       'Visita el delfinario para ver a los delfines desde el exterior',
     ],
     notes: 'El cliente puede llevar su propia bebida y comida si lo desea.',
+    primaryColor: 'from-amber-600 to-yellow-600',
+    accentColor: 'amber-500',
   },
 };
 
@@ -253,23 +285,335 @@ const WEATHER_POLICY =
 const calculatePrice = (catamaran, groupSize) => {
   const { minimumRate, baseGroupSize, additionalPersonRate } =
     catamaran.pricing;
-
   if (groupSize <= baseGroupSize) {
     return minimumRate;
   }
-
   const additionalPeople = groupSize - baseGroupSize;
   return minimumRate + additionalPeople * additionalPersonRate;
 };
 
-// ==================== COMPONENTS ====================
+// ==================== IMMERSIVE HERO SECTION ====================
+const ImmersiveHero = ({ selectedCatamaran, onCatamaranSelect }) => {
+  const [currentCatamaranIndex, setCurrentCatamaranIndex] = useState(0);
+  const catamarans = Object.values(CATAMARAN_DATA);
 
-// Touch-friendly Image Gallery Component
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCatamaranIndex((prev) => (prev + 1) % catamarans.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [catamarans.length]);
+
+  const currentCatamaran =
+    selectedCatamaran || catamarans[currentCatamaranIndex];
+
+  return (
+    <div className='relative h-screen overflow-hidden'>
+      {/* Background with Ken Burns Effect */}
+      <AnimatePresence mode='wait'>
+        <motion.div
+          key={currentCatamaran.id}
+          className='absolute inset-0'
+          initial={{ scale: 1.2, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          transition={{ duration: 1.5, ease: 'easeInOut' }}
+        >
+          <div className='absolute inset-0 overflow-hidden'>
+            <img
+              src={currentCatamaran.heroImage}
+              alt={currentCatamaran.name}
+              className='w-full h-full object-cover scale-110'
+            />
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Dynamic Gradient Based on Catamaran */}
+      <motion.div
+        className={`absolute inset-0 bg-gradient-to-br ${currentCatamaran.primaryColor} opacity-70`}
+        animate={{ opacity: [0.6, 0.8, 0.6] }}
+        transition={{ duration: 4, repeat: Infinity }}
+      />
+
+      <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40' />
+
+      {/* Floating Particles */}
+      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            className='absolute w-2 h-2 bg-white/20 rounded-full'
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [-20, -100],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Main Content */}
+      <div className='absolute inset-0 flex items-center justify-center z-10'>
+        <div className='text-center text-white max-w-6xl px-8'>
+          <AnimatePresence mode='wait'>
+            <motion.div
+              key={currentCatamaran.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.h1
+                className='text-7xl md:text-9xl font-black mb-6 leading-none'
+                style={{
+                  background: `linear-gradient(135deg, white, #e0f2fe, white)`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                {currentCatamaran.name}
+              </motion.h1>
+
+              <motion.p
+                className='text-2xl md:text-4xl mb-4 font-light opacity-90'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                {currentCatamaran.mood}
+              </motion.p>
+
+              <motion.p
+                className='text-lg md:text-xl mb-8 max-w-3xl mx-auto opacity-80'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {currentCatamaran.vibe}
+              </motion.p>
+
+              <motion.div
+                className='flex flex-wrap justify-center gap-4 mb-12'
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                {currentCatamaran.highlights.map((highlight, index) => (
+                  <span
+                    key={index}
+                    className='px-6 py-3 bg-white/20 backdrop-blur-md rounded-full border border-white/30 text-sm font-medium'
+                  >
+                    {highlight}
+                  </span>
+                ))}
+              </motion.div>
+
+              <motion.button
+                className='group bg-white text-gray-900 px-12 py-6 rounded-full text-xl font-bold shadow-2xl hover:shadow-white/25 transition-all duration-300'
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => onCatamaranSelect(currentCatamaran)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                <span className='flex items-center gap-3'>
+                  Start Your Adventure
+                  <ArrowRight className='w-6 h-6 group-hover:translate-x-2 transition-transform' />
+                </span>
+              </motion.button>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Catamaran Selector */}
+      <div className='absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4'>
+        {catamarans.map((catamaran, index) => (
+          <motion.button
+            key={catamaran.id}
+            className={`w-16 h-16 rounded-full border-2 overflow-hidden transition-all duration-300 ${
+              index === currentCatamaranIndex
+                ? 'border-white scale-110'
+                : 'border-white/50 hover:border-white/80'
+            }`}
+            onClick={() => {
+              setCurrentCatamaranIndex(index);
+              onCatamaranSelect(catamaran);
+            }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <img
+              src={catamaran.image}
+              alt={catamaran.name}
+              className='w-full h-full object-cover'
+            />
+          </motion.button>
+        ))}
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        className='absolute bottom-8 right-8 text-white/70'
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        <ChevronDown className='w-8 h-8' />
+      </motion.div>
+    </div>
+  );
+};
+
+// ==================== IMMERSIVE EXPERIENCE SHOWCASE ====================
+const ExperienceShowcase = ({ catamaran }) => {
+  const [activeExperience, setActiveExperience] = useState(0);
+
+  const experiences = [
+    {
+      title: 'Crystal Waters',
+      description: 'Sail through the most pristine Caribbean waters',
+      image: catamaran.gallery[0],
+      icon: Waves,
+    },
+    {
+      title: 'Adventure Awaits',
+      description: 'Snorkel, swim, and explore hidden coves',
+      image: catamaran.gallery[1] || catamaran.gallery[0],
+      icon: Camera,
+    },
+    {
+      title: 'Pure Paradise',
+      description: 'Create memories that last a lifetime',
+      image: catamaran.gallery[2] || catamaran.gallery[0],
+      icon: Heart,
+    },
+  ];
+
+  return (
+    <section className='relative py-32 overflow-hidden'>
+      <div className='absolute inset-0 bg-gradient-to-br from-slate-900 to-gray-900' />
+
+      {/* Background Pattern */}
+      <div className='absolute inset-0 opacity-10'>
+        <div
+          className='absolute inset-0'
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
+
+      <div className='relative max-w-7xl mx-auto px-8'>
+        <motion.div
+          className='text-center mb-20'
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className='text-6xl md:text-7xl font-black text-white mb-6'>
+            Your{' '}
+            <span
+              className={`text-transparent bg-clip-text bg-gradient-to-r ${catamaran.primaryColor}`}
+            >
+              {catamaran.name}
+            </span>{' '}
+            Experience
+          </h2>
+          <p className='text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
+            Every moment aboard {catamaran.name} is designed to create
+            unforgettable memories in Caribbean paradise.
+          </p>
+        </motion.div>
+
+        <div className='grid lg:grid-cols-2 gap-16 items-center'>
+          {/* Experience Content */}
+          <div className='space-y-8'>
+            {experiences.map((experience, index) => (
+              <motion.div
+                key={index}
+                className={`cursor-pointer transition-all duration-500 ${
+                  activeExperience === index
+                    ? 'opacity-100'
+                    : 'opacity-40 hover:opacity-70'
+                }`}
+                onClick={() => setActiveExperience(index)}
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{
+                  opacity: activeExperience === index ? 1 : 0.4,
+                  x: 0,
+                }}
+                transition={{ delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <div className='flex items-center gap-6 p-6 rounded-2xl hover:bg-white/5 transition-colors'>
+                  <div
+                    className={`p-4 rounded-xl bg-gradient-to-r ${catamaran.primaryColor}`}
+                  >
+                    <experience.icon className='w-8 h-8 text-white' />
+                  </div>
+                  <div>
+                    <h3 className='text-2xl font-bold text-white mb-2'>
+                      {experience.title}
+                    </h3>
+                    <p className='text-gray-300 text-lg'>
+                      {experience.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Experience Image */}
+          <div className='relative'>
+            <AnimatePresence mode='wait'>
+              <motion.div
+                key={activeExperience}
+                className='relative rounded-3xl overflow-hidden shadow-2xl'
+                initial={{ opacity: 0, scale: 0.9, rotateY: 90 }}
+                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                exit={{ opacity: 0, scale: 1.1, rotateY: -90 }}
+                transition={{ duration: 0.6 }}
+              >
+                <img
+                  src={experiences[activeExperience].image}
+                  alt={experiences[activeExperience].title}
+                  className='w-full h-96 object-cover'
+                />
+                <div
+                  className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent`}
+                />
+                <div className='absolute bottom-6 left-6'>
+                  <h4 className='text-white text-xl font-bold'>
+                    {experiences[activeExperience].title}
+                  </h4>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ==================== ENHANCED TOUCH GALLERY ====================
 const TouchGallery = ({ images, currentIndex, onIndexChange }) => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  // Minimum distance for swipe
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
@@ -283,355 +627,122 @@ const TouchGallery = ({ images, currentIndex, onIndexChange }) => {
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
-      // Swipe left - next image
       onIndexChange((currentIndex + 1) % images.length);
     }
     if (isRightSwipe) {
-      // Swipe right - previous image
       onIndexChange(currentIndex === 0 ? images.length - 1 : currentIndex - 1);
     }
   };
 
-  const handleImageClick = () => {
-    // Click to go to next image
-    onIndexChange((currentIndex + 1) % images.length);
-  };
-
   return (
-    <div className='relative'>
+    <div className='relative group'>
       <div
-        className='relative h-64 overflow-hidden rounded-lg cursor-pointer'
+        className='relative h-96 overflow-hidden rounded-3xl cursor-pointer shadow-2xl'
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        onClick={handleImageClick}
+        onClick={() => onIndexChange((currentIndex + 1) % images.length)}
       >
-        <img
-          src={images[currentIndex]}
-          alt={`Gallery image ${currentIndex + 1}`}
-          className='w-full h-full object-cover transition-opacity duration-300'
-        />
+        <AnimatePresence mode='wait'>
+          <motion.img
+            key={currentIndex}
+            src={images[currentIndex]}
+            alt={`Gallery ${currentIndex + 1}`}
+            className='w-full h-full object-cover'
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5 }}
+          />
+        </AnimatePresence>
 
-        {/* Click/Swipe indicator */}
-        <div className='absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs'>
-          Tap or swipe for next image
-        </div>
-
-        {/* Image Counter */}
-        <div className='absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-sm'>
-          {currentIndex + 1} / {images.length}
-        </div>
-      </div>
-
-      {/* Thumbnail Strip */}
-      <div className='flex gap-2 mt-3 overflow-x-auto'>
-        {images.map((image, index) => (
-          <button
-            key={index}
-            onClick={() => onIndexChange(index)}
-            className={`flex-shrink-0 w-16 h-16 overflow-hidden rounded border-2 transition ${
-              index === currentIndex ? 'border-blue-500' : 'border-transparent'
-            }`}
-          >
-            <img
-              src={image}
-              alt={`Thumbnail ${index + 1}`}
-              className='w-full h-full object-cover'
+        {/* Navigation Dots */}
+        <div className='absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2'>
+          {images.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentIndex
+                  ? 'bg-white w-8'
+                  : 'bg-white/50 hover:bg-white/80'
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onIndexChange(index);
+              }}
             />
-          </button>
-        ))}
+          ))}
+        </div>
+
+        {/* Touch Indicator */}
+        <div className='absolute top-4 left-4 bg-black/30 backdrop-blur-md text-white px-3 py-1 rounded-full text-sm opacity-0 group-hover:opacity-100 transition-opacity'>
+          Tap or swipe
+        </div>
       </div>
     </div>
   );
 };
 
-// Pricing Calculator Component
+// ==================== PRICING CALCULATOR ====================
 const PricingCalculator = ({ catamaran, groupSize, onGroupSizeChange }) => {
   const price = calculatePrice(catamaran, groupSize);
-  const isMinimumRate = groupSize <= catamaran.pricing.baseGroupSize;
-
-  return (
-    <div className='bg-blue-50 rounded-lg p-4'>
-      <h4 className='font-semibold text-gray-800 mb-3 flex items-center'>
-        <DollarSign className='w-4 h-4 mr-2' />
-        Pricing Calculator
-      </h4>
-
-      <div className='space-y-3'>
-        <div className='flex items-center justify-between'>
-          <label className='text-sm font-medium'>Group Size:</label>
-          <div className='flex items-center gap-2'>
-            <button
-              onClick={() => onGroupSizeChange(Math.max(1, groupSize - 1))}
-              className='w-8 h-8 bg-white border rounded flex items-center justify-center hover:bg-gray-50'
-            >
-              -
-            </button>
-            <span className='w-8 text-center font-medium'>{groupSize}</span>
-            <button
-              onClick={() => onGroupSizeChange(groupSize + 1)}
-              className='w-8 h-8 bg-white border rounded flex items-center justify-center hover:bg-gray-50'
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className='border-t pt-3'>
-          <div className='flex justify-between text-sm text-gray-600 mb-1'>
-            <span>
-              Minimum rate (1-{catamaran.pricing.baseGroupSize} people):
-            </span>
-            <span>${catamaran.pricing.minimumRate}</span>
-          </div>
-
-          {!isMinimumRate && (
-            <div className='flex justify-between text-sm text-gray-600 mb-1'>
-              <span>
-                Additional people ({groupSize - catamaran.pricing.baseGroupSize}
-                ):
-              </span>
-              <span>
-                +$
-                {(groupSize - catamaran.pricing.baseGroupSize) *
-                  catamaran.pricing.additionalPersonRate}
-              </span>
-            </div>
-          )}
-
-          <div className='flex justify-between font-bold text-lg text-blue-600 border-t pt-2'>
-            <span>Total Price:</span>
-            <span>${price} USD</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Catamaran Details Sidebar/Modal Component
-const CatamaranDetailsModal = ({ catamaran, isOpen, onClose, onBook }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [groupSize, setGroupSize] = useState(2);
-
-  if (!isOpen || !catamaran) return null;
-
-  const handleBookNow = () => {
-    onBook(catamaran, groupSize);
-  };
-
-  return (
-    <div className='fixed inset-0 z-50 flex'>
-      {/* Backdrop */}
-      <div className='absolute inset-0 bg-black/50' onClick={onClose} />
-
-      {/* Sidebar Content */}
-      <div className='relative ml-auto h-full w-full max-w-2xl bg-white shadow-2xl overflow-y-auto'>
-        {/* Header */}
-        <div className='sticky top-0 bg-white border-b p-6 flex items-center justify-between z-10'>
-          <div className='flex items-center'>
-            <div>
-              <h2 className='text-2xl font-bold text-gray-800'>
-                {catamaran.name}
-              </h2>
-              <p className='text-gray-600'>{catamaran.description}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className='p-2 hover:bg-gray-100 rounded-full transition'
-          >
-            <X className='w-6 h-6' />
-          </button>
-        </div>
-
-        <div className='p-6 space-y-8'>
-          {/* Image Gallery */}
-          <section>
-            <h3 className='text-lg font-semibold mb-4 flex items-center'>
-              <Camera className='w-5 h-5 mr-2' />
-              Gallery
-            </h3>
-            <TouchGallery
-              images={catamaran.gallery}
-              currentIndex={currentImageIndex}
-              onIndexChange={setCurrentImageIndex}
-            />
-          </section>
-
-          {/* Pricing Calculator */}
-          <section>
-            <PricingCalculator
-              catamaran={catamaran}
-              groupSize={groupSize}
-              onGroupSizeChange={setGroupSize}
-            />
-          </section>
-
-          {/* Time Slots */}
-          <section>
-            <h3 className='text-lg font-semibold mb-4 flex items-center'>
-              <Clock className='w-5 h-5 mr-2' />
-              Available Time Slots
-            </h3>
-            <div className='grid gap-3'>
-              {catamaran.timeSlots.map((slot) => (
-                <div
-                  key={slot.id}
-                  className='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
-                >
-                  <span className='font-medium'>{slot.time}</span>
-                  <span className='text-sm text-gray-600'>
-                    {catamaran.duration}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* What's Included */}
-          <section>
-            <h3 className='text-lg font-semibold mb-4 flex items-center'>
-              <Check className='w-5 h-5 mr-2' />
-              What's Included
-            </h3>
-            <div className='space-y-2'>
-              {catamaran.includes.map((item, index) => (
-                <div key={index} className='flex items-start'>
-                  <Check className='w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0' />
-                  <span className='text-sm text-gray-700'>{item}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Destinations */}
-          <section>
-            <h3 className='text-lg font-semibold mb-4 flex items-center'>
-              <MapPin className='w-5 h-5 mr-2' />
-              Destinations
-            </h3>
-            <div className='space-y-2'>
-              {catamaran.destinations.map((destination, index) => (
-                <div key={index} className='flex items-start'>
-                  <MapPin className='w-4 h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0' />
-                  <span className='text-sm text-gray-700'>{destination}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Additional Notes */}
-          {catamaran.notes && (
-            <section>
-              <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
-                <p className='text-sm text-amber-800'>{catamaran.notes}</p>
-              </div>
-            </section>
-          )}
-
-          {/* Cancellation Policy */}
-          <section>
-            <h3 className='text-lg font-semibold mb-4 flex items-center'>
-              <Shield className='w-5 h-5 mr-2' />
-              Cancellation Policy
-            </h3>
-            <div className='space-y-2'>
-              {CANCELLATION_POLICY.map((policy, index) => (
-                <div key={index} className='flex items-start'>
-                  <AlertCircle className='w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0' />
-                  <span className='text-sm text-gray-700'>{policy}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-              <p className='text-sm text-blue-800'>{WEATHER_POLICY}</p>
-            </div>
-          </section>
-        </div>
-
-        {/* Footer with Book Button */}
-        <div className='sticky bottom-0 bg-white border-t p-6'>
-          <button
-            onClick={handleBookNow}
-            className='w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl'
-          >
-            <Calendar className='w-5 h-5 mr-2' />
-            Book {catamaran.name} - ${calculatePrice(catamaran, groupSize)} USD
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Original Catamaran Selection Card Component (maintained as before)
-const CatamaranCard = ({ catamaran, isSelected, onSelect, onViewDetails }) => {
-  const getIcon = (catamaranId) => {
-    switch (catamaranId) {
-      case 'liberty':
-        return Anchor;
-      case 'trinity':
-        return Star;
-      case '45':
-        return Sun;
-      case 'destiny':
-        return Music;
-      default:
-        return Anchor;
-    }
-  };
-
-  const IconComponent = getIcon(catamaran.id);
 
   return (
     <motion.div
-      className={`relative overflow-hidden rounded-3xl cursor-pointer transition-all duration-500 group ${
-        isSelected
-          ? 'ring-4 ring-cyan-500 shadow-2xl scale-105'
-          : 'hover:scale-102 hover:shadow-xl'
-      }`}
-      onClick={onViewDetails}
-      whileHover={{ y: -5 }}
-      layout
+      className={`relative overflow-hidden bg-gradient-to-br ${catamaran.primaryColor} rounded-3xl p-8 text-white shadow-2xl`}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      <div className='relative h-80'>
-        <img
-          src={catamaran.image}
-          alt={catamaran.name}
-          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
-        />
-        <div className='absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent' />
+      <div className='absolute inset-0 bg-white/10 backdrop-blur-sm' />
+      <div className='relative'>
+        <h4 className='text-2xl font-bold mb-6 flex items-center'>
+          <DollarSign className='w-7 h-7 mr-3' />
+          Calculate Your Price
+        </h4>
 
-        {catamaran.premium && (
-          <div className='absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg'>
-            Premium
+        <div className='space-y-6'>
+          <div className='flex items-center justify-between'>
+            <span className='text-lg font-medium'>Group Size:</span>
+            <div className='flex items-center gap-4'>
+              <button
+                onClick={() => onGroupSizeChange(Math.max(1, groupSize - 1))}
+                className='w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center font-bold text-xl transition-colors'
+              >
+                -
+              </button>
+              <span className='text-2xl font-bold w-16 text-center'>
+                {groupSize}
+              </span>
+              <button
+                onClick={() => onGroupSizeChange(groupSize + 1)}
+                className='w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center font-bold text-xl transition-colors'
+              >
+                +
+              </button>
+            </div>
           </div>
-        )}
 
-        <div className='absolute top-4 left-4 bg-white/20 backdrop-blur-md rounded-full p-3'>
-          <IconComponent className='w-6 h-6 text-white' />
-        </div>
-      </div>
-
-      <div className='absolute bottom-0 left-0 right-0 p-4 text-white'>
-        <h3 className='text-2xl font-bold mb-2'>{catamaran.name}</h3>
-        <div className='flex items-center justify-between mb-4'>
-          <span className='text-3xl font-bold text-cyan-300'>
-            ${catamaran.price}
-            <span className='text-lg text-white/70'>/person</span>
-          </span>
-          <div className='flex items-center gap-4 text-white/80 text-sm'>
-            <div className='flex items-center gap-1'>
-              <Users className='w-4 h-4' />
-              <span>{catamaran.capacity}</span>
+          <div className='border-t border-white/20 pt-6'>
+            <div className='text-center'>
+              <div className='text-sm opacity-80 mb-2'>Total Price</div>
+              <motion.div
+                className='text-5xl font-black'
+                key={price}
+                initial={{ scale: 1.2 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.2 }}
+              >
+                ${price}
+              </motion.div>
+              <div className='text-sm opacity-80'>
+                USD for {groupSize} people
+              </div>
             </div>
           </div>
         </div>
@@ -640,61 +751,196 @@ const CatamaranCard = ({ catamaran, isSelected, onSelect, onViewDetails }) => {
   );
 };
 
-// Catamaran Selection Section (maintained as before)
+// ==================== CATAMARAN DETAILS MODAL ====================
+const CatamaranDetailsModal = ({ catamaran, isOpen, onClose, onBook }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [groupSize, setGroupSize] = useState(2);
+
+  if (!isOpen || !catamaran) return null;
+
+  return (
+    <AnimatePresence>
+      <div className='fixed inset-0 z-50'>
+        <motion.div
+          className='absolute inset-0 bg-black/80 backdrop-blur-sm'
+          onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+
+        <motion.div
+          className='absolute right-0 top-0 h-full w-full max-w-4xl bg-white shadow-2xl overflow-y-auto'
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        >
+          {/* Header */}
+          <div
+            className={`sticky top-0 bg-gradient-to-r ${catamaran.primaryColor} text-white p-8 z-10`}
+          >
+            <div className='flex justify-between items-start'>
+              <div>
+                <h2 className='text-4xl font-black mb-2'>{catamaran.name}</h2>
+                <p className='text-xl opacity-90'>{catamaran.description}</p>
+              </div>
+              <button
+                onClick={onClose}
+                className='p-3 hover:bg-white/20 rounded-full transition-colors'
+              >
+                <X className='w-8 h-8' />
+              </button>
+            </div>
+          </div>
+
+          <div className='p-8 space-y-12'>
+            {/* Gallery */}
+            <section>
+              <h3 className='text-3xl font-bold mb-6'>Experience Gallery</h3>
+              <TouchGallery
+                images={catamaran.gallery}
+                currentIndex={currentImageIndex}
+                onIndexChange={setCurrentImageIndex}
+              />
+            </section>
+
+            {/* Pricing */}
+            <section>
+              <PricingCalculator
+                catamaran={catamaran}
+                groupSize={groupSize}
+                onGroupSizeChange={setGroupSize}
+              />
+            </section>
+
+            {/* Features Grid */}
+            <section>
+              <h3 className='text-3xl font-bold mb-6'>What's Included</h3>
+              <div className='grid md:grid-cols-2 gap-4'>
+                {catamaran.includes.map((item, index) => (
+                  <div
+                    key={index}
+                    className='flex items-center gap-3 p-4 bg-gray-50 rounded-xl'
+                  >
+                    <Check className='w-5 h-5 text-green-500 flex-shrink-0' />
+                    <span className='text-gray-700'>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Time Slots */}
+            <section>
+              <h3 className='text-3xl font-bold mb-6'>Available Times</h3>
+              <div className='grid gap-4'>
+                {catamaran.timeSlots.map((slot) => (
+                  <div
+                    key={slot.id}
+                    className='flex justify-between items-center p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer'
+                  >
+                    <span className='text-lg font-semibold'>{slot.time}</span>
+                    <span className='text-gray-600'>{catamaran.duration}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* Footer */}
+          <div className='sticky bottom-0 bg-white border-t p-8'>
+            <button
+              onClick={() => onBook(catamaran, groupSize)}
+              className={`w-full bg-gradient-to-r ${catamaran.primaryColor} text-white py-6 rounded-2xl text-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-3`}
+            >
+              <Calendar className='w-6 h-6' />
+              Book {catamaran.name} - ${calculatePrice(catamaran, groupSize)}{' '}
+              USD
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
+
+// ==================== CATAMARAN SELECTION GRID ====================
 const CatamaranSelection = ({ onCatamaranViewDetails }) => {
   return (
-    <section className='py-20 px-4 bg-gradient-to-br from-blue-50 to-cyan-50'>
+    <section className='py-24 px-8'>
       <div className='max-w-7xl mx-auto'>
-        <div className='text-center mb-12'>
-          <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full mb-4'>
-            <Sparkles className='w-4 h-4 text-blue-600' />
-            <span className='text-blue-700 font-medium'>
-              Choose Your Adventure
+        <motion.div
+          className='text-center mb-16'
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className='text-5xl md:text-6xl font-black text-gray-900 mb-6'>
+            Choose Your{' '}
+            <span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600'>
+              Adventure
             </span>
-          </div>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
-            Select Your{' '}
-            <span className='text-cyan-500'>Catamaran Experience</span>
           </h2>
-          <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
-            Each catamaran offers a unique Caribbean adventure. Choose the
-            perfect experience for your group size and preferences.
+          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+            Four unique experiences, each designed to create unforgettable
+            Caribbean memories.
           </p>
-        </div>
+        </motion.div>
 
-        <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-8'>
-          {Object.values(CATAMARAN_DATA).map((catamaran) => (
-            <CatamaranCard
+        <div
+          className='grid md:grid-cols-2 gap-8'
+          data-section='catamaran-selection'
+        >
+          {Object.values(CATAMARAN_DATA).map((catamaran, index) => (
+            <motion.div
               key={catamaran.id}
-              catamaran={catamaran}
-              isSelected={false}
-              onViewDetails={() => onCatamaranViewDetails(catamaran)}
-            />
-          ))}
-        </div>
+              className='group relative overflow-hidden rounded-3xl cursor-pointer shadow-2xl hover:shadow-3xl transition-all duration-700'
+              onClick={() => onCatamaranViewDetails(catamaran)}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.6 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -8, scale: 1.02 }}
+            >
+              <div className='relative h-80 overflow-hidden'>
+                <img
+                  src={catamaran.image}
+                  alt={catamaran.name}
+                  className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+                />
+                <div
+                  className={`absolute inset-0 bg-gradient-to-t ${catamaran.primaryColor} opacity-60 group-hover:opacity-40 transition-opacity`}
+                />
 
-        <div className='mt-12 text-center'>
-          <div className='inline-flex items-center gap-6 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg'>
-            <div className='flex items-center gap-2 text-sm text-gray-700'>
-              <Shield className='w-4 h-4 text-green-500' />
-              <span>All safety equipment included</span>
-            </div>
-            <div className='flex items-center gap-2 text-sm text-gray-700'>
-              <LifeBuoy className='w-4 h-4 text-blue-500' />
-              <span>Professional crew</span>
-            </div>
-            <div className='flex items-center gap-2 text-sm text-gray-700'>
-              <MapPin className='w-4 h-4 text-red-500' />
-              <span>Multiple pickup locations</span>
-            </div>
-          </div>
+                {catamaran.premium && (
+                  <div className='absolute top-6 right-6 bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2'>
+                    <Award className='w-4 h-4' />
+                    Premium
+                  </div>
+                )}
+              </div>
+
+              <div className='absolute inset-0 flex flex-col justify-end p-8 text-white'>
+                <h3 className='text-4xl font-black mb-2'>{catamaran.name}</h3>
+                <p className='text-lg mb-4 opacity-90'>{catamaran.mood}</p>
+                <div className='flex justify-between items-end'>
+                  <span className='text-3xl font-bold'>
+                    ${catamaran.price}
+                    <span className='text-lg opacity-80'>/person</span>
+                  </span>
+                  <ArrowRight className='w-6 h-6 transform group-hover:translate-x-2 transition-transform' />
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
 };
 
-// Features Comparison Section (maintained as before)
+// ==================== FEATURES COMPARISON ====================
 const FeaturesComparison = () => {
   const features = [
     {
@@ -739,36 +985,49 @@ const FeaturesComparison = () => {
       '45': true,
       destiny: false,
     },
-    {
-      name: 'Couples Massage',
-      liberty: false,
-      trinity: false,
-      '45': true,
-      destiny: false,
-    },
   ];
 
   return (
-    <section className='py-16 bg-white'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
-            Compare <span className='text-cyan-500'>Experiences</span>
+    <section className='py-24 bg-gray-50'>
+      <div className='max-w-6xl mx-auto px-8'>
+        <motion.div
+          className='text-center mb-16'
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className='text-5xl font-black text-gray-900 mb-6'>
+            Compare{' '}
+            <span className='text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600'>
+              Experiences
+            </span>
           </h2>
-          <p className='text-lg text-gray-600'>
-            Find the perfect catamaran experience for your preferences
-          </p>
-        </div>
+        </motion.div>
 
-        <div className='overflow-x-auto'>
-          <table className='w-full bg-white rounded-2xl shadow-lg overflow-hidden'>
-            <thead className='bg-gradient-to-r from-cyan-500 to-blue-500 text-white'>
+        <motion.div
+          className='overflow-hidden rounded-3xl shadow-2xl'
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <table className='w-full bg-white'>
+            <thead className='bg-gradient-to-r from-gray-900 to-gray-800 text-white'>
               <tr>
-                <th className='px-6 py-4 text-left font-semibold'>Features</th>
-                <th className='px-6 py-4 text-center font-semibold'>Liberty</th>
-                <th className='px-6 py-4 text-center font-semibold'>Destiny</th>
-                <th className='px-6 py-4 text-center font-semibold'>45</th>
-                <th className='px-6 py-4 text-center font-semibold'>Trinity</th>
+                <th className='px-8 py-6 text-left text-lg font-bold'>
+                  Features
+                </th>
+                <th className='px-8 py-6 text-center text-lg font-bold'>
+                  Liberty
+                </th>
+                <th className='px-8 py-6 text-center text-lg font-bold'>
+                  Destiny
+                </th>
+                <th className='px-8 py-6 text-center text-lg font-bold'>45</th>
+                <th className='px-8 py-6 text-center text-lg font-bold'>
+                  Trinity
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -777,126 +1036,91 @@ const FeaturesComparison = () => {
                   key={feature.name}
                   className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}
                 >
-                  <td className='px-6 py-4 font-medium text-gray-800'>
+                  <td className='px-8 py-6 font-semibold text-gray-900'>
                     {feature.name}
                   </td>
-                  <td className='px-6 py-4 text-center'>
-                    {typeof feature.liberty === 'boolean' ? (
-                      feature.liberty ? (
-                        <Check className='w-5 h-5 text-green-500 mx-auto' />
+                  {['liberty', 'destiny', '45', 'trinity'].map((catamaran) => (
+                    <td key={catamaran} className='px-8 py-6 text-center'>
+                      {typeof feature[catamaran] === 'boolean' ? (
+                        feature[catamaran] ? (
+                          <Check className='w-6 h-6 text-green-500 mx-auto' />
+                        ) : (
+                          <X className='w-6 h-6 text-red-500 mx-auto' />
+                        )
                       ) : (
-                        <X className='w-5 h-5 text-red-500 mx-auto' />
-                      )
-                    ) : (
-                      <span className='text-sm text-gray-700'>
-                        {feature.liberty}
-                      </span>
-                    )}
-                  </td>
-                  <td className='px-6 py-4 text-center'>
-                    {typeof feature.destiny === 'boolean' ? (
-                      feature.destiny ? (
-                        <Check className='w-5 h-5 text-green-500 mx-auto' />
-                      ) : (
-                        <X className='w-5 h-5 text-red-500 mx-auto' />
-                      )
-                    ) : (
-                      <span className='text-sm text-gray-700'>
-                        {feature.destiny}
-                      </span>
-                    )}
-                  </td>
-                  <td className='px-6 py-4 text-center'>
-                    {typeof feature['45'] === 'boolean' ? (
-                      feature['45'] ? (
-                        <Check className='w-5 h-5 text-green-500 mx-auto' />
-                      ) : (
-                        <X className='w-5 h-5 text-red-500 mx-auto' />
-                      )
-                    ) : (
-                      <span className='text-sm text-gray-700'>
-                        {feature['45']}
-                      </span>
-                    )}
-                  </td>
-                  <td className='px-6 py-4 text-center'>
-                    {typeof feature.trinity === 'boolean' ? (
-                      feature.trinity ? (
-                        <Check className='w-5 h-5 text-green-500 mx-auto' />
-                      ) : (
-                        <X className='w-5 h-5 text-red-500 mx-auto' />
-                      )
-                    ) : (
-                      <span className='text-sm text-gray-700'>
-                        {feature.trinity}
-                      </span>
-                    )}
-                  </td>
+                        <span className='px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold'>
+                          {feature[catamaran]}
+                        </span>
+                      )}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 };
 
-// Gallery Section (maintained as before)
+// ==================== GALLERY SECTION ====================
 const GallerySection = () => {
   const images = [
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802356/3_syxzqo.jpg',
-      alt: 'Catamaran in crystal clear waters',
-      title: 'Crystal Clear Waters',
+      title: 'Crystal Waters',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/1_wvnp2r.jpg',
-      alt: 'Snorkeling from catamaran',
-      title: 'Snorkeling Adventures',
+      title: 'Snorkel Adventure',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802334/2_vrbyj2.jpg',
-      alt: 'Water slide fun',
-      title: 'Water Slide Thrills',
+      title: 'Water Slide Fun',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756802312/3_cz2ios.jpg',
-      alt: 'Sunset catamaran cruise',
-      title: 'Stunning Sunsets',
+      title: 'Sunset Views',
     },
   ];
 
   return (
-    <section className='py-16 bg-gradient-to-br from-blue-50 to-cyan-50'>
-      <div className='max-w-6xl mx-auto px-4'>
-        <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
-            Experience <span className='text-cyan-500'>Gallery</span>
+    <section className='py-24 bg-gray-900'>
+      <div className='max-w-7xl mx-auto px-8'>
+        <motion.div
+          className='text-center mb-16'
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className='text-5xl font-black text-white mb-6'>
+            Experience{' '}
+            <span className='text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400'>
+              Paradise
+            </span>
           </h2>
-          <p className='text-lg text-gray-600'>
-            See what awaits you on the crystal-clear Caribbean waters
-          </p>
-        </div>
+        </motion.div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+        <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
           {images.map((image, index) => (
             <motion.div
               key={index}
-              className='group relative overflow-hidden rounded-2xl h-64 shadow-lg'
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              className='group relative overflow-hidden rounded-2xl aspect-square cursor-pointer'
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.6 }}
+              viewport={{ once: true }}
               whileHover={{ scale: 1.05 }}
             >
               <img
                 src={image.src}
-                alt={image.alt}
-                className='w-full h-full object-cover transition-all duration-500 group-hover:scale-110'
+                alt={image.title}
+                className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
               />
-              <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-
-              <div className='absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
+              <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity' />
+              <div className='absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity'>
                 <h3 className='text-lg font-bold'>{image.title}</h3>
               </div>
             </motion.div>
@@ -907,7 +1131,7 @@ const GallerySection = () => {
   );
 };
 
-// Reviews Section (maintained as before)
+// ==================== REVIEWS SECTION ====================
 const ReviewsSection = () => {
   const reviews = [
     {
@@ -934,45 +1158,62 @@ const ReviewsSection = () => {
   ];
 
   return (
-    <section className='py-16 px-4 bg-white'>
-      <div className='max-w-5xl mx-auto'>
-        <div className='text-center mb-12'>
-          <h2 className='text-3xl md:text-4xl font-bold mb-4 text-gray-800'>
-            Guest <span className='text-cyan-500'>Reviews</span>
+    <section className='py-24 px-8 bg-white'>
+      <div className='max-w-6xl mx-auto'>
+        <motion.div
+          className='text-center mb-16'
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className='text-5xl font-black text-gray-900 mb-6'>
+            Guest{' '}
+            <span className='text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600'>
+              Stories
+            </span>
           </h2>
-          <div className='flex justify-center items-center gap-1'>
+          <div className='flex justify-center items-center gap-2 mb-4'>
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className='w-5 h-5 fill-amber-400 text-amber-400' />
+              <Star key={i} className='w-6 h-6 fill-amber-400 text-amber-400' />
             ))}
-            <span className='ml-2 text-gray-600'>
+            <span className='ml-3 text-xl text-gray-600 font-semibold'>
               4.9 from 2,500+ adventures
             </span>
           </div>
-        </div>
+        </motion.div>
 
-        <div className='grid md:grid-cols-3 gap-6'>
+        <div className='grid md:grid-cols-3 gap-8'>
           {reviews.map((review, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className='bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow'
+              className='bg-gray-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-shadow'
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.2, duration: 0.6 }}
+              viewport={{ once: true }}
             >
-              <div className='flex gap-1 mb-3'>
+              <div className='flex gap-1 mb-4'>
                 {[...Array(review.rating)].map((_, i) => (
                   <Star
                     key={i}
-                    className='w-4 h-4 fill-amber-400 text-amber-400'
+                    className='w-5 h-5 fill-amber-400 text-amber-400'
                   />
                 ))}
               </div>
-              <p className='text-gray-700 mb-4'>"{review.text}"</p>
-              <div className='flex justify-between items-center text-sm'>
+              <p className='text-gray-700 mb-6 text-lg leading-relaxed'>
+                "{review.text}"
+              </p>
+              <div className='flex justify-between items-center'>
                 <div>
-                  <p className='font-medium text-gray-800'>{review.name}</p>
-                  <p className='text-cyan-600 text-xs'>{review.experience}</p>
+                  <p className='font-bold text-gray-900'>{review.name}</p>
+                  <p className='text-cyan-600 text-sm font-semibold'>
+                    {review.experience}
+                  </p>
                 </div>
-                <span className='text-gray-500'>{review.date}</span>
+                <span className='text-gray-500 text-sm'>{review.date}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -980,14 +1221,13 @@ const ReviewsSection = () => {
   );
 };
 
-// Main Component
+// ==================== MAIN COMPONENT ====================
 const CatamaranServiceView = () => {
   const [selectedCatamaran, setSelectedCatamaran] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const { bookService } = useBooking(); // Uncomment when using real context
+  const [heroSelectedCatamaran, setHeroSelectedCatamaran] = useState(null);
 
-  // Create service object for your existing BookingModal
   const createServiceFromCatamaran = (catamaran) => ({
     id: `catamaran-${catamaran.id}`,
     name: `Catamaran ${catamaran.name}`,
@@ -1016,8 +1256,6 @@ const CatamaranServiceView = () => {
     : null;
 
   const handleBookingConfirm = (service, dates, guests) => {
-    // Your existing booking logic
-    // bookService(service, dates, guests);
     setIsModalOpen(false);
     console.log('Booking confirmed:', { service, dates, guests });
   };
@@ -1033,121 +1271,87 @@ const CatamaranServiceView = () => {
   };
 
   const handleBookFromDetails = (catamaran, groupSize) => {
-    setSelectedCatamaran(catamaran);
+    // Ensure the catamaran object has all required properties for CatamaranForm
+    const enrichedCatamaran = {
+      ...catamaran,
+      // Ensure pricing always exists
+      pricing: catamaran.pricing || {
+        minimumRate: catamaran.price * 4, // Fallback based on display price
+        baseGroupSize: 5,
+        additionalPersonRate: catamaran.price,
+        currency: 'USD',
+      },
+      // Ensure other required properties exist
+      includes: catamaran.includes || [],
+      destinations: catamaran.destinations || [],
+      features: catamaran.features || [],
+      highlights: catamaran.highlights || [],
+      timeSlots: catamaran.timeSlots || [
+        { id: 'morning', time: '8:30 AM - 11:30 AM' },
+        { id: 'midday', time: '11:30 AM - 2:30 PM' },
+        { id: 'afternoon', time: '2:30 PM - 5:30 PM' },
+      ],
+      duration: catamaran.duration || '3 hours',
+      notes: catamaran.notes || '',
+    };
+
+    setSelectedCatamaran(enrichedCatamaran);
     setIsDetailsModalOpen(false);
     setIsModalOpen(true);
   };
 
+  const handleHeroCatamaranSelect = (catamaran) => {
+    setHeroSelectedCatamaran(catamaran);
+    handleCatamaranViewDetails(catamaran);
+  };
+
   return (
     <div className='min-h-screen bg-white'>
-      {/* Hero Section */}
-      <div className='relative h-screen overflow-hidden'>
-        <motion.div
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className='absolute inset-0'
-        >
-          <img
-            src='https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg'
-            alt='Caribbean Catamaran Experience'
-            className='w-full h-full object-cover'
-          />
-        </motion.div>
+      {/* Immersive Hero */}
+      <ImmersiveHero
+        selectedCatamaran={heroSelectedCatamaran}
+        onCatamaranSelect={handleHeroCatamaranSelect}
+      />
 
-        <div className='absolute inset-0 bg-gradient-to-br from-blue-900/60 via-cyan-900/40 to-teal-900/60' />
+      {/* Experience Showcase */}
+      {heroSelectedCatamaran && (
+        <ExperienceShowcase catamaran={heroSelectedCatamaran} />
+      )}
 
-        <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
-          <div className='max-w-5xl'>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8'
-            >
-              <Anchor className='w-5 h-5 mr-3 text-cyan-300' />
-              <span className='font-semibold text-lg'>
-                Caribbean Adventures
-              </span>
-            </motion.div>
+      {/* Catamaran Selection */}
+      <CatamaranSelection onCatamaranViewDetails={handleCatamaranViewDetails} />
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className='text-6xl md:text-7xl font-bold mb-6 leading-tight'
-            >
-              Catamaran Experiences
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-              className='text-2xl md:text-3xl text-white/90 mb-4 font-light'
-            >
-              Choose Your Perfect Caribbean Adventure
-            </motion.p>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.8 }}
-              className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
-            >
-              From classic sailing adventures to romantic sunset cruises and
-              high-energy party experiences. Find the perfect catamaran
-              experience for your group.
-            </motion.p>
-
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.1, duration: 0.8 }}
-              onClick={() => {
-                document
-                  .querySelector('[data-section="catamaran-selection"]')
-                  .scrollIntoView({
-                    behavior: 'smooth',
-                  });
-              }}
-              className='bg-gradient-to-r from-cyan-600 to-blue-500 hover:from-cyan-700 hover:to-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Explore Catamarans
-              <ArrowRight className='w-6 h-6' />
-            </motion.button>
-          </div>
-        </div>
-      </div>
-
-      {/* Catamaran Selection Section */}
-      <div data-section='catamaran-selection'>
-        <CatamaranSelection
-          onCatamaranViewDetails={handleCatamaranViewDetails}
-        />
-      </div>
-
+      {/* Features Comparison */}
       <FeaturesComparison />
+
+      {/* Gallery */}
       <GallerySection />
+
+      {/* Reviews */}
       <ReviewsSection />
 
-      {/* Call to Action */}
-      <section className='relative overflow-hidden rounded-3xl mx-4 my-16 h-96 shadow-2xl max-w-7xl mx-auto'>
-        <img
-          src='https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg'
-          alt='Caribbean catamaran adventure'
-          className='w-full h-full object-cover'
-        />
-        <div className='absolute inset-0 bg-gradient-to-r from-blue-900/80 to-cyan-900/60' />
+      {/* CTA Section */}
+      <section className='relative py-32 overflow-hidden'>
+        <div className='absolute inset-0'>
+          <img
+            src='https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg'
+            alt='Caribbean Adventure'
+            className='w-full h-full object-cover'
+          />
+          <div className='absolute inset-0 bg-gradient-to-r from-blue-900/90 to-cyan-900/90' />
+        </div>
 
-        <div className='absolute inset-0 flex items-center justify-center text-center text-white p-4'>
-          <div className='max-w-3xl'>
-            <h2 className='text-3xl md:text-4xl font-bold mb-6'>
-              Ready for Your Caribbean Adventure?
+        <div className='relative text-center text-white px-8'>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className='text-5xl md:text-6xl font-black mb-8'>
+              Ready for Your <span className='text-cyan-300'>Adventure?</span>
             </h2>
-            <p className='text-xl text-white/90 mb-8'>
+            <p className='text-xl mb-12 max-w-3xl mx-auto'>
               Book your perfect catamaran experience today and create memories
               that will last a lifetime.
             </p>
@@ -1155,20 +1359,17 @@ const CatamaranServiceView = () => {
               onClick={() => {
                 document
                   .querySelector('[data-section="catamaran-selection"]')
-                  .scrollIntoView({
-                    behavior: 'smooth',
-                  });
+                  .scrollIntoView({ behavior: 'smooth' });
               }}
-              className='bg-gradient-to-r from-cyan-600 to-blue-500 hover:from-cyan-700 hover:to-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 mx-auto transition-all duration-300 hover:scale-105 shadow-2xl'
+              className='bg-white text-gray-900 px-12 py-6 rounded-full text-xl font-bold shadow-2xl hover:shadow-white/25 transition-all hover:scale-105'
             >
-              <Anchor className='w-6 h-6' />
-              Book Now
+              Book Your Adventure
             </button>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Catamaran Details Modal/Sidebar */}
+      {/* Catamaran Details Modal */}
       <CatamaranDetailsModal
         catamaran={selectedCatamaran}
         isOpen={isDetailsModalOpen}
@@ -1176,59 +1377,18 @@ const CatamaranServiceView = () => {
         onBook={handleBookFromDetails}
       />
 
-      {/* Your existing Booking Modal */}
-      {isModalOpen && service && formCatamaran && (
-        <div>
-          {/* Placeholder for your BookingModal component */}
-          <div className='fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4'>
-            <div className='bg-white rounded-xl p-6 max-w-md w-full'>
-              <h3 className='text-xl font-bold mb-4'>Booking Modal</h3>
-              <p className='mb-4'>
-                This would be your BookingModal component with:
-              </p>
-              <ul className='text-sm text-gray-600 mb-4'>
-                <li>• Service: {service.name}</li>
-                <li>• Type: {service.type}</li>
-                <li>• Price: ${service.price}</li>
-                <li>• Catamaran: {formCatamaran.name}</li>
-                <li>
-                  • Pricing:{' '}
-                  {formCatamaran.pricing
-                    ? `${formCatamaran.pricing.minimumRate}`
-                    : 'No pricing data'}
-                </li>
-              </ul>
-              <div className='flex gap-2'>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className='flex-1 px-4 py-2 bg-gray-200 rounded'
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleBookingConfirm(service, {}, 2)}
-                  className='flex-1 px-4 py-2 bg-blue-600 text-white rounded'
-                >
-                  Book Now
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Uncomment this when integrating with your real BookingModal */}
-      {/*
-      {isModalOpen && service && formCatamaran && (
-        <BookingModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleBookingConfirm}
-          service={service}
-          selectedCatamaran={formCatamaran} // Use transformed data
-        />
-      )}
-      */}
+      {/* Booking Modal */}
+      <AnimatePresence>
+        {isModalOpen && service && selectedCatamaran && (
+          <BookingModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleBookingConfirm}
+            service={service}
+            selectedCatamaran={selectedCatamaran}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
