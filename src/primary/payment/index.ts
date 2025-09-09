@@ -33,11 +33,11 @@ export class PaymentService {
         throw new Error('STRIPE_SECRET_KEY environment variable is required');
       }
 
-      if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_')) {
-        throw new Error(
-          'Invalid STRIPE_SECRET_KEY format - must start with sk_'
-        );
-      }
+      // if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_')) {
+      //   throw new Error(
+      //     'Invalid STRIPE_SECRET_KEY format - must start with sk_'
+      //   );
+      // }
 
       try {
         // Importar dinámicamente para evitar errores en el cliente
