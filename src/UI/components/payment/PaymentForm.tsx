@@ -246,15 +246,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className='space-y-6'>
-      {/* DEBUG INFO TEMPORAL */}
-      <div className='bg-yellow-100 border border-yellow-300 rounded p-3 text-xs'>
-        <strong>Debug Info:</strong>
-        <br />
-        Stripe: {stripe ? '✅' : '❌'} | Elements: {elements ? '✅' : '❌'} |
-        Card Ready: {cardReady ? '✅' : '❌'} | Card Error:{' '}
-        {cardError || 'None'}
-      </div>
-
       {/* Payment Amount Summary */}
       <div className='bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200'>
         <div className='flex justify-between items-center mb-4'>
@@ -324,19 +315,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               onReady={handleCardReady}
               onChange={handleCardChange}
             />
-          </div>
-
-          {/* Debug Info */}
-          <div className='mt-2 space-y-1'>
-            <p className='text-xs text-gray-500'>
-              Status: {cardReady ? '✅ Ready' : '⏳ Loading...'}
-            </p>
-            {cardError && (
-              <p className='text-xs text-red-600'>❌ {cardError}</p>
-            )}
-            <p className='text-xs text-blue-600'>
-              Test card: 4242 4242 4242 4242, any future date, any 3-digit CVC
-            </p>
           </div>
         </div>
       </div>
