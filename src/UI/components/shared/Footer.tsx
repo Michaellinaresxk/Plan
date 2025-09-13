@@ -23,13 +23,14 @@ const Footer = () => {
             <h3 className='text-xl font-bold mb-4'>Lux Punta Cana</h3>
             <p className='text-gray-400 mb-6'>{t('common.footer.slogan')}</p>
             <div className='flex space-x-4'>
-              <a
-                href='#'
+              <Link
+                href='https://www.instagram.com/lxpuntacana?igsh=bnp1NGtnbWpna3I4&utm_source=qr'
+                target='_blank'
                 className='text-gray-400 hover:text-white transition-colors'
               >
                 <Instagram size={20} />
-              </a>
-              <a
+              </Link>
+              {/* <a
                 href='#'
                 className='text-gray-400 hover:text-white transition-colors'
               >
@@ -40,7 +41,7 @@ const Footer = () => {
                 className='text-gray-400 hover:text-white transition-colors'
               >
                 <Twitter size={20} />
-              </a>
+              </a> */}
             </div>
           </div>
           {/* Quick Links */}
@@ -93,7 +94,7 @@ const Footer = () => {
               <li className='flex items-start'>
                 <MapPin className='h-5 w-5 mr-3 mt-0.5 text-gray-400' />
                 <span className='text-gray-400'>
-                  Puntacana Resort & Club, Punta Cana, Dominican Republic
+                  VISTACANA, Punta Cana 23000, Dominican Republic
                 </span>
               </li>
               <li className='flex items-center'>
