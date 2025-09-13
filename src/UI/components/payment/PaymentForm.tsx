@@ -2,7 +2,13 @@
 
 import React, { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { CreditCard, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import {
+  CreditCard,
+  Lock,
+  AlertCircle,
+  CheckCircle,
+  Loader2,
+} from 'lucide-react';
 import { usePayment } from '@/hooks/usePayment';
 import type { ReservationData } from '@/context/BookingContext';
 
@@ -18,7 +24,7 @@ const cardElementOptions = {
     base: {
       fontSize: '16px',
       color: '#374151',
-      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+      fontFamily: '"Inter", "Helvetica Neue", Helvetica, sans-serif',
       fontSmoothing: 'antialiased',
       '::placeholder': {
         color: '#9CA3AF',
@@ -42,79 +48,49 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const elements = useElements();
   const { createPaymentIntent, processCompletePayment } = usePayment();
 
-  // Debug logs
-  console.log('🔧 PaymentForm render:', {
-    stripe: !!stripe,
-    elements: !!elements,
-    reservationData: !!reservationData,
-    clientInfo: !!reservationData?.clientInfo,
-  });
-
+  // Estados del formulario
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [cardReady, setCardReady] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<
     'ready' | 'processing' | 'success'
   >('ready');
 
-  // AGREGAR ESTOS ESTADOS para debugging
-  const [cardReady, setCardReady] = useState(false);
-  const [cardError, setCardError] = useState<string | null>(null);
-
-  // AGREGAR estas funciones para debugging
+  // Handlers para el CardElement
   const handleCardReady = () => {
-    console.log('✅ Card Element is ready');
+    console.log('✅ Card Element ready');
     setCardReady(true);
   };
 
   const handleCardChange = (event: any) => {
-    console.log('💳 Card change event:', event);
     if (event.error) {
       setCardError(event.error.message);
       console.error('❌ Card error:', event.error.message);
     } else {
       setCardError(null);
-      if (event.complete) {
-        console.log('✅ Card input is complete');
-      }
     }
   };
 
+  // Loading state si Stripe no está listo
   if (!stripe || !elements) {
-    console.log('🔄 Stripe/Elements not ready:', {
-      stripe: !!stripe,
-      elements: !!elements,
-    });
     return (
       <div className='flex items-center justify-center p-8'>
         <div className='text-center'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
-          <p className='text-gray-600'>Loading payment system...</p>
-          <p className='text-xs text-gray-500 mt-2'>
-            {!stripe && '• Stripe not loaded'}
-            {!elements && '• Elements not ready'}
+          <Loader2 className='w-8 h-8 animate-spin text-blue-600 mx-auto mb-4' />
+          <p className='text-gray-600 mb-2'>Loading payment system...</p>
+          <p className='text-xs text-gray-500'>
+            Initializing secure connection...
           </p>
-          <div className='mt-4 p-2 bg-yellow-100 rounded text-xs'>
-            Debug: stripe={String(!!stripe)}, elements={String(!!elements)}
-          </div>
         </div>
       </div>
     );
   }
 
-  // ✅ VALIDACIÓN INICIAL
-  if (!stripe || !elements) {
-    return (
-      <div className='flex items-center justify-center p-8'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4'></div>
-          <p className='text-gray-600'>Loading payment system...</p>
-          <p className='text-xs text-gray-500 mt-2'>
-            {!stripe && '• Stripe not loaded'}
-            {!elements && '• Elements not ready'}
-          </p>
-        </div>
-      </div>
-    );
+  // Validación inicial
+  if (!reservationData.clientInfo) {
+    onError('Client information is required');
+    return null;
   }
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -123,11 +99,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     if (!stripe || !elements) {
       console.error('❌ Stripe not loaded');
       onError('Payment system not ready. Please refresh the page.');
-      return;
-    }
-
-    if (!reservationData.clientInfo) {
-      onError('Client information is required');
       return;
     }
 
@@ -141,12 +112,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error('Card element not found');
       }
 
-      console.log('💳 Step 1: Creating payment intent...');
+      console.log('💳 Creating payment intent...');
 
-      // CREAR PAYMENT INTENT SOLO CUANDO SE NECESITA
+      // Crear Payment Intent
       const paymentIntentData = {
         reservationId: `temp_${Date.now()}`,
-        amount: Math.round(reservationData.totalPrice * 100), // Convert to cents
+        amount: Math.round(reservationData.totalPrice * 100),
         currency: 'usd',
         metadata: {
           serviceName: reservationData.service.name,
@@ -157,7 +128,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       const paymentIntent = await createPaymentIntent(paymentIntentData);
 
-      console.log('💳 Step 2: Confirming payment with Stripe...');
+      console.log('💳 Confirming payment...');
 
       // Confirmar payment con Stripe
       const { error, paymentIntent: confirmedPayment } =
@@ -173,17 +144,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         });
 
       if (error) {
-        console.error('❌ Payment confirmation failed:', error);
-        const errorMessage = error.message || 'Payment failed';
-        setPaymentError(errorMessage);
-        setCurrentStep('ready');
-        onError(errorMessage);
-        return;
+        throw new Error(error.message || 'Payment failed');
       }
 
       if (confirmedPayment?.status === 'succeeded') {
-        console.log('✅ Step 2 complete: Payment confirmed!');
-        console.log('📋 Step 3: Creating reservation...');
+        console.log('✅ Payment confirmed, creating reservation...');
 
         // Crear reservación
         const result = await processCompletePayment({
@@ -193,7 +158,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         });
 
         if (result.success) {
-          console.log('✅ Step 3 complete: Reservation created successfully');
+          console.log('✅ Reservation created successfully');
           setCurrentStep('success');
 
           // Small delay to show success state
@@ -207,7 +172,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error('Payment did not complete successfully');
       }
     } catch (error) {
-      console.error('❌ Error during payment process:', error);
+      console.error('❌ Payment process error:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'An unexpected error occurred';
       setPaymentError(errorMessage);
@@ -218,7 +183,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     }
   };
 
-  // Success state
+  // Success state (inline success message)
   if (currentStep === 'success') {
     return (
       <div className='text-center py-8'>
@@ -245,157 +210,136 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   }
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-6'>
-      {/* Payment Amount Summary */}
-      <div className='bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200'>
-        <div className='flex justify-between items-center mb-4'>
+    <div className='space-y-6'>
+      {/* Simple Header - NO MORE SUMMARY */}
+      <div className='text-center'>
+        <h3 className='text-2xl font-bold text-gray-900 mb-2'>
+          Enter Payment Details
+        </h3>
+        <p className='text-gray-600'>
+          Total:{' '}
+          <span className='font-bold text-green-600'>
+            ${reservationData.totalPrice.toFixed(2)}
+          </span>
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className='space-y-6'>
+        {/* Card Input Section */}
+        <div className='space-y-4'>
           <div>
-            <h3 className='text-xl font-bold text-blue-900'>
-              {reservationData.service.name}
-            </h3>
-            <p className='text-sm text-blue-700'>
-              {reservationData.clientInfo?.name}
-            </p>
-          </div>
-          <div className='text-right'>
-            <div className='text-3xl font-bold text-blue-900'>
-              ${reservationData.totalPrice.toFixed(2)}
+            <label className='block text-sm font-medium text-gray-700 mb-3'>
+              <CreditCard className='inline w-4 h-4 mr-2' />
+              Card Information
+              {!cardReady && (
+                <span className='text-orange-500 ml-2'>(Loading...)</span>
+              )}
+            </label>
+
+            <div
+              className={`
+                border rounded-lg p-4 bg-white transition-all
+                ${
+                  cardError
+                    ? 'border-red-300 ring-2 ring-red-100'
+                    : 'border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500'
+                }
+              `}
+            >
+              <CardElement
+                options={cardElementOptions}
+                onReady={handleCardReady}
+                onChange={handleCardChange}
+              />
             </div>
-            <p className='text-sm text-blue-600'>Total Amount</p>
+
+            {cardError && (
+              <p className='mt-2 text-sm text-red-600 flex items-center'>
+                <AlertCircle className='w-4 h-4 mr-1' />
+                {cardError}
+              </p>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Client Information Display */}
-      <div className='bg-gray-50 p-4 rounded-lg'>
-        <h4 className='font-medium text-gray-900 mb-3'>Billing Information</h4>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-3 text-sm'>
-          <div>
-            <span className='text-gray-600'>Name:</span>
-            <span className='ml-2 text-gray-900'>
-              {reservationData.clientInfo?.name}
-            </span>
+        {/* Payment Error */}
+        {paymentError && (
+          <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+            <div className='flex items-start'>
+              <AlertCircle className='w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0' />
+              <div className='flex-grow'>
+                <h4 className='font-medium text-red-800 mb-1'>Payment Error</h4>
+                <p className='text-sm text-red-700'>{paymentError}</p>
+                <button
+                  type='button'
+                  onClick={() => setPaymentError(null)}
+                  className='mt-2 text-sm text-red-600 hover:text-red-800 underline'
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
           </div>
-          <div>
-            <span className='text-gray-600'>Email:</span>
-            <span className='ml-2 text-gray-900'>
-              {reservationData.clientInfo?.email}
-            </span>
-          </div>
-          <div className='md:col-span-2'>
-            <span className='text-gray-600'>Phone:</span>
-            <span className='ml-2 text-gray-900'>
-              {reservationData.clientInfo?.phone}
-            </span>
-          </div>
-        </div>
-      </div>
+        )}
 
-      {/* Card Input */}
-      <div className='space-y-4'>
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-3'>
-            <CreditCard className='inline w-4 h-4 mr-2' />
-            Card Information{' '}
-            {!cardReady && <span className='text-red-500'>(Loading...)</span>}
-          </label>
-
-          <div
-            className={`
-            border rounded-lg p-4 bg-white transition-all
-            ${
-              cardError
-                ? 'border-red-300 ring-2 ring-red-100'
-                : 'border-gray-300 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500'
-            }
-          `}
-          >
-            <CardElement
-              options={cardElementOptions}
-              onReady={handleCardReady}
-              onChange={handleCardChange}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Error Display */}
-      {paymentError && (
-        <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+        {/* Security Notice */}
+        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
           <div className='flex items-start'>
-            <AlertCircle className='w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0' />
-            <div className='flex-grow'>
-              <h4 className='font-medium text-red-800 mb-1'>Payment Error</h4>
-              <p className='text-sm text-red-700'>{paymentError}</p>
-              <button
-                type='button'
-                onClick={() => setPaymentError(null)}
-                className='mt-2 text-sm text-red-600 hover:text-red-800 underline'
-              >
-                Dismiss
-              </button>
+            <Lock className='w-5 h-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0' />
+            <div>
+              <h4 className='font-medium text-blue-800 mb-1'>Secure Payment</h4>
+              <p className='text-sm text-blue-700'>
+                Your payment is secured by 256-bit SSL encryption and processed
+                by Stripe.
+              </p>
             </div>
           </div>
         </div>
-      )}
 
-      {/* Security Notice */}
-      <div className='bg-green-50 border border-green-200 rounded-lg p-4'>
-        <div className='flex items-start'>
-          <Lock className='w-5 h-5 text-green-600 mr-3 mt-0.5 flex-shrink-0' />
-          <div>
-            <h4 className='font-medium text-green-800 mb-1'>Secure Payment</h4>
-            <p className='text-sm text-green-700'>
-              Your payment information is encrypted and secure. This transaction
-              is processed by Stripe.
-            </p>
-          </div>
+        {/* Action Buttons */}
+        <div className='flex flex-col sm:flex-row gap-3 pt-6'>
+          <button
+            type='button'
+            onClick={onClose}
+            className='flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium'
+            disabled={isProcessing}
+          >
+            Cancel
+          </button>
+
+          <button
+            type='submit'
+            disabled={!stripe || !cardReady || isProcessing}
+            className={`
+              flex-1 px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium text-lg
+              ${
+                !stripe || !cardReady || isProcessing
+                  ? 'bg-gray-400 cursor-not-allowed text-white'
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              }
+            `}
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                {currentStep === 'processing'
+                  ? 'Processing Payment...'
+                  : 'Creating Reservation...'}
+              </>
+            ) : !stripe ? (
+              'Loading Stripe...'
+            ) : !cardReady ? (
+              'Loading Card...'
+            ) : (
+              <>
+                <Lock className='w-4 h-4 mr-2' />
+                Complete Payment ${reservationData.totalPrice.toFixed(2)}
+              </>
+            )}
+          </button>
         </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className='flex flex-col sm:flex-row gap-3 pt-4'>
-        <button
-          type='button'
-          onClick={onClose}
-          className='flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium'
-          disabled={isProcessing}
-        >
-          Cancel
-        </button>
-
-        <button
-          type='submit'
-          disabled={!stripe || !cardReady || isProcessing}
-          className={`
-            flex-1 px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium text-lg
-            ${
-              !stripe || !cardReady || isProcessing
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700'
-            } text-white
-          `}
-        >
-          {isProcessing ? (
-            <>
-              <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
-              {currentStep === 'processing'
-                ? 'Processing Payment...'
-                : 'Creating Reservation...'}
-            </>
-          ) : !stripe ? (
-            'Stripe Loading...'
-          ) : !cardReady ? (
-            'Card Loading...'
-          ) : (
-            <>
-              <Lock className='w-4 h-4 mr-2' />
-              Pay ${reservationData.totalPrice.toFixed(2)}
-            </>
-          )}
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 
