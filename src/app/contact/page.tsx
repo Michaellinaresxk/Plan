@@ -8,6 +8,7 @@ import Footer from '@/UI/components/shared/Footer';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import CTASection from '@/UI/components/shared/CTASection';
+import InstagramCTA from '@/UI/components/shared/InstagramCTA';
 
 const ContactPage = () => {
   const { t } = useTranslation();
@@ -33,11 +34,14 @@ const ContactPage = () => {
     });
   };
 
+  // Función handleSubmit DEBUG para el componente
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
-    // Validación básica
+    console.log('🚀 Enviando formulario...');
+
+    // Validación client-side
     if (!formData.name || !formData.email || !formData.message) {
       setFormError('Por favor complete todos los campos requeridos.');
       return;
@@ -46,11 +50,35 @@ const ContactPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulación de envío de formulario
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setIsSuccess(true);
+      console.log('📤 Datos a enviar:', {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message.substring(0, 50) + '...',
+      });
 
-      // Resetear el formulario después de un tiempo
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
+      const result = await response.json();
+      console.log('📡 Response data:', result);
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al enviar el mensaje');
+      }
+
+      setIsSuccess(true);
+      console.log('✅ Formulario enviado exitosamente');
+
+      // Resetear formulario
       setTimeout(() => {
         setIsSuccess(false);
         setFormData({
@@ -61,8 +89,11 @@ const ContactPage = () => {
         });
       }, 5000);
     } catch (error) {
+      console.error('❌ Error en handleSubmit:', error);
       setFormError(
-        'Ha ocurrido un error al enviar su mensaje. Por favor intente nuevamente.'
+        error instanceof Error
+          ? error.message
+          : 'Ha ocurrido un error al enviar su mensaje. Por favor intente nuevamente.'
       );
     } finally {
       setIsSubmitting(false);
@@ -288,24 +319,7 @@ const ContactPage = () => {
                             </option>
                           </select>
                         </div>
-                        <div>
-                          <label
-                            htmlFor='date'
-                            className='block text-gray-700 mb-2 font-medium'
-                          >
-                            {t('contact.form.email')}
-                          </label>
-                          <input
-                            type='email'
-                            id='email'
-                            name='email'
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            required
-                            className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                            placeholder='Su dirección de email'
-                          />
-                        </div>
+
                         <div>
                           <label
                             htmlFor='message'
@@ -323,6 +337,15 @@ const ContactPage = () => {
                             className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
                             placeholder={t('contact.form.messagePlaceHolder')}
                           ></textarea>
+
+                          {/* Campo honeypot - Anti-spam invisible */}
+                          <input
+                            type='text'
+                            name='_honeypot'
+                            style={{ display: 'none' }}
+                            tabIndex={-1}
+                            autoComplete='off'
+                          />
                         </div>
 
                         {formError && (
@@ -376,7 +399,9 @@ const ContactPage = () => {
             </div>
           </div>
         </section>
-
+        <div className='container mx-auto px-2 mb-12'>
+          <InstagramCTA />
+        </div>
         <CTASection />
       </main>
 

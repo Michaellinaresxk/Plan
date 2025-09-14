@@ -55,7 +55,7 @@ const CTASection = () => {
                   {t('contact.Cta.btn1')}
                 </a>
                 <a
-                  href='#contact-form'
+                  href='/contact'
                   className='inline-flex items-center px-8 py-4 bg-blue-500 bg-opacity-30 backdrop-blur-sm hover:bg-opacity-40 text-white border border-white/30 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
                 >
                   <Mail className='mr-2 h-5 w-5' />
