@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import CTASection from '@/UI/components/shared/CTASection';
+import InstagramCTA from '@/UI/components/shared/InstagramCTA';
 
 const AboutPage = () => {
   const { t } = useTranslation();
@@ -325,7 +326,9 @@ const AboutPage = () => {
             </div>
           </div>
         </section>
-
+        <div className='container mx-auto px-2 mb-12'>
+          <InstagramCTA />
+        </div>
         <CTASection />
       </main>
 
