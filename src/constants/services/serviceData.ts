@@ -1878,13 +1878,13 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     titleKey: 'services.standard.atvAdventure.name',
     descriptionKey: 'services.standard.atvAdventure.description',
     fullDescriptionKey: 'services.standard.atvAdventure.full',
-    basePrice: 85, // Precio típico para ATV por persona
+    basePrice: 85,
     priceUnit: 'services.priceUnits.perPerson',
     category: 'tours',
     packageType: ['standard'],
     imageUrl:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg',
-    duration: 3, // 3 horas típicas para aventura ATV
+    duration: 3,
     bookingDuration: {
       min: 3,
       max: 6,

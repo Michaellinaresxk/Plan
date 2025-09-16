@@ -112,21 +112,42 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error('Card element not found');
       }
 
-      console.log('💳 Creating payment intent...');
+      console.log('💳 Creating NEW payment intent...');
 
-      // Crear Payment Intent
+      // 🔥 SOLUCIÓN: Generar ID único cada vez
+      const uniqueId = `${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2)}`;
+
       const paymentIntentData = {
-        reservationId: `temp_${Date.now()}`,
+        reservationId: `temp_${Date.now()}`, // ✅ Esto está bien
         amount: Math.round(reservationData.totalPrice * 100),
         currency: 'usd',
         metadata: {
           serviceName: reservationData.service.name,
           clientEmail: reservationData.clientInfo.email,
           clientName: reservationData.clientInfo.name,
+          timestamp: new Date().toISOString(), // ✅ Timestamp único
+          uniqueId: uniqueId, // ✅ ID adicional para debug
         },
       };
 
+      // Crear Payment Intent FRESCO
       const paymentIntent = await createPaymentIntent(paymentIntentData);
+
+      console.log(
+        '💳 Fresh payment intent created:',
+        paymentIntent.paymentIntentId
+      );
+      console.log(
+        '💳 Client secret:',
+        paymentIntent.clientSecret.substring(0, 20) + '...'
+      );
+
+      // Verificar que el client secret es nuevo
+      if (!paymentIntent.clientSecret || !paymentIntent.paymentIntentId) {
+        throw new Error('Invalid payment intent response');
+      }
 
       console.log('💳 Confirming payment...');
 
@@ -144,13 +165,21 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         });
 
       if (error) {
+        // 🔥 MEJOR MANEJO DE ERRORES
+        console.error('❌ Stripe error:', error);
+
+        if (error.message?.includes('No such payment_intent')) {
+          throw new Error(
+            'Payment expired. Please try again with a new payment.'
+          );
+        }
+
         throw new Error(error.message || 'Payment failed');
       }
 
       if (confirmedPayment?.status === 'succeeded') {
         console.log('✅ Payment confirmed, creating reservation...');
 
-        // Crear reservación
         const result = await processCompletePayment({
           reservationData,
           paymentMethodId: confirmedPayment.payment_method as string,
@@ -161,7 +190,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           console.log('✅ Reservation created successfully');
           setCurrentStep('success');
 
-          // Small delay to show success state
           setTimeout(() => {
             onSuccess(result.reservation);
           }, 1500);
@@ -169,20 +197,23 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           throw new Error('Failed to create reservation after payment');
         }
       } else {
-        throw new Error('Payment did not complete successfully');
+        throw new Error(
+          `Payment status: ${confirmedPayment?.status}. Expected: succeeded`
+        );
       }
     } catch (error) {
       console.error('❌ Payment process error:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'An unexpected error occurred';
-      setPaymentError(errorMessage);
+
+      // 🔥 RESET ESTADO EN ERROR
       setCurrentStep('ready');
+      setPaymentError(errorMessage);
       onError(errorMessage);
     } finally {
       setIsProcessing(false);
     }
   };
-
   // Success state (inline success message)
   if (currentStep === 'success') {
     return (
