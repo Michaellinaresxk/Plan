@@ -125,9 +125,9 @@ const VEHICLE_TYPES = {
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
     description: 'Single rider adventure',
     features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
-    price: 50,
+    price: 85,
     duration: '3 hours',
-    maxParticipants: 1,
+    maxParticipants: 2,
   },
   BUGGY: {
     id: 'buggy',
@@ -136,7 +136,7 @@ const VEHICLE_TYPES = {
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1754597118/9_m5fya0.jpg',
     description: 'Shared adventure for couples',
     features: ['2-person capacity', 'Side by side', 'Great for couples'],
-    price: 45,
+    price: 65,
     duration: '3 hours',
     maxParticipants: 2,
   },
@@ -147,9 +147,20 @@ const VEHICLE_TYPES = {
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946908/polaris1_kfwgbw.jpg',
     description: 'Premium off-road experience',
     features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
-    price: null, // No price - contact for pricing
+    price: 160,
     duration: '3 hours',
     maxParticipants: 2,
+  },
+  POLARIS_FAMILIAR: {
+    id: 'polaris',
+    name: 'Polaris Familiar',
+    image:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1758048523/caption_1_e1y8cs.jpg',
+    description: 'Premium off-road experience',
+    features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
+    price: 215,
+    duration: '3 hours',
+    maxParticipants: 4,
   },
 };
 
@@ -343,13 +354,13 @@ const PhotoGallery = () => {
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754596293/4_enh3k1.jpg',
       alt: 'Polaris sunset',
-      caption: 'Sunset adventures',
+      caption: 'Polaris RZR',
       category: 'buggies',
     },
     {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946940/polaris-3_vidkhu.jpg',
-      alt: 'Polaris landscape',
-      caption: 'Breathtaking landscapes',
+      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1758048524/caption_yf0et6.jpg',
+      alt: 'Polaris Familiar',
+      caption: 'Polaris Familiar',
       category: 'polaris',
     },
   ];

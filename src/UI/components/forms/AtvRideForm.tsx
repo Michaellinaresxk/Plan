@@ -37,11 +37,32 @@ interface AtvRideFormProps {
   onCancel?: () => void;
 }
 
-// Vehicle types with updated pricing
+// Fixed Vehicle types with correct pricing and structure
 const VEHICLE_TYPES = {
-  atv: { name: 'ATV Quad', price: 50, maxParticipants: 1 },
-  buggy: { name: 'Dune Buggy', price: 45, maxParticipants: 2 },
-  polaris: { name: 'Polaris RZR', price: null, maxParticipants: 2 },
+  atv: {
+    name: 'ATV Quad',
+    price: 85,
+    maxParticipants: 1,
+    description: 'Solo rider adventure',
+  },
+  buggy: {
+    name: 'Dune Buggy',
+    price: 65,
+    maxParticipants: 2,
+    description: 'Perfect for couples',
+  },
+  polaris: {
+    name: 'Polaris RZR',
+    price: 160,
+    maxParticipants: 2,
+    description: 'Premium off-road experience',
+  },
+  polarisFamiliar: {
+    name: 'Polaris Familiar',
+    price: 215,
+    maxParticipants: 4,
+    description: 'Family adventure vehicle',
+  },
 };
 
 // Time slots for ATV adventures
@@ -96,7 +117,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     location: '',
     vehicleType: selectedVehicle?.id || 'atv',
     vehicleCount: 1,
-    totalParticipants: selectedVehicle?.maxParticipants || 1,
+    totalParticipants: 1, // Start with 1 person
     hasExperience: true,
     specialRequests: '',
     additionalNotes: '',
@@ -104,6 +125,12 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get current vehicle info
+  const currentVehicle = useMemo(
+    () => VEHICLE_TYPES[formData.vehicleType as keyof typeof VEHICLE_TYPES],
+    [formData.vehicleType]
+  );
 
   // Use location pricing hook
   const {
@@ -118,21 +145,32 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     servicePricing: ATV_TRANSPORT_PRICING,
   });
 
-  // Get vehicle info
-  const vehicleInfo =
-    VEHICLE_TYPES[formData.vehicleType as keyof typeof VEHICLE_TYPES];
-
-  // Calculate base price
+  // Calculate base price (price per machine × number of machines)
   const basePrice = useMemo(() => {
-    if (!vehicleInfo?.price) return 0; // Polaris - contact for pricing
-    return vehicleInfo.price * formData.vehicleCount;
-  }, [vehicleInfo, formData.vehicleCount]);
+    if (!currentVehicle?.price) return 0;
+    return currentVehicle.price * formData.vehicleCount;
+  }, [currentVehicle, formData.vehicleCount]);
 
   // Calculate total price
   const totalPrice = useMemo(() => {
-    if (!vehicleInfo?.price) return 0; // Polaris
+    if (!currentVehicle?.price) return 0;
     return basePrice + totalLocationCost;
-  }, [basePrice, totalLocationCost, vehicleInfo]);
+  }, [basePrice, totalLocationCost, currentVehicle]);
+
+  // Update vehicle count when total participants or vehicle type changes
+  useEffect(() => {
+    if (currentVehicle) {
+      const vehiclesNeeded = Math.ceil(
+        formData.totalParticipants / currentVehicle.maxParticipants
+      );
+      if (vehiclesNeeded !== formData.vehicleCount) {
+        setFormData((prev) => ({
+          ...prev,
+          vehicleCount: vehiclesNeeded,
+        }));
+      }
+    }
+  }, [formData.totalParticipants, formData.vehicleType, currentVehicle]);
 
   // Handle input changes
   const handleChange = useCallback(
@@ -186,31 +224,39 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     [errors.location]
   );
 
+  // Handle people count changes
+  const updatePeopleCount = useCallback((increment: boolean) => {
+    setFormData((prev) => {
+      const newCount = increment
+        ? Math.min(16, prev.totalParticipants + 1) // Max 16 people
+        : Math.max(1, prev.totalParticipants - 1); // Min 1 person
+
+      return {
+        ...prev,
+        totalParticipants: newCount,
+      };
+    });
+  }, []);
+
   // Handle vehicle count changes
-  const updateVehicleCount = useCallback(
-    (increment: boolean) => {
-      setFormData((prev) => {
-        const newCount = increment
-          ? Math.min(4, prev.vehicleCount + 1) // Max 4 vehicles
-          : Math.max(1, prev.vehicleCount - 1);
+  const updateVehicleCount = useCallback((increment: boolean) => {
+    setFormData((prev) => {
+      const newCount = increment
+        ? Math.min(8, prev.vehicleCount + 1) // Max 8 vehicles
+        : Math.max(1, prev.vehicleCount - 1); // Min 1 vehicle
 
-        // Update total participants based on vehicle type and count
-        const maxParticipantsPerVehicle = vehicleInfo?.maxParticipants || 1;
-        const newTotalParticipants = newCount * maxParticipantsPerVehicle;
-
-        return {
-          ...prev,
-          vehicleCount: newCount,
-          totalParticipants: newTotalParticipants,
-        };
-      });
-    },
-    [vehicleInfo]
-  );
+      return {
+        ...prev,
+        vehicleCount: newCount,
+      };
+    });
+  }, []);
 
   // Validate form
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+    const maxCapacity =
+      (currentVehicle?.maxParticipants || 1) * formData.vehicleCount;
 
     if (!formData.date) {
       newErrors.date = 'Date is required';
@@ -228,8 +274,28 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       newErrors.vehicleType = 'Please select a vehicle';
     }
 
-    if (formData.vehicleCount > 4) {
-      newErrors.vehicleCount = 'Maximum 4 vehicles allowed';
+    if (formData.totalParticipants < 1) {
+      newErrors.totalParticipants = 'At least 1 person required';
+    }
+
+    if (formData.totalParticipants > 16) {
+      newErrors.totalParticipants = 'Maximum 16 people allowed';
+    }
+
+    if (formData.vehicleCount < 1) {
+      newErrors.vehicleCount = 'At least 1 vehicle required';
+    }
+
+    if (formData.vehicleCount > 8) {
+      newErrors.vehicleCount = 'Maximum 8 vehicles allowed';
+    }
+
+    // Critical validation: Check capacity
+    if (formData.totalParticipants > maxCapacity) {
+      newErrors.totalParticipants = `Cannot fit ${formData.totalParticipants} people in ${formData.vehicleCount} vehicle(s). Maximum capacity is ${maxCapacity} people.`;
+      newErrors.vehicleCount = `Need at least ${Math.ceil(
+        formData.totalParticipants / (currentVehicle?.maxParticipants || 1)
+      )} vehicles for ${formData.totalParticipants} people.`;
     }
 
     setErrors(newErrors);
@@ -340,7 +406,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     }
   };
 
-  const isPremium = formData.vehicleType === 'polaris';
+  const isPremium =
+    formData.vehicleType === 'polaris' ||
+    formData.vehicleType === 'polarisFamiliar';
 
   return (
     <motion.div
@@ -351,11 +419,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
         <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
           {/* Form Header */}
-
           <FormHeader
             title='ATVs Adventure'
-            subtitle='Explore tropical paradise through jungle trails and pristine
-              beaches'
+            subtitle='Explore tropical paradise through jungle trails and pristine beaches'
             icon={Mountain}
             isPremium={isPremium}
             onCancel={handleClose}
@@ -516,7 +582,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     isPremium ? 'text-purple-600' : 'text-green-600'
                   }`}
                 />
-                Vehicle Selection
+                Vehicle & Group Size
               </h3>
 
               {/* Vehicle Type */}
@@ -533,61 +599,273 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                       : 'focus:ring-green-500 focus:border-green-500'
                   } bg-gray-50`}
                 >
-                  <option value='atv'>ATV Quad - $50 (1 person)</option>
-                  <option value='buggy'>Dune Buggy - $45 (2 people)</option>
-                  <option value='polaris'>
-                    Polaris RZR - Contact for pricing (2 people)
-                  </option>
+                  {Object.entries(VEHICLE_TYPES).map(([key, vehicle]) => (
+                    <option key={key} value={key}>
+                      {vehicle.name} - ${vehicle.price} (Max{' '}
+                      {vehicle.maxParticipants}{' '}
+                      {vehicle.maxParticipants === 1 ? 'person' : 'people'})
+                    </option>
+                  ))}
                 </select>
+
+                {/* Vehicle Description */}
+                {currentVehicle && (
+                  <div className='mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+                    <p className='text-sm text-blue-800'>
+                      <strong>{currentVehicle.name}:</strong>{' '}
+                      {currentVehicle.description}
+                    </p>
+                    <p className='text-xs text-blue-600 mt-1'>
+                      Price: ${currentVehicle.price} per vehicle | Max capacity:{' '}
+                      {currentVehicle.maxParticipants}{' '}
+                      {currentVehicle.maxParticipants === 1
+                        ? 'person'
+                        : 'people'}{' '}
+                      per vehicle
+                    </p>
+                  </div>
+                )}
+
                 {errors.vehicleType && (
                   <p className='text-red-500 text-xs mt-1'>
                     {errors.vehicleType}
                   </p>
                 )}
               </div>
-
-              {/* Vehicle Count */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Users
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    }`}
-                  />
-                  Number of Vehicles
-                </label>
-                <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
-                  <button
-                    type='button'
-                    onClick={() => updateVehicleCount(false)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                  >
-                    -
-                  </button>
-                  <div className='flex-1 py-2 text-center'>
-                    {formData.vehicleCount}
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {/* Number of People Input */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Users
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-purple-600' : 'text-green-600'
+                      }`}
+                    />
+                    Number of People *
+                  </label>
+                  <div className='flex items-center border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
+                    <button
+                      type='button'
+                      onClick={() => updatePeopleCount(false)}
+                      className='px-3 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                      disabled={formData.totalParticipants <= 1}
+                    >
+                      -
+                    </button>
+                    <input
+                      type='number'
+                      value={formData.totalParticipants}
+                      onChange={(e) => {
+                        const value = Math.max(
+                          1,
+                          Math.min(16, parseInt(e.target.value) || 1)
+                        );
+                        setFormData((prev) => ({
+                          ...prev,
+                          totalParticipants: value,
+                        }));
+                      }}
+                      min='1'
+                      max='16'
+                      className='flex-1 py-2 text-center border-0 focus:ring-0 focus:outline-none font-medium'
+                    />
+                    <button
+                      type='button'
+                      onClick={() => updatePeopleCount(true)}
+                      className='px-3 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                    >
+                      +
+                    </button>
                   </div>
-                  <button
-                    type='button'
-                    onClick={() => updateVehicleCount(true)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                  >
-                    +
-                  </button>
+                  <p className='text-xs text-gray-500 mt-1'>
+                    Maximum 16 people per group
+                  </p>
+                  {errors.totalParticipants && (
+                    <p className='text-red-500 text-xs mt-1'>
+                      {errors.totalParticipants}
+                    </p>
+                  )}
                 </div>
-                <p className='text-sm text-gray-600 mt-1'>
-                  Total participants: {formData.totalParticipants}
-                </p>
-                {formData.vehicleCount >= 4 && (
-                  <p className='text-sm text-amber-600 mt-1'>
-                    Maximum vehicles reached
+
+                {/* Number of Vehicles Input */}
+                <div>
+                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                    <Car
+                      className={`w-4 h-4 mr-2 ${
+                        isPremium ? 'text-purple-600' : 'text-green-600'
+                      }`}
+                    />
+                    Number of Vehicles *
+                  </label>
+                  <div className='flex items-center border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
+                    <button
+                      type='button'
+                      onClick={() => updateVehicleCount(false)}
+                      className='px-3 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                      disabled={formData.vehicleCount <= 1}
+                    >
+                      -
+                    </button>
+                    <input
+                      type='number'
+                      value={formData.vehicleCount}
+                      onChange={(e) => {
+                        const value = Math.max(
+                          1,
+                          Math.min(8, parseInt(e.target.value) || 1)
+                        );
+                        setFormData((prev) => ({
+                          ...prev,
+                          vehicleCount: value,
+                        }));
+                      }}
+                      min='1'
+                      max='8'
+                      className='flex-1 py-2 text-center border-0 focus:ring-0 focus:outline-none font-medium'
+                    />
+                    <button
+                      type='button'
+                      onClick={() => updateVehicleCount(true)}
+                      className='px-3 py-2 bg-gray-100 hover:bg-gray-200 transition'
+                      disabled={formData.vehicleCount >= 8}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <p className='text-xs text-gray-500 mt-1'>
+                    Maximum 8 vehicles per group
                   </p>
-                )}
-                {errors.vehicleCount && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.vehicleCount}
-                  </p>
-                )}
+                  {errors.vehicleCount && (
+                    <p className='text-red-500 text-xs mt-1'>
+                      {errors.vehicleCount}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Capacity Validation and Info */}
+              <div>
+                {(() => {
+                  const maxCapacity =
+                    (currentVehicle?.maxParticipants || 1) *
+                    formData.vehicleCount;
+                  const isOverCapacity =
+                    formData.totalParticipants > maxCapacity;
+                  const suggestedVehicles = Math.ceil(
+                    formData.totalParticipants /
+                      (currentVehicle?.maxParticipants || 1)
+                  );
+
+                  if (isOverCapacity) {
+                    return (
+                      <div className='p-4 bg-red-50 border-2 border-red-300 rounded-lg'>
+                        <div className='flex items-start gap-3'>
+                          <AlertTriangle className='w-5 h-5 text-red-600 flex-shrink-0 mt-0.5' />
+                          <div>
+                            <h4 className='font-semibold text-red-800 mb-2'>
+                              ❌ Capacity Exceeded!
+                            </h4>
+                            <p className='text-red-700 text-sm mb-3'>
+                              <strong>
+                                {formData.totalParticipants} people
+                              </strong>{' '}
+                              cannot fit in{' '}
+                              <strong>
+                                {formData.vehicleCount}{' '}
+                                {currentVehicle?.name || 'vehicle'}
+                                {formData.vehicleCount !== 1 ? 's' : ''}
+                              </strong>
+                              <br />
+                              Maximum capacity:{' '}
+                              <strong>{maxCapacity} people</strong> (
+                              {currentVehicle?.maxParticipants} per vehicle)
+                            </p>
+
+                            <div className='space-y-2'>
+                              <p className='text-red-800 font-medium text-sm'>
+                                💡 Solutions:
+                              </p>
+                              <div className='text-sm text-red-700 space-y-1'>
+                                <div className='flex items-center gap-2'>
+                                  <span className='w-2 h-2 bg-red-500 rounded-full'></span>
+                                  <span>
+                                    Increase to{' '}
+                                    <strong>
+                                      {suggestedVehicles} vehicles
+                                    </strong>{' '}
+                                    of {currentVehicle?.name}
+                                  </span>
+                                  <button
+                                    type='button'
+                                    onClick={() =>
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        vehicleCount: suggestedVehicles,
+                                      }))
+                                    }
+                                    className='ml-2 px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition'
+                                  >
+                                    Apply
+                                  </button>
+                                </div>
+                                {currentVehicle?.id !== 'polarisFamiliar' && (
+                                  <div className='flex items-center gap-2'>
+                                    <span className='w-2 h-2 bg-red-500 rounded-full'></span>
+                                    <span>
+                                      Or switch to{' '}
+                                      <strong>Polaris Familiar</strong> (4
+                                      people per vehicle)
+                                    </span>
+                                    <button
+                                      type='button'
+                                      onClick={() =>
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          vehicleType: 'polarisFamiliar',
+                                          vehicleCount: Math.ceil(
+                                            formData.totalParticipants / 4
+                                          ),
+                                        }))
+                                      }
+                                      className='ml-2 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition'
+                                    >
+                                      Switch
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className='p-3 bg-green-50 border border-green-200 rounded-lg'>
+                      <div className='flex items-center gap-2 mb-2'>
+                        <CheckCircle className='w-4 h-4 text-green-600' />
+                        <span className='text-sm font-medium text-green-800'>
+                          ✅ Perfect Fit!
+                        </span>
+                      </div>
+                      <div className='text-xs text-green-700 space-y-1'>
+                        <div>
+                          <strong>Capacity:</strong>{' '}
+                          {formData.totalParticipants}/{maxCapacity} people
+                        </div>
+                        <div>
+                          <strong>Vehicles:</strong> {formData.vehicleCount} ×{' '}
+                          {currentVehicle?.name}
+                        </div>
+                        <div>
+                          <strong>Cost:</strong> {formData.vehicleCount} × $
+                          {currentVehicle?.price || 0} = ${basePrice}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
@@ -648,7 +926,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             )}
           </div>
 
-          {/* Form Footer */}
+          {/* Form Footer with corrected price calculation */}
           <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
@@ -656,7 +934,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               </span>
               <div className='flex items-center mt-1'>
                 <span className='text-3xl font-light'>
-                  {vehicleInfo?.price
+                  {currentVehicle?.price
                     ? `$${totalPrice.toFixed(2)}`
                     : 'Contact Us'}
                 </span>
@@ -666,22 +944,31 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 </span>
               </div>
 
-              {/* Price breakdown */}
-              {vehicleInfo?.price && (
+              {/* Detailed price breakdown */}
+              {currentVehicle?.price && (
                 <div className='text-xs text-gray-400 mt-2 space-y-1'>
                   <div className='text-green-400 font-medium'>
-                    {vehicleInfo.name} × {formData.vehicleCount}
+                    {currentVehicle.name}
                   </div>
-                  <div>Vehicles: ${basePrice.toFixed(2)}</div>
+                  <div>
+                    {formData.vehicleCount} vehicle
+                    {formData.vehicleCount !== 1 ? 's' : ''} × $
+                    {currentVehicle.price} = ${basePrice.toFixed(2)}
+                  </div>
                   <div>Transport: ${transportCost.toFixed(2)}</div>
                   {locationSurcharge > 0 && (
-                    <div>Location: +${locationSurcharge.toFixed(2)}</div>
+                    <div>
+                      Location surcharge: +${locationSurcharge.toFixed(2)}
+                    </div>
                   )}
                   {selectedLocation && (
                     <div className='text-green-400'>
                       Pickup: {selectedLocation.name}
                     </div>
                   )}
+                  <div className='border-t border-gray-600 pt-1 mt-1 text-white font-medium'>
+                    Total: ${totalPrice.toFixed(2)}
+                  </div>
                 </div>
               )}
             </div>
@@ -698,10 +985,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
 
               <button
                 type='submit'
-                disabled={
-                  isSubmitting ||
-                  (!vehicleInfo?.price && formData.vehicleType === 'polaris')
-                }
+                disabled={isSubmitting || !currentVehicle?.price}
                 className={`px-8 py-3 ${
                   isPremium
                     ? 'bg-purple-600 hover:bg-purple-500'
@@ -711,9 +995,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 <CreditCard className='h-4 w-4 mr-2' />
                 {isSubmitting
                   ? 'Booking...'
-                  : formData.vehicleType === 'polaris'
-                  ? 'Contact for Booking'
-                  : 'Book Adventure'}
+                  : currentVehicle?.price
+                  ? 'Book Adventure'
+                  : 'Contact for Booking'}
               </button>
             </div>
           </div>
