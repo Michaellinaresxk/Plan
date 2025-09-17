@@ -326,7 +326,7 @@ const AboutPage = () => {
             </div>
           </div>
         </section>
-        <div className='container mx-auto px-2 mb-12'>
+        <div className='container mx-auto px-2 py-10 mb-12'>
           <InstagramCTA />
         </div>
         <CTASection />

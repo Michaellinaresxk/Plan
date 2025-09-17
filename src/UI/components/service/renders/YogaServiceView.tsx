@@ -515,12 +515,12 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
 
         {/* Location Selection */}
         <motion.div
-          className='px-4'
+          className='px-2'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
         >
-          <div className='bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-12'>
+          <div className='bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-2'>
             <div className='text-center mb-16'>
               <h2 className='text-4xl font-bold text-gray-800 mb-6'>
                 Sacred Spaces
@@ -586,7 +586,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
 
         {/* Service Overview Section - From PDF */}
         <motion.div
-          className='px-4'
+          className='px-2'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
@@ -602,7 +602,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               </p>
             </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
               <div className='text-center'>
                 <div className='w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4'>
                   <Clock className='w-8 h-8 text-emerald-600' />
@@ -683,15 +683,15 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               <div className='absolute inset-0 bg-gradient-to-r from-emerald-900/90 to-teal-900/80' />
             </div>
 
-            <div className='relative z-10 p-16 text-center text-white'>
+            <div className='relative z-10 p-6 text-center text-white'>
               <motion.h2
-                className='text-5xl md:text-6xl font-bold mb-6'
+                className='text-4xl md:text-6xl font-bold mb-6'
                 variants={fadeInUp}
               >
                 Ready to Transform?
               </motion.h2>
               <motion.p
-                className='text-2xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
+                className='text-xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
                 variants={fadeInUp}
               >
                 Begin your journey to inner peace, strength, and vitality. Your
@@ -704,10 +704,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
               >
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-12 py-5 rounded-2xl font-bold text-xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
+                  className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-10 py-3 rounded-2xl font-bold text-1xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
                 >
                   <Sparkles className='w-6 h-6' />
-                  Book Your Private Session
+                  Book Now
                   <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
                 </button>
               </motion.div>
@@ -717,12 +717,12 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({
 
         {/* Mindfulness Quote Banner */}
         <motion.div
-          className='px-4'
+          className='px-2'
           initial='hidden'
           animate='visible'
           variants={fadeInUp}
         >
-          <div className='bg-gradient-to-r from-emerald-100 via-teal-50 to-cyan-100 rounded-3xl p-12 text-center relative overflow-hidden'>
+          <div className='bg-gradient-to-r from-emerald-100 via-teal-50 to-cyan-100 rounded-3xl p-6 text-center relative overflow-hidden'>
             <Quote className='w-12 h-12 text-emerald-500 mx-auto mb-6' />
             <blockquote className='text-3xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
               "Yoga is not about touching your toes. It is about what you learn

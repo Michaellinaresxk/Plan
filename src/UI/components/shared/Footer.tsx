@@ -97,10 +97,10 @@ const Footer = () => {
                   VISTACANA, Punta Cana 23000, Dominican Republic
                 </span>
               </li>
-              {/* <li className='flex items-center'>
+              <li className='flex items-center'>
                 <Phone className='h-5 w-5 mr-3 text-gray-400' />
-                <span className='text-gray-400'>+1 (809) 555-1234</span>
-              </li> */}
+                <span className='text-gray-400'>+1 302-724-8080</span>
+              </li>
               <li className='flex items-center'>
                 <Mail className='h-5 w-5 mr-3 text-gray-400' />
                 <span className='text-gray-400'>info@luxpuntacana.com</span>
