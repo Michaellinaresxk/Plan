@@ -11,6 +11,7 @@ import Footer from '@/UI/components/shared/Footer';
 import LuxuryServices from '@/UI/components/layout/LuxuryServices';
 import ServicesGallery from '@/UI/components/service/ServicesGalery';
 import PackageSelector from '@/UI/components/layout/PackageSelector';
+import FloatingActionButton from '@/UI/components/shared/WhatsAppFloatingButton';
 
 const HomePage = () => {
   return (
@@ -23,6 +24,10 @@ const HomePage = () => {
         {/* <CustomPackageCTA /> */}
         <ServicesGallery />
         <ConsiergeSupport />
+        <FloatingActionButton
+          message='Hi! I need help with luxury services'
+          position='bottom-right'
+        />
         <Footer />
       </div>
     </BookingProvider>

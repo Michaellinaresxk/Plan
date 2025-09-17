@@ -172,7 +172,7 @@ const ContactPage = () => {
                 <p className='text-gray-600 mb-4'>
                   {t('contact.channel1SubTitle')}
                 </p>
-                <p className='text-blue-600 font-medium'>+1 (809) 555-1234</p>
+                <p className='text-blue-600 font-medium'>+1 302-724-8080</p>
               </motion.div>
 
               {/* Contact Card 2 */}
