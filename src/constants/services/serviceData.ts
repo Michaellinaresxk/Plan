@@ -117,89 +117,89 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   // },
 
   // YOGA SERVICE
-  [SERVICE_IDS.YOGA]: {
-    id: SERVICE_IDS.YOGA,
-    titleKey: 'services.standard.yoga.short',
-    descriptionKey: 'services.standard.yoga.short',
-    fullDescriptionKey: 'ramon dime aver ',
-    basePrice: 10,
-    priceUnit: 'services.priceUnits.perSession',
-    category: 'wellness',
-    packageType: ['standard'],
-    imageUrl:
-      'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 1,
-    bookingDuration: {
-      min: 1,
-      max: 10,
-      unit: 'hours',
-    },
-    options: {
-      yogaStyle: {
-        id: 'yogaStyle',
-        nameKey: 'services.yoga.options.yogaStyle.title',
-        subOptions: {
-          hatha: {
-            id: 'hatha',
-            nameKey: 'services.yoga.options.yogaStyle.options.hatha',
-            price: 0,
-          },
-          vinyasa: {
-            id: 'vinyasa',
-            nameKey: 'services.yoga.options.yogaStyle.options.vinyasa',
-            price: 0,
-          },
-          restorative: {
-            id: 'restorative',
-            nameKey: 'services.yoga.options.yogaStyle.options.restorative',
-            price: 0,
-          },
-          meditation: {
-            id: 'meditation',
-            nameKey: 'services.yoga.options.yogaStyle.options.meditation',
-            price: -10,
-          },
-        },
-      },
-      location: {
-        id: 'location',
-        nameKey: 'services.yoga.options.location.title',
-        subOptions: {
-          beach: {
-            id: 'beach',
-            nameKey: 'services.yoga.options.location.options.beach',
-            price: 15,
-          },
-          pool: {
-            id: 'pool',
-            nameKey: 'services.yoga.options.location.options.pool',
-            price: 0,
-          },
-          indoors: {
-            id: 'indoors',
-            nameKey: 'services.yoga.options.location.options.indoors',
-            price: 0,
-          },
-        },
-      },
-    },
-    additionalInfoKeys: [
-      'services.yoga.additionalInfo.1',
-      'services.yoga.additionalInfo.2',
-    ],
-    specialRender: 'yoga',
-    relatedServices: [SERVICE_IDS.PERSONAL_TRAINER],
-    tags: ['wellness', 'fitness', 'relaxation'],
-    availability: {
-      daysOfWeek: [1, 2, 3, 4, 5, 6],
-      hoursOfDay: [6, 7, 8, 9, 16, 17, 18],
-    },
-    metaData: {
-      equipmentProvided: true,
-      languages: 'english,spanish',
-      experienceLevel: 'beginner,intermediate,advanced',
-    },
-  },
+  // [SERVICE_IDS.YOGA]: {
+  //   id: SERVICE_IDS.YOGA,
+  //   titleKey: 'services.standard.yoga.short',
+  //   descriptionKey: 'services.standard.yoga.short',
+  //   fullDescriptionKey: 'ramon dime aver ',
+  //   basePrice: 10,
+  //   priceUnit: 'services.priceUnits.perSession',
+  //   category: 'wellness',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   duration: 1,
+  //   bookingDuration: {
+  //     min: 1,
+  //     max: 10,
+  //     unit: 'hours',
+  //   },
+  //   options: {
+  //     yogaStyle: {
+  //       id: 'yogaStyle',
+  //       nameKey: 'services.yoga.options.yogaStyle.title',
+  //       subOptions: {
+  //         hatha: {
+  //           id: 'hatha',
+  //           nameKey: 'services.yoga.options.yogaStyle.options.hatha',
+  //           price: 0,
+  //         },
+  //         vinyasa: {
+  //           id: 'vinyasa',
+  //           nameKey: 'services.yoga.options.yogaStyle.options.vinyasa',
+  //           price: 0,
+  //         },
+  //         restorative: {
+  //           id: 'restorative',
+  //           nameKey: 'services.yoga.options.yogaStyle.options.restorative',
+  //           price: 0,
+  //         },
+  //         meditation: {
+  //           id: 'meditation',
+  //           nameKey: 'services.yoga.options.yogaStyle.options.meditation',
+  //           price: -10,
+  //         },
+  //       },
+  //     },
+  //     location: {
+  //       id: 'location',
+  //       nameKey: 'services.yoga.options.location.title',
+  //       subOptions: {
+  //         beach: {
+  //           id: 'beach',
+  //           nameKey: 'services.yoga.options.location.options.beach',
+  //           price: 15,
+  //         },
+  //         pool: {
+  //           id: 'pool',
+  //           nameKey: 'services.yoga.options.location.options.pool',
+  //           price: 0,
+  //         },
+  //         indoors: {
+  //           id: 'indoors',
+  //           nameKey: 'services.yoga.options.location.options.indoors',
+  //           price: 0,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   additionalInfoKeys: [
+  //     'services.yoga.additionalInfo.1',
+  //     'services.yoga.additionalInfo.2',
+  //   ],
+  //   specialRender: 'yoga',
+  //   relatedServices: [SERVICE_IDS.PERSONAL_TRAINER],
+  //   tags: ['wellness', 'fitness', 'relaxation'],
+  //   availability: {
+  //     daysOfWeek: [1, 2, 3, 4, 5, 6],
+  //     hoursOfDay: [6, 7, 8, 9, 16, 17, 18],
+  //   },
+  //   metaData: {
+  //     equipmentProvided: true,
+  //     languages: 'english,spanish',
+  //     experienceLevel: 'beginner,intermediate,advanced',
+  //   },
+  // },
 
   // GOLF CART SERVICE
   [SERVICE_IDS.GOLF_CART]: {
@@ -573,443 +573,443 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   },
 
   // KARAOKE SERVICE
-  [SERVICE_IDS.KARAOKE]: {
-    id: SERVICE_IDS.KARAOKE,
-    titleKey: 'services.standard.karaoke.name',
-    descriptionKey: 'services.standard.karaoke.description',
-    fullDescriptionKey: 'services.standard.karaoke.full',
-    basePrice: 120,
-    priceUnit: 'services.priceUnits.perSession',
-    category: 'leisure',
-    packageType: ['standard'],
-    imageUrl:
-      'https://production-media-prisoner-of-payload.s3.amazonaws.com/media/Lucky-Voice-2021-Adults-Edited-AntTran-1935%20RESIZED-4-1920x1440.jpg',
-    duration: 3,
-    bookingDuration: {
-      min: 2,
-      max: 5,
-      unit: 'hours',
-    },
-    options: {
-      setupType: {
-        id: 'setupType',
-        nameKey: 'services.karaoke.options.setupType.title',
-        subOptions: {
-          basic: {
-            id: 'basic',
-            nameKey: 'services.karaoke.options.setupType.options.basic',
-            price: 0,
-          },
-        },
-      },
-      hostIncluded: {
-        id: 'hostIncluded',
-        nameKey: 'services.karaoke.options.hostIncluded.title',
-        subOptions: {
-          yes: {
-            id: 'yes',
-            nameKey: 'services.karaoke.options.hostIncluded.options.yes',
-            price: 40,
-          },
-          no: {
-            id: 'no',
-            nameKey: 'services.karaoke.options.hostIncluded.options.no',
-            price: 0,
-          },
-        },
-      },
-    },
-    additionalInfoKeys: [
-      'services.karaoke.additionalInfo.1',
-      'services.karaoke.additionalInfo.2',
-    ],
-    specialRender: 'karaoke',
-    includes: [
-      'services.karaoke.includes.1',
-      'services.karaoke.includes.2',
-      'services.karaoke.includes.3',
-      'services.karaoke.includes.4',
-    ],
-    notIncluded: ['services.karaoke.notIncluded.1'],
-    itinerary: [
-      'services.karaoke.itinerary.1',
-      'services.karaoke.itinerary.2',
-      'services.karaoke.itinerary.3',
-      'services.karaoke.itinerary.4',
-    ],
-    disclaimer: 'services.karaoke.disclaimer',
-    tags: ['entertainment', 'party', 'music'],
-    metaData: {
-      songsAvailable: 5000,
-      languages: 'english,spanish,italian,french',
-      equipmentIncluded: 'microphones,speakers,screen,lights',
-    },
-  },
+  // [SERVICE_IDS.KARAOKE]: {
+  //   id: SERVICE_IDS.KARAOKE,
+  //   titleKey: 'services.standard.karaoke.name',
+  //   descriptionKey: 'services.standard.karaoke.description',
+  //   fullDescriptionKey: 'services.standard.karaoke.full',
+  //   basePrice: 120,
+  //   priceUnit: 'services.priceUnits.perSession',
+  //   category: 'leisure',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://production-media-prisoner-of-payload.s3.amazonaws.com/media/Lucky-Voice-2021-Adults-Edited-AntTran-1935%20RESIZED-4-1920x1440.jpg',
+  //   duration: 3,
+  //   bookingDuration: {
+  //     min: 2,
+  //     max: 5,
+  //     unit: 'hours',
+  //   },
+  //   options: {
+  //     setupType: {
+  //       id: 'setupType',
+  //       nameKey: 'services.karaoke.options.setupType.title',
+  //       subOptions: {
+  //         basic: {
+  //           id: 'basic',
+  //           nameKey: 'services.karaoke.options.setupType.options.basic',
+  //           price: 0,
+  //         },
+  //       },
+  //     },
+  //     hostIncluded: {
+  //       id: 'hostIncluded',
+  //       nameKey: 'services.karaoke.options.hostIncluded.title',
+  //       subOptions: {
+  //         yes: {
+  //           id: 'yes',
+  //           nameKey: 'services.karaoke.options.hostIncluded.options.yes',
+  //           price: 40,
+  //         },
+  //         no: {
+  //           id: 'no',
+  //           nameKey: 'services.karaoke.options.hostIncluded.options.no',
+  //           price: 0,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   additionalInfoKeys: [
+  //     'services.karaoke.additionalInfo.1',
+  //     'services.karaoke.additionalInfo.2',
+  //   ],
+  //   specialRender: 'karaoke',
+  //   includes: [
+  //     'services.karaoke.includes.1',
+  //     'services.karaoke.includes.2',
+  //     'services.karaoke.includes.3',
+  //     'services.karaoke.includes.4',
+  //   ],
+  //   notIncluded: ['services.karaoke.notIncluded.1'],
+  //   itinerary: [
+  //     'services.karaoke.itinerary.1',
+  //     'services.karaoke.itinerary.2',
+  //     'services.karaoke.itinerary.3',
+  //     'services.karaoke.itinerary.4',
+  //   ],
+  //   disclaimer: 'services.karaoke.disclaimer',
+  //   tags: ['entertainment', 'party', 'music'],
+  //   metaData: {
+  //     songsAvailable: 5000,
+  //     languages: 'english,spanish,italian,french',
+  //     equipmentIncluded: 'microphones,speakers,screen,lights',
+  //   },
+  // },
 
   // PERSONAL_TRAINER SERVICE
-  [SERVICE_IDS.PERSONAL_TRAINER]: {
-    id: SERVICE_IDS.PERSONAL_TRAINER,
-    titleKey: 'services.standard.personalTraining.name',
-    descriptionKey: 'services.standard.personalTraining.short',
-    fullDescriptionKey: 'services.standard.personalTraining.full',
-    basePrice: 30,
-    priceUnit: 'services.priceUnits.perSession',
-    category: 'wellness',
-    packageType: ['standard'],
-    imageUrl:
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 1,
-    bookingDuration: {
-      min: 1,
-      max: 5,
-      unit: 'hours',
-    },
-    options: {
-      trainingType: {
-        id: 'trainingType',
-        nameKey: 'services.personalTraining.options.trainingType.title',
-        subOptions: {
-          strength: {
-            id: 'strength',
-            nameKey:
-              'services.personalTraining.options.trainingType.options.strength',
-            price: 0,
-          },
-          hiit: {
-            id: 'hiit',
-            nameKey:
-              'services.personalTraining.options.trainingType.options.hiit',
-            price: 0,
-          },
-          functional: {
-            id: 'functional',
-            nameKey:
-              'services.personalTraining.options.trainingType.options.functional',
-            price: 0,
-          },
-          flexibility: {
-            id: 'flexibility',
-            nameKey:
-              'services.personalTraining.options.trainingType.options.flexibility',
-            price: -10,
-          },
-          prenatal: {
-            id: 'prenatal',
-            nameKey:
-              'services.personalTraining.options.trainingType.options.prenatal',
-            price: 15,
-          },
-          cardioKickboxing: {
-            id: 'cardioKickboxing',
-            nameKey:
-              'services.personalTraining.options.trainingType.options.cardioKickboxing',
-            price: 10,
-          },
-        },
-      },
-      location: {
-        id: 'location',
-        nameKey: 'services.personalTraining.options.location.title',
-        subOptions: {
-          villa: {
-            id: 'villa',
-            nameKey: 'services.personalTraining.options.location.options.villa',
-            price: 0,
-          },
-          resortGym: {
-            id: 'resortGym',
-            nameKey:
-              'services.personalTraining.options.location.options.resortGym',
-            price: 0,
-          },
-          beachside: {
-            id: 'beachside',
-            nameKey:
-              'services.personalTraining.options.location.options.beachside',
-            price: 20,
-          },
-        },
-      },
-    },
-    additionalInfoKeys: [
-      'services.personalTraining.additionalInfo.1',
-      'services.personalTraining.additionalInfo.2',
-      'services.personalTraining.additionalInfo.3',
-    ],
-    specialRender: 'personalTraining',
-    relatedServices: [SERVICE_IDS.YOGA],
-    tags: ['wellness', 'fitness', 'personal', 'training'],
-    availability: {
-      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
-      hoursOfDay: [6, 7, 8, 9, 10, 16, 17, 18, 19],
-    },
-    metaData: {
-      equipmentProvided: true,
-      languages: 'english,spanish',
-      experienceLevel: 'beginner,intermediate,advanced',
-      sessionDuration: 60,
-      agePolicy: '16+',
-      adaptable: true,
-      certifiedTrainers: true,
-      customWorkoutPlan: true,
-      disclaimer: 'services.personalTraining.disclaimer',
-    },
-  },
+  // [SERVICE_IDS.PERSONAL_TRAINER]: {
+  //   id: SERVICE_IDS.PERSONAL_TRAINER,
+  //   titleKey: 'services.standard.personalTraining.name',
+  //   descriptionKey: 'services.standard.personalTraining.short',
+  //   fullDescriptionKey: 'services.standard.personalTraining.full',
+  //   basePrice: 30,
+  //   priceUnit: 'services.priceUnits.perSession',
+  //   category: 'wellness',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   duration: 1,
+  //   bookingDuration: {
+  //     min: 1,
+  //     max: 5,
+  //     unit: 'hours',
+  //   },
+  //   options: {
+  //     trainingType: {
+  //       id: 'trainingType',
+  //       nameKey: 'services.personalTraining.options.trainingType.title',
+  //       subOptions: {
+  //         strength: {
+  //           id: 'strength',
+  //           nameKey:
+  //             'services.personalTraining.options.trainingType.options.strength',
+  //           price: 0,
+  //         },
+  //         hiit: {
+  //           id: 'hiit',
+  //           nameKey:
+  //             'services.personalTraining.options.trainingType.options.hiit',
+  //           price: 0,
+  //         },
+  //         functional: {
+  //           id: 'functional',
+  //           nameKey:
+  //             'services.personalTraining.options.trainingType.options.functional',
+  //           price: 0,
+  //         },
+  //         flexibility: {
+  //           id: 'flexibility',
+  //           nameKey:
+  //             'services.personalTraining.options.trainingType.options.flexibility',
+  //           price: -10,
+  //         },
+  //         prenatal: {
+  //           id: 'prenatal',
+  //           nameKey:
+  //             'services.personalTraining.options.trainingType.options.prenatal',
+  //           price: 15,
+  //         },
+  //         cardioKickboxing: {
+  //           id: 'cardioKickboxing',
+  //           nameKey:
+  //             'services.personalTraining.options.trainingType.options.cardioKickboxing',
+  //           price: 10,
+  //         },
+  //       },
+  //     },
+  //     location: {
+  //       id: 'location',
+  //       nameKey: 'services.personalTraining.options.location.title',
+  //       subOptions: {
+  //         villa: {
+  //           id: 'villa',
+  //           nameKey: 'services.personalTraining.options.location.options.villa',
+  //           price: 0,
+  //         },
+  //         resortGym: {
+  //           id: 'resortGym',
+  //           nameKey:
+  //             'services.personalTraining.options.location.options.resortGym',
+  //           price: 0,
+  //         },
+  //         beachside: {
+  //           id: 'beachside',
+  //           nameKey:
+  //             'services.personalTraining.options.location.options.beachside',
+  //           price: 20,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   additionalInfoKeys: [
+  //     'services.personalTraining.additionalInfo.1',
+  //     'services.personalTraining.additionalInfo.2',
+  //     'services.personalTraining.additionalInfo.3',
+  //   ],
+  //   specialRender: 'personalTraining',
+  //   relatedServices: [SERVICE_IDS.YOGA],
+  //   tags: ['wellness', 'fitness', 'personal', 'training'],
+  //   availability: {
+  //     daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
+  //     hoursOfDay: [6, 7, 8, 9, 10, 16, 17, 18, 19],
+  //   },
+  //   metaData: {
+  //     equipmentProvided: true,
+  //     languages: 'english,spanish',
+  //     experienceLevel: 'beginner,intermediate,advanced',
+  //     sessionDuration: 60,
+  //     agePolicy: '16+',
+  //     adaptable: true,
+  //     certifiedTrainers: true,
+  //     customWorkoutPlan: true,
+  //     disclaimer: 'services.personalTraining.disclaimer',
+  //   },
+  // },
 
   // AIRPORT TRANSFERS
-  [SERVICE_IDS.AIRPORT_TRANSFER]: {
-    id: SERVICE_IDS.AIRPORT_TRANSFER,
-    titleKey: 'services.standard.airportTransfers.name',
-    descriptionKey: 'services.standard.airportTransfers.description',
-    fullDescriptionKey: 'services.standard.airportTransfers.full',
-    basePrice: 40, // Updated base price for standard van (1-6 people)
-    priceUnit: 'services.priceUnits.perTrip',
-    category: 'transportation',
-    packageType: ['standard'],
-    imageUrl:
-      'https://denomades.imgix.net/destinos/santiago/8/vehiculo-transporte-pasajeros.jpg?w=907&h=494&fit=crop&q=100&auto=format,compress&fm=webp',
-    duration: 1,
-    specialRender: 'airport',
-    options: {
-      vehicleType: {
-        id: 'vehicleType',
-        nameKey: 'services.airportTransfer.options.vehicleType.title',
-        subOptions: {
-          vanSmall: {
-            id: 'vanSmall',
-            nameKey:
-              'services.airportTransfer.options.vehicleType.options.vanSmall',
-            price: 0, // Base price $40
-            descriptionKey:
-              'services.airportTransfer.options.vehicleType.options.vanSmallDesc',
-            capacityInfo: {
-              min: 1,
-              max: 6,
-              price: 40,
-            },
-          },
-          vanMedium: {
-            id: 'vanMedium',
-            nameKey:
-              'services.airportTransfer.options.vehicleType.options.vanMedium',
-            price: 25, // $65 total
-            descriptionKey:
-              'services.airportTransfer.options.vehicleType.options.vanMediumDesc',
-            capacityInfo: {
-              min: 7,
-              max: 10,
-              price: 65,
-            },
-          },
-          vanLarge: {
-            id: 'vanLarge',
-            nameKey:
-              'services.airportTransfer.options.vehicleType.options.vanLarge',
-            price: 35, // $75 total
-            descriptionKey:
-              'services.airportTransfer.options.vehicleType.options.vanLargeDesc',
-            capacityInfo: {
-              min: 11,
-              max: 16,
-              price: 75,
-            },
-          },
-          suv: {
-            id: 'suv',
-            nameKey: 'services.airportTransfer.options.vehicleType.options.suv',
-            price: 30, // $70 total
-            descriptionKey:
-              'services.airportTransfer.options.vehicleType.options.suvDesc',
-            capacityInfo: {
-              min: 1,
-              max: 6,
-              price: 70,
-            },
-          },
-        },
-      },
-      isRoundTrip: {
-        id: 'isRoundTrip',
-        nameKey: 'services.airportTransfer.options.isRoundTrip.title',
-        subOptions: {
-          oneWay: {
-            id: 'oneWay',
-            nameKey:
-              'services.airportTransfer.options.isRoundTrip.options.oneWay',
-            price: 0,
-          },
-          roundTrip: {
-            id: 'roundTrip',
-            nameKey:
-              'services.airportTransfer.options.isRoundTrip.options.roundTrip',
-            price: 'double', // Special indicator to double the base price
-          },
-        },
-      },
-    },
-    includes: [
-      'services.airportTransfer.includes.1',
-      'services.airportTransfer.includes.2',
-      'services.airportTransfer.includes.3',
-      'services.airportTransfer.includes.4',
-    ],
-    notIncluded: ['services.airportTransfer.notIncluded.1'],
-    itinerary: [
-      'services.airportTransfer.itinerary.1',
-      'services.airportTransfer.itinerary.2',
-      'services.airportTransfer.itinerary.3',
-      'services.airportTransfer.itinerary.4',
-    ],
-    relatedServices: [SERVICE_IDS.GOLF_CART],
-    tags: ['transport', 'airport'],
-    metaData: {
-      travelTime: '20-40 min',
-      availability: '24/7',
-      flightTracking: true,
-      childSeats: true,
-      providerChoice: true,
-      providers: ['Provider 1', 'Provider 2'],
-    },
-  },
+  // [SERVICE_IDS.AIRPORT_TRANSFER]: {
+  //   id: SERVICE_IDS.AIRPORT_TRANSFER,
+  //   titleKey: 'services.standard.airportTransfers.name',
+  //   descriptionKey: 'services.standard.airportTransfers.description',
+  //   fullDescriptionKey: 'services.standard.airportTransfers.full',
+  //   basePrice: 40, // Updated base price for standard van (1-6 people)
+  //   priceUnit: 'services.priceUnits.perTrip',
+  //   category: 'transportation',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://denomades.imgix.net/destinos/santiago/8/vehiculo-transporte-pasajeros.jpg?w=907&h=494&fit=crop&q=100&auto=format,compress&fm=webp',
+  //   duration: 1,
+  //   specialRender: 'airport',
+  //   options: {
+  //     vehicleType: {
+  //       id: 'vehicleType',
+  //       nameKey: 'services.airportTransfer.options.vehicleType.title',
+  //       subOptions: {
+  //         vanSmall: {
+  //           id: 'vanSmall',
+  //           nameKey:
+  //             'services.airportTransfer.options.vehicleType.options.vanSmall',
+  //           price: 0, // Base price $40
+  //           descriptionKey:
+  //             'services.airportTransfer.options.vehicleType.options.vanSmallDesc',
+  //           capacityInfo: {
+  //             min: 1,
+  //             max: 6,
+  //             price: 40,
+  //           },
+  //         },
+  //         vanMedium: {
+  //           id: 'vanMedium',
+  //           nameKey:
+  //             'services.airportTransfer.options.vehicleType.options.vanMedium',
+  //           price: 25, // $65 total
+  //           descriptionKey:
+  //             'services.airportTransfer.options.vehicleType.options.vanMediumDesc',
+  //           capacityInfo: {
+  //             min: 7,
+  //             max: 10,
+  //             price: 65,
+  //           },
+  //         },
+  //         vanLarge: {
+  //           id: 'vanLarge',
+  //           nameKey:
+  //             'services.airportTransfer.options.vehicleType.options.vanLarge',
+  //           price: 35, // $75 total
+  //           descriptionKey:
+  //             'services.airportTransfer.options.vehicleType.options.vanLargeDesc',
+  //           capacityInfo: {
+  //             min: 11,
+  //             max: 16,
+  //             price: 75,
+  //           },
+  //         },
+  //         suv: {
+  //           id: 'suv',
+  //           nameKey: 'services.airportTransfer.options.vehicleType.options.suv',
+  //           price: 30, // $70 total
+  //           descriptionKey:
+  //             'services.airportTransfer.options.vehicleType.options.suvDesc',
+  //           capacityInfo: {
+  //             min: 1,
+  //             max: 6,
+  //             price: 70,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     isRoundTrip: {
+  //       id: 'isRoundTrip',
+  //       nameKey: 'services.airportTransfer.options.isRoundTrip.title',
+  //       subOptions: {
+  //         oneWay: {
+  //           id: 'oneWay',
+  //           nameKey:
+  //             'services.airportTransfer.options.isRoundTrip.options.oneWay',
+  //           price: 0,
+  //         },
+  //         roundTrip: {
+  //           id: 'roundTrip',
+  //           nameKey:
+  //             'services.airportTransfer.options.isRoundTrip.options.roundTrip',
+  //           price: 'double', // Special indicator to double the base price
+  //         },
+  //       },
+  //     },
+  //   },
+  //   includes: [
+  //     'services.airportTransfer.includes.1',
+  //     'services.airportTransfer.includes.2',
+  //     'services.airportTransfer.includes.3',
+  //     'services.airportTransfer.includes.4',
+  //   ],
+  //   notIncluded: ['services.airportTransfer.notIncluded.1'],
+  //   itinerary: [
+  //     'services.airportTransfer.itinerary.1',
+  //     'services.airportTransfer.itinerary.2',
+  //     'services.airportTransfer.itinerary.3',
+  //     'services.airportTransfer.itinerary.4',
+  //   ],
+  //   relatedServices: [SERVICE_IDS.GOLF_CART],
+  //   tags: ['transport', 'airport'],
+  //   metaData: {
+  //     travelTime: '20-40 min',
+  //     availability: '24/7',
+  //     flightTracking: true,
+  //     childSeats: true,
+  //     providerChoice: true,
+  //     providers: ['Provider 1', 'Provider 2'],
+  //   },
+  // },
 
   // POINT_TO_POINT_TRANSFER
-  [SERVICE_IDS.POINT_TO_POINT_TRANSFER]: {
-    id: SERVICE_IDS.POINT_TO_POINT_TRANSFER,
-    titleKey: 'services.standard.pointToPointTransfer.name',
-    descriptionKey: 'services.standard.pointToPointTransfer.description',
-    fullDescriptionKey: 'services.standard.pointToPointTransfer.full',
-    basePrice: 25, // Starting price for short routes
-    priceUnit: 'services.priceUnits.perTrip',
-    category: 'transportation',
-    packageType: ['standard'],
-    imageUrl:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1756210030/4_f3ola3.jpg',
-    duration: 1, // Variable duration
-    specialRender: 'pointToPoint',
-    options: {
-      vehicleType: {
-        id: 'vehicleType',
-        nameKey: 'services.pointToPointTransfer.options.vehicleType.title',
-        subOptions: {
-          suv: {
-            id: 'suv',
-            nameKey:
-              'services.pointToPointTransfer.options.vehicleType.options.suv',
-            price: 25, // +$25
-            descriptionKey:
-              'services.pointToPointTransfer.options.vehicleType.options.suvDesc',
-            capacityInfo: {
-              min: 1,
-              max: 6,
-              suitcases: 4,
-            },
-          },
-          van: {
-            id: 'van',
-            nameKey:
-              'services.pointToPointTransfer.options.vehicleType.options.van',
-            price: 50, // +$50
-            descriptionKey:
-              'services.pointToPointTransfer.options.vehicleType.options.vanDesc',
-            capacityInfo: {
-              min: 7,
-              max: 15,
-              suitcases: 8,
-            },
-          },
-          two_suvs: {
-            id: 'two_suvs',
-            nameKey:
-              'services.pointToPointTransfer.options.vehicleType.options.twoSuvs',
-            price: 75, // +$75
-            descriptionKey:
-              'services.pointToPointTransfer.options.vehicleType.options.twoSuvsDesc',
-            capacityInfo: {
-              min: 10,
-              max: 12,
-              suitcases: 8,
-              features: ['flexibility', 'comfort'],
-            },
-          },
-        },
-      },
-      isRoundTrip: {
-        id: 'isRoundTrip',
-        nameKey: 'services.pointToPointTransfer.options.isRoundTrip.title',
-        subOptions: {
-          oneWay: {
-            id: 'oneWay',
-            nameKey:
-              'services.pointToPointTransfer.options.isRoundTrip.options.oneWay',
-            price: 0,
-          },
-          roundTrip: {
-            id: 'roundTrip',
-            nameKey:
-              'services.pointToPointTransfer.options.isRoundTrip.options.roundTrip',
-            price: 'multiply_1.8', // 80% of double price
-          },
-        },
-      },
-      routeType: {
-        id: 'routeType',
-        nameKey: 'services.pointToPointTransfer.options.routeType.title',
-        subOptions: {
-          local: {
-            id: 'local',
-            nameKey:
-              'services.pointToPointTransfer.options.routeType.options.local',
-            price: 0,
-            description: 'Within Punta Cana/Bavaro area (15-30 min)',
-          },
-          regional: {
-            id: 'regional',
-            nameKey:
-              'services.pointToPointTransfer.options.routeType.options.regional',
-            price: 'zone_based',
-            description: 'Between different resort areas (30-90 min)',
-          },
-          longDistance: {
-            id: 'longDistance',
-            nameKey:
-              'services.pointToPointTransfer.options.routeType.options.longDistance',
-            price: 'zone_based',
-            description: 'To Santo Domingo, La Romana, or Samaná (2-4 hours)',
-          },
-        },
-      },
-    },
-    includes: [
-      'services.pointToPointTransfer.includes.1', // Professional driver
-      'services.pointToPointTransfer.includes.2', // Door-to-door service
-      'services.pointToPointTransfer.includes.3', // Air-conditioned vehicle
-      'services.pointToPointTransfer.includes.4', // Luggage assistance
-      'services.pointToPointTransfer.includes.5', // Route planning
-      'services.pointToPointTransfer.includes.6', // Real-time tracking
-    ],
-    notIncluded: [
-      'services.pointToPointTransfer.notIncluded.1', // Gratuity
-      'services.pointToPointTransfer.notIncluded.2', // Waiting time
-      'services.pointToPointTransfer.notIncluded.3', // Additional stops
-    ],
-    itinerary: [
-      'services.pointToPointTransfer.itinerary.1', // Driver arrives at pickup
-      'services.pointToPointTransfer.itinerary.2', // Assistance with luggage
-      'services.pointToPointTransfer.itinerary.3', // Comfortable journey
-      'services.pointToPointTransfer.itinerary.4', // Safe arrival
-    ],
-    relatedServices: [SERVICE_IDS.AIRPORT_TRANSFER, SERVICE_IDS.GOLF_CART],
-    tags: ['transport', 'point-to-point', 'private'],
-    metaData: {
-      travelTime: '15-45 min (zone dependent)',
-      availability: '24/7',
-      childSeats: true,
-      routePlanning: true,
-      realTimeTracking: true,
-      zoneBased: true,
-      providers: ['Provider 1', 'Provider 2'],
-    },
-  },
+  // [SERVICE_IDS.POINT_TO_POINT_TRANSFER]: {
+  //   id: SERVICE_IDS.POINT_TO_POINT_TRANSFER,
+  //   titleKey: 'services.standard.pointToPointTransfer.name',
+  //   descriptionKey: 'services.standard.pointToPointTransfer.description',
+  //   fullDescriptionKey: 'services.standard.pointToPointTransfer.full',
+  //   basePrice: 25, // Starting price for short routes
+  //   priceUnit: 'services.priceUnits.perTrip',
+  //   category: 'transportation',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://res.cloudinary.com/ddg92xar5/image/upload/v1756210030/4_f3ola3.jpg',
+  //   duration: 1, // Variable duration
+  //   specialRender: 'pointToPoint',
+  //   options: {
+  //     vehicleType: {
+  //       id: 'vehicleType',
+  //       nameKey: 'services.pointToPointTransfer.options.vehicleType.title',
+  //       subOptions: {
+  //         suv: {
+  //           id: 'suv',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.vehicleType.options.suv',
+  //           price: 25, // +$25
+  //           descriptionKey:
+  //             'services.pointToPointTransfer.options.vehicleType.options.suvDesc',
+  //           capacityInfo: {
+  //             min: 1,
+  //             max: 6,
+  //             suitcases: 4,
+  //           },
+  //         },
+  //         van: {
+  //           id: 'van',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.vehicleType.options.van',
+  //           price: 50, // +$50
+  //           descriptionKey:
+  //             'services.pointToPointTransfer.options.vehicleType.options.vanDesc',
+  //           capacityInfo: {
+  //             min: 7,
+  //             max: 15,
+  //             suitcases: 8,
+  //           },
+  //         },
+  //         two_suvs: {
+  //           id: 'two_suvs',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.vehicleType.options.twoSuvs',
+  //           price: 75, // +$75
+  //           descriptionKey:
+  //             'services.pointToPointTransfer.options.vehicleType.options.twoSuvsDesc',
+  //           capacityInfo: {
+  //             min: 10,
+  //             max: 12,
+  //             suitcases: 8,
+  //             features: ['flexibility', 'comfort'],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     isRoundTrip: {
+  //       id: 'isRoundTrip',
+  //       nameKey: 'services.pointToPointTransfer.options.isRoundTrip.title',
+  //       subOptions: {
+  //         oneWay: {
+  //           id: 'oneWay',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.isRoundTrip.options.oneWay',
+  //           price: 0,
+  //         },
+  //         roundTrip: {
+  //           id: 'roundTrip',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.isRoundTrip.options.roundTrip',
+  //           price: 'multiply_1.8', // 80% of double price
+  //         },
+  //       },
+  //     },
+  //     routeType: {
+  //       id: 'routeType',
+  //       nameKey: 'services.pointToPointTransfer.options.routeType.title',
+  //       subOptions: {
+  //         local: {
+  //           id: 'local',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.routeType.options.local',
+  //           price: 0,
+  //           description: 'Within Punta Cana/Bavaro area (15-30 min)',
+  //         },
+  //         regional: {
+  //           id: 'regional',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.routeType.options.regional',
+  //           price: 'zone_based',
+  //           description: 'Between different resort areas (30-90 min)',
+  //         },
+  //         longDistance: {
+  //           id: 'longDistance',
+  //           nameKey:
+  //             'services.pointToPointTransfer.options.routeType.options.longDistance',
+  //           price: 'zone_based',
+  //           description: 'To Santo Domingo, La Romana, or Samaná (2-4 hours)',
+  //         },
+  //       },
+  //     },
+  //   },
+  //   includes: [
+  //     'services.pointToPointTransfer.includes.1', // Professional driver
+  //     'services.pointToPointTransfer.includes.2', // Door-to-door service
+  //     'services.pointToPointTransfer.includes.3', // Air-conditioned vehicle
+  //     'services.pointToPointTransfer.includes.4', // Luggage assistance
+  //     'services.pointToPointTransfer.includes.5', // Route planning
+  //     'services.pointToPointTransfer.includes.6', // Real-time tracking
+  //   ],
+  //   notIncluded: [
+  //     'services.pointToPointTransfer.notIncluded.1', // Gratuity
+  //     'services.pointToPointTransfer.notIncluded.2', // Waiting time
+  //     'services.pointToPointTransfer.notIncluded.3', // Additional stops
+  //   ],
+  //   itinerary: [
+  //     'services.pointToPointTransfer.itinerary.1', // Driver arrives at pickup
+  //     'services.pointToPointTransfer.itinerary.2', // Assistance with luggage
+  //     'services.pointToPointTransfer.itinerary.3', // Comfortable journey
+  //     'services.pointToPointTransfer.itinerary.4', // Safe arrival
+  //   ],
+  //   relatedServices: [SERVICE_IDS.AIRPORT_TRANSFER, SERVICE_IDS.GOLF_CART],
+  //   tags: ['transport', 'point-to-point', 'private'],
+  //   metaData: {
+  //     travelTime: '15-45 min (zone dependent)',
+  //     availability: '24/7',
+  //     childSeats: true,
+  //     routePlanning: true,
+  //     realTimeTracking: true,
+  //     zoneBased: true,
+  //     providers: ['Provider 1', 'Provider 2'],
+  //   },
+  // },
 
   // BABYSITTER SERVICE
   [SERVICE_IDS.BABYSITTER]: {
@@ -1097,221 +1097,221 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   },
 
   // CUSTOM DECORATIONS SERVICE
-  [SERVICE_IDS.CUSTOM_DECORATIONS]: {
-    id: SERVICE_IDS.CUSTOM_DECORATIONS,
-    titleKey: 'services.standard.customDecorations.name',
-    descriptionKey: 'services.standard.customDecorations.description',
-    fullDescriptionKey: 'services.standard.customDecorations.full',
-    basePrice: 150,
-    priceUnit: 'services.priceUnits.perSetup',
-    category: 'leisure',
-    packageType: ['standard'],
-    imageUrl:
-      'https://images.unsplash.com/photo-1604668915840-580c30026e5f?q=80&w=2848&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 0, // No tiene duración específica
-    specialRender: 'decorations',
-    bookingDuration: {
-      min: 1,
-      max: 1,
-      unit: 'setups',
-    },
-    options: {
-      decorationType: {
-        id: 'decorationType',
-        nameKey: 'services.customDecorations.options.decorationType.title',
-        subOptions: {
-          romantic: {
-            id: 'romantic',
-            nameKey:
-              'services.customDecorations.options.decorationType.options.romantic',
-            price: 0,
-          },
-          birthday: {
-            id: 'birthday',
-            nameKey:
-              'services.customDecorations.options.decorationType.options.birthday',
-            price: 25,
-          },
-          balloonGarlands: {
-            id: 'balloonGarlands',
-            nameKey:
-              'services.customDecorations.options.decorationType.options.balloonGarlands',
-            price: 35,
-          },
-          beachPicnic: {
-            id: 'beachPicnic',
-            nameKey:
-              'services.customDecorations.options.decorationType.options.beachPicnic',
-            price: 50,
-          },
-          kidsParty: {
-            id: 'kidsParty',
-            nameKey:
-              'services.customDecorations.options.decorationType.options.kidsParty',
-            price: 45,
-          },
-          luxuryDining: {
-            id: 'luxuryDining',
-            nameKey:
-              'services.customDecorations.options.decorationType.options.luxuryDining',
-            price: 75,
-          },
-        },
-      },
-      extras: {
-        id: 'extras',
-        nameKey: 'services.customDecorations.options.extras.title',
-        subOptions: {
-          none: {
-            id: 'none',
-            nameKey: 'services.customDecorations.options.extras.options.none',
-            price: 0,
-          },
-          cake: {
-            id: 'cake',
-            nameKey: 'services.customDecorations.options.extras.options.cake',
-            price: 45,
-          },
-          flowers: {
-            id: 'flowers',
-            nameKey:
-              'services.customDecorations.options.extras.options.flowers',
-            price: 55,
-          },
-          welcomeSign: {
-            id: 'welcomeSign',
-            nameKey:
-              'services.customDecorations.options.extras.options.welcomeSign',
-            price: 25,
-          },
-        },
-      },
-    },
-    includes: [
-      'services.customDecorations.includes.1',
-      'services.customDecorations.includes.2',
-      'services.customDecorations.includes.3',
-      'services.customDecorations.includes.4',
-    ],
-    notIncluded: ['services.customDecorations.notIncluded.1'],
-    itinerary: [
-      'services.customDecorations.itinerary.1',
-      'services.customDecorations.itinerary.2',
-      'services.customDecorations.itinerary.3',
-      'services.customDecorations.itinerary.4',
-    ],
-    disclaimer: 'services.customDecorations.disclaimer',
-    relatedServices: [SERVICE_IDS.CHEF, SERVICE_IDS.LIVE_MUSIC],
-    tags: ['events', 'celebration', 'decorations', 'birthday', 'romantic'],
-    metaData: {
-      bookingNotice: '48 hours',
-      setupLocation: 'Indoor or outdoor',
-      customization: 'High',
-    },
-  },
+  // [SERVICE_IDS.CUSTOM_DECORATIONS]: {
+  //   id: SERVICE_IDS.CUSTOM_DECORATIONS,
+  //   titleKey: 'services.standard.customDecorations.name',
+  //   descriptionKey: 'services.standard.customDecorations.description',
+  //   fullDescriptionKey: 'services.standard.customDecorations.full',
+  //   basePrice: 150,
+  //   priceUnit: 'services.priceUnits.perSetup',
+  //   category: 'leisure',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://images.unsplash.com/photo-1604668915840-580c30026e5f?q=80&w=2848&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   duration: 0, // No tiene duración específica
+  //   specialRender: 'decorations',
+  //   bookingDuration: {
+  //     min: 1,
+  //     max: 1,
+  //     unit: 'setups',
+  //   },
+  //   options: {
+  //     decorationType: {
+  //       id: 'decorationType',
+  //       nameKey: 'services.customDecorations.options.decorationType.title',
+  //       subOptions: {
+  //         romantic: {
+  //           id: 'romantic',
+  //           nameKey:
+  //             'services.customDecorations.options.decorationType.options.romantic',
+  //           price: 0,
+  //         },
+  //         birthday: {
+  //           id: 'birthday',
+  //           nameKey:
+  //             'services.customDecorations.options.decorationType.options.birthday',
+  //           price: 25,
+  //         },
+  //         balloonGarlands: {
+  //           id: 'balloonGarlands',
+  //           nameKey:
+  //             'services.customDecorations.options.decorationType.options.balloonGarlands',
+  //           price: 35,
+  //         },
+  //         beachPicnic: {
+  //           id: 'beachPicnic',
+  //           nameKey:
+  //             'services.customDecorations.options.decorationType.options.beachPicnic',
+  //           price: 50,
+  //         },
+  //         kidsParty: {
+  //           id: 'kidsParty',
+  //           nameKey:
+  //             'services.customDecorations.options.decorationType.options.kidsParty',
+  //           price: 45,
+  //         },
+  //         luxuryDining: {
+  //           id: 'luxuryDining',
+  //           nameKey:
+  //             'services.customDecorations.options.decorationType.options.luxuryDining',
+  //           price: 75,
+  //         },
+  //       },
+  //     },
+  //     extras: {
+  //       id: 'extras',
+  //       nameKey: 'services.customDecorations.options.extras.title',
+  //       subOptions: {
+  //         none: {
+  //           id: 'none',
+  //           nameKey: 'services.customDecorations.options.extras.options.none',
+  //           price: 0,
+  //         },
+  //         cake: {
+  //           id: 'cake',
+  //           nameKey: 'services.customDecorations.options.extras.options.cake',
+  //           price: 45,
+  //         },
+  //         flowers: {
+  //           id: 'flowers',
+  //           nameKey:
+  //             'services.customDecorations.options.extras.options.flowers',
+  //           price: 55,
+  //         },
+  //         welcomeSign: {
+  //           id: 'welcomeSign',
+  //           nameKey:
+  //             'services.customDecorations.options.extras.options.welcomeSign',
+  //           price: 25,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   includes: [
+  //     'services.customDecorations.includes.1',
+  //     'services.customDecorations.includes.2',
+  //     'services.customDecorations.includes.3',
+  //     'services.customDecorations.includes.4',
+  //   ],
+  //   notIncluded: ['services.customDecorations.notIncluded.1'],
+  //   itinerary: [
+  //     'services.customDecorations.itinerary.1',
+  //     'services.customDecorations.itinerary.2',
+  //     'services.customDecorations.itinerary.3',
+  //     'services.customDecorations.itinerary.4',
+  //   ],
+  //   disclaimer: 'services.customDecorations.disclaimer',
+  //   relatedServices: [SERVICE_IDS.CHEF, SERVICE_IDS.LIVE_MUSIC],
+  //   tags: ['events', 'celebration', 'decorations', 'birthday', 'romantic'],
+  //   metaData: {
+  //     bookingNotice: '48 hours',
+  //     setupLocation: 'Indoor or outdoor',
+  //     customization: 'High',
+  //   },
+  // },
 
   // LIVE MUSIC SERVICE
-  [SERVICE_IDS.LIVE_MUSIC]: {
-    id: SERVICE_IDS.LIVE_MUSIC,
-    titleKey: 'services.standard.liveMusic.name',
-    descriptionKey: 'services.standard.liveMusic.description',
-    fullDescriptionKey: 'services.standard.liveMusic.full',
-    basePrice: 200,
-    priceUnit: 'services.priceUnits.perPerformance',
-    category: 'leisure',
-    packageType: ['standard'],
-    imageUrl:
-      'https://plus.unsplash.com/premium_photo-1719467541072-7b53ae7e93c4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 2, // Duración en horas (estándar)
-    specialRender: 'music',
-    bookingDuration: {
-      min: 1,
-      max: 4,
-      unit: 'hours',
-    },
-    options: {
-      performerType: {
-        id: 'performerType',
-        nameKey: 'services.liveMusic.options.performerType.title',
-        subOptions: {
-          soloist: {
-            id: 'soloist',
-            nameKey: 'services.liveMusic.options.performerType.options.soloist',
-            price: 0,
-          },
-          duo: {
-            id: 'duo',
-            nameKey: 'services.liveMusic.options.performerType.options.duo',
-            price: 100,
-          },
-          trio: {
-            id: 'trio',
-            nameKey: 'services.liveMusic.options.performerType.options.trio',
-            price: 200,
-          },
-          quartet: {
-            id: 'quartet',
-            nameKey: 'services.liveMusic.options.performerType.options.quartet',
-            price: 300,
-          },
-          quintet: {
-            id: 'quintet',
-            nameKey: 'services.liveMusic.options.performerType.options.quintet',
-            price: 400,
-          },
-        },
-      },
-      duration: {
-        id: 'duration',
-        nameKey: 'services.liveMusic.options.duration.title',
-        subOptions: {
-          standard: {
-            id: 'standard',
-            nameKey: 'services.liveMusic.options.duration.options.standard',
-            descriptionKey:
-              'services.liveMusic.options.duration.options.standardDescription',
-            price: 0,
-          },
-          extended: {
-            id: 'extended',
-            nameKey: 'services.liveMusic.options.duration.options.extended',
-            descriptionKey:
-              'services.liveMusic.options.duration.options.extendedDescription',
-            price: 75,
-          },
-          fullEvent: {
-            id: 'fullEvent',
-            nameKey: 'services.liveMusic.options.duration.options.fullEvent',
-            descriptionKey:
-              'services.liveMusic.options.duration.options.fullEventDescription',
-            price: 150,
-          },
-        },
-      },
-    },
-    includes: [
-      'services.liveMusic.includes.1',
-      'services.liveMusic.includes.2',
-      'services.liveMusic.includes.3',
-      'services.liveMusic.includes.4',
-    ],
-    notIncluded: ['services.liveMusic.notIncluded.1'],
-    itinerary: [
-      'services.liveMusic.itinerary.1',
-      'services.liveMusic.itinerary.2',
-      'services.liveMusic.itinerary.3',
-      'services.liveMusic.itinerary.4',
-    ],
-    disclaimer: 'services.liveMusic.disclaimer',
-    relatedServices: [SERVICE_IDS.CUSTOM_DECORATIONS, SERVICE_IDS.CHEF],
-    tags: ['entertainment', 'music', 'live', 'events', 'celebration'],
-    metaData: {
-      bookingNotice: '72 hours',
-      setupLocation: 'Indoor or outdoor',
-      electricityRequired: true,
-      standardSessionLength: '60-90 minutes',
-    },
-  },
+  // [SERVICE_IDS.LIVE_MUSIC]: {
+  //   id: SERVICE_IDS.LIVE_MUSIC,
+  //   titleKey: 'services.standard.liveMusic.name',
+  //   descriptionKey: 'services.standard.liveMusic.description',
+  //   fullDescriptionKey: 'services.standard.liveMusic.full',
+  //   basePrice: 200,
+  //   priceUnit: 'services.priceUnits.perPerformance',
+  //   category: 'leisure',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://plus.unsplash.com/premium_photo-1719467541072-7b53ae7e93c4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   duration: 2, // Duración en horas (estándar)
+  //   specialRender: 'music',
+  //   bookingDuration: {
+  //     min: 1,
+  //     max: 4,
+  //     unit: 'hours',
+  //   },
+  //   options: {
+  //     performerType: {
+  //       id: 'performerType',
+  //       nameKey: 'services.liveMusic.options.performerType.title',
+  //       subOptions: {
+  //         soloist: {
+  //           id: 'soloist',
+  //           nameKey: 'services.liveMusic.options.performerType.options.soloist',
+  //           price: 0,
+  //         },
+  //         duo: {
+  //           id: 'duo',
+  //           nameKey: 'services.liveMusic.options.performerType.options.duo',
+  //           price: 100,
+  //         },
+  //         trio: {
+  //           id: 'trio',
+  //           nameKey: 'services.liveMusic.options.performerType.options.trio',
+  //           price: 200,
+  //         },
+  //         quartet: {
+  //           id: 'quartet',
+  //           nameKey: 'services.liveMusic.options.performerType.options.quartet',
+  //           price: 300,
+  //         },
+  //         quintet: {
+  //           id: 'quintet',
+  //           nameKey: 'services.liveMusic.options.performerType.options.quintet',
+  //           price: 400,
+  //         },
+  //       },
+  //     },
+  //     duration: {
+  //       id: 'duration',
+  //       nameKey: 'services.liveMusic.options.duration.title',
+  //       subOptions: {
+  //         standard: {
+  //           id: 'standard',
+  //           nameKey: 'services.liveMusic.options.duration.options.standard',
+  //           descriptionKey:
+  //             'services.liveMusic.options.duration.options.standardDescription',
+  //           price: 0,
+  //         },
+  //         extended: {
+  //           id: 'extended',
+  //           nameKey: 'services.liveMusic.options.duration.options.extended',
+  //           descriptionKey:
+  //             'services.liveMusic.options.duration.options.extendedDescription',
+  //           price: 75,
+  //         },
+  //         fullEvent: {
+  //           id: 'fullEvent',
+  //           nameKey: 'services.liveMusic.options.duration.options.fullEvent',
+  //           descriptionKey:
+  //             'services.liveMusic.options.duration.options.fullEventDescription',
+  //           price: 150,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   includes: [
+  //     'services.liveMusic.includes.1',
+  //     'services.liveMusic.includes.2',
+  //     'services.liveMusic.includes.3',
+  //     'services.liveMusic.includes.4',
+  //   ],
+  //   notIncluded: ['services.liveMusic.notIncluded.1'],
+  //   itinerary: [
+  //     'services.liveMusic.itinerary.1',
+  //     'services.liveMusic.itinerary.2',
+  //     'services.liveMusic.itinerary.3',
+  //     'services.liveMusic.itinerary.4',
+  //   ],
+  //   disclaimer: 'services.liveMusic.disclaimer',
+  //   relatedServices: [SERVICE_IDS.CUSTOM_DECORATIONS, SERVICE_IDS.CHEF],
+  //   tags: ['entertainment', 'music', 'live', 'events', 'celebration'],
+  //   metaData: {
+  //     bookingNotice: '72 hours',
+  //     setupLocation: 'Indoor or outdoor',
+  //     electricityRequired: true,
+  //     standardSessionLength: '60-90 minutes',
+  //   },
+  // },
 
   // BIKE_RENTALS SERVICE
   // [SERVICE_IDS.BIKE_RENTALS]: {
