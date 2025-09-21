@@ -50,13 +50,6 @@ const TIME_SLOTS = [
     icon: Sun,
     description: 'Great lighting conditions',
   },
-  {
-    id: '2pm',
-    name: 'Sun Adventure',
-    time: '2:00 PM',
-    icon: Activity,
-    description: 'Perfect for photos',
-  },
 ] as const;
 
 // Package options with updated pricing
@@ -64,7 +57,7 @@ const PACKAGE_OPTIONS = [
   {
     id: 'classic-beach',
     name: 'Classic Beach Adventure',
-    price: 89,
+    price: 70,
     duration: '2 Hours',
     description: 'Perfect introduction to beach horseback riding',
   },

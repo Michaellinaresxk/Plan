@@ -60,13 +60,13 @@ const LOCATION_OPTIONS = [
     id: 'punta-cana-resorts',
     name: 'Punta Cana Resorts',
     surcharge: 0,
-    description: 'Precio estándar',
+    description: 'Standadard price',
   },
   {
     id: 'bavaro',
     name: 'Bavaro',
     surcharge: 0,
-    description: 'Mismo precio que Punta Cana',
+    description: 'Standadard price',
   },
   {
     id: 'cap-cana',

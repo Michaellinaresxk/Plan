@@ -41,14 +41,14 @@ interface AtvRideFormProps {
 const VEHICLE_TYPES = {
   atv: {
     name: 'ATV Quad',
-    price: 85,
-    maxParticipants: 1,
-    description: 'Solo rider adventure',
+    price: 80,
+    maxParticipants: 2,
+    description: 'Off-Road adventure',
   },
   buggy: {
     name: 'Dune Buggy',
     price: 65,
-    maxParticipants: 2,
+    maxParticipants: 4,
     description: 'Perfect for couples',
   },
   polaris: {
