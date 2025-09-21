@@ -185,15 +185,15 @@ const VehicleSelection = ({ onVehicleSelect }) => {
           </p>
         </div>
 
-        <div className='grid md:grid-cols-3 gap-8'>
+        <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-3'>
           {Object.values(VEHICLE_TYPES).map((vehicle) => (
             <div
               key={vehicle.id}
-              className='group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer'
+              className='group  bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer'
               onClick={() => onVehicleSelect(vehicle)}
             >
               {/* Vehicle Image */}
-              <div className='relative h-48 overflow-hidden'>
+              <div className='relative h-50 overflow-hidden'>
                 <img
                   src={vehicle.image}
                   alt={vehicle.name}
