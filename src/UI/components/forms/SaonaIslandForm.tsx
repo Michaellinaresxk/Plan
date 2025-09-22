@@ -91,7 +91,7 @@ const PRICING_CONFIG = {
   MAX_AGE_LIMIT: 75, // No apta para mayores de 75 años
 
   // Base prices per person
-  BASE_PRICE_PER_PERSON: 55,
+  BASE_PRICE_PER_PERSON: 75,
   FREE_PRICE: 0,
 
   // Transport costs based on group size

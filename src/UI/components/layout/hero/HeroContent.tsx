@@ -18,26 +18,34 @@ const HeroContent = ({ scrollY, t }) => {
           {/* Foreground Content */}
           <div className='relative z-10 pt-8'>
             {/* Título principal LUX */}
-            <motion.h1
+            <motion.div
               initial={{ opacity: 0, y: 60, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ delay: 1.2, duration: 1.2, ease: 'easeOut' }}
-              className='text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight mb-4'
               style={{
                 textShadow: '0 0 40px rgba(0, 0, 0, 0.7)',
                 transform: `translateY(${scrollY * 0.1}px)`,
               }}
             >
-              LUX
-            </motion.h1>
+              {/* LUX */}
+              <div className='ml-10 mb-5'>
+                <img
+                  src='/img/logo.png'
+                  alt='Lux puntacana logo'
+                  className='max-w-50 w-full h-auto object-contain'
+                />
+              </div>
+            </motion.div>
 
             {/* Línea amarilla elegante - RECUPERADA */}
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 1.8, duration: 1.2, ease: 'easeOut' }}
-              className='h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-2 mb-5 rounded-full mx-auto max-w-xs'
+              className='h-1 mb-5 rounded-full mx-auto max-w-xs'
               style={{
+                background:
+                  'linear-gradient(to right, transparent, #e2cd8c, transparent)',
                 transform: `translateY(${scrollY * 0.1}px)`,
               }}
             />
@@ -61,14 +69,22 @@ const HeroContent = ({ scrollY, t }) => {
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 2.6, duration: 1 }}
-                  className='w-20 h-px bg-gradient-to-r from-transparent to-amber-400'
+                  className='w-20 h-px'
+                  style={{
+                    background:
+                      'linear-gradient(to right, transparent, #e2cd8c)',
+                  }}
                 />
-                <Sparkles size={24} className='text-amber-400' />
+                <Sparkles size={24} className='text-[#e2cd8c]' />
                 <motion.div
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 2.6, duration: 1 }}
-                  className='w-20 h-px bg-gradient-to-l from-transparent to-amber-400'
+                  className='w-20 h-px'
+                  style={{
+                    background:
+                      'linear-gradient(to left, transparent, #e2cd8c)',
+                  }}
                 />
               </div>
             </motion.div>
