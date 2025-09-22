@@ -11,10 +11,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   ChevronRight,
-  Clock,
   Star,
   Sparkles,
-  CheckCircle,
   Users,
   MapPin,
   Calendar,

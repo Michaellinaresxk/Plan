@@ -20,7 +20,14 @@ const Footer = () => {
         <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
           {/* Company Info */}
           <div className='md:col-span-1'>
-            <h3 className='text-xl font-bold mb-4'>Lux Punta Cana</h3>
+            {/* <h3 className='text-xl font-bold mb-4'>Lux Punta Cana</h3> */}
+            <div className='mb-4'>
+              <img
+                src='/img/logo.png'
+                alt='Lux puntacana logo'
+                className='max-w-20 w-full h-auto object-contain'
+              />
+            </div>
             <p className='text-gray-400 mb-6'>{t('common.footer.slogan')}</p>
             <div className='flex space-x-4'>
               <Link

@@ -62,7 +62,7 @@ const Navbar = () => {
                 isScrolled ? 'text-amber-500' : 'text-white'
               }`}
             >
-              LPC
+              <img className='w-15' src='/img/gratis.png' alt='' />
             </Link>
           </motion.div>
 
