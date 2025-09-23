@@ -27,17 +27,17 @@ const HeroContent = ({ scrollY, t }) => {
                 transform: `translateY(${scrollY * 0.1}px)`,
               }}
             >
-              {/* LUX */}
-              <div className='ml-10 mb-5'>
+              {/* LUX - Centrado en todos los dispositivos */}
+              <div className='mb-5 flex justify-center'>
                 <img
                   src='/img/logo.png'
                   alt='Lux puntacana logo'
-                  className='max-w-50 w-full h-auto object-contain'
+                  className='max-w-30 md:max-w-40 w-full h-auto object-contain'
                 />
               </div>
             </motion.div>
 
-            {/* Línea amarilla elegante - RECUPERADA */}
+            {/* Línea amarilla elegante */}
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
