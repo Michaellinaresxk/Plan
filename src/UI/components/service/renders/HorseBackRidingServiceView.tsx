@@ -54,51 +54,44 @@ interface BookingActions {
 const ITINERARY_STEPS = [
   {
     id: 1,
-    icon: Coffee,
-    title: 'Courtesy Stop',
-    duration: '15 min',
-    description: 'Taste Dominican coffee, mamajuana, and enjoy shopping',
+    icon: Info,
+    title: 'Safety Briefing',
+    description: 'Learn horse riding basics and safety instructions',
   },
   {
     id: 2,
-    icon: Info,
-    title: 'Safety Briefing',
-    duration: '10 min',
-    description: 'Learn horse riding basics and safety instructions',
+    icon: Coffee,
+    title: 'Courtesy Stop',
+    description: 'Taste Dominican coffee, mamajuana, and enjoy shopping',
   },
   {
     id: 3,
     icon: Trees,
     title: 'Forest Trail',
-    duration: '30 min',
     description: 'Ride through tropical forest to reach the river mouth',
   },
   {
     id: 4,
     icon: Waves,
     title: 'River Recreation',
-    duration: '20 min',
     description: 'Enjoy recreation time at the beautiful river',
   },
   {
     id: 5,
     icon: Sun,
     title: 'Macao Beach',
-    duration: '30 min',
     description: 'Experience the pristine Macao Beach',
   },
   {
     id: 6,
     icon: Droplets,
     title: 'Beach Swimming',
-    duration: '20 min',
     description: 'Optional swimming and beach time',
   },
   {
     id: 7,
     icon: Navigation,
     title: 'Return Journey',
-    duration: '25 min',
     description: 'Return to the ranch for transportation back',
   },
 ];
@@ -473,9 +466,6 @@ const ItinerarySection: React.FC = () => {
                   <div className='flex items-center gap-2 mb-1'>
                     <span className='bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full'>
                       {step.id}
-                    </span>
-                    <span className='text-gray-500 text-xs'>
-                      {step.duration}
                     </span>
                   </div>
                   <h3 className='font-semibold text-gray-800 text-sm mb-1'>

@@ -13,15 +13,10 @@ import {
   AlertTriangle,
   Info,
   CheckCircle,
-  Star,
   Mountain,
-  Sparkles,
-  Shield,
   CreditCard,
   Sunrise,
   Sun,
-  Activity,
-  DollarSign,
 } from 'lucide-react';
 import { useLocationPricing } from '@/hooks/useLocationPricing';
 import { LocationSelector } from '../service/LocationSelector';
@@ -34,7 +29,19 @@ interface HorseBackRidingFormProps {
   onCancel?: () => void;
 }
 
-// Time slot configuration - specific for horseback riding
+interface FormData {
+  date: string;
+  timeSlot: string;
+  location: string;
+  participantCount: number;
+  minorsCount: number;
+}
+
+interface FormErrors {
+  [key: string]: string;
+}
+
+// Time slot configuration
 const TIME_SLOTS = [
   {
     id: '8am',
@@ -52,26 +59,7 @@ const TIME_SLOTS = [
   },
 ] as const;
 
-// Package options with updated pricing
-const PACKAGE_OPTIONS = [
-  {
-    id: 'classic-beach',
-    name: 'Classic Beach Adventure',
-    price: 70,
-    duration: '2 Hours',
-    description: 'Perfect introduction to beach horseback riding',
-  },
-  {
-    id: 'sunset-premium',
-    name: 'Premium Sunset Experience',
-    price: 129,
-    duration: '2.5 Hours',
-    description: 'Romantic sunset ride with champagne toast',
-    availableTimeSlots: ['2pm'], // Only available at 2pm for sunset timing
-  },
-];
-
-// Horseback riding specific transport pricing
+// Transport pricing
 const HORSEBACK_TRANSPORT_PRICING = {
   small: 80, // 1-6 people
   large: 120, // 7-8 people (max for safety)
@@ -88,21 +76,35 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   const { setReservationData } = useReservation();
   const { handleClose } = useFormModal({ onCancel });
 
-  const [formData, setFormData] = useState({
+  // Form state - same pattern as SaonaIslandForm
+  const [formData, setFormData] = useState<FormData>({
     date: '',
     timeSlot: '',
     location: '',
     participantCount: 2,
     minorsCount: 0,
-    packageType: 'classic-beach',
-    hasSpecialNeeds: false,
-    specialNeedsDetails: '',
-    confirmSpecialNeeds: false,
-    additionalNotes: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Helper to update form fields - same as SaonaIslandForm
+  const updateFormField = useCallback((field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Clear error when field is updated
+    setErrors((prev) => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
 
   // Use location pricing hook
   const {
@@ -119,126 +121,81 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
   // Calculate base price
   const basePrice = useMemo(() => {
-    const selectedPackage = PACKAGE_OPTIONS.find(
-      (pkg) => pkg.id === formData.packageType
-    );
-    let price =
-      (selectedPackage?.price || service.price) * formData.participantCount;
-
-    // Add special needs fee if applicable
-    if (formData.hasSpecialNeeds) {
-      price += 25;
-    }
-
-    return price;
-  }, [
-    formData.packageType,
-    formData.participantCount,
-    formData.hasSpecialNeeds,
-    service.price,
-  ]);
+    return service.price * formData.participantCount;
+  }, [formData.participantCount, service.price]);
 
   // Calculate total price
   const totalPrice = useMemo(() => {
     return basePrice + totalLocationCost;
   }, [basePrice, totalLocationCost]);
 
-  // Handle input changes
-  const handleChange = useCallback(
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-      >
-    ) => {
-      const { name, value, type, checked } = e.target as HTMLInputElement;
-
-      if (type === 'checkbox') {
-        setFormData((prev) => ({
-          ...prev,
-          [name]: checked,
-        }));
-
-        if (name === 'hasSpecialNeeds' && !checked) {
-          setFormData((prev) => ({
-            ...prev,
-            hasSpecialNeeds: false,
-            specialNeedsDetails: '',
-            confirmSpecialNeeds: false,
-          }));
-        }
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          [name]: value,
-        }));
-      }
-
-      // Clear errors for this field
-      if (errors[name]) {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors[name];
-          return newErrors;
-        });
-      }
+  // Generic input handler - same as SaonaIslandForm
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      updateFormField(name, value);
     },
-    [errors]
+    [updateFormField]
   );
 
-  // Handle location selection
+  // Handle location selection - same pattern as SaonaIslandForm
   const handleLocationSelect = useCallback(
     (locationId: string) => {
-      setFormData((prev) => ({
-        ...prev,
-        location: locationId,
-      }));
-
-      if (errors.location) {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors.location;
-          return newErrors;
-        });
-      }
+      updateFormField('location', locationId);
     },
-    [errors.location]
+    [updateFormField]
   );
 
-  // Handle participant count changes
-  const updateParticipantCount = useCallback((increment: boolean) => {
-    setFormData((prev) => {
-      const newCount = increment
-        ? Math.min(8, prev.participantCount + 1) // Max 8 people for safety
-        : Math.max(1, prev.participantCount - 1);
-
-      const adjustedMinorsCount = Math.min(prev.minorsCount, newCount);
-
-      return {
+  // Counter handlers - same pattern as SaonaIslandForm
+  const createCounterHandler = (field: keyof FormData, min = 0, max = 8) => ({
+    increment: () =>
+      setFormData((prev) => ({
         ...prev,
-        participantCount: newCount,
-        minorsCount: adjustedMinorsCount,
-      };
-    });
-  }, []);
+        [field]: Math.min(max, (prev[field] as number) + 1),
+      })),
+    decrement: () =>
+      setFormData((prev) => ({
+        ...prev,
+        [field]: Math.max(min, (prev[field] as number) - 1),
+      })),
+  });
 
-  // Validate form
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
+  const participantCounter = createCounterHandler('participantCount', 1);
 
+  // Update minors count when participant count changes
+  useEffect(() => {
+    if (formData.minorsCount > formData.participantCount) {
+      setFormData((prev) => ({
+        ...prev,
+        minorsCount: Math.min(prev.minorsCount, prev.participantCount),
+      }));
+    }
+  }, [formData.participantCount]);
+
+  // Validation function - exact same pattern as SaonaIslandForm
+  const validateForm = (): FormErrors => {
+    const newErrors: FormErrors = {};
+
+    // Required fields
     if (!formData.date) {
       newErrors.date = 'Date is required';
     }
 
     if (!formData.location) {
-      newErrors.location = 'Please select a location';
+      newErrors.location = 'Please select a pickup location';
     }
 
     if (!formData.timeSlot) {
       newErrors.timeSlot = 'Please select a time slot';
     }
 
-    if (!formData.packageType) {
-      newErrors.packageType = 'Please select a package';
+    // Participant validation
+    if (formData.participantCount < 1) {
+      newErrors.participantCount = 'At least one participant is required';
+    }
+
+    if (formData.participantCount > 8) {
+      newErrors.participantCount = 'Maximum 8 participants allowed for safety';
     }
 
     if (formData.minorsCount > formData.participantCount) {
@@ -246,31 +203,18 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
         'Number of minors cannot exceed total participants';
     }
 
-    if (formData.participantCount > 8) {
-      newErrors.participantCount = 'Maximum 8 participants allowed for safety';
-    }
-
-    if (formData.hasSpecialNeeds) {
-      if (!formData.specialNeedsDetails.trim()) {
-        newErrors.specialNeedsDetails =
-          'Please provide details about special needs';
-      }
-
-      if (!formData.confirmSpecialNeeds) {
-        newErrors.confirmSpecialNeeds =
-          'Please confirm special needs accommodation';
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return newErrors;
   };
 
-  // Handle form submission
+  // Submit handler - exact same pattern as SaonaIslandForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      console.log('❌ HorseBackForm - Validation errors:', validationErrors);
       return;
     }
 
@@ -281,19 +225,15 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
       const bookingStartDate = new Date(selectedDate);
       const bookingEndDate = new Date(selectedDate);
 
-      // Set times based on time slot - specific times for horseback riding
+      // Set times based on time slot
       switch (formData.timeSlot) {
         case '8am':
           bookingStartDate.setHours(8, 0, 0, 0);
-          bookingEndDate.setHours(11, 0, 0, 0); // 3 hour duration
+          bookingEndDate.setHours(11, 0, 0, 0);
           break;
         case '10am':
           bookingStartDate.setHours(10, 0, 0, 0);
-          bookingEndDate.setHours(13, 0, 0, 0); // 3 hour duration
-          break;
-        case '2pm':
-          bookingStartDate.setHours(14, 0, 0, 0);
-          bookingEndDate.setHours(17, 0, 0, 0); // 3 hour duration
+          bookingEndDate.setHours(13, 0, 0, 0);
           break;
       }
 
@@ -318,12 +258,12 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
         },
         selectedItems: [
           {
-            id: `horseback-${formData.packageType}`,
+            id: 'horseback-classic',
+            name: 'Horseback Riding Adventure',
             quantity: 1,
             price: totalPrice,
             totalPrice,
             timeSlot: formData.timeSlot,
-            packageType: formData.packageType,
             location: selectedLocation?.name || formData.location,
           },
         ],
@@ -332,12 +272,8 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           timeSlot: formData.timeSlot,
           location: formData.location,
           locationName: selectedLocation?.name || formData.location,
-          packageType: formData.packageType,
-          hasSpecialNeeds: formData.hasSpecialNeeds,
-          specialNeedsDetails: formData.specialNeedsDetails,
           participantCount: formData.participantCount,
           minorsCount: formData.minorsCount,
-          additionalNotes: formData.additionalNotes,
           pricing: {
             basePrice,
             transportCost,
@@ -347,15 +283,20 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
         },
       };
 
+      console.log(
+        '🐎 HorseBackForm - Reservation data created:',
+        reservationData
+      );
+
       setReservationData(reservationData);
 
       if (onSubmit) {
         await onSubmit(reservationData);
-      } else {
-        router.push('/reservation-confirmation');
       }
+
+      router.push('/reservation-confirmation');
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('❌ HorseBackForm - Error submitting form:', error);
       setErrors({
         submit: 'Failed to submit reservation. Please try again.',
       });
@@ -364,20 +305,55 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     }
   };
 
-  const isPremium = formData.packageType === 'sunset-premium';
-
-  // Get available time slots for selected package
-  const availableTimeSlots = useMemo(() => {
-    const selectedPackage = PACKAGE_OPTIONS.find(
-      (pkg) => pkg.id === formData.packageType
-    );
-    if (selectedPackage?.availableTimeSlots) {
-      return TIME_SLOTS.filter((slot) =>
-        selectedPackage.availableTimeSlots.includes(slot.id)
-      );
-    }
-    return TIME_SLOTS;
-  }, [formData.packageType]);
+  // Counter component - same as SaonaIslandForm
+  const Counter = ({
+    label,
+    value,
+    onIncrement,
+    onDecrement,
+    icon: Icon,
+    min = 0,
+    max = 8,
+  }: {
+    label: string;
+    value: number;
+    onIncrement: () => void;
+    onDecrement: () => void;
+    icon: React.ElementType;
+    min?: number;
+    max?: number;
+  }) => (
+    <div>
+      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+        <Icon className='w-4 h-4 mr-2 text-amber-600' />
+        {label}
+      </label>
+      <div className='flex border border-gray-300 rounded-lg overflow-hidden bg-white'>
+        <button
+          type='button'
+          onClick={onDecrement}
+          disabled={value <= min}
+          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
+        >
+          -
+        </button>
+        <div className='flex-1 py-2 text-center font-medium'>{value}</div>
+        <button
+          type='button'
+          onClick={onIncrement}
+          disabled={value >= max}
+          className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
+        >
+          +
+        </button>
+      </div>
+      {value >= max && (
+        <p className='text-xs text-amber-600 mt-1'>
+          Maximum {max} participants allowed
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <motion.div
@@ -392,7 +368,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             title='Horseback Riding Adventure'
             subtitle='Experience the magic of riding along pristine Macao Beach'
             icon={Mountain}
-            isPremium={isPremium}
+            isPremium={false}
             onCancel={handleClose}
             showCloseButton={true}
           />
@@ -401,38 +377,25 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           <div className='p-8 space-y-8'>
             {/* Date and Time Section */}
             <div className='space-y-6'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Calendar
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-amber-600'
-                  }`}
-                />
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
                 Schedule Your Adventure
               </h3>
 
               {/* Date Selection */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Calendar
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-amber-600'
-                    }`}
-                  />
+                  <Calendar className='w-4 h-4 mr-2 text-amber-600' />
                   Select Date *
                 </label>
                 <input
                   type='date'
                   name='date'
                   value={formData.date}
-                  onChange={handleChange}
-                  min={new Date().toISOString().split('T')[0]}
+                  onChange={handleInputChange}
                   className={`w-full p-3 border ${
                     errors.date ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium
-                      ? 'focus:ring-orange-500 focus:border-orange-500'
-                      : 'focus:ring-amber-500 focus:border-amber-500'
-                  } bg-gray-50`}
+                  } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
+                  min={new Date().toISOString().split('T')[0]}
                 />
                 {errors.date && (
                   <p className='text-red-500 text-xs mt-1'>{errors.date}</p>
@@ -442,16 +405,12 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               {/* Time Slot Selection */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-amber-600'
-                    }`}
-                  />
+                  <Clock className='w-4 h-4 mr-2 text-amber-600' />
                   Time Slot *
                 </label>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {availableTimeSlots.map((slot) => {
+                  {TIME_SLOTS.map((slot) => {
                     const IconComponent = slot.icon;
                     return (
                       <div
@@ -460,20 +419,11 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                           border rounded-lg p-4 cursor-pointer transition-all
                           ${
                             formData.timeSlot === slot.id
-                              ? `${
-                                  isPremium
-                                    ? 'bg-orange-50 border-orange-300'
-                                    : 'bg-amber-50 border-amber-300'
-                                } shadow-sm`
+                              ? 'bg-amber-50 border-amber-300 shadow-sm'
                               : 'border-gray-200 hover:bg-gray-50'
                           }
                         `}
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            timeSlot: slot.id,
-                          }))
-                        }
+                        onClick={() => updateFormField('timeSlot', slot.id)}
                       >
                         <div className='flex items-center'>
                           <div
@@ -481,11 +431,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                             w-5 h-5 rounded-full border flex items-center justify-center mr-3
                             ${
                               formData.timeSlot === slot.id
-                                ? `${
-                                    isPremium
-                                      ? 'border-orange-500 bg-orange-500'
-                                      : 'border-amber-500 bg-amber-500'
-                                  }`
+                                ? 'border-amber-500 bg-amber-500'
                                 : 'border-gray-300'
                             }
                           `}
@@ -495,11 +441,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                             )}
                           </div>
                           <div className='flex items-center'>
-                            <IconComponent
-                              className={`w-5 h-5 mr-2 ${
-                                isPremium ? 'text-orange-500' : 'text-amber-500'
-                              }`}
-                            />
+                            <IconComponent className='w-5 h-5 mr-2 text-amber-500' />
                             <span className='font-medium'>{slot.name}</span>
                           </div>
                         </div>
@@ -520,14 +462,9 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               </div>
             </div>
 
-            {/* Location Selection using the new component */}
+            {/* Location Selection */}
             <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <MapPin
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-amber-600'
-                  }`}
-                />
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
                 Pickup Location
               </h3>
 
@@ -536,70 +473,30 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 onLocationSelect={handleLocationSelect}
                 locationOptions={locationOptions}
                 error={errors.location}
-                isPremium={isPremium}
+                isPremium={false}
               />
             </div>
 
             {/* Participants Section */}
             <div className='space-y-6'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Users
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-amber-600'
-                  }`}
-                />
-                Participants
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
+                Participants (Maximum 8)
               </h3>
-              <section className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-6'>
-                {/* Participant Count */}
-                <div>
-                  <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                    <Users
-                      className={`w-4 h-4 mr-2 ${
-                        isPremium ? 'text-orange-600' : 'text-amber-600'
-                      }`}
-                    />
-                    Number of Participants
-                  </label>
-                  <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
-                    <button
-                      type='button'
-                      onClick={() => updateParticipantCount(false)}
-                      className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                    >
-                      -
-                    </button>
-                    <div className='flex-1 py-2 text-center'>
-                      {formData.participantCount}
-                    </div>
-                    <button
-                      type='button'
-                      onClick={() => updateParticipantCount(true)}
-                      className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                    >
-                      +
-                    </button>
-                  </div>
-                  {formData.participantCount >= 8 && (
-                    <p className='text-sm text-amber-600 mt-1'>
-                      Maximum group size reached (safety limit)
-                    </p>
-                  )}
-                  {errors.participantCount && (
-                    <p className='text-red-500 text-xs mt-1'>
-                      {errors.participantCount}
-                    </p>
-                  )}
-                </div>
 
-                {/* Minors Count */}
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <Counter
+                  label='Total Participants'
+                  value={formData.participantCount}
+                  onIncrement={participantCounter.increment}
+                  onDecrement={participantCounter.decrement}
+                  icon={Users}
+                  min={1}
+                  max={8}
+                />
+
                 <div>
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                    <Baby
-                      className={`w-4 h-4 mr-2 ${
-                        isPremium ? 'text-orange-600' : 'text-amber-600'
-                      }`}
-                    />
+                    <Baby className='w-4 h-4 mr-2 text-amber-600' />
                     Number of participants under 18
                   </label>
                   <input
@@ -608,14 +505,10 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                     min='0'
                     max={formData.participantCount}
                     value={formData.minorsCount}
-                    onChange={handleChange}
-                    className={`w-full max-w-xs p-3 border ${
+                    onChange={handleInputChange}
+                    className={`w-full p-3 border ${
                       errors.minorsCount ? 'border-red-500' : 'border-gray-300'
-                    } rounded-lg focus:ring-2 ${
-                      isPremium
-                        ? 'focus:ring-orange-500 focus:border-orange-500'
-                        : 'focus:ring-amber-500 focus:border-amber-500'
-                    } bg-gray-50`}
+                    } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
                     placeholder='0'
                   />
                   {errors.minorsCount && (
@@ -634,7 +527,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                     </div>
                   )}
                 </div>
-              </section>
+              </div>
             </div>
 
             {/* Safety Information */}
@@ -685,11 +578,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               {/* Price breakdown */}
               <div className='text-xs text-gray-400 mt-2 space-y-1'>
                 <div className='text-amber-400 font-medium'>
-                  {
-                    PACKAGE_OPTIONS.find(
-                      (pkg) => pkg.id === formData.packageType
-                    )?.name
-                  }
+                  Classic Beach Adventure
                 </div>
                 <div>Package: ${basePrice.toFixed(2)}</div>
                 <div>Transport: ${transportCost.toFixed(2)}</div>
@@ -707,7 +596,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             <div className='flex space-x-4'>
               <button
                 type='button'
-                onClick={() => onCancel?.()}
+                onClick={onCancel}
                 disabled={isSubmitting}
                 className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
               >
@@ -716,12 +605,8 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
               <button
                 type='submit'
-                disabled={isSubmitting}
-                className={`px-8 py-3 ${
-                  isPremium
-                    ? 'bg-orange-600 hover:bg-orange-500'
-                    : 'bg-amber-600 hover:bg-amber-500'
-                } text-white rounded-lg transition flex items-center disabled:opacity-50`}
+                disabled={isSubmitting || formData.participantCount > 8}
+                className='px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition flex items-center disabled:opacity-50'
               >
                 <CreditCard className='h-4 w-4 mr-2' />
                 {isSubmitting ? 'Booking...' : 'Book Adventure'}
