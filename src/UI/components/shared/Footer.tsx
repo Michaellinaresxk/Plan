@@ -24,7 +24,7 @@ const Footer = () => {
             <div className='mb-4'>
               <img
                 src='/img/logo.png'
-                alt='Lux puntacana logo'
+                alt='Lux punta cana logo'
                 className='max-w-20 w-full h-auto object-contain'
               />
             </div>

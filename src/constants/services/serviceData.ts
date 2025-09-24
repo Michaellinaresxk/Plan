@@ -347,7 +347,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   [SERVICE_IDS.MASSAGE]: {
     id: SERVICE_IDS.MASSAGE,
     titleKey: 'services.standard.massage.name',
-    descriptionKey: 'services.standard.massage.short',
+    descriptionKey: 'services.standard.massageDetails.description',
     fullDescriptionKey: 'services.standard.massage.full',
     basePrice: 100,
     priceUnit: 'services.priceUnits.perSession',

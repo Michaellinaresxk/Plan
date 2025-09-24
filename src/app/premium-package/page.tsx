@@ -297,7 +297,7 @@ const PremiumPackageContent = () => {
                         The Ultimate Punta Cana Experience
                       </h3>
                       <p className='text-gray-300 mb-6 leading-relaxed text-lg'>
-                        Our Lux Puntacana package redefines the Dominican
+                        Our Lux Punta Cana package redefines the Dominican
                         vacation experience, offering an exclusive journey into
                         luxury and personalized service. From your arrival in a
                         premium SUV to unforgettable days aboard your private

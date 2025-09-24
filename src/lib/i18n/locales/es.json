@@ -56,7 +56,7 @@
       "subtitle": "Seleccione el paquete que se adapte a sus necesidades vacacionales. Cada opción ofrece servicios únicos para mejorar su estancia.",
       "standard": "Este paquete estándar ofrece una experiencia vacacional completa con todos los servicios esenciales.",
       "transfers": "Traslados al aeropuerto",
-      "golfCart": "Alquiler de carritos de golf",
+      "golfCart": "Alquiler de carros de golf",
       "trips": "Viajes en catamarán",
       "chef": "Servicio de chef privado"
     },
@@ -139,7 +139,7 @@
         "full": "Vive una experiencia única en el mar con nuestras excursiones en catamarán. Disfruta de paisajes impresionantes, aguas cristalinas y la tranquilidad de navegar por las costas de Punta Cana. Reserva tu excursión hoy y navega hacia el paraíso."
       },
       "golfCartRentals": {
-        "name": "Alquiler de Carritos de Golf",
+        "name": "Alquiler de Carros de Golf",
         "short": "Transporte conveniente dentro del resort",
         "full": "Disfruta de la libertad de recorrer Punta Cana a tu propio ritmo con nuestros carritos de golf de alquiler. Ideales para moverte cómodamente por resorts, playas y senderos locales. Conduce, explora y disfruta a tu ritmo. Reserva tu carrito hoy y explora Punta Cana."
       },
@@ -202,6 +202,26 @@
         "name": "Private Catamaran",
         "short": "Experiencias culinarias personalizadas en tu alojamiento",
         "full": "Deleita tu paladar con creaciones gourmet personalizadas por un chef privado en tu villa, apartamento o yate. Nuestro equipo elabora menús a tu medida, usando ingredientes frescos y sabores locales para convertir cada comida en un momento inolvidable. Reserva tu chef privado hoy y disfruta de una experiencia culinaria única en Punta Cana."
+      },
+      "massageDetails": {
+        "title": "Experiencia Wellness",
+        "experience": "Experience",
+        "premiumExperience": "Premium Massage Experience",
+        "professionalExperience": "Professional Massage Experience",
+        "sessionDuration": "Session Duration",
+        "massageTypes": "Massage Types",
+        "durationOptions": "Duration Options",
+        "techniques": "Massage Techniques",
+        "technique1Description": "Relaxing technique that uses long, smooth strokes to release tension",
+        "technique2Description": "Targets deeper layers of muscle and connective tissue",
+        "technique3Description": "Combines massage with essential oils for enhanced relaxation",
+        "technique4Description": "Uses heated stones to ease muscle tension and improve circulation",
+        "benefits": "Benefits",
+        "sessionPreparation": "Preparing for Your Session",
+        "preparation1": "Arrive 10-15 minutes before your scheduled appointment",
+        "preparation2": "Communicate any preferences or concerns to your massage therapist",
+        "preparation3": "Stay hydrated before and after your massage session",
+        "preparation4": "Avoid heavy meals right before your massage"
       },
       "customDecorations": {
         "name": "Decoraciones Personalizadas",
