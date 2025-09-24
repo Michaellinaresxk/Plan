@@ -28,13 +28,25 @@ const HeroContent = ({ scrollY, t }) => {
               }}
             >
               {/* LUX - Centrado en todos los dispositivos */}
-              <div className='mb-5 flex justify-center'>
+              {/* <div className='mb-5 flex justify-center'>
                 <img
                   src='/img/logo.png'
                   alt='Lux puntacana logo'
                   className='max-w-30 md:max-w-40 w-full h-auto object-contain opacity-80'
                 />
-              </div>
+              </div> */}
+              {/* <motion.h1
+                initial={{ opacity: 0, y: 60, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 1.2, duration: 1.2, ease: 'easeOut' }}
+                className='text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight mb-4'
+                style={{
+                  textShadow: '0 0 40px rgba(0, 0, 0, 0.7)',
+                  transform: `translateY(${scrollY * 0.1}px)`,
+                }}
+              >
+                Lux
+              </motion.h1> */}
             </motion.div>
 
             {/* Línea amarilla elegante */}
@@ -60,7 +72,10 @@ const HeroContent = ({ scrollY, t }) => {
                 transform: `translateY(${scrollY * 0.15}px)`,
               }}
             >
-              <div className='text-2xl sm:text-3xl md:text-4xl font-light text-white/90 tracking-[0.2em] uppercase'>
+              <div
+                className='text-2xl sm:text-3xl md:text-4xl font-light text-white/90 tracking-[0.1em]'
+                style={{ fontFamily: 'Pacifico, cursive' }}
+              >
                 Punta Cana
               </div>
 

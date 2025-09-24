@@ -73,7 +73,11 @@ const Navbar = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <LanguageSwitch
-              className={isScrolled ? 'text-amber-500' : 'text-white'}
+              className={
+                isScrolled
+                  ? 'text-white hover:text-[#e2cd8c]'
+                  : 'text-white hover:text-[#e2cd8c]'
+              }
             />
 
             {/* Menú Hamburguesa con texto y animación */}

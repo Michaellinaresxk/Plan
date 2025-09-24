@@ -132,9 +132,15 @@ const StandardPackageContent = () => {
 
             <motion.h1
               variants={fadeInUp}
-              className='text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent'
+              className='text-5xl md:text-7xl font-extrabold leading-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent'
             >
-              Lux Punta Cana
+              Lux
+            </motion.h1>
+            <motion.h1
+              variants={fadeInUp}
+              className='text-5xl md:text-7xl font-extrabold  mb-6 leading-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent'
+            >
+              Puntacana
               <span className='block text-3xl md:text-5xl font-normal text-blue-300 mt-2'>
                 Standard Experience
               </span>
