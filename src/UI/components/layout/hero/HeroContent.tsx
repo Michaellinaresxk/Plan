@@ -32,13 +32,13 @@ const HeroContent = ({ scrollY, t }) => {
                 <img
                   src='/img/logo.png'
                   alt='Lux puntacana logo'
-                  className='max-w-30 md:max-w-40 w-full h-auto object-contain'
+                  className='max-w-30 md:max-w-40 w-full h-auto object-contain opacity-80'
                 />
               </div>
             </motion.div>
 
             {/* Línea amarilla elegante */}
-            <motion.div
+            {/* <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 1.8, duration: 1.2, ease: 'easeOut' }}
@@ -48,10 +48,10 @@ const HeroContent = ({ scrollY, t }) => {
                   'linear-gradient(to right, transparent, #e2cd8c, transparent)',
                 transform: `translateY(${scrollY * 0.1}px)`,
               }}
-            />
+            /> */}
 
             {/* Punta Cana y elementos decorativos */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.2, duration: 0.8 }}
@@ -87,7 +87,7 @@ const HeroContent = ({ scrollY, t }) => {
                   }}
                 />
               </div>
-            </motion.div>
+            </motion.div> */}
           </div>
         </motion.div>
       </div>
