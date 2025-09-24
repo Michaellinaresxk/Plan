@@ -8,19 +8,15 @@ import { useTranslation } from '@/lib/i18n/client';
 import { useReservation } from '@/context/BookingContext';
 import {
   ArrowLeft,
-  Check,
   DollarSign,
-  AlertCircle,
   CreditCard,
   Shield,
   User,
   Mail,
   Phone,
-  Building,
-  ArrowRight,
+  MapPin,
 } from 'lucide-react';
 
-import StepIndicator from '@/UI/components/confirmation/StepIndicator';
 import FormDataRenderer from '@/UI/components/confirmation/FormDataRenderer';
 import type { ReservationData } from '@/context/BookingContext';
 import CheckoutModal from '../payment/CheckoutModal';
@@ -29,7 +25,7 @@ interface ClientInfo {
   name: string;
   email: string;
   phone: string;
-  hostInfo?: string;
+  hostInfo: string; // Required field for pickup location contact
 }
 
 interface ReservationStepsProps {
@@ -48,8 +44,6 @@ const ReservationSteps: React.FC<ReservationStepsProps> = ({
   const { updateClientInfo, setReservationResult, clearReservation } =
     useReservation();
 
-  // SOLO 2 PASOS ANTES DEL PAGO: review + contact
-  const [currentStep, setCurrentStep] = useState(1);
   const [showCheckout, setShowCheckout] = useState(false);
   const [clientForm, setClientForm] = useState<ClientInfo>({
     name: reservationData.clientInfo?.name || '',
@@ -77,6 +71,18 @@ const ReservationSteps: React.FC<ReservationStepsProps> = ({
 
     if (!clientForm.phone.trim()) {
       errors.phone = 'Phone number is required';
+    } else {
+      // Enhanced phone validation - accepts various international formats
+      const phoneRegex = /^[\+]?[\d\s\-\(\)]{8,}$/;
+      const cleanPhone = clientForm.phone.replace(/[\s\-\(\)]/g, '');
+      if (!phoneRegex.test(clientForm.phone) || cleanPhone.length < 8) {
+        errors.phone = 'Please enter a valid phone number';
+      }
+    }
+
+    if (!clientForm.hostInfo.trim()) {
+      errors.hostInfo =
+        'Host contact information is required for pickup location';
     }
 
     setClientFormErrors(errors);
@@ -89,7 +95,6 @@ const ReservationSteps: React.FC<ReservationStepsProps> = ({
     if (validateClientForm()) {
       console.log('👤 Client info validated, proceeding to payment');
       updateClientInfo(clientForm);
-      // DIRECTO AL PAGO - NO MORE STEP 3
       setShowCheckout(true);
     }
   };
@@ -147,132 +152,62 @@ You will receive a confirmation email shortly.`;
             })}
           </h1>
           <p className='text-blue-100 mt-1'>
-            {currentStep === 1
-              ? 'Review your booking details'
-              : 'Enter your contact information'}
+            Enter your details and complete payment
           </p>
         </div>
 
-        {/* Simple 2-Step Indicator */}
-        <div className='p-6 border-b bg-gray-50'>
-          <div className='flex items-center justify-center space-x-8'>
-            <div className='flex items-center'>
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  currentStep === 1
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-green-600 text-white'
-                }`}
-              >
-                {currentStep > 1 ? <Check className='w-4 h-4' /> : '1'}
-              </div>
-              <span
-                className={`ml-2 text-sm font-medium ${
-                  currentStep === 1 ? 'text-blue-600' : 'text-green-600'
-                }`}
-              >
-                Review Details
-              </span>
-            </div>
-
-            <div
-              className={`w-12 h-0.5 ${
-                currentStep > 1 ? 'bg-green-600' : 'bg-gray-300'
-              }`}
-            ></div>
-
-            <div className='flex items-center'>
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  currentStep === 2
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-300 text-gray-600'
-                }`}
-              >
-                2
-              </div>
-              <span
-                className={`ml-2 text-sm font-medium ${
-                  currentStep === 2 ? 'text-blue-600' : 'text-gray-500'
-                }`}
-              >
-                Contact & Pay
-              </span>
-            </div>
-          </div>
-        </div>
-
         <div className='p-6'>
-          {/* Step 1: Review Details - SIMPLIFIED */}
-          {currentStep === 1 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className='space-y-6'
-            >
-              {/* Quick Service Summary */}
-              <div className='bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-100'>
-                <div className='flex items-start justify-between'>
-                  <div>
-                    <h3 className='text-xl font-bold text-blue-900 mb-2'>
-                      {reservationData.service.name}
-                    </h3>
-                    {reservationData.service.description && (
-                      <p className='text-blue-800 text-sm'>
-                        {reservationData.service.description}
-                      </p>
-                    )}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className='space-y-6'
+          >
+            {/* Compact Service Summary */}
+            <div className='bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-100'>
+              <div className='flex items-start justify-between'>
+                <div>
+                  <h3 className='text-xl font-bold text-blue-900 mb-2'>
+                    {reservationData.service.name}
+                  </h3>
+                  {reservationData.service.description && (
+                    <p className='text-blue-800 text-sm'>
+                      {reservationData.service.description}
+                    </p>
+                  )}
+                </div>
+                <div className='text-right'>
+                  <div className='flex items-center text-blue-700 mb-1'>
+                    <DollarSign className='w-5 h-5 mr-1' />
+                    <span className='text-3xl font-bold'>
+                      ${reservationData.totalPrice.toFixed(2)}
+                    </span>
                   </div>
-                  <div className='text-right'>
-                    <div className='flex items-center text-blue-700 mb-1'>
-                      <DollarSign className='w-5 h-5 mr-1' />
-                      <span className='text-3xl font-bold'>
-                        ${reservationData.totalPrice.toFixed(2)}
-                      </span>
-                    </div>
-                    <p className='text-sm text-blue-600'>Total Price</p>
-                  </div>
+                  <p className='text-sm text-blue-600'>Total Price</p>
                 </div>
               </div>
+            </div>
 
-              {/* Booking Details */}
-              <div>
-                <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center'>
-                  <Check className='w-5 h-5 mr-2 text-green-600' />
-                  Booking Details
-                </h3>
-
+            {/* Collapsible Booking Details */}
+            <details className='group bg-gray-50 rounded-lg border border-gray-200'>
+              <summary className='cursor-pointer p-4 font-medium text-gray-900 hover:bg-gray-100 rounded-lg transition-colors'>
+                <span className='select-none'>📋 View Booking Details</span>
+              </summary>
+              <div className='px-4 pb-4 border-t border-gray-200'>
                 <FormDataRenderer
                   formData={reservationData.formData}
                   serviceId={reservationData.service.id}
                 />
               </div>
+            </details>
 
-              <div className='pt-4'>
-                <button
-                  onClick={() => setCurrentStep(2)}
-                  className='w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center'
-                >
-                  Continue to Contact Information
-                  <ArrowRight className='w-4 h-4 ml-2' />
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Step 2: Contact Information + Direct Payment */}
-          {currentStep === 2 && (
-            <motion.div
-              initial={{ opacity: 0, x: 0 }}
-              animate={{ opacity: 1, x: 0 }}
-              className='space-y-6'
-            >
+            {/* Contact Information Form */}
+            <div className='bg-white border border-gray-200 rounded-lg p-6'>
               <div className='text-center mb-6'>
                 <h3 className='text-2xl font-bold text-gray-900 mb-2'>
                   Contact Information
                 </h3>
                 <p className='text-gray-600'>
-                  Enter your details and complete payment in one step
+                  Enter your details to complete your reservation
                 </p>
               </div>
 
@@ -348,7 +283,7 @@ You will receive a confirmation email shortly.`;
                           ? 'border-red-300'
                           : 'border-gray-300'
                       }`}
-                      placeholder='Enter your phone number'
+                      placeholder='+1 (555) 123-4567'
                     />
                     {clientFormErrors.phone && (
                       <p className='mt-1 text-sm text-red-600'>
@@ -357,14 +292,24 @@ You will receive a confirmation email shortly.`;
                     )}
                   </div>
 
-                  {/* Hotel Info (Optional) */}
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      <Building className='inline w-4 h-4 mr-2' />
-                      Hotel/Accommodation (Optional)
+                  {/* Pickup Location Host Contact */}
+                  <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-4'>
+                    <label className='block text-sm font-medium text-gray-700 mb-3'>
+                      <MapPin className='inline w-4 h-4 mr-2' />
+                      Pickup Location Contact *
                     </label>
-                    <input
-                      type='text'
+                    <div className='space-y-2 mb-3'>
+                      <p className='text-sm text-gray-600'>
+                        <strong>Where should we pick you up?</strong>
+                      </p>
+                      <p className='text-xs text-gray-500'>
+                        Please provide the name and contact info of your
+                        accommodation (hotel, villa, Airbnb, etc.) so we can
+                        coordinate the exact pickup location and time.
+                      </p>
+                    </div>
+                    <textarea
+                      rows={3}
                       value={clientForm.hostInfo}
                       onChange={(e) =>
                         setClientForm({
@@ -372,9 +317,18 @@ You will receive a confirmation email shortly.`;
                           hostInfo: e.target.value,
                         })
                       }
-                      className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                      placeholder='Hotel name or accommodation details'
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none ${
+                        clientFormErrors.hostInfo
+                          ? 'border-red-300'
+                          : 'border-gray-300'
+                      }`}
+                      placeholder='Example: Paradise Beach, Front Desk: +1-555-0123, or: Villa Casa Blanca, Contact: Maria +1-555-9876, 123 Puntacana'
                     />
+                    {clientFormErrors.hostInfo && (
+                      <p className='mt-1 text-sm text-red-600'>
+                        {clientFormErrors.hostInfo}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -397,27 +351,19 @@ You will receive a confirmation email shortly.`;
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className='flex flex-col sm:flex-row gap-4 pt-6'>
-                  <button
-                    type='button'
-                    onClick={() => setCurrentStep(1)}
-                    className='flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors'
-                  >
-                    Back
-                  </button>
-
+                {/* Action Button */}
+                <div className='pt-6'>
                   <button
                     type='submit'
-                    className='flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center font-medium'
+                    className='w-full px-6 py-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center font-medium text-lg'
                   >
-                    <CreditCard className='w-4 h-4 mr-2' />
+                    <CreditCard className='w-5 h-5 mr-3' />
                     Complete Payment ${reservationData.totalPrice.toFixed(2)}
                   </button>
                 </div>
               </form>
-            </motion.div>
-          )}
+            </div>
+          </motion.div>
         </div>
       </div>
 
