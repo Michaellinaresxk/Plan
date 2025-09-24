@@ -35,7 +35,7 @@ const HeroActions = (scrollY) => {
       }}
     >
       {/* Botón circular con scroll suave mejorado */}
-      <motion.div
+      {/* <motion.div
         animate={{ y: [0, 20, 0] }}
         transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
       >
@@ -49,7 +49,7 @@ const HeroActions = (scrollY) => {
             className='text-white/60 group-hover:text-amber-400/90 transition-colors duration-500'
           />
         </button>
-      </motion.div>
+      </motion.div> */}
     </motion.div>
   );
 };

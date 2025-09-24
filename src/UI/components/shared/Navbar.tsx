@@ -62,7 +62,7 @@ const Navbar = () => {
                 isScrolled ? 'text-amber-500' : 'text-white'
               }`}
             >
-              <img className='w-13' src='/img/logo.png' alt='' />
+              <img className='w-20' src='/img/logo-white.png' alt='' />
             </Link>
           </motion.div>
 

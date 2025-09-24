@@ -101,7 +101,7 @@ const Footer = () => {
               <li className='flex items-start'>
                 <MapPin className='h-5 w-5 mr-3 mt-0.5 text-gray-400' />
                 <span className='text-gray-400'>
-                  VISTACANA, Punta Cana 23000, Dominican Republic
+                  VISTA CANA, Punta Cana 23000, Dominican Republic
                 </span>
               </li>
               <li className='flex items-center'>
