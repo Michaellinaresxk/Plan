@@ -1,8 +1,19 @@
 import { motion } from 'framer-motion';
 import { Mail, Phone } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
+import { useEmailContact } from '@/utils/mailUtils';
+
 const CTASection = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const { sendInquiry } = useEmailContact();
+
+  const handleEmailClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Detectar idioma actual (asumiendo que language viene del contexto de traducción)
+    const currentLanguage = language === 'es' ? 'es' : 'en';
+    sendInquiry(currentLanguage);
+  };
+
   return (
     <>
       {/* Call-to-action Section */}
@@ -47,6 +58,7 @@ const CTASection = () => {
                 {t('contact.Cta.subTitle')}
               </p>
               <div className='flex flex-wrap justify-center gap-4'>
+                {/* Botón de teléfono */}
                 <a
                   href='tel:+13027248080'
                   className='inline-flex items-center px-8 py-4 bg-white text-blue-700 hover:bg-gray-100 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
@@ -54,13 +66,15 @@ const CTASection = () => {
                   <Phone className='mr-2 h-5 w-5' />
                   {t('contact.Cta.btn1')}
                 </a>
-                <a
-                  href='/contact'
+
+                {/* Botón de email mejorado */}
+                <button
+                  onClick={handleEmailClick}
                   className='inline-flex items-center px-8 py-4 bg-blue-500 bg-opacity-30 backdrop-blur-sm hover:bg-opacity-40 text-white border border-white/30 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1'
                 >
                   <Mail className='mr-2 h-5 w-5' />
                   {t('contact.Cta.btn2')}
-                </a>
+                </button>
               </div>
             </motion.div>
           </div>

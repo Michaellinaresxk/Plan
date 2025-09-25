@@ -135,12 +135,12 @@
       },
       "catamaranTrips": {
         "name": "Viajes en Catamarán",
-        "short": "Aventuras escénicas de navegación a lo largo de la costa",
+        "short": "Vive una experiencia única en el mar con nuestras excursiones en catamarán.",
         "full": "Vive una experiencia única en el mar con nuestras excursiones en catamarán. Disfruta de paisajes impresionantes, aguas cristalinas y la tranquilidad de navegar por las costas de Punta Cana. Reserva tu excursión hoy y navega hacia el paraíso."
       },
       "golfCartRentals": {
         "name": "Alquiler de Carros de Golf",
-        "short": "Transporte conveniente dentro del resort",
+        "short": "Recorra su complejo turístico, comunidad de villas o localidad costera con uno de nuestros cómodos carritos de golf totalmente cargados",
         "full": "Disfruta de la libertad de recorrer Punta Cana a tu propio ritmo con nuestros carritos de golf de alquiler. Ideales para moverte cómodamente por resorts, playas y senderos locales. Conduce, explora y disfruta a tu ritmo. Reserva tu carrito hoy y explora Punta Cana."
       },
       "personalTraining": {
@@ -154,7 +154,7 @@
         "headerOption2": "Actividades adecuadas a la edad",
         "headerOption3": "Horario flexible",
         "name": "Niñera",
-        "short": "Servicios profesionales de cuidado infantil",
+        "short": "Confíe en nuestras niñeras experimentadas y con antecedentes comprobados para cuidar de sus pequeños en la comodidad de su villa o resort.",
         "full": "Confía en nuestras niñeras experimentadas y con verificación de antecedentes para cuidar a tus pequeños en la comodidad de tu villa o resort. Ya sea para unas horas por la noche o cuidado diario, nuestros profesionales entretienen a los niños con actividades seguras y supervisión atenta.",
         "slogan": "DISFRUTA DE TU TIEMPO SIN PREOCUPACIONES",
         "ageRange": "Rango de edad:",
@@ -185,7 +185,7 @@
       },
       "horsebackRiding": {
         "name": "Paseos a Caballo",
-        "short": "Recorridos guiados a caballo por senderos escénicos",
+        "short": "Disfruta de un paseo guiado por playas, senderos y paisajes impresionantes, perfecto para todos los niveles de experiencia.",
         "full": "Descubre la belleza natural de Punta Cana a caballo. Disfruta de un paseo guiado por playas, senderos y paisajes únicos, ideal para todos los niveles de experiencia. Reserva tu aventura a caballo y vive una experiencia inolvidable."
       },
       "deepSeaFishing": {
@@ -203,8 +203,17 @@
         "short": "Experiencias culinarias personalizadas en tu alojamiento",
         "full": "Deleita tu paladar con creaciones gourmet personalizadas por un chef privado en tu villa, apartamento o yate. Nuestro equipo elabora menús a tu medida, usando ingredientes frescos y sabores locales para convertir cada comida en un momento inolvidable. Reserva tu chef privado hoy y disfruta de una experiencia culinaria única en Punta Cana."
       },
+      "standardMassage": {
+        "name": "Masajes",
+        "short": "Relájese y rejuvenezca con nuestros servicios profesionales de masajes..."
+      },
+      "atvExcursions": {
+        "name": "ATV Adventures",
+        "short": "Explora playas recónditas, senderos selváticos y cenotes cristalinos en la aventura todoterreno definitiva."
+      },
       "massageDetails": {
         "title": "Experiencia Wellness",
+        "short": "yea",
         "experience": "Experience",
         "premiumExperience": "Premium Massage Experience",
         "professionalExperience": "Professional Massage Experience",
@@ -236,7 +245,12 @@
       "karaoke": {
         "name": "Sesiones Privadas de Karaoke",
         "short": "Divertido montaje de karaoke en tu alojamiento",
-        "full": "Disfruta de una noche llena de música y diversión con nuestro servicio de karaoke. Canta tus canciones favoritas y crea recuerdos inolvidables con amigos y familiares en un ambiente animado. ¡Canta, ríe y haz de cada momento una fiesta! Reserva tu sesión de karaoke hoy y vive la diversión al máximo."
+        "full": "La excursión a la isla Saona es una popular excursión desde Punta Cana y Bayahibe, en la República Dominicana, que ofrece una visita de un día a la idílica isla caribeña conocida por sus playas vírgenes y sus aguas turquesas. Las excursiones suelen incluir transporte en lancha rápida y catamarán, una parada en una piscina natural, un almuerzo bufé y barra libre, así como tiempo para relajarse en la playa y disfrutar del paisaje."
+      },
+      "saonaIslandTour": {
+        "name": "Excursión a la isla Saona",
+        "short": "Excursión de un día a la idílica isla caribeña conocida por sus playas vírgenes y sus aguas turquesas",
+        "full": "A Saona Island tour is a popular excursion from Punta Cana and Bayahibe in the Dominican Republic, offering a day trip to the idyllic Caribbean island known for its pristine beaches and turquoise waters. Tours typically include transportation by speedboat and catamaran, a stop at a natural swimming pool, a buffet lunch, and an open bar, as well as time to relax on the beach and enjoy the scenery. "
       },
       "liveMusic": {
         "name": "Live Music",
@@ -565,7 +579,7 @@
   },
   "about": {
     "aboutChip": "Nuestra Historia",
-    "title": "Sobre Lux Puntacana",
+    "title": "Sobre Lux Punta Cana",
     "subTitle": "Nos aseguramos de que su estancia esté llena de auténtico confort, experiencias auténticas y recuerdos que atesorará de verdad.",
     "card1": "Años Creando Experiencias Memorables",
     "card2": "Viajeros Atendidos con Excelencia",

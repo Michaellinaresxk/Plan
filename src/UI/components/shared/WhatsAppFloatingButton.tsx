@@ -59,32 +59,4 @@ const WhatsAppFloatingButton: React.FC<WhatsAppButtonProps> = ({
   );
 };
 
-// Demo simple
-const Demo: React.FC = () => {
-  return (
-    <div className='min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center'>
-      <div className='text-center'>
-        <h1 className='text-4xl font-bold text-gray-800 mb-4'>
-          WhatsApp Button
-        </h1>
-        <p className='text-gray-600 mb-8'>
-          Versión limpia y optimizada con el ícono oficial
-        </p>
-
-        {/* El botón aparecerá en la esquina */}
-        <WhatsAppFloatingButton
-          phoneNumber='13027248080'
-          message='¡Hola! Me interesa conocer más sobre sus servicios.'
-        />
-
-        {/* Ejemplo en posición izquierda para demo */}
-        <div className='relative w-80 h-40 mx-auto bg-white rounded-lg shadow-lg'>
-          <p className='pt-16 text-gray-500'>Vista previa del sitio web</p>
-          <WhatsAppFloatingButton position='bottom-left' className='relative' />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Demo;
+export default WhatsAppFloatingButton;

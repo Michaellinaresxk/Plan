@@ -343,11 +343,12 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
-  // MESSAGE
+  // MaSSAGE
   [SERVICE_IDS.MASSAGE]: {
     id: SERVICE_IDS.MASSAGE,
     titleKey: 'services.standard.massage.name',
-    descriptionKey: 'services.standard.massageDetails.description',
+    short: 'services.standard.massage.short',
+    descriptionKey: 'yeah',
     fullDescriptionKey: 'services.standard.massage.full',
     basePrice: 100,
     priceUnit: 'services.priceUnits.perSession',

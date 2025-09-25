@@ -140,7 +140,7 @@ const StandardPackageContent = () => {
               variants={fadeInUp}
               className='text-5xl md:text-7xl font-extrabold  mb-6 leading-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent'
             >
-              Puntacana
+              Punta Cana
               <span className='block text-3xl md:text-5xl font-normal text-blue-300 mt-2'>
                 Standard Experience
               </span>
