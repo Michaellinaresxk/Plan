@@ -676,7 +676,7 @@ const InfoSection = () => {
             <h2 className='text-2xl font-bold text-gray-800 mb-6'>
               Schedule & <span className='text-blue-500'>Important Info</span>
             </h2>
-            <div className='space-y-4'>
+            <div className='grid grid-cols-2 md:grid-cols-1 gap-4'>
               {SCHEDULE_INFO.map((category, index) => {
                 const IconComponent = category.icon;
                 return (

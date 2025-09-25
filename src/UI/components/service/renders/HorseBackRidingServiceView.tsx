@@ -445,39 +445,72 @@ const ItinerarySection: React.FC = () => {
             Approximately 3 hours of unforgettable experiences
           </p>
         </div>
+        <div className='space-y-6'>
+          {/* Primeros 6 elementos en grid */}
+          <div className='grid grid-cols-2 gap-6'>
+            {ITINERARY_STEPS.slice(0, -1).map((step, index) => {
+              const IconComponent = step.icon;
+              return (
+                <motion.div
+                  key={step.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className='flex items-center gap-4 bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300'
+                >
+                  <div className='w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0'>
+                    <IconComponent className='w-6 h-6 text-amber-600' />
+                  </div>
+                  <div className='flex-grow'>
+                    <div className='flex items-center gap-2 mb-1'>
+                      <span className='bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full'>
+                        {step.id}
+                      </span>
+                    </div>
+                    <h3 className='font-semibold text-gray-800 text-sm mb-1'>
+                      {step.title}
+                    </h3>
+                    <p className='text-gray-600 text-xs'>{step.description}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
 
-        <div className='grid grid-cols-2 md:grid-cols-2 gap-6'>
-          {ITINERARY_STEPS.map((step, index) => {
-            const IconComponent = step.icon;
+          {/* Último elemento centrado ocupando todo el ancho */}
+          {(() => {
+            const lastStep = ITINERARY_STEPS[ITINERARY_STEPS.length - 1];
+            const IconComponent = lastStep.icon;
             return (
               <motion.div
-                key={step.id}
+                key={lastStep.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className='flex items-center gap-4 bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300'
+                transition={{ delay: (ITINERARY_STEPS.length - 1) * 0.1 }}
+                className='flex items-center gap-4 bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-300 max-w-md mx-auto'
               >
                 <div className='w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0'>
                   <IconComponent className='w-6 h-6 text-amber-600' />
                 </div>
-
-                <div className='flex-grow'>
-                  <div className='flex items-center gap-2 mb-1'>
+                <div className='flex-grow text-center'>
+                  <div className='flex items-center gap-2 mb-1 justify-center'>
                     <span className='bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full'>
-                      {step.id}
+                      {lastStep.id}
                     </span>
                   </div>
                   <h3 className='font-semibold text-gray-800 text-sm mb-1'>
-                    {step.title}
+                    {lastStep.title}
                   </h3>
-                  <p className='text-gray-600 text-xs'>{step.description}</p>
+                  <p className='text-gray-600 text-xs'>
+                    {lastStep.description}
+                  </p>
                 </div>
               </motion.div>
             );
-          })}
+          })()}
         </div>
-
         <div className='mt-8 text-center'>
           <div className='inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full'>
             <Clock className='w-4 h-4 text-amber-600' />
@@ -532,7 +565,7 @@ const InfoSection: React.FC = () => {
             <h2 className='text-2xl font-bold text-gray-800 mb-6'>
               Important <span className='text-red-500'>Information</span>
             </h2>
-            <div className='space-y-4'>
+            <div className='grid grid-cols-2 md:grid-cols-1 gap-4'>
               {RESTRICTIONS_INFO.map((category, index) => {
                 const IconComponent = category.icon;
                 return (

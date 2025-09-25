@@ -104,18 +104,7 @@ export const RecommendedServices: React.FC<RecommendedServicesProps> = ({
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
 
-  // Categorías para filtrado
-  const categories = [
-    { id: 'all', name: 'Todos' },
-    { id: 'water', name: 'Acuáticos' },
-    { id: 'relax', name: 'Relajación' },
-    { id: 'food', name: 'Gastronomía' },
-    { id: 'adventure', name: 'Aventura' },
-    { id: 'tours', name: 'Tours' },
-    { id: 'romantic', name: 'Romántico' },
-    { id: 'transport', name: 'Transporte' },
-  ];
-
+  
   // Filtrar servicios basados en búsqueda y categoría
   const filteredServices = useMemo(() => {
     return services.filter((service) => {
