@@ -4,6 +4,11 @@
       "yes": "Yes",
       "not": "Not requier"
     },
+    "instagram": {
+      "followUs": "Follow us on Instagram",
+      "description": "Discover the best experiences in Punta Cana, exclusive photos, and special offers only for our followers.",
+      "button": "Follow us"
+    },
     "nav": {
       "home": "Home",
       "packages": "Packages",
@@ -20,7 +25,10 @@
     "mainText": {
       "title": "Xclusive Services",
       "subtitle": "At Lux Punta Cana, we understand that the most valuable moments are not improvised... They are designed with intention. That's why our services, from SUV pickups and private yacht cruises to gourmet dinners, not only create experiences, but memories that last. Because true luxury does not need to show excess.",
-      "slogan": "You just need to touch the soul."
+      "slogan": "You just need to touch the soul.",
+      "experience": "Years of Experience",
+      "happyClients": "Happy Clients",
+      "exclusiveServices": "Xclusive Services"
     },
     "gallery": {
       "title": "Our Luxury Gallery",
@@ -40,23 +48,30 @@
     },
     "button": {
       "explore": "Explore Packages",
-      "contactUs": "Contact us"
+      "contactUs": "Contact us",
+      "details": "View Details"
     },
     "package-standard": {
+      "chip": "Xclusive Services",
+      "standardChip": "Standard Services",
       "title": "Choose Your Experience",
       "subtitle": "Select the package that fits your vacation needs. Each option offers unique services to enhance your stay.",
       "standard": "Our standard package offers a complete vacation experience with all the essential services.",
       "transfers": "Airport Transfers",
       "golfCart": "Golf Cart Rentals",
       "trips": "Catamaran Trips",
-      "chef": "Private Chef Service"
+      "chef": "Private Chef Service",
+      "selectPackage": "Select Package",
+      "selectedPackage": "Selected Package",
+      "curatedExperiences": "Curated Experiences",
+      "ultraLuxe": "Ultra Lux"
     },
     "package-luxe": {
       "subtitle": "Our premium package offers an elevated experience with exclusive luxury services.",
-      "yacht": "Luxe Yacht",
-      "culinarie": "Luxe Culinary Service",
-      "massage": "Luxe Masseuse Service",
-      "suv": "Luxe Arrival - SUV Service"
+      "yacht": "Lux Yacht",
+      "culinarie": "Lux Culinary Service",
+      "massage": "Lux Masseuse Service",
+      "suv": "Lux Arrival - SUV Service"
     }
   },
   "home": {
@@ -86,7 +101,7 @@
   "services": {
     "title": {
       "standard": "Lux Punta Cana Services",
-      "premium": "Luxe Punta Cana Services"
+      "premium": "Lux Punta Cana Services"
     },
     "subtitle": "Select the services you would like to include in your booking.",
     "actions": {
@@ -106,6 +121,46 @@
       "contact": "Contact us"
     },
     "standard": {
+      "standardPage": {
+        "title": "Your Standard Experience",
+        "subtitle": "Discover handpicked services designed to make your Punta Cana adventure unforgettable. Each experience is crafted with care and attention to detail."
+      },
+      "serviceGallery": {
+        "categories": {
+          "all": "All",
+          "waterActivities": "Aquatic",
+          "tours": "Tours",
+          "transportation": "Transport",
+          "wellness": "Wellness",
+          "foodDrinks": "Gastronomy",
+          "leisure": "Entertainment"
+        },
+        "header": {
+          "subtitle": "Exclusive Experiences",
+          "title": "Our Services",
+          "description": "Discover our complete collection of luxury experiences, designed to create unique moments in the paradise of Punta Cana."
+        },
+        "packageTypes": {
+          "premium": "Premium",
+          "standard": "Standard"
+        },
+        "emptyState": {
+          "title": "No se encontraron servicios",
+          "description": "Intenta seleccionar una categoría diferente para explorar nuestros servicios.",
+          "button": "Mostrar todos los servicios"
+        },
+        "cta": {
+          "title": "We Create Your Perfect Experience",
+          "description": "Our team of experts is ready to design a completely personalized vacation that will exceed all your expectations.",
+          "standardPackages": "Standard Packages",
+          "xclusivePackages": "Xclusive Packages",
+          "features": {
+            "service247": "Service 24/7",
+            "uniqueExperiences": "Unique Experiences",
+            "fullyCustomized": "Fully Customized"
+          }
+        }
+      },
       "yoga": {
         "yogaTitlePage": "Yoga & meditation",
         "name": "Yoga",
@@ -201,7 +256,7 @@
         "full": "Delight your palate with personalized gourmet creations by a private chef in your villa, apartment, or yacht. Our team crafts custom menus using fresh ingredients and local flavors, turning every meal into an unforgettable experience. Book your private chef today and enjoy a unique culinary experience in Punta Cana."
       },
       "standardMassage": {
-        "name": "Masajes",
+        "name": "Massages",
         "short": "Relax and rejuvenate with our professional massage services..."
       },
       "atvExcursions": {
@@ -366,42 +421,42 @@
     },
     "premium": {
       "luxeYacht": {
-        "name": "Luxe Yacht",
+        "name": "Lux Yacht",
         "short": "Private luxury yacht charter with crew",
         "full": "Experience ultimate luxury with our private yacht charter. Cruise the pristine Caribbean waters with a professional crew catering to your every need. Indulge in gourmet meals, premium beverages, and exclusive water activities."
       },
       "luxeEBikes": {
-        "name": "Luxe E-Bikes",
+        "name": "Lux E-Bikes",
         "short": "Premium electric bikes for effortless exploration",
         "full": "Discover Punta Cana in style with our premium electric bikes. Enjoy effortless exploration of beaches, trails, and local attractions with top-of-the-line e-bikes featuring extended battery life and comfortable ergonomics."
       },
       "luxeGolfCart": {
-        "name": "Luxe Golf Cart",
+        "name": "Lux Golf Cart",
         "short": "Premium golf cart with extended features",
         "full": "Travel in style with our luxury golf carts featuring premium leather seats, extended battery range, and upgraded features. Perfect for exploring resorts and local areas with elegance and comfort."
       },
       "luxeYoga": {
-        "name": "Luxe Yoga Sessions",
+        "name": "Lux Yoga Sessions",
         "short": "Private beachfront yoga with premium amenities",
         "full": "Elevate your wellness journey with our exclusive private yoga sessions held in breathtaking locations. Experience personalized instruction, premium mats and equipment, and post-session organic refreshments."
       },
       "luxeFitness": {
-        "name": "Luxe Fitness Sessions",
+        "name": "Lux Fitness Sessions",
         "short": "Elite personal training with specialized equipment",
         "full": "Transform your fitness routine with our elite training sessions. Work with top-tier personal trainers using premium equipment and cutting-edge techniques tailored specifically to your goals and fitness level."
       },
       "luxeCulinary": {
-        "name": "Luxe Culinary Service",
+        "name": "Lux Culinary Service",
         "short": "Gourmet chef experience with premium ingredients",
         "full": "Indulge in the ultimate dining experience with our gourmet chef service. Enjoy exquisite multi-course meals prepared with the finest local and imported ingredients, paired with premium wines and served in the comfort of your accommodation."
       },
       "luxeMasseuse": {
-        "name": "Luxe Masseuse Service",
+        "name": "Lux Masseuse Service",
         "short": "Premium spa treatments in your accommodation",
         "full": "Unwind with our luxury spa experience brought directly to your accommodation. Our elite massage therapists provide premium treatments using organic oils and top-tier techniques, complete with aromatherapy and ambient music."
       },
       "luxeArrival": {
-        "name": "Luxe Arrival - SUV Service",
+        "name": "Lux Arrival - SUV Service",
         "short": "Luxury SUV airport transfer with premium amenities",
         "full": "Begin your luxury experience from the moment you land with our premium SUV airport transfer. Enjoy plush leather seating, climate control, complimentary refreshments, and a professional chauffeur ready to ensure a seamless arrival to your destination."
       }
@@ -501,14 +556,14 @@
   "contact": {
     "headerChip": "We are here to help you",
     "headerTitle": "Contact Our Premium Team",
-    "headerSubTitle": "Our vacation experience specialists are ready to assist ready to assist you and make your stay in Punta Cana an unforgettable memory. an unforgettable memory.",
+    "headerSubTitle": "Our vacation experience specialists are ready to assist you and make your stay in Punta Cana an unforgettable memory an unforgettable memory.",
     "title": "Contact Us",
     "subtitle": "We're here to answer your questions and help you plan your perfect stay in Punta Cana.",
     "multipleChanelChip": "Multiple Channels",
     "multipleChanelTitle": "How to Contact Us",
     "multipleChanelSubTitle": "Select the method of contact that best suits your needs",
-    "channel1Title": "Call us at",
-    "channel1SubTitle": "Available to assist you by telephone with all your inquiries.",
+    "channel1Title": "Whatsapp us",
+    "channel1SubTitle": "Available to assist you with all your inquiries.",
     "channel2Title": "Write to us at",
     "channel2SubTitle": "Send us an email and we will get back to you as soon as possible.",
     "channel3Title": "Visit us at",
@@ -521,7 +576,7 @@
       "subTitle": "Complete the form below and our team will contact you soon.",
       "name": "Full Name",
       "email": "Email",
-      "subject": "What type of services are you interested in?",
+      "subject": "How can we help you today?",
       "selectSubject": "Select a service",
       "date": "Date of Arrival",
       "guests": "Number of Guests",

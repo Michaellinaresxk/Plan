@@ -13,30 +13,8 @@ import {
   Anchor,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/lib/i18n/client';
 
-// Mock translation function - replace with your actual implementation
-const useTranslation = () => ({
-  t: (key: string) => {
-    const translations: Record<string, string> = {
-      'home.packages.title': 'Choose Your Experience',
-      'home.packages.subtitle':
-        'Select the perfect luxury package tailored to your desires',
-      'common.package-standard.standard':
-        'Experience the best of Punta Cana with our carefully curated standard package.',
-      'common.package-standard.transfers': 'Premium Airport Transfers',
-      'common.package-standard.trips': 'Catamaran Adventures',
-      'common.package-standard.chef': 'Private Chef Experience',
-      'common.package-luxe.subtitle':
-        'Indulge in ultimate luxury with our premium collection of exclusive experiences.',
-      'common.package-luxe.yacht': 'Private Yacht Charter',
-      'common.package-luxe.culinarie': 'Michelin-Star Dining',
-      'common.package-luxe.massage': 'Spa & Wellness',
-    };
-    return translations[key] || key;
-  },
-});
-
-// Mock booking context - replace with your actual implementation
 const useBooking = () => {
   const [packageType, setPackageType] = useState('');
   return { packageType, setPackageType };
@@ -44,10 +22,8 @@ const useBooking = () => {
 
 // Service Card Component
 const ServiceCard = ({
-  title,
   description,
   imageUrl,
-  href,
   icon: Icon,
   isExclusive = false,
   delay = 0,
@@ -110,7 +86,7 @@ const PremiumPackageCard = ({
   delay?: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
+  const { t } = useTranslation();
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -309,11 +285,11 @@ const PremiumPackageCard = ({
               {isSelected ? (
                 <>
                   <CheckCircle className='w-6 h-6' />
-                  <span>Selected</span>
+                  <span>{t('common.package-standard.selectedPackage')}</span>
                 </>
               ) : (
                 <>
-                  <span>Select Package</span>
+                  <span>{t('common.package-standard.selectPackage')}</span>
                   <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
                 </>
               )}
@@ -345,10 +321,10 @@ const PackageSelector = () => {
     {
       id: 'standard',
       title: 'Standard',
-      subtitle: 'Standard Experience',
+      subtitle: t('common.package-standard.standardChip'),
       description: t('common.package-standard.standard'),
       rating: 4,
-      experience: 'Curated Experience',
+      experience: t('common.package-standard.curatedExperiences'),
       isPremium: false,
       services: [
         {
@@ -364,10 +340,10 @@ const PackageSelector = () => {
     {
       id: 'premium',
       title: 'Lux',
-      subtitle: 'Exclusive Experience',
+      subtitle: t('common.package-standard.chip'),
       description: t('common.package-luxe.subtitle'),
       rating: 5,
-      experience: 'Ultra Luxury',
+      experience: t('common.package-standard.ultraLuxe'),
       isPremium: true,
       services: [
         {
@@ -435,7 +411,7 @@ const PackageSelector = () => {
           >
             <Diamond className='w-5 h-5 text-amber-400' />
             <span className='text-sm font-bold text-white tracking-wider'>
-              EXCLUSIVE PACKAGES
+              {t('common.package-standard.chip')}
             </span>
             <Diamond className='w-5 h-5 text-amber-400' />
           </motion.div>

@@ -578,9 +578,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                             <span className='font-medium'>{slot.name}</span>
                           </div>
                         </div>
-                        <p className='text-gray-500 text-sm mt-2 ml-8'>
-                          Adventure: {slot.time}
-                        </p>
+
                         <p className='text-gray-400 text-xs mt-1 ml-8'>
                           Pickup: {slot.pickup}
                         </p>
@@ -644,24 +642,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     </option>
                   ))}
                 </select>
-
-                {/* Vehicle Description */}
-                {currentVehicle && (
-                  <div className='mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
-                    <p className='text-sm text-blue-800'>
-                      <strong>{currentVehicle.name}:</strong>{' '}
-                      {currentVehicle.description}
-                    </p>
-                    <p className='text-xs text-blue-600 mt-1'>
-                      Price: ${currentVehicle.price} per vehicle | Max capacity:{' '}
-                      {currentVehicle.maxParticipants}{' '}
-                      {currentVehicle.maxParticipants === 1
-                        ? 'person'
-                        : 'people'}{' '}
-                      per vehicle
-                    </p>
-                  </div>
-                )}
 
                 {errors.vehicleType && (
                   <p className='text-red-500 text-xs mt-1'>

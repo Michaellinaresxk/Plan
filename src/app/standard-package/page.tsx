@@ -266,12 +266,10 @@ const StandardPackageContent = () => {
                   className='text-center mb-16'
                 >
                   <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
-                    Your Standard Experience
+                    {t('services.standard.standardPage.title')}
                   </h2>
                   <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
-                    Discover handpicked services designed to make your Punta
-                    Cana adventure unforgettable. Each experience is crafted
-                    with care and attention to detail.
+                    {t('services.standard.standardPage.subtitle')}
                   </p>
                 </motion.div>
                 <ServiceList

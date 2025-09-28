@@ -256,7 +256,7 @@ const ContactPage = () => {
                               onChange={handleInputChange}
                               required
                               className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                              placeholder='Su nombre completo'
+                              placeholder={t('contact.form.name')}
                             />
                           </div>
 
@@ -275,7 +275,7 @@ const ContactPage = () => {
                               onChange={handleInputChange}
                               required
                               className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                              placeholder='Su dirección de email'
+                              placeholder={t('contact.form.email')}
                             />
                           </div>
                         </div>
@@ -321,12 +321,6 @@ const ContactPage = () => {
                         </div>
 
                         <div>
-                          <label
-                            htmlFor='message'
-                            className='block text-gray-700 mb-2 font-medium'
-                          >
-                            {t('contact.form.preferences')}
-                          </label>
                           <textarea
                             id='message'
                             name='message'

@@ -67,23 +67,23 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href='#packages'
+                  href='/standard-package'
                   className='text-gray-400 hover:text-white transition-colors'
                 >
-                  {t('common.footer.packages')}
+                  {t('common.nav.standard')}
                 </Link>
               </li>
               <li>
                 <Link
-                  href='/custom-package'
+                  href='/premium-package'
                   className='text-gray-400 hover:text-white transition-colors'
                 >
-                  {t('common.footer.custom')}
+                  {t('common.nav.premium')}
                 </Link>
               </li>
               <li>
                 <Link
-                  href='contact'
+                  href='/contact'
                   className='text-gray-400 hover:text-white transition-colors'
                 >
                   {t('common.footer.contact')}

@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
-  X,
   Grid,
   Anchor,
   Map,
@@ -12,7 +11,7 @@ import {
   Heart,
   Utensils,
   Music,
-  ChevronDown,
+  MapPin,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service, BookingDate } from '@/types/type';
@@ -27,51 +26,6 @@ interface EnhancedServiceListProps {
   textColor?: string;
   viewContext?: 'standard-view' | 'premium-view';
 }
-
-const serviceCategories = [
-  {
-    id: 'all',
-    name: 'All',
-    icon: Grid,
-    color: 'slate',
-  },
-  {
-    id: 'water-activities',
-    name: 'Water',
-    icon: Anchor,
-    color: 'blue',
-  },
-  {
-    id: 'tours',
-    name: 'Tours',
-    icon: Map,
-    color: 'green',
-  },
-  {
-    id: 'transportation',
-    name: 'Transport',
-    icon: Car,
-    color: 'purple',
-  },
-  {
-    id: 'wellness',
-    name: 'Wellness',
-    icon: Heart,
-    color: 'pink',
-  },
-  {
-    id: 'food-drinks',
-    name: 'Food',
-    icon: Utensils,
-    color: 'orange',
-  },
-  {
-    id: 'leisure',
-    name: 'Leisure',
-    icon: Music,
-    color: 'indigo',
-  },
-];
 
 const ServiceList: React.FC<EnhancedServiceListProps> = ({
   services,
@@ -92,6 +46,51 @@ const ServiceList: React.FC<EnhancedServiceListProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  const serviceCategories = [
+    {
+      id: 'all',
+      name: t('services.standard.serviceGallery.categories.all'),
+      icon: Grid,
+      color: 'slate',
+    },
+    {
+      id: 'water-activities',
+      name: t('services.standard.serviceGallery.categories.waterActivities'),
+      icon: Anchor,
+      color: 'blue',
+    },
+    {
+      id: 'tours',
+      name: t('services.standard.serviceGallery.categories.tours'),
+      icon: Map,
+      color: 'green',
+    },
+    {
+      id: 'transportation',
+      name: t('services.standard.serviceGallery.categories.transportation'),
+      icon: Car,
+      color: 'purple',
+    },
+    {
+      id: 'wellness',
+      name: t('services.standard.serviceGallery.categories.wellness'),
+      icon: Heart,
+      color: 'pink',
+    },
+    {
+      id: 'food-drinks',
+      name: t('services.standard.serviceGallery.categories.foodDrinks'),
+      icon: Utensils,
+      color: 'orange',
+    },
+    {
+      id: 'leisure',
+      name: t('services.standard.serviceGallery.categories.leisure'),
+      icon: Music,
+      color: 'indigo',
+    },
+  ];
 
   // Memoized filtered services for better performance
   const filteredServices = useMemo(() => {
@@ -173,7 +172,7 @@ const ServiceList: React.FC<EnhancedServiceListProps> = ({
     >
       <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Modern Search Bar */}
-        <div className='mb-8'>
+        {/* <div className='mb-8'>
           <div className='relative max-w-md mx-auto'>
             <motion.div
               className={`
@@ -216,7 +215,7 @@ const ServiceList: React.FC<EnhancedServiceListProps> = ({
               </AnimatePresence>
             </motion.div>
           </div>
-        </div>
+        </div> */}
 
         {/* Modern Category Pills */}
         <div className='mb-8'>
