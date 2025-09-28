@@ -48,15 +48,24 @@ const LuxuryServices = () => {
           >
             <div className='text-center'>
               <div className='text-3xl font-bold text-blue-600 mb-2'>15+</div>
-              <div className='text-slate-600 text-sm'>Años de Experiencia</div>
+              <div className='text-slate-600 text-sm'>
+                {' '}
+                {t('common.mainText.experience')}
+              </div>
             </div>
             <div className='text-center'>
               <div className='text-3xl font-bold text-blue-600 mb-2'>500+</div>
-              <div className='text-slate-600 text-sm'>Clientes Satisfechos</div>
+              <div className='text-slate-600 text-sm'>
+                {' '}
+                {t('common.mainText.happyClients')}s
+              </div>
             </div>
             <div className='text-center'>
               <div className='text-3xl font-bold text-blue-600 mb-2'>100%</div>
-              <div className='text-slate-600 text-sm'>Servicio Premium</div>
+              <div className='text-slate-600 text-sm'>
+                {' '}
+                {t('common.mainText.exclusiveServices')}
+              </div>
             </div>
           </motion.div>
         </motion.div>

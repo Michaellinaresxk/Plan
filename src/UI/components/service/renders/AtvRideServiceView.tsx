@@ -33,7 +33,6 @@ const ITINERARY_STEPS = [
     id: 1,
     icon: Waves,
     title: 'Playa Macao',
-    duration: '45 min',
     description:
       'First stop: Experience pristine untouched beach with white sand',
   },
@@ -41,14 +40,12 @@ const ITINERARY_STEPS = [
     id: 2,
     icon: Mountain,
     title: 'Cueva Taína (Cenote)',
-    duration: '30 min',
     description: 'Natural cenote cave with crystal-clear water for swimming',
   },
   {
     id: 3,
     icon: Coffee,
     title: 'Casa Típica',
-    duration: '30 min',
     description:
       'Traditional Dominican house with coffee, tobacco & chocolate tasting',
   },
@@ -56,7 +53,6 @@ const ITINERARY_STEPS = [
     id: 4,
     icon: ArrowRight,
     title: 'Return to Ranch',
-    duration: '45 min',
     description: 'Return journey through scenic tropical trails',
   },
 ];
@@ -90,11 +86,7 @@ const SCHEDULE_INFO = [
   {
     icon: Clock,
     title: 'Pickup Times',
-    items: [
-      '7:30 AM pickup → 8:00 AM start',
-      '10:30 AM pickup → 11:00 AM start',
-      '1:30 PM pickup → 2:00 PM start',
-    ],
+    items: ['7:30 AM pickup', '10:30 AM pickup', '1:30 PM pickup'],
   },
   {
     icon: Waves,
@@ -118,17 +110,6 @@ const SCHEDULE_INFO = [
 
 // Vehicle Selection Types with updated pricing
 const VEHICLE_TYPES = {
-  ATV: {
-    id: 'atv',
-    name: 'ATV Quad',
-    image:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
-    description: 'Single rider adventure',
-    features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
-    price: 85,
-    duration: '3 hours',
-    maxParticipants: 2,
-  },
   BUGGY: {
     id: 'buggy',
     name: 'Dune Buggy',
@@ -137,6 +118,17 @@ const VEHICLE_TYPES = {
     description: 'Shared adventure for couples',
     features: ['2-person capacity', 'Side by side', 'Great for couples'],
     price: 65,
+    duration: '3 hours',
+    maxParticipants: 2,
+  },
+  ATV: {
+    id: 'atv',
+    name: 'ATV Quad',
+    image:
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
+    description: 'Single rider adventure',
+    features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
+    price: 85,
     duration: '3 hours',
     maxParticipants: 2,
   },
@@ -580,9 +572,6 @@ const ItinerarySection = () => {
                   <div className='flex items-center gap-2 mb-1'>
                     <span className='bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full'>
                       Stop {step.id}
-                    </span>
-                    <span className='text-gray-500 text-xs'>
-                      {step.duration}
                     </span>
                   </div>
                   <h3 className='font-semibold text-gray-800 text-sm mb-1'>

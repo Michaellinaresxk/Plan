@@ -318,6 +318,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                         : 'bg-gradient-to-r from-amber-500 to-orange-500 text-black'
                     }`}
                   >
+                    {/* <span className='flex items-center'>
+                      Details
+                      <ArrowUpRight size={14} className='ml-1.5' />
+                    </span> */}
                     <span className='flex items-center'>
                       Details
                       <ArrowUpRight size={14} className='ml-1.5' />
@@ -491,7 +495,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     }`}
                   >
                     <span className='flex items-center'>
-                      Details
+                      {t(`common.button.details`)}
                       <ArrowUpRight size={14} className='ml-1.5' />
                     </span>
                   </motion.div>

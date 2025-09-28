@@ -4,6 +4,11 @@
       "yes": "Si",
       "not": "No requiere electridad"
     },
+    "instagram": {
+      "followUs": "Síguenos en Instagram",
+      "description": "Descubre las mejores experiencias en Punta Cana, fotos exclusivas y ofertas especiales solo para nuestros seguidores.",
+      "button": "Síguenos"
+    },
     "nav": {
       "home": "Inicio",
       "packages": "Paquetes",
@@ -20,7 +25,10 @@
     "mainText": {
       "title": "Servicios Exclusivos",
       "subtitle": "En Lux Punta Cana entendemos que los momentos más valiosos no se improvisan… Se diseñan con intención. Por eso nuestros servicios, desde recogidas en SUV, travesías en Yates privados hasta cenas gourmet, no solo crean experiencias, sino recuerdos que perduran. Porque el verdadero lujo no necesita mostrar exceso. ",
-      "slogan": "Solo necesita tocar el alma."
+      "slogan": "Solo necesita tocar el alma.",
+      "experience": "Años de Experiencia",
+      "happyClients": "Clientes Felices",
+      "exclusiveServices": "Servicios Ecxclusivos"
     },
     "gallery": {
       "title": "Galeria de Experiencias",
@@ -49,23 +57,30 @@
     },
     "button": {
       "explore": "Explorar Paquetes",
-      "contactUs": "Contactanos"
+      "contactUs": "Contactanos",
+      "details": "Ver Detalles"
     },
     "package-standard": {
+      "chip": "Servicios Exclusivos",
+      "standardChip": "Servicios Standard",
       "title": "Elige tu experiencia",
       "subtitle": "Seleccione el paquete que se adapte a sus necesidades vacacionales. Cada opción ofrece servicios únicos para mejorar su estancia.",
       "standard": "Este paquete estándar ofrece una experiencia vacacional completa con todos los servicios esenciales.",
       "transfers": "Traslados al aeropuerto",
       "golfCart": "Alquiler de carros de golf",
       "trips": "Viajes en catamarán",
-      "chef": "Servicio de chef privado"
+      "chef": "Servicio de chef privado",
+      "selectPackage": "Seleccionar paquete",
+      "selectedPackage": "Paquete seleccionado",
+      "curatedExperiences": "Experiencias seleccionadas",
+      "ultraLuxe": "Ultra Lujo"
     },
     "package-luxe": {
       "subtitle": "Nuestro paquete premium ofrece una experiencia elevada con servicios de lujo exclusivos.",
       "yacht": "Yates de lujo",
       "culinarie": "Servicio culinario de lujo",
       "massage": "Servicio de masajista",
-      "suv": "Luxe Arrival - Servicio todoterreno"
+      "suv": "Lux Arrival - Servicio todoterreno"
     }
   },
   "home": {
@@ -104,6 +119,46 @@
       "contact": "Contactanos"
     },
     "standard": {
+      "standardPage": {
+        "title": "Tu experiencia estándar",
+        "subtitle": "Descubra servicios cuidadosamente seleccionados y diseñados para que su aventura en Punta Cana sea inolvidable. Cada experiencia está elaborada con esmero y atención al detalle."
+      },
+      "serviceGallery": {
+        "categories": {
+          "all": "Todos",
+          "waterActivities": "Acuáticos",
+          "tours": "Tours",
+          "transportation": "Transporte",
+          "wellness": "Bienestar",
+          "foodDrinks": "Gastronomía",
+          "leisure": "Entretenimiento"
+        },
+        "header": {
+          "subtitle": "Experiencias Exclusivas",
+          "title": "Nuestros Servicios",
+          "description": "Descubre nuestra colección completa de experiencias de lujo, diseñadas para crear momentos únicos en el paraíso de Punta Cana"
+        },
+        "packageTypes": {
+          "premium": "Premium",
+          "standard": "Standard"
+        },
+        "emptyState": {
+          "title": "No se encontraron servicios",
+          "description": "Intenta seleccionar una categoría diferente para explorar nuestros servicios.",
+          "button": "Mostrar todos los servicios"
+        },
+        "cta": {
+          "title": "Creamos Tu Experiencia Perfecta",
+          "description": "Nuestro equipo de expertos está listo para diseñar unas vacaciones completamente personalizadas que superen todas tus expectativas.",
+          "standardPackages": "Servicios Standard",
+          "xclusivePackages": "Servicios Exclusivos",
+          "features": {
+            "service247": "Servicio 24/7",
+            "uniqueExperiences": "Experiencias Únicas",
+            "fullyCustomized": "Totalmente Personalizado"
+          }
+        }
+      },
       "yoga": {
         "yogaTitlePage": "Yoga & meditacion",
         "name": "Yoga",
@@ -520,8 +575,8 @@
     "multipleChanelChip": "Múltiples Canales",
     "multipleChanelTitle": "Cómo Puede Contactarnos",
     "multipleChanelSubTitle": "Seleccione el método de contacto que mejor se adapte a sus necesidades",
-    "channel1Title": "Llámenos",
-    "channel1SubTitle": "Disponibles para asistirle telefónicamente con todas sus consultas",
+    "channel1Title": "Envíenos un Whatsapp",
+    "channel1SubTitle": "Disponibles para asistirle con todas sus consultas",
     "channel2Title": "Escríbanos",
     "channel2SubTitle": "Envíenos un email y le responderemos a la brevedad posible",
     "channel3Title": "Visítenos",
@@ -535,7 +590,7 @@
       "subTitle": "Complete el formulario y nuestro equipo le contactará pronto",
       "name": "Nombre Completo",
       "email": "Correo Electrónico",
-      "subject": "¿Qué tipo de servicios le interesan?",
+      "subject": "¿En qué podemos ayudarle hoy?",
       "selectSubject": "Select a service",
       "date": "Fecha",
       "guests": "Número de invitados",

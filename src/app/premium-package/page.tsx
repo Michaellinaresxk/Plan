@@ -10,13 +10,10 @@ import CartSidebar from '@/UI/components/shared/CartSidebar';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  Check,
-  ChevronRight,
   Users,
   Clock,
   Star,
   MapPin,
-  Award,
   Wine,
   Sparkles,
   Calendar,
@@ -25,8 +22,6 @@ import {
   Loader2,
   Crown,
   Gem,
-  Shield,
-  Heart,
 } from 'lucide-react';
 import ServiceList from '@/UI/components/service/ServiceList';
 import ServiceManager from '@/constants/services/ServiceManager';
@@ -111,7 +106,7 @@ const PremiumPackageContent = () => {
         <div className='absolute inset-0 z-0'>
           <Image
             src='/img/saona-island/saona-3.jpg'
-            alt='Punta Cana Luxe'
+            alt='Punta Cana lux'
             fill
             className='object-cover scale-105'
             quality={100}
@@ -396,7 +391,7 @@ const PremiumPackageContent = () => {
                   </h2>
                   <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
                     Discover what our premium guests have to say about their
-                    luxury experience with Punta Cana Luxe.
+                    luxury experience with Lux Punta Cana.
                   </p>
                 </motion.div>
 
@@ -404,7 +399,7 @@ const PremiumPackageContent = () => {
                   {[
                     {
                       rating: 5,
-                      text: 'Our Punta Cana Luxe experience was absolutely magnificent. From the moment we were picked up at the airport in that beautiful SUV, we knew we were in for something special. The yacht day was beyond anything we could have imagined - the crew was exceptional and the private coves they took us to were paradise. Worth every penny for a truly unforgettable anniversary.',
+                      text: 'Our Punta Cana Lux experience was absolutely magnificent. From the moment we were picked up at the airport in that beautiful SUV, we knew we were in for something special. The yacht day was beyond anything we could have imagined - the crew was exceptional and the private coves they took us to were paradise. Worth every penny for a truly unforgettable anniversary.',
                       name: 'Robert & Lisa Johnson',
                       location: 'Anniversary Celebration, New York',
                       initials: 'RL',
@@ -412,7 +407,7 @@ const PremiumPackageContent = () => {
                     },
                     {
                       rating: 5,
-                      text: "I've stayed at luxury resorts worldwide, but Punta Cana Luxe brought personalization to another level. The concierge anticipated needs I didn't even know I had. The private yacht experience was seamless - I've been on many yacht charters, and this rivaled the best of them. This is how vacation should be done.",
+                      text: "I've stayed at luxury resorts worldwide, but Lux Punta Cana  brought personalization to another level. The concierge anticipated needs I didn't even know I had. The private yacht experience was seamless - I've been on many yacht charters, and this rivaled the best of them. This is how vacation should be done.",
                       name: 'Emily Chen',
                       location: 'Solo Luxury Traveler, San Francisco',
                       initials: 'EC',
@@ -420,7 +415,7 @@ const PremiumPackageContent = () => {
                     },
                     {
                       rating: 5,
-                      text: "We booked the Punta Cana Luxe package for our parents' 40th anniversary and they haven't stopped talking about it. The concierge even helped us arrange a surprise renewal of vows ceremony on the beach with a photographer. The attention to detail and personalized service exceeded all expectations.",
+                      text: "We booked the Punta Cana Lux package for our parents' 40th anniversary and they haven't stopped talking about it. The concierge even helped us arrange a surprise renewal of vows ceremony on the beach with a photographer. The attention to detail and personalized service exceeded all expectations.",
                       name: 'Michael Rodriguez',
                       location: 'Family Celebration, Chicago',
                       initials: 'MR',
@@ -495,7 +490,7 @@ const PremiumPackageContent = () => {
                     Frequently Asked Questions
                   </h2>
                   <p className='text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
-                    Find answers to common questions about our Punta Cana Luxe
+                    Find answers to common questions about our Lux Punta Cana
                     premium package.
                   </p>
                 </motion.div>
@@ -612,7 +607,7 @@ const PremiumPackageContent = () => {
                 Experience Ultimate Luxury
               </h2>
               <p className='text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed'>
-                Book your Punta Cana Luxe package now and indulge in the most
+                Book your Lux Punta Cana package now and indulge in the most
                 exclusive Caribbean experience with personalized service and
                 premium amenities.
               </p>

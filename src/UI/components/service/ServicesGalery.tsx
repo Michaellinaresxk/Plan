@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+
 import Link from 'next/link';
 import {
   Anchor,
@@ -9,28 +9,50 @@ import {
   MapPin,
   Music,
   Sparkles,
-  Users,
   Star,
   Grid,
   Heart,
   Utensils,
 } from 'lucide-react';
 import ServiceManager from '@/constants/services/ServiceManager';
+import { useTranslation } from '@/lib/i18n/client';
 
 const ServicesGallery = () => {
   const [services, setServices] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
+  const { t } = useTranslation();
 
   // Categorías reales basadas en ServiceManager
   const FILTER_CATEGORIES = {
-    all: { label: 'Todos', icon: Grid },
-    'water-activities': { label: 'Acuáticos', icon: Anchor },
-    tours: { label: 'Tours', icon: MapPin },
-    transportation: { label: 'Transporte', icon: Car },
-    wellness: { label: 'Bienestar', icon: Heart },
-    'food-drinks': { label: 'Gastronomía', icon: Utensils },
-    leisure: { label: 'Entretenimiento', icon: Music },
+    all: {
+      label: t('services.standard.serviceGallery.categories.all'),
+      icon: Grid,
+    },
+    'water-activities': {
+      label: t('services.standard.serviceGallery.categories.waterActivities'),
+      icon: Anchor,
+    },
+    tours: {
+      label: t('services.standard.serviceGallery.categories.tours'),
+      icon: MapPin,
+    },
+    transportation: {
+      label: t('services.standard.serviceGallery.categories.transportation'),
+      icon: Car,
+    },
+    wellness: {
+      label: t('services.standard.serviceGallery.categories.wellness'),
+      icon: Heart,
+    },
+    'food-drinks': {
+      label: t('services.standard.serviceGallery.categories.foodDrinks'),
+      icon: Utensils,
+    },
+    leisure: {
+      label: t('services.standard.serviceGallery.categories.leisure'),
+      icon: Music,
+    },
   };
 
   // Cargar servicios al montar el componente
@@ -325,16 +347,18 @@ const ServicesGallery = () => {
             <div className='inline-block mb-6'>
               <div className='flex items-center justify-center gap-2 text-slate-500 font-medium tracking-wider text-sm uppercase'>
                 <div className='w-8 h-0.5 bg-slate-300'></div>
-                <span>Experiencias Exclusivas</span>
+                <span>
+                  {t('services.standard.serviceGallery.header.subtitle')}
+                </span>
+
                 <div className='w-8 h-0.5 bg-slate-300'></div>
               </div>
             </div>
             <h2 className='text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent leading-tight'>
-              Nuestros Servicios
+              {t('services.standard.serviceGallery.header.title')}
             </h2>
             <p className='text-xl md:text-2xl text-slate-700 leading-relaxed font-light max-w-3xl mx-auto'>
-              Descubre nuestra colección completa de experiencias de lujo,
-              diseñadas para crear momentos únicos en el paraíso de Punta Cana
+              {t('services.standard.serviceGallery.header.description')}
             </p>
           </div>
 
@@ -401,7 +425,7 @@ const ServicesGallery = () => {
                           }`}
                         >
                           {service.packageType.includes('premium')
-                            ? 'Premium'
+                            ? 'Xclusive'
                             : 'Standard'}
                         </div>
                       </div>
@@ -472,20 +496,22 @@ const ServicesGallery = () => {
                 </div>
 
                 <h2 className='text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent leading-tight'>
-                  Creamos Tu Experiencia Perfecta
+                  {t('services.standard.serviceGallery.cta.title')}
                 </h2>
 
                 <p className='text-xl md:text-2xl text-slate-700 leading-relaxed font-light mb-12 max-w-3xl mx-auto'>
-                  Nuestro equipo de expertos está listo para diseñar unas
-                  vacaciones completamente personalizadas que superen todas tus
-                  expectativas.
+                  {t('services.standard.serviceGallery.cta.description')}
                 </p>
 
                 <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
                   <Link href='/standard-package'>
                     <button className='cta-button group bg-white border-2 border-slate-900 text-slate-900 px-8 py-4 rounded-full font-semibold flex items-center justify-center gap-3 min-w-[250px]'>
                       <Crown className='w-5 h-5 transition-transform group-hover:scale-110' />
-                      <span>Standard Packages</span>
+                      <span>
+                        {t(
+                          'services.standard.serviceGallery.cta.standardPackages'
+                        )}
+                      </span>
                       <ArrowRight className='w-4 h-4 transition-transform group-hover:translate-x-1' />
                     </button>
                   </Link>
@@ -493,7 +519,11 @@ const ServicesGallery = () => {
                   <Link href='/premium-package'>
                     <button className='cta-button group bg-slate-900 text-white px-8 py-4 rounded-full font-semibold flex items-center justify-center gap-3 min-w-[250px]'>
                       <Crown className='w-5 h-5 transition-transform group-hover:scale-110' />
-                      <span>Xclusive Packages</span>
+                      <span>
+                        {t(
+                          'services.standard.serviceGallery.cta.xclusivePackages'
+                        )}
+                      </span>
                       <ArrowRight className='w-4 h-4 transition-transform group-hover:translate-x-1' />
                     </button>
                   </Link>
@@ -502,17 +532,29 @@ const ServicesGallery = () => {
                 <div className='mt-8 flex items-center justify-center gap-4 text-sm text-slate-500'>
                   <div className='flex items-center gap-2'>
                     <div className='w-2 h-2 bg-slate-300 rounded-full'></div>
-                    <span>Servicio 24/7</span>
+                    <span>
+                      {t(
+                        'services.standard.serviceGallery.cta.features.service247'
+                      )}
+                    </span>
                   </div>
                   <div className='w-px h-4 bg-slate-300'></div>
                   <div className='flex items-center gap-2'>
                     <div className='w-2 h-2 bg-slate-300 rounded-full'></div>
-                    <span>Experiencias Únicas</span>
+                    <span>
+                      {t(
+                        'services.standard.serviceGallery.cta.features.uniqueExperiences'
+                      )}
+                    </span>
                   </div>
                   <div className='w-px h-4 bg-slate-300'></div>
                   <div className='flex items-center gap-2'>
                     <div className='w-2 h-2 bg-slate-300 rounded-full'></div>
-                    <span>Totalmente Personalizado</span>
+                    <span>
+                      {t(
+                        'services.standard.serviceGallery.cta.features.fullyCustomized'
+                      )}
+                    </span>
                   </div>
                 </div>
               </div>
