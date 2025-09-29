@@ -437,46 +437,34 @@ const StandardPackageContent = () => {
                   className='text-center mb-16'
                 >
                   <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
-                    Frequently Asked Questions
+                    {t('common.faqs.title')}
                   </h2>
                   <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
-                    Find answers to common questions about our Standard
-                    Experience package.
+                    {t('common.faqs.subtitle')}
                   </p>
                 </motion.div>
 
                 <div className='space-y-6'>
                   {[
                     {
-                      question: "What's included in the standard package?",
-                      answer:
-                        'The Standard Experience package includes airport transfers, golf cart rental, a catamaran trip, and a private chef service. These core services provide you with transportation, adventure, and culinary experiences during your stay.',
+                      question: t('common.faqs.question1'),
+                      answer: t('common.faqs.answer1'),
                     },
                     {
-                      question: 'How long is the standard package valid for?',
-                      answer:
-                        'The package is flexible and can be customized for stays between 3-14 days. The services included are allocated once during your stay, regardless of its length (e.g., one round-trip airport transfer, one catamaran trip, etc.).',
+                      question: t('common.faqs.question2'),
+                      answer: t('common.faqs.answer2'),
                     },
                     {
-                      question: 'Can I customize the standard package?',
-                      answer:
-                        'Yes! While the standard package includes core services, you can add additional services from our catalog. You can also upgrade to our premium package for more exclusive experiences or create a fully custom package through our package builder.',
+                      question: t('common.faqs.question3'),
+                      answer: t('common.faqs.answer3'),
                     },
                     {
-                      question:
-                        "What if I'm staying at an all-inclusive resort?",
-                      answer:
-                        "Our packages complement all-inclusive stays perfectly. While your resort provides meals and basic amenities, our services offer unique experiences beyond the resort, transportation solutions, and special experiences like private dining that all-inclusives typically don't offer.",
+                      question: t('common.faqs.question4'),
+                      answer: t('common.faqs.answer4'),
                     },
                     {
-                      question: 'How far in advance should I book?',
-                      answer:
-                        'We recommend booking at least 30 days in advance, especially during high season (December-April). This ensures availability of all services and gives us time to perfectly coordinate your experience. Last-minute bookings are possible but subject to availability.',
-                    },
-                    {
-                      question: "What's the cancellation policy?",
-                      answer:
-                        'We offer a flexible cancellation policy: full refund for cancellations 30+ days before arrival, 50% refund for cancellations 14-29 days before arrival, and no refund for cancellations less than 14 days before arrival. Special terms may apply during hurricane season or for group bookings.',
+                      question: t('common.faqs.question5'),
+                      answer: t('common.faqs.answer5'),
                     },
                   ].map((faq, index) => (
                     <motion.div
@@ -504,15 +492,14 @@ const StandardPackageContent = () => {
                   className='mt-16 text-center p-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl border border-blue-200'
                 >
                   <h3 className='text-2xl font-bold text-gray-900 mb-4'>
-                    Still Have Questions?
+                    {t('common.faqs.stillHaveQuestions')}
                   </h3>
                   <p className='text-gray-700 mb-8 text-lg'>
-                    Our team is here to help you plan your perfect Punta Cana
-                    experience.
+                    {t('common.faqs.stillHaveQuestionsText')}
                   </p>
                   <Link href='/contact'>
                     <button className='inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg transform hover:scale-105'>
-                      Contact Our Team
+                      {t('common.faqs.contactUs')}
                       <ArrowRight className='ml-2 h-5 w-5' />
                     </button>
                   </Link>

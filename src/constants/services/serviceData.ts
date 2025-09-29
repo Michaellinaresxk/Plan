@@ -1589,7 +1589,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     category: 'water-activities',
     packageType: ['premium'],
     imageUrl:
-      'https://moonshadow-tqc.com.au/wp-content/uploads/sites/5204/2022/01/MSTQC-Boats-slide-into-clear-waters.png?resize=360%2C240&zoom=2',
+      'https://res.cloudinary.com/michaelxk-com/image/upload/v1625794349/nuestra%20flota/lagoon%2042/1_uspfu7.jpg',
     duration: 3,
     bookingDuration: {
       min: 3,

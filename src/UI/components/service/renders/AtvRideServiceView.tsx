@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
-  ChevronRight,
   MapPin,
   Clock,
   Shield,
@@ -15,149 +14,95 @@ import {
   Shirt,
   Waves,
   Coffee,
-  Trees,
   Camera,
   Info,
   AlertTriangle,
-  DollarSign,
   Mountain,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BookingModal from '../../modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
+import { useTranslation } from '@/lib/i18n/client';
 import { BookingDate, Service } from '@/constants/formFields';
-
-// Itinerary data - Places to visit (updated with specific sequence)
-const ITINERARY_STEPS = [
-  {
-    id: 1,
-    icon: Waves,
-    title: 'Playa Macao',
-    description:
-      'First stop: Experience pristine untouched beach with white sand',
-  },
-  {
-    id: 2,
-    icon: Mountain,
-    title: 'Cueva Taína (Cenote)',
-    description: 'Natural cenote cave with crystal-clear water for swimming',
-  },
-  {
-    id: 3,
-    icon: Coffee,
-    title: 'Casa Típica',
-    description:
-      'Traditional Dominican house with coffee, tobacco & chocolate tasting',
-  },
-  {
-    id: 4,
-    icon: ArrowRight,
-    title: 'Return to Ranch',
-    description: 'Return journey through scenic tropical trails',
-  },
-];
-
-// What to bring data (specific items mentioned)
-const WHAT_TO_BRING = [
-  {
-    icon: Eye,
-    title: 'Sunglasses',
-    description: 'Eye protection (optional purchase at ranch)',
-  },
-  {
-    icon: Shirt,
-    title: 'Bandanas',
-    description: 'Dust protection (optional purchase at ranch)',
-  },
-  {
-    icon: Waves,
-    title: 'Swimwear',
-    description: 'Essential for cenote swimming experience',
-  },
-  {
-    icon: AlertTriangle,
-    title: 'Old Clothes',
-    description: 'Clothes WILL get dirty from muddy trails',
-  },
-];
-
-// Pickup times and schedule info
-const SCHEDULE_INFO = [
-  {
-    icon: Clock,
-    title: 'Pickup Times',
-    items: ['7:30 AM pickup', '10:30 AM pickup', '1:30 PM pickup'],
-  },
-  {
-    icon: Waves,
-    title: 'Cenote Important',
-    items: [
-      'Life vests NOT included',
-      'Available as additional paid service',
-      'Swimming is optional',
-    ],
-  },
-  {
-    icon: Shield,
-    title: 'Weather Policy',
-    items: [
-      'Excursion does NOT cancel for rain',
-      'Only cancelled in extreme weather conditions',
-      'Come prepared for adventure!',
-    ],
-  },
-];
-
-// Vehicle Selection Types with updated pricing
-const VEHICLE_TYPES = {
-  BUGGY: {
-    id: 'buggy',
-    name: 'Dune Buggy',
-    image:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754597118/9_m5fya0.jpg',
-    description: 'Shared adventure for couples',
-    features: ['2-person capacity', 'Side by side', 'Great for couples'],
-    price: 65,
-    duration: '3 hours',
-    maxParticipants: 2,
-  },
-  ATV: {
-    id: 'atv',
-    name: 'ATV Quad',
-    image:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
-    description: 'Single rider adventure',
-    features: ['Solo riding', 'Easy handling', 'Perfect for beginners'],
-    price: 85,
-    duration: '3 hours',
-    maxParticipants: 2,
-  },
-  POLARIS: {
-    id: 'polaris',
-    name: 'Polaris RZR',
-    image:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946908/polaris1_kfwgbw.jpg',
-    description: 'Premium off-road experience',
-    features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
-    price: 160,
-    duration: '3 hours',
-    maxParticipants: 2,
-  },
-  POLARIS_FAMILIAR: {
-    id: 'polaris',
-    name: 'Polaris Familiar',
-    image:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1758048523/caption_1_e1y8cs.jpg',
-    description: 'Premium off-road experience',
-    features: ['High performance', 'Advanced suspension', 'Thrill seekers'],
-    price: 215,
-    duration: '3 hours',
-    maxParticipants: 4,
-  },
-};
 
 // Vehicle Selection Section
 const VehicleSelection = ({ onVehicleSelect }) => {
+  const { t } = useTranslation();
+
+  // Vehicle Types with translated content
+  const VEHICLE_TYPES = {
+    BUGGY: {
+      id: 'buggy',
+      name: t('services.standard.atvService.vehicles.buggy.name'),
+      image:
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1754597118/9_m5fya0.jpg',
+      description: t('services.standard.atvService.vehicles.buggy.description'),
+      features: [
+        t('services.standard.atvService.vehicles.buggy.features.capacity'),
+        t('services.standard.atvService.vehicles.buggy.features.sideBySide'),
+        t('services.standard.atvService.vehicles.buggy.features.couples'),
+      ],
+      price: 65,
+      duration: t('services.standard.atvService.vehicles.duration'),
+      maxParticipants: 2,
+    },
+    ATV: {
+      id: 'atv',
+      name: t('services.standard.atvService.vehicles.atv.name'),
+      image:
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595961/7_x4rptj.jpg',
+      description: t('services.standard.atvService.vehicles.atv.description'),
+      features: [
+        t('services.standard.atvService.vehicles.atv.features.solo'),
+        t('services.standard.atvService.vehicles.atv.features.handling'),
+        t('services.standard.atvService.vehicles.atv.features.beginners'),
+      ],
+      price: 85,
+      duration: t('services.standard.atvService.vehicles.duration'),
+      maxParticipants: 2,
+    },
+    POLARIS: {
+      id: 'polaris-rzr',
+      name: t('services.standard.atvService.vehicles.polaris.name'),
+      image:
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946908/polaris1_kfwgbw.jpg',
+      description: t(
+        'services.standard.atvService.vehicles.polaris.description'
+      ),
+      features: [
+        t('services.standard.atvService.vehicles.polaris.features.performance'),
+        t('services.standard.atvService.vehicles.polaris.features.suspension'),
+        t('services.standard.atvService.vehicles.polaris.features.thrill'),
+      ],
+      price: 160,
+      duration: t('services.standard.atvService.vehicles.duration'),
+      maxParticipants: 2,
+    },
+    POLARIS_FAMILIAR: {
+      id: 'polaris-familiar',
+      name: t('services.standard.atvService.vehicles.polarisFamiliar.name'),
+      image:
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1758048523/caption_1_e1y8cs.jpg',
+      description: t(
+        'services.standard.atvService.vehicles.polarisFamiliar.description'
+      ),
+      features: [
+        t(
+          'services.standard.atvService.vehicles.polarisFamiliar.features.performance'
+        ),
+        t(
+          'services.standard.atvService.vehicles.polarisFamiliar.features.suspension'
+        ),
+        t(
+          'services.standard.atvService.vehicles.polarisFamiliar.features.thrill'
+        ),
+      ],
+      price: 215,
+      duration: t('services.standard.atvService.vehicles.duration'),
+      maxParticipants: 4,
+    },
+  };
+
   return (
     <section className='py-20 px-4 bg-gradient-to-br from-green-50 to-amber-50'>
       <div className='max-w-6xl mx-auto'>
@@ -165,15 +110,19 @@ const VehicleSelection = ({ onVehicleSelect }) => {
           <div className='inline-flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full mb-4'>
             <Sparkles className='w-4 h-4 text-green-600' />
             <span className='text-green-700 font-medium'>
-              Choose Your Adventure
+              {t('services.standard.atvService.vehicleSelection.badge')}
             </span>
           </div>
           <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
-            Select Your <span className='text-amber-500'>Off-Road Vehicle</span>
+            {t('services.standard.atvService.vehicleSelection.title')}{' '}
+            <span className='text-amber-500'>
+              {t(
+                'services.standard.atvService.vehicleSelection.titleHighlight'
+              )}
+            </span>
           </h2>
           <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
-            Each vehicle offers a unique way to explore the tropical wilderness.
-            Choose the perfect ride for your adventure level.
+            {t('services.standard.atvService.vehicleSelection.subtitle')}
           </p>
         </div>
 
@@ -181,10 +130,9 @@ const VehicleSelection = ({ onVehicleSelect }) => {
           {Object.values(VEHICLE_TYPES).map((vehicle) => (
             <div
               key={vehicle.id}
-              className='group  bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer'
+              className='group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer'
               onClick={() => onVehicleSelect(vehicle)}
             >
-              {/* Vehicle Image */}
               <div className='relative h-50 overflow-hidden'>
                 <img
                   src={vehicle.image}
@@ -192,12 +140,15 @@ const VehicleSelection = ({ onVehicleSelect }) => {
                   className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
                 />
                 <div className='absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-semibold'>
-                  {vehicle.price ? `$${vehicle.price}` : 'Contact Us'}
+                  {vehicle.price
+                    ? `$${vehicle.price}`
+                    : t(
+                        'services.standard.atvService.vehicleSelection.contactUs'
+                      )}
                 </div>
                 <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent group-hover:from-black/40 transition-all duration-300' />
               </div>
 
-              {/* Card Content */}
               <div className='p-6'>
                 <h3 className='text-xl font-bold text-gray-800 mb-2'>
                   {vehicle.name}
@@ -223,7 +174,10 @@ const VehicleSelection = ({ onVehicleSelect }) => {
                   </span>
                   <span className='flex items-center'>
                     <Users className='w-4 h-4 mr-1' />
-                    Max {vehicle.maxParticipants}
+                    {t(
+                      'services.standard.atvService.vehicleSelection.maxParticipants'
+                    )}{' '}
+                    {vehicle.maxParticipants}
                   </span>
                 </div>
               </div>
@@ -231,20 +185,27 @@ const VehicleSelection = ({ onVehicleSelect }) => {
           ))}
         </div>
 
-        {/* Additional Info */}
         <div className='mt-12 text-center'>
           <div className='inline-flex items-center gap-6 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg'>
             <div className='flex items-center gap-2 text-sm text-gray-700'>
               <Shield className='w-4 h-4 text-green-500' />
-              <span>All safety gear included</span>
+              <span>
+                {t('services.standard.atvService.vehicleSelection.info.safety')}
+              </span>
             </div>
             <div className='flex items-center gap-2 text-sm text-gray-700'>
               <Clock className='w-4 h-4 text-blue-500' />
-              <span>3-hour adventure</span>
+              <span>
+                {t(
+                  'services.standard.atvService.vehicleSelection.info.adventure'
+                )}
+              </span>
             </div>
             <div className='flex items-center gap-2 text-sm text-gray-700'>
               <MapPin className='w-4 h-4 text-red-500' />
-              <span>Tropical trails & beaches</span>
+              <span>
+                {t('services.standard.atvService.vehicleSelection.info.trails')}
+              </span>
             </div>
           </div>
         </div>
@@ -255,13 +216,14 @@ const VehicleSelection = ({ onVehicleSelect }) => {
 
 // Updated Hero Section for ATV Adventures
 const HeroSection = ({ onBookNow }) => {
+  const { t } = useTranslation();
+
   return (
     <div className='relative h-screen min-h-[600px] md:min-h-[700px] overflow-hidden'>
-      {/* Parallax Background */}
       <div className='absolute inset-0'>
         <img
           src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595140/2_fhmcnt.jpg'
-          alt='ATV adventures in tropical paradise'
+          alt={t('services.standard.atvService.hero.imageAlt')}
           className='w-full h-full object-cover'
         />
         <div className='absolute inset-0 bg-black/40' />
@@ -273,20 +235,19 @@ const HeroSection = ({ onBookNow }) => {
           <div className='inline-flex items-center gap-2 bg-green-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-green-400/30'>
             <Sparkles className='w-4 h-4 text-green-400' />
             <span className='text-green-200 text-sm font-medium'>
-              #1 Tropical Adventure
+              {t('services.standard.atvService.hero.badge')}
             </span>
           </div>
 
           <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 text-white'>
-            ATV Adventures
+            {t('services.standard.atvService.hero.title')}
             <span className='block text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-amber-400 mt-2'>
-              Tropical Paradise
+              {t('services.standard.atvService.hero.subtitle')}
             </span>
           </h1>
 
           <p className='text-base sm:text-lg md:text-xl text-white/90 mb-8 md:mb-10 max-w-2xl'>
-            Explore hidden beaches, jungle trails, and crystal-clear cenotes on
-            the ultimate off-road adventure.
+            {t('services.standard.atvService.hero.description')}
           </p>
 
           <div className='flex flex-col sm:flex-row gap-4 mb-8'>
@@ -294,7 +255,7 @@ const HeroSection = ({ onBookNow }) => {
               onClick={onBookNow}
               className='group bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all transform hover:scale-105 shadow-2xl inline-flex items-center justify-center gap-2'
             >
-              Start Your Adventure
+              {t('services.standard.atvService.hero.ctaButton')}
               <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
             </button>
           </div>
@@ -302,15 +263,24 @@ const HeroSection = ({ onBookNow }) => {
           <div className='flex flex-wrap gap-6 text-white/80 text-sm sm:text-base'>
             <div className='flex items-center gap-2'>
               <Star className='w-4 h-4 text-amber-400 fill-amber-400' />
-              <span>4.9 Rating</span>
+              <span>
+                {' '}
+                {t('services.standard.atvService.hero.stats.rating')}
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <Clock className='w-4 h-4' />
-              <span>3 Hours</span>
+              <span>
+                {' '}
+                {t('services.standard.atvService.hero.stats.duration')}
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <Users className='w-4 h-4' />
-              <span>Small Groups</span>
+              <span>
+                {' '}
+                {t('services.standard.atvService.hero.stats.groups')}
+              </span>
             </div>
           </div>
         </div>
@@ -321,63 +291,70 @@ const HeroSection = ({ onBookNow }) => {
 
 // Updated Photo Gallery for ATV Adventures
 const PhotoGallery = () => {
+  const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeCategory, setActiveCategory] = useState('all');
 
   const photos = [
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595136/6_xkqjqa.jpg',
-      alt: 'ATV jungle adventure',
-      caption: 'Explore lush jungle trails',
+      alt: t('services.standard.atvService.gallery.photos.jungle.alt'),
+      caption: t('services.standard.atvService.gallery.photos.jungle.caption'),
       category: 'atv',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754595137/5_qkapnv.jpg',
-      alt: 'Beach ATV riding',
-      caption: 'Race along pristine beaches',
+      alt: t('services.standard.atvService.gallery.photos.beach.alt'),
+      caption: t('services.standard.atvService.gallery.photos.beach.caption'),
       category: 'buggies',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755946926/polaris-2_rrtt3b.jpg',
-      alt: 'Polaris adventure',
-      caption: 'Discover hidden cenotes',
+      alt: t('services.standard.atvService.gallery.photos.cenotes.alt'),
+      caption: t('services.standard.atvService.gallery.photos.cenotes.caption'),
       category: 'polaris',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754596293/4_enh3k1.jpg',
-      alt: 'Polaris sunset',
-      caption: 'Polaris RZR',
+      alt: t('services.standard.atvService.gallery.photos.polarisSunset.alt'),
+      caption: t(
+        'services.standard.atvService.gallery.photos.polarisSunset.caption'
+      ),
       category: 'buggies',
     },
     {
       src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1758048524/caption_yf0et6.jpg',
-      alt: 'Polaris Familiar',
-      caption: 'Polaris Familiar',
+      alt: t('services.standard.atvService.gallery.photos.polarisFamiliar.alt'),
+      caption: t(
+        'services.standard.atvService.gallery.photos.polarisFamiliar.caption'
+      ),
       category: 'polaris',
     },
   ];
 
-  // Configuración de categorías
   const categories = [
-    { id: 'all', label: 'All Vehicles', count: photos.length },
+    {
+      id: 'all',
+      label: t('services.standard.atvService.gallery.categories.all'),
+      count: photos.length,
+    },
     {
       id: 'atv',
-      label: 'ATV',
+      label: t('services.standard.atvService.gallery.categories.atv'),
       count: photos.filter((p) => p.category === 'atv').length,
     },
     {
       id: 'buggies',
-      label: 'Buggies',
+      label: t('services.standard.atvService.gallery.categories.buggies'),
       count: photos.filter((p) => p.category === 'buggies').length,
     },
     {
       id: 'polaris',
-      label: 'Polaris',
+      label: t('services.standard.atvService.gallery.categories.polaris'),
       count: photos.filter((p) => p.category === 'polaris').length,
     },
   ];
 
-  // Filtrar fotos según categoría activa
   const filteredPhotos = useMemo(() => {
     return activeCategory === 'all'
       ? photos
@@ -399,16 +376,17 @@ const PhotoGallery = () => {
   return (
     <section className='py-16 bg-white'>
       <div className='max-w-7xl mx-auto px-4'>
-        {/* Header */}
         <div className='text-center mb-12'>
           <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-4'>
-            Adventure <span className='text-green-500'>Gallery</span>
+            {t('services.standard.atvService.gallery.title')}{' '}
+            <span className='text-green-500'>
+              {t('services.standard.atvService.gallery.titleHighlight')}
+            </span>
           </h2>
           <p className='text-lg text-gray-600 mb-8'>
-            See what awaits you on this tropical adventure
+            {t('services.standard.atvService.gallery.subtitle')}
           </p>
 
-          {/* Filtros */}
           <div className='flex flex-wrap justify-center gap-2 md:gap-4'>
             {categories.map((category) => (
               <button
@@ -433,7 +411,6 @@ const PhotoGallery = () => {
           </div>
         </div>
 
-        {/* Grid de fotos - 2 columnas en móvil, 4 en desktop */}
         <div className='grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4'>
           {filteredPhotos.map((photo, idx) => (
             <div
@@ -466,7 +443,6 @@ const PhotoGallery = () => {
                 />
               </div>
 
-              {/* Overlay con caption */}
               <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                 <div className='absolute bottom-4 left-4 text-white'>
                   <p className='font-semibold text-xs md:text-base'>
@@ -481,17 +457,15 @@ const PhotoGallery = () => {
           ))}
         </div>
 
-        {/* Mensaje cuando no hay fotos */}
         {filteredPhotos.length === 0 && (
           <div className='text-center py-12'>
             <p className='text-gray-500 text-lg'>
-              No photos found for this category
+              {t('services.standard.atvService.gallery.noPhotos')}
             </p>
           </div>
         )}
       </div>
 
-      {/* Lightbox Modal */}
       {selectedImage && (
         <div
           className='fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4'
@@ -503,7 +477,7 @@ const PhotoGallery = () => {
           <button
             className='absolute top-4 right-4 text-white hover:text-gray-300 z-50 p-2 rounded-full hover:bg-white/10 transition-colors'
             onClick={closeLightbox}
-            aria-label='Close image'
+            aria-label={t('services.standard.atvService.gallery.closeImage')}
           >
             <X className='w-8 h-8' />
           </button>
@@ -516,7 +490,6 @@ const PhotoGallery = () => {
               onClick={(e) => e.stopPropagation()}
             />
 
-            {/* Info overlay en lightbox */}
             <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg'>
               <h3
                 id='lightbox-title'
@@ -535,20 +508,62 @@ const PhotoGallery = () => {
   );
 };
 
-// Compact Itinerary Section (2 columns) - Updated with specific sequence
+// Compact Itinerary Section
 const ItinerarySection = () => {
+  const { t } = useTranslation();
+
+  const ITINERARY_STEPS = [
+    {
+      id: 1,
+      icon: Waves,
+      title: t('services.standard.atvService.itinerary.steps.playaMacao.title'),
+      description: t(
+        'services.standard.atvService.itinerary.steps.playaMacao.description'
+      ),
+    },
+    {
+      id: 2,
+      icon: Mountain,
+      title: t('services.standard.atvService.itinerary.steps.cuevaTaina.title'),
+      description: t(
+        'services.standard.atvService.itinerary.steps.cuevaTaina.description'
+      ),
+    },
+    {
+      id: 3,
+      icon: Coffee,
+      title: t('services.standard.atvService.itinerary.steps.casaTipica.title'),
+      description: t(
+        'services.standard.atvService.itinerary.steps.casaTipica.description'
+      ),
+    },
+    {
+      id: 4,
+      icon: ArrowRight,
+      title: t(
+        'services.standard.atvService.itinerary.steps.returnRanch.title'
+      ),
+      description: t(
+        'services.standard.atvService.itinerary.steps.returnRanch.description'
+      ),
+    },
+  ];
+
   return (
     <section className='py-16 bg-gradient-to-br from-green-50 to-amber-50'>
       <div className='max-w-6xl mx-auto px-4'>
         <div className='text-center mb-12'>
           <h2 className='text-3xl font-bold text-gray-800 mb-4'>
-            Adventure <span className='text-green-500'>Itinerary</span>
+            {t('services.standard.atvService.itinerary.title')}{' '}
+            <span className='text-green-500'>
+              {t('services.standard.atvService.itinerary.titleHighlight')}
+            </span>
           </h2>
           <p className='text-gray-600'>
-            Approximately 3 hours exploring tropical paradise
+            {t('services.standard.atvService.itinerary.subtitle')}
           </p>
           <p className='text-sm text-blue-600 mt-2 font-medium'>
-            Route: Playa Macao → Cueva Taína → Casa Típica → Return to Ranch
+            {t('services.standard.atvService.itinerary.route')}
           </p>
         </div>
 
@@ -571,7 +586,8 @@ const ItinerarySection = () => {
                 <div className='flex-grow'>
                   <div className='flex items-center gap-2 mb-1'>
                     <span className='bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full'>
-                      Stop {step.id}
+                      {t('services.standard.atvService.itinerary.stopLabel')}{' '}
+                      {step.id}
                     </span>
                   </div>
                   <h3 className='font-semibold text-gray-800 text-sm mb-1'>
@@ -588,14 +604,14 @@ const ItinerarySection = () => {
           <div className='inline-flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full'>
             <Clock className='w-4 h-4 text-green-600' />
             <span className='text-green-800 font-medium text-sm'>
-              Total Duration: ~3 hours
+              {t('services.standard.atvService.itinerary.totalDuration')}
             </span>
           </div>
 
           <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full ml-3'>
             <Waves className='w-4 h-4 text-blue-600' />
             <span className='text-blue-800 font-medium text-sm'>
-              Life vests available as additional service
+              {t('services.standard.atvService.itinerary.lifeVests')}
             </span>
           </div>
         </div>
@@ -604,16 +620,94 @@ const ItinerarySection = () => {
   );
 };
 
-// Compact What to Bring & Schedule Info Section (2 columns)
+// Compact What to Bring & Schedule Info Section
 const InfoSection = () => {
+  const { t } = useTranslation();
+
+  const WHAT_TO_BRING = [
+    {
+      icon: Eye,
+      title: t('services.standard.atvService.whatToBring.sunglasses.title'),
+      description: t(
+        'services.standard.atvService.whatToBring.sunglasses.description'
+      ),
+    },
+    {
+      icon: Shirt,
+      title: t('services.standard.atvService.whatToBring.bandanas.title'),
+      description: t(
+        'services.standard.atvService.whatToBring.bandanas.description'
+      ),
+    },
+    {
+      icon: Waves,
+      title: t('services.standard.atvService.whatToBring.swimwear.title'),
+      description: t(
+        'services.standard.atvService.whatToBring.swimwear.description'
+      ),
+    },
+    {
+      icon: AlertTriangle,
+      title: t('services.standard.atvService.whatToBring.oldClothes.title'),
+      description: t(
+        'services.standard.atvService.whatToBring.oldClothes.description'
+      ),
+    },
+  ];
+
+  // Helper function to ensure we always get an array
+  const getArrayFromTranslation = (key, fallback = []) => {
+    const result = t(key, { returnObjects: true });
+    return Array.isArray(result) ? result : fallback;
+  };
+
+  const SCHEDULE_INFO = [
+    {
+      icon: Clock,
+      title: t('services.standard.atvService.scheduleInfo.pickupTimes.title'),
+      items: getArrayFromTranslation(
+        'standard.atvService.scheduleInfo.pickupTimes.items',
+        ['7:30 AM', '10:30 AM', '1:30 PM']
+      ),
+    },
+    {
+      icon: Waves,
+      title: t(
+        'services.standard.atvService.scheduleInfo.cenoteImportant.title'
+      ),
+      items: getArrayFromTranslation(
+        'standard.atvService.scheduleInfo.cenoteImportant.items',
+        [
+          'Life vests NOT included',
+          'Available as additional paid service',
+          'Swimming is optional',
+        ]
+      ),
+    },
+    {
+      icon: Shield,
+      title: t('services.standard.atvService.scheduleInfo.weatherPolicy.title'),
+      items: getArrayFromTranslation(
+        'atvService.scheduleInfo.weatherPolicy.items',
+        [
+          'Excursion does NOT cancel for rain',
+          'Only cancelled in extreme weather conditions',
+          'Come prepared for adventure!',
+        ]
+      ),
+    },
+  ];
+
   return (
     <section className='py-16 bg-white'>
       <div className='max-w-6xl mx-auto px-4'>
         <div className='grid lg:grid-cols-2 gap-12'>
-          {/* What to Bring */}
           <div>
             <h2 className='text-2xl font-bold text-gray-800 mb-6'>
-              What to <span className='text-green-500'>Bring</span>
+              {t('services.standard.atvService.whatToBring.title')}{' '}
+              <span className='text-green-500'>
+                {t('services.standard.atvService.whatToBring.titleHighlight')}
+              </span>
             </h2>
             <div className='grid grid-cols-2 gap-4'>
               {WHAT_TO_BRING.map((item, index) => {
@@ -639,33 +733,38 @@ const InfoSection = () => {
               })}
             </div>
 
-            {/* Special Observation */}
             <div className='mt-6 bg-red-50 rounded-xl p-4 border border-red-200'>
               <div className='flex items-start gap-3'>
                 <AlertTriangle className='w-5 h-5 text-red-600 flex-shrink-0 mt-0.5' />
                 <div>
                   <h3 className='font-semibold text-red-800 mb-2'>
-                    ⚠️ Important Observation
+                    {t(
+                      'services.standard.atvService.importantObservation.title'
+                    )}
                   </h3>
                   <p className='text-red-700 text-sm font-medium'>
-                    Your clothes WILL get dirty from the muddy trails! Wear old
-                    clothes that you don't mind getting messy.
+                    {t(
+                      'services.standard.atvService.importantObservation.description'
+                    )}
                   </p>
                   <p className='text-red-600 text-xs mt-2'>
-                    Sunglasses and bandanas are available for purchase at the
-                    ranch if needed.
+                    {t(
+                      'services.standard.atvService.importantObservation.note'
+                    )}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Schedule & Important Information */}
           <div>
             <h2 className='text-2xl font-bold text-gray-800 mb-6'>
-              Schedule & <span className='text-blue-500'>Important Info</span>
+              {t('services.standard.atvService.scheduleInfo.title')}{' '}
+              <span className='text-blue-500'>
+                {t('services.standard.atvService.scheduleInfo.titleHighlight')}
+              </span>
             </h2>
-            <div className='grid grid-cols-2 md:grid-cols-1 gap-4'>
+            <div className='grid grid-cols-2 md:grid-cols-2 gap-4'>
               {SCHEDULE_INFO.map((category, index) => {
                 const IconComponent = category.icon;
                 return (
@@ -700,37 +799,32 @@ const InfoSection = () => {
           </div>
         </div>
 
-        {/* Photo & Weather Disclaimer - Combined */}
         <div className='mt-12 grid md:grid-cols-2 gap-6'>
-          {/* Weather Policy */}
           <div className='bg-amber-50 rounded-2xl p-6 border border-amber-200'>
             <div className='flex items-start gap-4'>
               <Shield className='w-6 h-6 text-amber-600 flex-shrink-0 mt-1' />
               <div>
                 <h3 className='text-lg font-semibold text-amber-800 mb-3'>
-                  🌦️ Weather Policy
+                  {t('services.standard.atvService.policies.weather.title')}
                 </h3>
                 <p className='text-amber-700 text-sm leading-relaxed'>
-                  <strong>The excursion does NOT cancel for rain!</strong> We
-                  only cancel in extreme weather conditions. Come prepared for
-                  an adventure regardless of weather.
+                  {t(
+                    'services.standard.atvService.policies.weather.description'
+                  )}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Photo Disclaimer */}
           <div className='bg-blue-50 rounded-2xl p-6 border border-blue-200'>
             <div className='flex items-start gap-4'>
               <Camera className='w-6 h-6 text-blue-600 flex-shrink-0 mt-1' />
               <div>
                 <h3 className='text-lg font-semibold text-blue-800 mb-3'>
-                  📸 Photo Disclaimer
+                  {t('services.standard.atvService.policies.photo.title')}
                 </h3>
                 <p className='text-blue-700 text-sm leading-relaxed'>
-                  Photos taken during our excursions may be used for promotional
-                  purposes. Professional action shots are included in your
-                  adventure experience.
+                  {t('services.standard.atvService.policies.photo.description')}
                 </p>
               </div>
             </div>
@@ -743,26 +837,36 @@ const InfoSection = () => {
 
 // Quick Info Section Component
 const QuickInfoSection = () => {
+  const { t } = useTranslation();
+
   const cards = [
     {
       icon: <MapPin className='w-5 h-5' />,
-      title: 'Jungle & Beach',
-      description: 'Explore diverse tropical terrain',
+      title: t('services.standard.atvService.quickInfo.cards.location.title'),
+      description: t(
+        'services.standard.atvService.quickInfo.cards.location.description'
+      ),
     },
     {
       icon: <Shield className='w-5 h-5' />,
-      title: 'Safety First',
-      description: 'Professional guides & gear',
+      title: t('services.standard.atvService.quickInfo.cards.safety.title'),
+      description: t(
+        'services.standard.atvService.quickInfo.cards.safety.description'
+      ),
     },
     {
       icon: <Clock className='w-5 h-5' />,
-      title: '3 Hours',
-      description: 'Action-packed adventure',
+      title: t('services.standard.atvService.quickInfo.cards.duration.title'),
+      description: t(
+        'services.standard.atvService.quickInfo.cards.duration.description'
+      ),
     },
     {
       icon: <Star className='w-5 h-5' />,
-      title: '4.9 Rating',
-      description: 'From 1,200+ adventurers',
+      title: t('services.standard.atvService.quickInfo.cards.rating.title'),
+      description: t(
+        'services.standard.atvService.quickInfo.cards.rating.description'
+      ),
     },
   ];
 
@@ -788,39 +892,53 @@ const QuickInfoSection = () => {
   );
 };
 
-// Updated Includes Section with specific cenote info
+// Updated Includes Section
 const IncludesSection = () => {
-  const includes = [
-    'Round-trip hotel transportation',
-    'Professional ATV/Buggy/Polaris rental',
-    'Safety equipment & briefing',
-    'Expert bilingual guide',
-    'Playa Macao beach access',
-    'Cueva Taína (cenote) exploration',
-    'Casa Típica traditional house visit',
-    'Coffee, tobacco & chocolate tasting',
+  const { t } = useTranslation();
+
+  // Keys for included items
+  const includedKeys = [
+    'transportation',
+    'atvRental',
+    'safetyEquipment',
+    'bilingualGuide',
+    'beachAccess',
+    'cenoteExploration',
+    'traditionalHouse',
+    'tasting',
   ];
 
-  const notIncluded = [
-    '🚨 Life vests for cenote (additional paid service)',
-    'Sunglasses (optional purchase at ranch)',
-    'Bandanas (optional purchase at ranch)',
-    'Personal items & souvenirs',
+  // Keys for not included items
+  const notIncludedKeys = [
+    'lifeVests',
+    'sunglasses',
+    'bandanas',
+    'personalItems',
   ];
+
+  const includes = includedKeys.map((key) =>
+    t(`services.standard.atvService.includes.items.${key}`)
+  );
+
+  const notIncluded = notIncludedKeys.map((key) =>
+    t(`services.standard.atvService.includes.items.${key}`)
+  );
 
   return (
     <section className='py-16 px-4 bg-white'>
       <div className='max-w-4xl mx-auto'>
         <h2 className='text-3xl font-bold text-center mb-10 text-gray-800'>
-          What's <span className='text-green-500'>Included</span>
+          {t('services.standard.atvService.includes.title')}{' '}
+          <span className='text-green-500'>
+            {t('services.standard.atvService.includes.titleHighlight')}
+          </span>
         </h2>
 
         <div className='grid md:grid-cols-2 gap-8'>
-          {/* Included */}
           <div>
             <h3 className='text-lg font-semibold text-green-600 mb-4 flex items-center'>
               <Check className='w-5 h-5 mr-2' />
-              Included in Your Adventure
+              {t('services.standard.atvService.includes.includedTitle')}
             </h3>
             <div className='space-y-3'>
               {includes.map((item, idx) => (
@@ -835,40 +953,41 @@ const IncludesSection = () => {
             </div>
           </div>
 
-          {/* Not Included */}
           <div>
             <h3 className='text-lg font-semibold text-orange-600 mb-4 flex items-center'>
               <X className='w-5 h-5 mr-2' />
-              Additional Services Available
+              {t('atvService.includes.notIncludedTitle')}
             </h3>
             <div className='space-y-3'>
-              {notIncluded.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`flex items-center gap-3 p-3 rounded-lg ${
-                    item.includes('Life vests')
-                      ? 'bg-red-50 border border-red-200'
-                      : 'bg-orange-50'
-                  }`}
-                >
-                  <X
-                    className={`w-4 h-4 flex-shrink-0 ${
-                      item.includes('Life vests')
-                        ? 'text-red-500'
-                        : 'text-orange-500'
-                    }`}
-                  />
-                  <span
-                    className={`${
-                      item.includes('Life vests')
-                        ? 'text-red-700 font-semibold'
-                        : 'text-gray-700'
+              {notIncluded.map((item, idx) => {
+                const isLifeVest = notIncludedKeys[idx] === 'lifeVests';
+
+                return (
+                  <div
+                    key={idx}
+                    className={`flex items-center gap-3 p-3 rounded-lg ${
+                      isLifeVest
+                        ? 'bg-red-50 border border-red-200'
+                        : 'bg-orange-50'
                     }`}
                   >
-                    {item}
-                  </span>
-                </div>
-              ))}
+                    <X
+                      className={`w-4 h-4 flex-shrink-0 ${
+                        isLifeVest ? 'text-red-500' : 'text-orange-500'
+                      }`}
+                    />
+                    <span
+                      className={`${
+                        isLifeVest
+                          ? 'text-red-700 font-semibold'
+                          : 'text-gray-700'
+                      }`}
+                    >
+                      {item}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -877,14 +996,16 @@ const IncludesSection = () => {
   );
 };
 
-// Updated Special Banner - Recibe onBookNow como prop
+// Updated Special Banner
 const SpecialBanner = ({ onBookNow }) => {
+  const { t } = useTranslation();
+
   return (
     <section className='relative py-32 overflow-hidden'>
       <div className='absolute inset-0'>
         <img
           src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754596123/8_y6xwml.jpg'
-          alt='ATV adventure through tropical paradise'
+          alt={t('services.standard.atvService.specialBanner.imageAlt')}
           className='w-full h-full object-cover'
         />
         <div className='absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent' />
@@ -895,34 +1016,45 @@ const SpecialBanner = ({ onBookNow }) => {
           <div className='inline-flex items-center gap-2 bg-green-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-green-400/30'>
             <Sparkles className='w-4 h-4 text-green-400' />
             <span className='text-green-200 text-sm font-medium'>
-              Eco-Adventure Experience
+              {t('services.standard.atvService.specialBanner.badge')}
             </span>
           </div>
 
           <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
-            Off-Road Adventure
-            <span className='block text-amber-400'>Through Paradise</span>
+            {t('services.standard.atvService.specialBanner.title')}
+            <span className='block text-amber-400'>
+              {t('services.standard.atvService.specialBanner.subtitle')}
+            </span>
           </h2>
 
           <p className='text-lg text-white/90 mb-8'>
-            Navigate through tropical jungles, splash through crystal-clear
-            rivers, and discover hidden beaches on the ultimate ATV adventure.
-            Our eco-friendly tours respect nature while delivering maximum
-            thrills.
+            {t('services.standard.atvService.specialBanner.description')}
           </p>
 
           <div className='flex flex-wrap gap-6 mb-8'>
             <div className='flex items-center gap-2 text-white'>
               <Heart className='w-5 h-5 text-red-400' />
-              <span>Eco-Friendly</span>
+              <span>
+                {t(
+                  'services.standard.atvService.specialBanner.features.ecoFriendly'
+                )}
+              </span>
             </div>
             <div className='flex items-center gap-2 text-white'>
               <Shield className='w-5 h-5 text-green-400' />
-              <span>Certified Guides</span>
+              <span>
+                {t(
+                  'services.standard.atvService.specialBanner.features.guides'
+                )}
+              </span>
             </div>
             <div className='flex items-center gap-2 text-white'>
               <Star className='w-5 h-5 text-amber-400' />
-              <span>Premium Equipment</span>
+              <span>
+                {t(
+                  'services.standard.atvService.specialBanner.features.equipment'
+                )}
+              </span>
             </div>
           </div>
 
@@ -930,7 +1062,7 @@ const SpecialBanner = ({ onBookNow }) => {
             onClick={onBookNow}
             className='bg-gradient-to-r from-amber-500 to-green-500 hover:from-amber-600 hover:to-green-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
           >
-            Book Your ATV Adventure
+            {t('services.standard.atvService.specialBanner.ctaButton')}
           </button>
         </div>
       </div>
@@ -940,14 +1072,21 @@ const SpecialBanner = ({ onBookNow }) => {
 
 // Updated Adventure Banner
 const AdventureBanner = () => {
+  const { t } = useTranslation();
+
   return (
     <section className='relative py-24 overflow-hidden bg-gradient-to-br from-green-50 to-amber-50'>
       <div className='max-w-6xl mx-auto px-4'>
         <div className='grid lg:grid-cols-2 gap-12 items-center'>
           <div>
             <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-6'>
-              Why Choose Our
-              <span className='text-green-500'> ATV Adventures?</span>
+              {t('services.standard.atvService.adventureBanner.title')}
+              <span className='text-green-500'>
+                {' '}
+                {t(
+                  'services.standard.atvService.adventureBanner.titleHighlight'
+                )}
+              </span>
             </h2>
 
             <div className='space-y-6'>
@@ -957,11 +1096,14 @@ const AdventureBanner = () => {
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-800 mb-2'>
-                    Diverse Terrain Exploration
+                    {t(
+                      'services.standard.atvService.adventureBanner.features.terrain.title'
+                    )}
                   </h3>
                   <p className='text-gray-600'>
-                    From dense jungle trails to pristine beaches and refreshing
-                    cenotes, experience the full spectrum of tropical paradise.
+                    {t(
+                      'services.standard.atvService.adventureBanner.features.terrain.description'
+                    )}
                   </p>
                 </div>
               </div>
@@ -972,11 +1114,14 @@ const AdventureBanner = () => {
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-800 mb-2'>
-                    Premium Equipment Fleet
+                    {t(
+                      'services.standard.atvService.adventureBanner.features.equipment.title'
+                    )}
                   </h3>
                   <p className='text-gray-600'>
-                    Choose from ATVs, Buggies, or Polaris RZRs - all regularly
-                    maintained and equipped with latest safety features.
+                    {t(
+                      'services.standard.atvService.adventureBanner.features.equipment.description'
+                    )}
                   </p>
                 </div>
               </div>
@@ -987,11 +1132,14 @@ const AdventureBanner = () => {
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-800 mb-2'>
-                    Eco-Responsible Tourism
+                    {t(
+                      'services.standard.atvService.adventureBanner.features.ecoTourism.title'
+                    )}
                   </h3>
                   <p className='text-gray-600'>
-                    We follow strict environmental guidelines to preserve the
-                    natural beauty for future generations.
+                    {t(
+                      'services.standard.atvService.adventureBanner.features.ecoTourism.description'
+                    )}
                   </p>
                 </div>
               </div>
@@ -1002,7 +1150,7 @@ const AdventureBanner = () => {
             <div className='rounded-2xl overflow-hidden shadow-2xl'>
               <img
                 src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754595138/3_xanwzg.jpg'
-                alt='ATV adventure group'
+                alt={t('servicces.standard.tvService.adventureBanner.imageAlt')}
                 className='w-full h-[400px] object-cover'
               />
             </div>
@@ -1012,8 +1160,16 @@ const AdventureBanner = () => {
                   <Sparkles className='w-6 h-6 text-green-600' />
                 </div>
                 <div>
-                  <p className='text-xl font-bold text-gray-800'>Premium</p>
-                  <p className='text-xs text-gray-600'>Adventure</p>
+                  <p className='text-xl font-bold text-gray-800'>
+                    {t(
+                      'services.standard.atvService.adventureBanner.badge.title'
+                    )}
+                  </p>
+                  <p className='text-xs text-gray-600'>
+                    {t(
+                      'services.standard.atvService.adventureBanner.badge.subtitle'
+                    )}
+                  </p>
                 </div>
               </div>
             </div>
@@ -1026,27 +1182,29 @@ const AdventureBanner = () => {
 
 // Updated Reviews for ATV theme
 const ReviewsSection = () => {
+  const { t } = useTranslation();
+
   const reviews = [
     {
-      name: 'Carlos Rodriguez',
+      name: t('services.standard.atvService.reviews.items.carlos.name'),
       rating: 5,
-      text: 'Incredible ATV adventure! The jungle trails were amazing and the cenote swim was refreshing.',
-      date: '3 days ago',
-      vehicle: 'Polaris RZR',
+      text: t('services.standard.atvService.reviews.items.carlos.text'),
+      date: t('services.standard.atvService.reviews.items.carlos.date'),
+      vehicle: t('services.standard.atvService.reviews.items.carlos.vehicle'),
     },
     {
-      name: 'Jennifer Smith',
+      name: t('services.standard.atvService.reviews.items.jennifer.name'),
       rating: 5,
-      text: 'Perfect for beginners! Our guide was patient and the buggy was easy to handle. Loved every minute!',
-      date: '1 week ago',
-      vehicle: 'Dune Buggy',
+      text: t('services.standard.atvService.reviews.items.jennifer.text'),
+      date: t('services.standard.atvService.reviews.items.jennifer.date'),
+      vehicle: t('services.standard.atvService.reviews.items.jennifer.vehicle'),
     },
     {
-      name: 'Alex Thompson',
+      name: t('services.standard.atvService.reviews.items.alex.name'),
       rating: 5,
-      text: 'Best excursion in Punta Cana! The ATV was powerful and the routes were thrilling but safe.',
-      date: '2 weeks ago',
-      vehicle: 'ATV Quad',
+      text: t('services.standard.atvService.reviews.items.alex.text'),
+      date: t('services.standard.atvService.reviews.items.alex.date'),
+      vehicle: t('services.standard.atvService.reviews.items.alex.vehicle'),
     },
   ];
 
@@ -1055,14 +1213,17 @@ const ReviewsSection = () => {
       <div className='max-w-5xl mx-auto'>
         <div className='text-center mb-12'>
           <h2 className='text-3xl md:text-4xl font-bold mb-4 text-gray-800'>
-            Adventure <span className='text-green-500'>Stories</span>
+            {t('services.standard.atvService.reviews.title')}{' '}
+            <span className='text-green-500'>
+              {t('services.standard.atvService.reviews.titleHighlight')}
+            </span>
           </h2>
           <div className='flex justify-center items-center gap-1'>
             {[...Array(5)].map((_, i) => (
               <Star key={i} className='w-5 h-5 fill-amber-400 text-amber-400' />
             ))}
             <span className='ml-2 text-gray-600'>
-              4.9 from 1,200+ adventures
+              {t('services.standard.atvService.reviews.subtitle')}
             </span>
           </div>
         </div>
@@ -1099,24 +1260,33 @@ const ReviewsSection = () => {
 
 // Main Component with State Management
 const AtvRideServiceView = () => {
+  const { t } = useTranslation();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { bookService } = useBooking();
 
+  // Helper function to ensure we always get an array
+  const getArrayFromTranslation = (key, fallback = []) => {
+    const result = t(key, { returnObjects: true });
+    return Array.isArray(result) ? result : fallback;
+  };
+
   const service = {
     id: 'atv-adventure',
-    name: 'ATV Adventure',
+    name: t('services.standard.atvService.service.name'),
     type: 'ATV_EXPERIENCE',
-    description: 'Tropical paradise off-road adventure',
-    duration: '3 hours',
-    price: selectedVehicle?.price || 50, // Precio dinámico basado en vehículo seleccionado
-    included: [
+    description: t('services.standard.atvService.service.description'),
+    duration: t('services.standard.atvService.service.duration'),
+    price: selectedVehicle?.price || 50,
+    included: getArrayFromTranslation('atvService.service.included', [
       'Round-trip transportation',
       'Safety equipment',
       'Expert guide',
       'Photos',
-    ],
-    packageType: selectedVehicle?.id === 'polaris' ? 'premium' : 'standard',
+    ]),
+    packageType: selectedVehicle?.id?.includes('polaris')
+      ? 'premium'
+      : 'standard',
     vehicleType: selectedVehicle?.id || 'atv',
     maxParticipants: selectedVehicle?.maxParticipants || 2,
   };
@@ -1130,12 +1300,10 @@ const AtvRideServiceView = () => {
     setIsModalOpen(false);
   };
 
-  // Función para abrir el modal
   const handleBookNow = () => {
     setIsModalOpen(true);
   };
 
-  // Handle vehicle selection
   const handleVehicleSelect = (vehicle) => {
     setSelectedVehicle(vehicle);
     setIsModalOpen(true);
@@ -1146,7 +1314,6 @@ const AtvRideServiceView = () => {
       <HeroSection onBookNow={handleBookNow} />
       <QuickInfoSection />
 
-      {/* Vehicle Selection Section */}
       <div data-section='vehicle-selection'>
         <VehicleSelection onVehicleSelect={handleVehicleSelect} />
       </div>
@@ -1156,7 +1323,6 @@ const AtvRideServiceView = () => {
       <InfoSection />
       <IncludesSection />
 
-      {/* Special Banner */}
       <SpecialBanner onBookNow={handleBookNow} />
 
       <AdventureBanner />
@@ -1169,15 +1335,13 @@ const AtvRideServiceView = () => {
           <Waves className='w-8 h-8 text-red-600 flex-shrink-0 mt-1' />
           <div>
             <h3 className='text-xl font-bold text-red-800 mb-3'>
-              🏊‍♂️ Important: Cenote Swimming
+              {t('services.standard.atvService.cenoteNotice.title')}
             </h3>
             <p className='text-red-700 font-medium mb-2'>
-              Life vests are NOT included for cenote swimming and must be
-              purchased as an additional service at the location.
+              {t('services.standard.atvService.cenoteNotice.description')}
             </p>
             <p className='text-red-600 text-sm'>
-              Swimming in the cenote is completely optional. Safety equipment
-              can be rented on-site for those who wish to swim.
+              {t('services.standard.atvService.cenoteNotice.note')}
             </p>
           </div>
         </div>
@@ -1187,13 +1351,11 @@ const AtvRideServiceView = () => {
         <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full'>
           <Info className='w-4 h-4 text-blue-600' />
           <span className='text-blue-800 font-medium text-sm'>
-            All safety equipment and professional guidance included for vehicle
-            operation
+            {t('services.standard.atvService.safetyNotice')}
           </span>
         </div>
       </div>
 
-      {/* Booking Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <BookingModal
