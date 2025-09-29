@@ -38,36 +38,6 @@ const LuxuryServices = () => {
               {t('common.mainText.slogan')}
             </span>
           </p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className='mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto'
-          >
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-blue-600 mb-2'>15+</div>
-              <div className='text-slate-600 text-sm'>
-                {' '}
-                {t('common.mainText.experience')}
-              </div>
-            </div>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-blue-600 mb-2'>500+</div>
-              <div className='text-slate-600 text-sm'>
-                {' '}
-                {t('common.mainText.happyClients')}s
-              </div>
-            </div>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-blue-600 mb-2'>100%</div>
-              <div className='text-slate-600 text-sm'>
-                {' '}
-                {t('common.mainText.exclusiveServices')}
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
 

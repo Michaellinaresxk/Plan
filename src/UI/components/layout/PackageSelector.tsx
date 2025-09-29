@@ -226,9 +226,6 @@ const PremiumPackageCard = ({
                   </motion.div>
                 ))}
               </div>
-              <span className='text-gray-400 text-sm'>
-                {packageData.experience}
-              </span>
             </div>
           </div>
 
@@ -340,7 +337,7 @@ const PackageSelector = () => {
     {
       id: 'premium',
       title: 'Lux',
-      subtitle: t('common.package-standard.chip'),
+      subtitle: t('common.package-luxe.xclusiveService'),
       description: t('common.package-luxe.subtitle'),
       rating: 5,
       experience: t('common.package-standard.ultraLuxe'),

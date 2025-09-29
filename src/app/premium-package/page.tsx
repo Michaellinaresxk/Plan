@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BookingProvider, useBooking } from '@/context/BookingContext';
 import { useTranslation } from '@/lib/i18n/client';
 import Navbar from '@/UI/components/shared/Navbar';
@@ -29,7 +29,6 @@ import ServiceManager from '@/constants/services/ServiceManager';
 const PremiumPackageContent = () => {
   const { packageType, setPackageType } = useBooking();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('overview');
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -90,12 +89,6 @@ const PremiumPackageContent = () => {
     },
   };
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: Calendar },
-    { id: 'testimonials', label: 'Testimonials', icon: Users },
-    { id: 'faq', label: 'FAQ', icon: CheckCircle },
-  ];
-
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900'>
       <Navbar />
@@ -106,7 +99,7 @@ const PremiumPackageContent = () => {
         <div className='absolute inset-0 z-0'>
           <Image
             src='/img/saona-island/saona-3.jpg'
-            alt='Punta Cana lux'
+            alt={t('premiumPage.hero.imageAlt')}
             fill
             className='object-cover scale-105'
             quality={100}
@@ -133,20 +126,17 @@ const PremiumPackageContent = () => {
               className='inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 mb-8 border border-amber-400/30 backdrop-blur-sm'
             >
               <Crown className='w-5 h-5 mr-2' />
-              PREMIUM LUXURY EXPERIENCE
+              {t('premiumPage.hero.badge')}
             </motion.div>
 
             <motion.h1
               variants={fadeInUp}
               className='text-5xl md:text-8xl font-extrabold text-white mb-6 leading-tight'
             >
-              X
+              {t('premiumPage.hero.titlePrefix')}
               <span className='bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent'>
-                clusive
+                {t('premiumPage.hero.titleHighlight')}
               </span>
-              {/* <span className='block text-3xl md:text-5xl font-normal text-amber-300 mt-4'>
-                Ultimate Premium Experience
-              </span> */}
             </motion.h1>
 
             <motion.div
@@ -162,7 +152,7 @@ const PremiumPackageContent = () => {
                 ))}
               </div>
               <span className='text-gray-200 text-lg font-medium'>
-                5.0 Exclusive Rating • Elite Experience
+                {t('premiumPage.hero.rating')}
               </span>
             </motion.div>
 
@@ -170,26 +160,16 @@ const PremiumPackageContent = () => {
               variants={fadeInUp}
               className='text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-3xl mx-auto'
             >
-              Indulge in the ultimate Dominican Republic experience with our
-              premium package. Elevate your vacation with exclusive luxuries,
-              personalized service, and unforgettable moments from arrival to
-              departure.
+              {t('premiumPage.hero.description')}
             </motion.p>
 
             <motion.div
               variants={fadeInUp}
               className='flex flex-col sm:flex-row gap-6 justify-center'
             >
-              {/* <Link href='/custom-package'>
-                <button className='group px-10 py-5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-bold rounded-2xl transition-all duration-300 flex items-center shadow-2xl shadow-amber-500/30 text-lg transform hover:scale-105'>
-                  Explore Custom Package
-                  <ChevronRight className='ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform' />
-                </button>
-              </Link> */}
-
               <Link href='/standard-package'>
                 <button className='group px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-amber-400/30 hover:border-amber-400/50 hover:bg-amber-400/10 text-amber-300 font-bold rounded-2xl transition-all duration-300 flex items-center text-lg'>
-                  Explore Standard Experience
+                  {t('premiumPage.hero.exploreStandardButton')}
                   <ArrowRight className='ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform' />
                 </button>
               </Link>
@@ -198,384 +178,122 @@ const PremiumPackageContent = () => {
         </div>
       </section>
 
-      {/* Enhanced Premium Navigation Tabs */}
-      <section className='sticky top-16 bg-black/90 backdrop-blur-lg z-30 border-b border-amber-400/30 shadow-2xl'>
-        <div className='container mx-auto px-6'>
-          <div className='flex overflow-x-auto scrollbar-hide py-2'>
-            {tabs.map((tab) => {
-              const IconComponent = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`group flex items-center px-6 py-4 font-bold transition-all duration-300 whitespace-nowrap relative ${
-                    activeTab === tab.id
-                      ? 'text-amber-400'
-                      : 'text-gray-400 hover:text-amber-300'
-                  }`}
-                >
-                  <IconComponent
-                    className={`w-5 h-5 mr-2 transition-colors ${
-                      activeTab === tab.id
-                        ? 'text-amber-400'
-                        : 'text-gray-500 group-hover:text-amber-400'
-                    }`}
-                  />
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <motion.div
-                      layoutId='premiumActiveTab'
-                      className='absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full'
-                      initial={false}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </button>
-              );
-            })}
+      {/* Main Content Area - Overview Section */}
+      <motion.section
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+        className='py-20 bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white'
+      >
+        {isLoading ? (
+          <div className='container mx-auto px-6'>
+            <div className='flex items-center justify-center py-20'>
+              <div className='text-center'>
+                <Loader2 className='w-12 h-12 animate-spin text-amber-400 mx-auto mb-4' />
+                <p className='text-gray-300 text-lg'>
+                  {t('premiumPage.overview.loading')}
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        ) : (
+          <div className='container mx-auto px-6'>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className='text-center mb-16'
+            >
+              <h2 className='text-4xl md:text-6xl font-bold text-white mb-6'>
+                {t('premiumPage.overview.title')}
+              </h2>
+              <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
+                {t('premiumPage.overview.subtitle')}
+              </p>
+            </motion.div>
 
-      {/* Main Content Area */}
-      <AnimatePresence mode='wait'>
-        {activeTab === 'overview' && (
-          <motion.section
-            key='overview'
-            initial='hidden'
-            animate='visible'
-            exit='hidden'
-            variants={fadeIn}
-            className='py-20 bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white'
-          >
-            {isLoading ? (
-              <div className='container mx-auto px-6'>
-                <div className='flex items-center justify-center py-20'>
-                  <div className='text-center'>
-                    <Loader2 className='w-12 h-12 animate-spin text-amber-400 mx-auto mb-4' />
-                    <p className='text-gray-300 text-lg'>
-                      Loading your Xclusive experiences...
+            <div className='max-w-6xl mx-auto mb-16'>
+              <div className='grid md:grid-cols-2 gap-12'>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h3 className='text-2xl font-bold text-amber-400 mb-6 flex items-center'>
+                    <Gem className='w-6 h-6 mr-2' />
+                    {t('premiumPage.overview.experienceTitle')}
+                  </h3>
+                  <p className='text-gray-300 mb-6 leading-relaxed text-lg'>
+                    {t('premiumPage.overview.experienceDescription1')}
+                  </p>
+                  <p className='text-gray-300 mb-8 leading-relaxed text-lg'>
+                    {t('premiumPage.overview.experienceDescription2')}
+                  </p>
+
+                  <div className='flex items-center space-x-2 text-amber-400 font-bold text-lg'>
+                    <Sparkles className='h-6 w-6' />
+                    <span>{t('premiumPage.overview.availabilityNote')}</span>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className='grid grid-cols-2 gap-6'
+                >
+                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
+                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
+                      <Clock className='h-5 w-5 mr-2' />
+                      {t('premiumPage.overview.details.duration.title')}
+                    </h4>
+                    <p className='text-gray-200 font-medium'>
+                      {t('premiumPage.overview.details.duration.value')}
                     </p>
                   </div>
-                </div>
-              </div>
-            ) : (
-              <div className='container mx-auto px-6'>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className='text-center mb-16'
-                >
-                  <h2 className='text-4xl md:text-6xl font-bold text-white mb-6'>
-                    Your Xclusive Experience
-                  </h2>
-                  <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
-                    Indulge in the ultimate luxury with our handpicked premium
-                    services. Every moment is crafted for discerning travelers
-                    who demand nothing but the finest.
-                  </p>
-                </motion.div>
 
-                <div className='max-w-6xl mx-auto mb-16'>
-                  <div className='grid md:grid-cols-2 gap-12'>
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <h3 className='text-2xl font-bold text-amber-400 mb-6 flex items-center'>
-                        <Gem className='w-6 h-6 mr-2' />
-                        The Ultimate Punta Cana Experience
-                      </h3>
-                      <p className='text-gray-300 mb-6 leading-relaxed text-lg'>
-                        Our Lux Punta Cana package redefines the Dominican
-                        vacation experience, offering an exclusive journey into
-                        luxury and personalized service. From your arrival in a
-                        premium SUV to unforgettable days aboard your private
-                        yacht, every moment is crafted for maximum enjoyment.
-                      </p>
-                      <p className='text-gray-300 mb-8 leading-relaxed text-lg'>
-                        Perfect for discerning travelers, honeymooners, or
-                        anyone celebrating a special occasion who desires the
-                        very best that Punta Cana has to offer. Every detail is
-                        meticulously arranged by our dedicated concierge team.
-                      </p>
-
-                      <div className='flex items-center space-x-2 text-amber-400 font-bold text-lg'>
-                        <Sparkles className='h-6 w-6' />
-                        <span>Limited availability - Reserve early</span>
-                      </div>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className='grid grid-cols-2 gap-6'
-                    >
-                      <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                        <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                          <Clock className='h-5 w-5 mr-2' />
-                          Duration
-                        </h4>
-                        <p className='text-gray-200 font-medium'>
-                          Flexible (5-14 days)
-                        </p>
-                      </div>
-
-                      <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                        <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                          <Users className='h-5 w-5 mr-2' />
-                          Group Size
-                        </h4>
-                        <p className='text-gray-200 font-medium'>1-8 people</p>
-                      </div>
-
-                      <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                        <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                          <MapPin className='h-5 w-5 mr-2' />
-                          Location
-                        </h4>
-                        <p className='text-gray-200 font-medium'>
-                          Punta Cana, Dominican Republic
-                        </p>
-                      </div>
-
-                      <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                        <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                          <Wine className='h-5 w-5 mr-2' />
-                          Services
-                        </h4>
-                        <p className='text-gray-200 font-medium'>
-                          All-inclusive premium
-                        </p>
-                      </div>
-                    </motion.div>
+                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
+                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
+                      <Users className='h-5 w-5 mr-2' />
+                      {t('premiumPage.overview.details.groupSize.title')}
+                    </h4>
+                    <p className='text-gray-200 font-medium'>
+                      {t('premiumPage.overview.details.groupSize.value')}
+                    </p>
                   </div>
-                </div>
 
-                <ServiceList
-                  services={services}
-                  servicePath='premium-package'
-                  variant='dark'
-                  textColor='white'
-                  viewContext='premium-view'
-                />
-              </div>
-            )}
-          </motion.section>
-        )}
+                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
+                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
+                      <MapPin className='h-5 w-5 mr-2' />
+                      {t('premiumPage.overview.details.location.title')}
+                    </h4>
+                    <p className='text-gray-200 font-medium'>
+                      {t('premiumPage.overview.details.location.value')}
+                    </p>
+                  </div>
 
-        {activeTab === 'testimonials' && (
-          <motion.section
-            key='testimonials'
-            initial='hidden'
-            animate='visible'
-            exit='hidden'
-            variants={fadeIn}
-            className='py-20 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-white'
-          >
-            <div className='container mx-auto px-6'>
-              <div className='max-w-6xl mx-auto'>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className='text-center mb-16'
-                >
-                  <h2 className='text-4xl md:text-6xl font-bold text-white mb-6'>
-                    Guest Testimonials
-                  </h2>
-                  <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
-                    Discover what our premium guests have to say about their
-                    luxury experience with Lux Punta Cana.
-                  </p>
-                </motion.div>
-
-                <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-8'>
-                  {[
-                    {
-                      rating: 5,
-                      text: 'Our Punta Cana Lux experience was absolutely magnificent. From the moment we were picked up at the airport in that beautiful SUV, we knew we were in for something special. The yacht day was beyond anything we could have imagined - the crew was exceptional and the private coves they took us to were paradise. Worth every penny for a truly unforgettable anniversary.',
-                      name: 'Robert & Lisa Johnson',
-                      location: 'Anniversary Celebration, New York',
-                      initials: 'RL',
-                      gradient: 'from-amber-500 to-yellow-500',
-                    },
-                    {
-                      rating: 5,
-                      text: "I've stayed at luxury resorts worldwide, but Lux Punta Cana  brought personalization to another level. The concierge anticipated needs I didn't even know I had. The private yacht experience was seamless - I've been on many yacht charters, and this rivaled the best of them. This is how vacation should be done.",
-                      name: 'Emily Chen',
-                      location: 'Solo Luxury Traveler, San Francisco',
-                      initials: 'EC',
-                      gradient: 'from-purple-500 to-pink-500',
-                    },
-                    {
-                      rating: 5,
-                      text: "We booked the Punta Cana Lux package for our parents' 40th anniversary and they haven't stopped talking about it. The concierge even helped us arrange a surprise renewal of vows ceremony on the beach with a photographer. The attention to detail and personalized service exceeded all expectations.",
-                      name: 'Michael Rodriguez',
-                      location: 'Family Celebration, Chicago',
-                      initials: 'MR',
-                      gradient: 'from-green-500 to-emerald-500',
-                    },
-                  ].map((testimonial, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 + index * 0.1 }}
-                      className='bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-8 shadow-2xl border border-gray-700 hover:border-amber-400/30 transition-all duration-300'
-                    >
-                      <div className='flex items-center mb-6'>
-                        <div className='flex mr-3'>
-                          {Array(testimonial.rating)
-                            .fill(0)
-                            .map((_, i) => (
-                              <Star
-                                key={i}
-                                className='h-6 w-6 text-amber-400 fill-amber-400'
-                              />
-                            ))}
-                        </div>
-                        <span className='text-gray-400 font-bold'>
-                          {testimonial.rating}.0
-                        </span>
-                      </div>
-                      <p className='text-gray-300 italic mb-8 leading-relaxed text-lg'>
-                        "{testimonial.text}"
-                      </p>
-                      <div className='flex items-center'>
-                        <div
-                          className={`h-16 w-16 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center text-black font-bold text-xl mr-4 shadow-lg`}
-                        >
-                          {testimonial.initials}
-                        </div>
-                        <div>
-                          <h4 className='font-bold text-white text-lg'>
-                            {testimonial.name}
-                          </h4>
-                          <p className='text-gray-400'>
-                            {testimonial.location}
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.section>
-        )}
-
-        {activeTab === 'faq' && (
-          <motion.section
-            key='faq'
-            initial='hidden'
-            animate='visible'
-            exit='hidden'
-            variants={fadeIn}
-            className='py-20 bg-gradient-to-b from-gray-800 via-black to-gray-900 text-white'
-          >
-            <div className='container mx-auto px-6'>
-              <div className='max-w-4xl mx-auto'>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className='text-center mb-16'
-                >
-                  <h2 className='text-4xl md:text-6xl font-bold text-white mb-6'>
-                    Frequently Asked Questions
-                  </h2>
-                  <p className='text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed'>
-                    Find answers to common questions about our Lux Punta Cana
-                    premium package.
-                  </p>
-                </motion.div>
-
-                <div className='space-y-6'>
-                  {[
-                    {
-                      question:
-                        'What makes the premium package different from the standard package?',
-                      answer:
-                        'The premium package offers exclusive upgrades on all services, including a luxury SUV for airport transfers, a private yacht experience instead of a group catamaran trip, gourmet dining with a personal executive chef, additional wellness services, and 24/7 dedicated concierge support. Every aspect is enhanced for maximum luxury and personalization.',
-                    },
-                    {
-                      question:
-                        'Is the premium package worth the additional cost?',
-                      answer:
-                        'For travelers seeking a truly exceptional vacation experience, the premium upgrade delivers significant value. The private yacht alone represents a considerable upgrade from the group catamaran experience. When combined with the personal chef, massage service, 24/7 concierge, and upgraded transportation, the premium package creates a seamless luxury experience that our guests consistently rate as exceptional value.',
-                    },
-                    {
-                      question: 'How customizable is the premium package?',
-                      answer:
-                        'The premium package is highly customizable. While it includes our core luxury services, our dedicated concierge works with you before and during your stay to tailor each experience to your preferences. From menu planning with the chef to specific destinations for your yacht journey, the premium package can be adjusted to match your exact desires.',
-                    },
-                    {
-                      question:
-                        'Can I add additional yacht days or chef experiences?',
-                      answer:
-                        'Absolutely. Additional yacht days, chef experiences, and massage services can be added for an extra charge. Many of our premium guests choose to extend these signature experiences, particularly the yacht days. Your concierge can arrange any additional services with preferential rates for premium package guests.',
-                    },
-                    {
-                      question:
-                        'How far in advance should I book the premium package?',
-                      answer:
-                        'We recommend booking the premium package at least 60 days in advance to ensure availability of all luxury services, particularly during high season (December-April). This lead time also allows our team to thoroughly prepare your personalized experience. Due to limited availability of our premium services, last-minute bookings cannot always be accommodated.',
-                    },
-                    {
-                      question:
-                        "What's the cancellation policy for the premium package?",
-                      answer:
-                        'For premium packages, we offer a full refund for cancellations 45+ days before arrival, 50% refund for cancellations 30-44 days before arrival, and no refund for cancellations less than 30 days before arrival. We strongly recommend travel insurance for all premium bookings. Special consideration may be given for extreme circumstances.',
-                    },
-                  ].map((faq, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className='bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 shadow-xl border border-gray-700 hover:border-amber-400/30 transition-all duration-300'
-                    >
-                      <h3 className='text-xl font-bold text-amber-400 mb-4'>
-                        {faq.question}
-                      </h3>
-                      <p className='text-gray-300 leading-relaxed text-lg'>
-                        {faq.answer}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Contact for More Questions */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className='mt-16 text-center p-8 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 rounded-3xl border border-amber-400/30'
-                >
-                  <h3 className='text-2xl font-bold text-amber-400 mb-4'>
-                    Still Have Questions?
-                  </h3>
-                  <p className='text-gray-300 mb-8 text-lg'>
-                    Our luxury concierge team is here to help you plan your
-                    perfect premium experience.
-                  </p>
-                  <Link href='/contact'>
-                    <button className='inline-flex items-center px-8 py-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-bold rounded-2xl transition-all duration-300 shadow-lg transform hover:scale-105'>
-                      Contact Our Concierge Team
-                      <ArrowRight className='ml-2 h-5 w-5' />
-                    </button>
-                  </Link>
+                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
+                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
+                      <Wine className='h-5 w-5 mr-2' />
+                      {t('premiumPage.overview.details.services.title')}
+                    </h4>
+                    <p className='text-gray-200 font-medium'>
+                      {t('premiumPage.overview.details.services.value')}
+                    </p>
+                  </div>
                 </motion.div>
               </div>
             </div>
-          </motion.section>
+
+            <ServiceList
+              services={services}
+              servicePath='premium-package'
+              variant='dark'
+              textColor='white'
+              viewContext='premium-view'
+            />
+          </div>
         )}
-      </AnimatePresence>
+      </motion.section>
 
       {/* Enhanced Premium CTA Section */}
       <section className='py-20 bg-gradient-to-br from-black via-amber-900/20 to-black relative overflow-hidden'>
@@ -589,7 +307,7 @@ const PremiumPackageContent = () => {
         <div className='absolute inset-0 z-0 opacity-20'>
           <Image
             src='/img/beach.jpg'
-            alt='Luxury Yacht Sunset'
+            alt={t('premiumPage.cta.backgroundImageAlt')}
             fill
             className='object-cover'
           />
@@ -604,24 +322,16 @@ const PremiumPackageContent = () => {
               transition={{ duration: 0.6 }}
             >
               <h2 className='text-4xl md:text-7xl font-bold text-white mb-8 leading-tight'>
-                Experience Ultimate Luxury
+                {t('premiumPage.cta.title')}
               </h2>
               <p className='text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed'>
-                Book your Lux Punta Cana package now and indulge in the most
-                exclusive Caribbean experience with personalized service and
-                premium amenities.
+                {t('premiumPage.cta.description')}
               </p>
 
               <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                {/* <Link href='/custom-package'>
-                  <button className='group px-10 py-5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-black font-bold rounded-2xl transition-all duration-300 shadow-2xl shadow-amber-500/30 text-lg transform hover:scale-105'>
-                    Customize Your Package
-                    <ArrowRight className='ml-2 h-6 w-6 inline group-hover:translate-x-1 transition-transform' />
-                  </button>
-                </Link> */}
                 <Link href='/contact'>
                   <button className='group px-10 py-5 bg-gradient-to-r from-amber-400/20 to-yellow-400/20 backdrop-blur-sm border-2 border-amber-400 hover:border-amber-300 hover:bg-amber-400/30 text-amber-300 font-bold rounded-2xl transition-all duration-300 text-lg transform hover:scale-105'>
-                    Contact Concierge
+                    {t('premiumPage.cta.contactButton')}
                     <Crown className='ml-2 h-6 w-6 inline group-hover:rotate-12 transition-transform' />
                   </button>
                 </Link>

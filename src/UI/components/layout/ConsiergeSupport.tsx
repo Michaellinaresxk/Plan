@@ -21,7 +21,7 @@ const ConsiergeSupport = () => {
               viewport={{ once: true }}
             >
               <span className='inline-block px-4 py-1 bg-gray-200 text-gray-800 rounded-full text-sm font-medium mb-4'>
-                {t('customPackage.personalTouch', {
+                {t('common.consierge.chip', {
                   fallback: 'Personal Touch',
                 })}
               </span>
@@ -153,7 +153,9 @@ const ConsiergeSupport = () => {
                           Bladimir Rodriguez
                         </h4>
                         <p className='text-gray-600 text-sm'>
-                          Head of Concierge Services
+                          {t('common.consierge.consierge', {
+                            fallback: 'Contact Our Concierge',
+                          })}
                         </p>
                       </div>
                     </div>

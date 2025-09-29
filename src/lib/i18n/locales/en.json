@@ -23,9 +23,9 @@
       "needHelp": "Need Help"
     },
     "mainText": {
-      "title": "Xclusive Services",
-      "subtitle": "At Lux Punta Cana, we understand that the most valuable moments are not improvised... They are designed with intention. That's why our services, from SUV pickups and private yacht cruises to gourmet dinners, not only create experiences, but memories that last. Because true luxury does not need to show excess.",
-      "slogan": "You just need to touch the soul.",
+      "title": "Xclusive Experiences",
+      "subtitle": "At Lux Punta Cana, we understand that the most precious moments are not born of chance, but are masterpieces of intentional design. Each of our services from luxurious SUV transfers that envelop you in comfort and elegance to serene private yacht cruises that cradle you in the calm of the sea and gourmet dining experiences that awaken your senses are meticulously crafted not just to create fleeting instants, but to forge memories that resonate in your heart. Because true luxury is not defined by the superficial, it is ",
+      "slogan": "it is the ability to touch the soul and create connections that endure.",
       "experience": "Years of Experience",
       "happyClients": "Happy Clients",
       "exclusiveServices": "Xclusive Services"
@@ -52,11 +52,13 @@
       "details": "View Details"
     },
     "package-standard": {
-      "chip": "Xclusive Services",
-      "standardChip": "Standard Services",
+      "chip": "Xclusive Experiences",
+      "standardService": "Standard Experiences",
+      "standardExperiences": "Service",
+      "standardChip": "Services",
       "title": "Choose Your Experience",
       "subtitle": "Select the package that fits your vacation needs. Each option offers unique services to enhance your stay.",
-      "standard": "Our standard package offers a complete vacation experience with all the essential services.",
+      "standard": "This package provides a comprehensive vacation experience, thoughtfully designed to encompass all the essential services for your ultimate comfort and convenience.",
       "transfers": "Airport Transfers",
       "golfCart": "Golf Cart Rentals",
       "trips": "Catamaran Trips",
@@ -67,11 +69,29 @@
       "ultraLuxe": "Ultra Lux"
     },
     "package-luxe": {
-      "subtitle": "Our premium package offers an elevated experience with exclusive luxury services.",
+      "xclusiveService": "Xclusive Experience",
+      "subtitle": "This package presents an opportunity to indulge in elevated experiences, seamlessly complemented by our lux services.",
       "yacht": "Lux Yacht",
       "culinarie": "Lux Culinary Service",
       "massage": "Lux Masseuse Service",
       "suv": "Lux Arrival - SUV Service"
+    },
+    "faqs": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Find answers to common questions about our packages and services",
+      "question1": "What happens if the weather is bad?",
+      "answer1": "In case of bad weather affecting safety (storm, hurricane, heavy rain, or rough seas) the activity will be rescheduled at no additional cost. If rescheduling is not possible, a partial or full refund will be issued depending on the service policy.",
+      "question2": "What is the cancellation policy?",
+      "answer2": "Cancellations made more than 72 hours in advance: full refund. Cancellations before 48 hours: partial refund (50%). Cancellations less than 24 hours or no-show: non-refundable.",
+      "question3": "How do payments work?",
+      "answer3": "We accept credit and debit cards through Stripe, as well as international or local bank transfers. All payments are secure and protected.",
+      "question4": "Are the services private or shared?",
+      "answer4": "Most of our services are private and personalized. If an experience is shared, you will be informed in advance.",
+      "question5": "What if I need to change my reservation date?",
+      "answer5": "You may request a date change at least 48 hours in advance, subject to availability.",
+      "stillHaveQuestions": "Still Have Questions?",
+      "stillHaveQuestionsText": "Our team is here to help you plan your perfect Punta Cana experience.",
+      "contactUs": "Contact Us"
     }
   },
   "home": {
@@ -89,11 +109,13 @@
 
     "consierge": {
       "title": "Need Help? Our Concierge Team Is Ready",
+      "chip": "Personal Touch",
       "subtitle": "Not sure which services to select? Our experienced concierge team is available to guide you through creating the perfect package tailored to your preferences.",
       "option1": "Expert advice on selecting the perfect mix of services",
       "option2": "Personalized suggestions based on your preferences",
       "option3": "Assistance with special requests and arrangements",
       "button": "Contact Our Concierge Team",
+      "consierge": "Head of Concierge Services",
       "testimonial": "Our team is dedicated to crafting the perfect vacation experience for you. We're here to make your dream vacation a reality."
     }
   },
@@ -138,7 +160,7 @@
         "header": {
           "subtitle": "Exclusive Experiences",
           "title": "Our Services",
-          "description": "Discover our complete collection of luxury experiences, designed to create unique moments in the paradise of Punta Cana."
+          "description": "Discover our complete collection of lux experiences, designed to create unique moments in the paradise of Punta Cana."
         },
         "packageTypes": {
           "premium": "Premium",
@@ -244,6 +266,312 @@
         "name": "Horseback Riding",
         "short": "Enjoy a guided ride along beaches, trails, and breathtaking landscapes—perfect for all experience levels. Book your horseback adventure and live an unforgettable experience.",
         "full": "Discover the natural beauty of Punta Cana on horseback. Enjoy a guided ride along beaches, trails, and breathtaking landscapes—perfect for all experience levels. Book your horseback adventure and live an unforgettable experience."
+      },
+      "atvService": {
+        "hero": {
+          "imageAlt": "ATV adventures in tropical paradise",
+          "badge": "#1 Tropical Adventure",
+          "title": "ATV Adventures",
+          "subtitle": "Tropical Paradise",
+          "description": "Explore hidden beaches, jungle trails, and crystal-clear cenotes on the ultimate off-road adventure.",
+          "ctaButton": "Start Your Adventure",
+          "stats": {
+            "rating": "4.9 Rating",
+            "duration": "3 Hours",
+            "groups": "Small Groups"
+          }
+        },
+        "vehicleSelection": {
+          "badge": "Choose Your Adventure",
+          "title": "Select Your",
+          "titleHighlight": "Off-Road Vehicle",
+          "subtitle": "Each vehicle offers a unique way to explore the tropical wilderness. Choose the perfect ride for your adventure level.",
+          "contactUs": "Contact Us",
+          "maxParticipants": "Max",
+          "info": {
+            "safety": "All safety gear included",
+            "adventure": "3-hour adventure",
+            "trails": "Tropical trails & beaches"
+          }
+        },
+        "vehicles": {
+          "duration": "3 hours",
+          "buggy": {
+            "name": "Dune Buggy",
+            "description": "Shared adventure for couples",
+            "features": {
+              "capacity": "2-person capacity",
+              "sideBySide": "Side by side",
+              "couples": "Great for couples"
+            }
+          },
+          "atv": {
+            "name": "ATV Quad",
+            "description": "Single rider adventure",
+            "features": {
+              "solo": "Solo riding",
+              "handling": "Easy handling",
+              "beginners": "Perfect for beginners"
+            }
+          },
+          "polaris": {
+            "name": "Polaris RZR",
+            "description": "Premium off-road experience",
+            "features": {
+              "performance": "High performance",
+              "suspension": "Advanced suspension",
+              "thrill": "Thrill seekers"
+            }
+          },
+          "polarisFamiliar": {
+            "name": "Polaris Familiar",
+            "description": "Premium off-road experience",
+            "features": {
+              "performance": "High performance",
+              "suspension": "Advanced suspension",
+              "thrill": "Thrill seekers"
+            }
+          }
+        },
+        "gallery": {
+          "title": "Adventure",
+          "titleHighlight": "Gallery",
+          "subtitle": "See what awaits you on this tropical adventure",
+          "categories": {
+            "all": "All Vehicles",
+            "atv": "ATV",
+            "buggies": "Buggies",
+            "polaris": "Polaris"
+          },
+          "photos": {
+            "jungle": {
+              "alt": "ATV jungle adventure",
+              "caption": "Explore lush jungle trails"
+            },
+            "beach": {
+              "alt": "Beach ATV riding",
+              "caption": "Race along pristine beaches"
+            },
+            "cenotes": {
+              "alt": "Polaris adventure",
+              "caption": "Polaris RZR"
+            },
+            "polarisSunset": {
+              "alt": "Polaris sunset",
+              "caption": "Discover hidden cenotes"
+            },
+            "polarisFamiliar": {
+              "alt": "Polaris Familiar",
+              "caption": "Polaris Familiar"
+            }
+          },
+          "noPhotos": "No photos found for this category",
+          "closeImage": "Close image"
+        },
+        "itinerary": {
+          "title": "Adventure",
+          "titleHighlight": "Itinerary",
+          "subtitle": "Approximately 3 hours exploring tropical paradise",
+          "route": "Route: Playa Macao → Cueva Taína → Casa Típica → Return to Ranch",
+          "stopLabel": "Stop",
+          "totalDuration": "Total Duration: ~3 hours",
+          "lifeVests": "Life vests available as additional service",
+          "steps": {
+            "playaMacao": {
+              "title": "Playa Macao",
+              "description": "First stop: Experience pristine untouched beach with white sand"
+            },
+            "cuevaTaina": {
+              "title": "Cueva Taína (Cenote)",
+              "description": "Natural cenote cave with crystal-clear water for swimming"
+            },
+            "casaTipica": {
+              "title": "Casa Típica",
+              "description": "Traditional Dominican house with coffee, tobacco & chocolate tasting"
+            },
+            "returnRanch": {
+              "title": "Return to Ranch",
+              "description": "Return journey through scenic tropical trails"
+            }
+          }
+        },
+        "whatToBring": {
+          "title": "What to",
+          "titleHighlight": "Bring",
+          "sunglasses": {
+            "title": "Sunglasses",
+            "description": "Eye protection (optional purchase at ranch)"
+          },
+          "bandanas": {
+            "title": "Bandanas",
+            "description": "Dust protection (optional purchase at ranch)"
+          },
+          "swimwear": {
+            "title": "Swimwear",
+            "description": "Essential for cenote swimming experience"
+          },
+          "oldClothes": {
+            "title": "Old Clothes",
+            "description": "Clothes WILL get dirty from muddy trails"
+          }
+        },
+        "scheduleInfo": {
+          "title": "Schedule &",
+          "titleHighlight": "Important Info",
+          "pickupTimes": {
+            "title": "Pickup Times",
+            "items": ["7:30 AM ", "10:30 AM", "1:30 PM"]
+          },
+          "cenoteImportant": {
+            "title": "Cenote Important",
+            "items": [
+              "Life vests NOT included",
+              "Available as additional paid service",
+              "Swimming is optional"
+            ]
+          },
+          "weatherPolicy": {
+            "title": "Weather Policy",
+            "items": [
+              "Excursion does NOT cancel for rain",
+              "Only cancelled in extreme weather conditions",
+              "Come prepared for adventure!"
+            ]
+          }
+        },
+        "importantObservation": {
+          "title": "⚠️ Important Observation",
+          "description": "Your clothes WILL get dirty from the muddy trails! Wear old clothes that you don't mind getting messy.",
+          "note": "Sunglasses and bandanas are available for purchase at the ranch if needed."
+        },
+        "policies": {
+          "weather": {
+            "title": "🌦️ Weather Policy",
+            "description": "The excursion does NOT cancel for rain! We only cancel in extreme weather conditions. Come prepared for an adventure regardless of weather."
+          },
+          "photo": {
+            "title": "📸 Photo Disclaimer",
+            "description": "Photos taken during our excursions may be used for promotional purposes. Professional action shots are included in your adventure experience."
+          }
+        },
+        "quickInfo": {
+          "cards": {
+            "location": {
+              "title": "Jungle & Beach",
+              "description": "Explore diverse tropical terrain"
+            },
+            "safety": {
+              "title": "Safety First",
+              "description": "Professional guides & gear"
+            },
+            "duration": {
+              "title": "3 Hours",
+              "description": "Action-packed adventure"
+            },
+            "rating": {
+              "title": "4.9 Rating",
+              "description": "From 1,200+ adventurers"
+            }
+          }
+        },
+        "includes": {
+          "title": "What's",
+          "titleHighlight": "Included",
+          "includedTitle": "Included in Your Adventure",
+          "notIncludedTitle": "Additional Services Available",
+          "items": {
+            "transportation": "Round-trip hotel transportation",
+            "atvRental": "Professional ATV/Buggy/Polaris rental",
+            "safetyEquipment": "Safety equipment & briefing",
+            "bilingualGuide": "Expert bilingual guide",
+            "beachAccess": "Playa Macao beach access",
+            "cenoteExploration": "Cueva Taína (cenote) exploration",
+            "traditionalHouse": "Casa Típica traditional house visit",
+            "tasting": "Coffee, tobacco & chocolate tasting",
+            "lifeVests": "🚨 Life vests for cenote (additional paid service)",
+            "sunglasses": "Sunglasses (optional purchase at ranch)",
+            "bandanas": "Bandanas (optional purchase at ranch)",
+            "personalItems": "Personal items & souvenirs"
+          }
+        },
+        "specialBanner": {
+          "imageAlt": "ATV adventure through tropical paradise",
+          "badge": "Eco-Adventure Experience",
+          "title": "Off-Road Adventure",
+          "subtitle": "Through Paradise",
+          "description": "Navigate through tropical jungles, splash through crystal-clear rivers, and discover hidden beaches on the ultimate ATV adventure. Our eco-friendly tours respect nature while delivering maximum thrills.",
+          "features": {
+            "ecoFriendly": "Eco-Friendly",
+            "guides": "Certified Guides",
+            "equipment": "Premium Equipment"
+          },
+          "ctaButton": "Book Your ATV Adventure"
+        },
+        "adventureBanner": {
+          "title": "Why Choose Our",
+          "titleHighlight": "ATV Adventures?",
+          "imageAlt": "ATV adventure group",
+          "features": {
+            "terrain": {
+              "title": "Diverse Terrain Exploration",
+              "description": "From dense jungle trails to pristine beaches and refreshing cenotes, experience the full spectrum of tropical paradise."
+            },
+            "equipment": {
+              "title": "Xclusive Equipment Fleet",
+              "description": "Choose from ATVs, Buggies, or Polaris RZRs - all regularly maintained and equipped with latest safety features."
+            },
+            "ecoTourism": {
+              "title": "Eco-Responsible Tourism",
+              "description": "We follow strict environmental guidelines to preserve the natural beauty for future generations."
+            }
+          },
+          "badge": {
+            "title": "Xclusive",
+            "subtitle": "Adventure"
+          }
+        },
+        "reviews": {
+          "title": "Adventure",
+          "titleHighlight": "Stories",
+          "subtitle": "4.9 from 1,200+ adventures",
+          "items": {
+            "carlos": {
+              "name": "Carlos Rodriguez",
+              "text": "Incredible ATV adventure! The jungle trails were amazing and the cenote swim was refreshing.",
+              "date": "3 days ago",
+              "vehicle": "Polaris RZR"
+            },
+            "jennifer": {
+              "name": "Jennifer Smith",
+              "text": "Perfect for beginners! Our guide was patient and the buggy was easy to handle. Loved every minute!",
+              "date": "1 week ago",
+              "vehicle": "Dune Buggy"
+            },
+            "alex": {
+              "name": "Alex Thompson",
+              "text": "Best excursion in Punta Cana! The ATV was powerful and the routes were thrilling but safe.",
+              "date": "2 weeks ago",
+              "vehicle": "ATV Quad"
+            }
+          }
+        },
+        "cenoteNotice": {
+          "title": "🏊‍♂️ Important: Cenote Swimming",
+          "description": "Life vests are NOT included for cenote swimming and must be purchased as an additional service at the location.",
+          "note": "Swimming in the cenote is completely optional. Safety equipment can be rented on-site for those who wish to swim."
+        },
+        "safetyNotice": "All safety equipment and professional guidance included for vehicle operation",
+        "service": {
+          "name": "ATV Adventure",
+          "description": "Tropical paradise off-road adventure",
+          "duration": "3 hours",
+          "included": [
+            "Round-trip transportation",
+            "Safety equipment",
+            "Expert guide",
+            "Photos"
+          ]
+        }
       },
       "deepSeaFishing": {
         "name": "Deep-Sea Fishing",
@@ -726,15 +1054,47 @@
     }
   },
   "premiumPage": {
-    "chip": "PREMIUM LUXURY EXPERIENCE",
-    "rating": "Rating",
-    "experince": "Exclusive Experience",
-    "subtitle": "Indulge in the ultimate Dominican Republic experience with our premium package. Elevate your vacation with exclusive luxuries, personalized service, and unforgettable moments from arrival to departure.",
-    "btn1": "Explore Premium Services",
-    "btn2": "Customize Your Experience",
-    "tab1": "Overview",
-    "tab2": "Premium Services",
-    "tab3": "Testimonials",
-    "tab4": "FAQ"
+    "hero": {
+      "imageAlt": "Punta Cana lux",
+      "badge": "PREMIUM LUXURY EXPERIENCE",
+      "titlePrefix": "X",
+      "titleHighlight": "clusive",
+      "rating": "5.0 Exclusive Rating • Elite Experience",
+      "description": "Indulge in the ultimate Dominican Republic experience with our premium package. Elevate your vacation with exclusive luxuries, personalized service, and unforgettable moments from arrival to departure.",
+      "exploreStandardButton": "Explore Standard Experience"
+    },
+    "overview": {
+      "loading": "Loading your Xclusive experiences...",
+      "title": "Your Xclusive Experience",
+      "subtitle": "Indulge in the ultimate luxury with our handpicked premium services. Every moment is crafted for discerning travelers who demand nothing but the finest.",
+      "experienceTitle": "The Ultimate Punta Cana Experience",
+      "experienceDescription1": "Our Lux Punta Cana package redefines the Dominican vacation experience, offering an exclusive journey into luxury and personalized service. From your arrival in a premium SUV to unforgettable days aboard your private yacht, every moment is crafted for maximum enjoyment.",
+      "experienceDescription2": "Perfect for discerning travelers, honeymooners, or anyone celebrating a special occasion who desires the very best that Punta Cana has to offer. Every detail is meticulously arranged by our dedicated concierge team.",
+      "availabilityNote": "Limited availability - Reserve early",
+      "details": {
+        "duration": {
+          "title": "Duration",
+          "value": "Flexible (5-14 days)"
+        },
+        "groupSize": {
+          "title": "Group Size",
+          "value": "1-8 people"
+        },
+        "location": {
+          "title": "Location",
+          "value": "Punta Cana, Dominican Republic"
+        },
+        "services": {
+          "title": "Services",
+          "value": "All-inclusive premium"
+        }
+      }
+    },
+    "cta": {
+      "backgroundImageAlt": "Luxury Yacht Sunset",
+      "title": "Experience Ultimate Luxury",
+      "description": "Book your Lux Punta Cana package now and indulge in the most exclusive Caribbean experience with personalized service and premium amenities.",
+      "contactButton": "Contact Concierge"
+    }
   }
 }
