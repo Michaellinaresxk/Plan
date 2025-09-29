@@ -31,7 +31,6 @@ interface AtvRideFormProps {
   onCancel?: () => void;
 }
 
-// Interfaces tipadas - mismo patrón que HorseBackRidingForm
 interface FormData {
   date: string;
   timeSlot: string;
@@ -47,66 +46,45 @@ interface FormErrors {
   [key: string]: string;
 }
 
-// Vehicle types with correct pricing
+// Solo datos no traducibles
 const VEHICLE_TYPES = {
-  atv: {
-    name: 'ATV Quad',
-    price: 80,
-    maxParticipants: 2,
-    description: 'Off-Road adventure',
-  },
   buggy: {
-    name: 'Dune Buggy',
     price: 65,
-    maxParticipants: 4,
-    description: 'Perfect for couples',
+    maxParticipants: 2,
+  },
+  atv: {
+    price: 85,
+    maxParticipants: 2,
   },
   polaris: {
-    name: 'Polaris RZR',
     price: 160,
     maxParticipants: 2,
-    description: 'Premium off-road experience',
   },
   polarisFamiliar: {
-    name: 'Polaris Familiar',
     price: 215,
     maxParticipants: 4,
-    description: 'Family adventure vehicle',
   },
 };
 
-// Time slots
+// Solo datos no traducibles
 const TIME_SLOTS = [
   {
     id: '8am',
-    name: 'Morning Adventure',
-    time: '8:00 AM',
-    pickup: '7:30 AM',
     icon: Sunrise,
-    description: 'Perfect for cooler weather',
   },
   {
     id: '11am',
-    name: 'Mid-Morning',
-    time: '11:00 AM',
-    pickup: '10:30 AM',
     icon: Sun,
-    description: 'Great lighting conditions',
   },
   {
     id: '2pm',
-    name: 'Afternoon Adventure',
-    time: '2:00 PM',
-    pickup: '1:30 PM',
     icon: Activity,
-    description: 'Perfect for photos',
   },
 ] as const;
 
-// Transport pricing
 const ATV_TRANSPORT_PRICING = {
-  small: 60, // 1-4 people
-  large: 100, // 5-8 people
+  small: 60,
+  large: 100,
   maxCapacity: 8,
 };
 
@@ -121,12 +99,11 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
   const { setReservationData } = useReservation();
   const { handleClose } = useFormModal({ onCancel });
 
-  // Form state - mismo patrón que HorseBackRidingForm
   const [formData, setFormData] = useState<FormData>({
     date: '',
     timeSlot: '',
     location: '',
-    vehicleType: selectedVehicle?.id || 'atv',
+    vehicleType: selectedVehicle?.id || 'buggy', // 👈 Cambiado de 'atv' a 'buggy'
     vehicleCount: 1,
     totalParticipants: 1,
     hasExperience: true,
@@ -136,14 +113,12 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Helper to update form fields - mismo patrón que HorseBackRidingForm
   const updateFormField = useCallback((field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
 
-    // Clear error when field is updated
     setErrors((prev) => {
       if (prev[field]) {
         const newErrors = { ...prev };
@@ -154,13 +129,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     });
   }, []);
 
-  // Generic input handler - mismo patrón que HorseBackRidingForm
   const handleInputChange = useCallback(
-    (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-      >
-    ) => {
+    (e: { target: HTMLInputElement }) => {
       const { name, value, type, checked } = e.target as HTMLInputElement;
 
       if (type === 'checkbox') {
@@ -171,8 +141,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     },
     [updateFormField]
   );
-
-  // Handle location selection - mismo patrón que HorseBackRidingForm
   const handleLocationSelect = useCallback(
     (locationId: string) => {
       updateFormField('location', locationId);
@@ -180,13 +148,11 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     [updateFormField]
   );
 
-  // Get current vehicle info
   const currentVehicle = useMemo(
     () => VEHICLE_TYPES[formData.vehicleType as keyof typeof VEHICLE_TYPES],
     [formData.vehicleType]
   );
 
-  // Use location pricing hook
   const {
     locationOptions,
     selectedLocation,
@@ -199,19 +165,16 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     servicePricing: ATV_TRANSPORT_PRICING,
   });
 
-  // Calculate base price
   const basePrice = useMemo(() => {
     if (!currentVehicle?.price) return 0;
     return currentVehicle.price * formData.vehicleCount;
   }, [currentVehicle, formData.vehicleCount]);
 
-  // Calculate total price
   const totalPrice = useMemo(() => {
     if (!currentVehicle?.price) return 0;
     return basePrice + totalLocationCost;
   }, [basePrice, totalLocationCost, currentVehicle]);
 
-  // Update vehicle count when participants change
   useEffect(() => {
     if (currentVehicle) {
       const vehiclesNeeded = Math.ceil(
@@ -226,7 +189,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     }
   }, [formData.totalParticipants, formData.vehicleType, currentVehicle]);
 
-  // Counter handlers - mismo patrón que HorseBackRidingForm
   const createCounterHandler = (field: keyof FormData, min = 0, max = 16) => ({
     increment: () =>
       setFormData((prev) => ({
@@ -243,59 +205,82 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
   const participantCounter = createCounterHandler('totalParticipants', 1);
   const vehicleCounter = createCounterHandler('vehicleCount', 1, 8);
 
-  // Validation function - MISMO PATRÓN QUE HorseBackRidingForm
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     const maxCapacity =
       (currentVehicle?.maxParticipants || 1) * formData.vehicleCount;
 
-    // Required fields
     if (!formData.date) {
-      newErrors.date = 'Date is required';
+      newErrors.date = t(
+        'services.standard.atvExcurtionsForm.fields.date.required'
+      );
     }
 
     if (!formData.location) {
-      newErrors.location = 'Please select a pickup location';
+      newErrors.location = t(
+        'services.standard.atvExcurtionsForm.fields.location.required'
+      );
     }
 
     if (!formData.timeSlot) {
-      newErrors.timeSlot = 'Please select a time slot';
+      newErrors.timeSlot = t(
+        'services.standard.atvExcurtionsForm.fields.timeSlot.required'
+      );
     }
 
     if (!formData.vehicleType) {
-      newErrors.vehicleType = 'Please select a vehicle';
+      newErrors.vehicleType = t(
+        'services.standard.atvExcurtionsForm.fields.vehicleType.required'
+      );
     }
 
-    // Participant validation
     if (formData.totalParticipants < 1) {
-      newErrors.totalParticipants = 'At least 1 person required';
+      newErrors.totalParticipants = t(
+        'services.standard.atvExcurtionsForm.fields.participants.min'
+      );
     }
 
     if (formData.totalParticipants > 16) {
-      newErrors.totalParticipants = 'Maximum 16 people allowed';
+      newErrors.totalParticipants = t(
+        'services.standard.atvExcurtionsForm.fields.participants.max'
+      );
     }
 
-    // Vehicle validation
     if (formData.vehicleCount < 1) {
-      newErrors.vehicleCount = 'At least 1 vehicle required';
+      newErrors.vehicleCount = t(
+        'services.standard.atvExcurtionsForm.fields.vehicles.min'
+      );
     }
 
     if (formData.vehicleCount > 8) {
-      newErrors.vehicleCount = 'Maximum 8 vehicles allowed';
+      newErrors.vehicleCount = t(
+        'services.standard.atvExcurtionsForm.fields.vehicles.max'
+      );
     }
 
-    // Capacity validation
     if (formData.totalParticipants > maxCapacity) {
-      newErrors.totalParticipants = `Cannot fit ${formData.totalParticipants} people in ${formData.vehicleCount} vehicle(s). Maximum capacity is ${maxCapacity} people.`;
-      newErrors.vehicleCount = `Need at least ${Math.ceil(
-        formData.totalParticipants / (currentVehicle?.maxParticipants || 1)
-      )} vehicles for ${formData.totalParticipants} people.`;
+      newErrors.totalParticipants = t(
+        'services.standard.atvExcurtionsForm.errors.capacityExceeded',
+        {
+          participants: formData.totalParticipants,
+          vehicles: formData.vehicleCount,
+          max: maxCapacity,
+        }
+      );
+      newErrors.vehicleCount = t(
+        'services.standard.atvExcurtionsForm.errors.needMoreVehicles',
+        {
+          needed: Math.ceil(
+            formData.totalParticipants / (currentVehicle?.maxParticipants || 1)
+          ),
+          participants: formData.totalParticipants,
+        }
+      );
     }
 
     return newErrors;
   };
 
-  // Submit handler - MISMO PATRÓN QUE HorseBackRidingForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -314,7 +299,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       const bookingStartDate = new Date(selectedDate);
       const bookingEndDate = new Date(selectedDate);
 
-      // Set times based on time slot
       switch (formData.timeSlot) {
         case '8am':
           bookingStartDate.setHours(8, 0, 0, 0);
@@ -330,10 +314,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
           break;
       }
 
-      const selectedTimeSlot = TIME_SLOTS.find(
-        (slot) => slot.id === formData.timeSlot
-      );
-
       const reservationData = {
         service: service,
         formData: {
@@ -344,7 +324,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
           transportCost,
           locationSurcharge,
           locationName: selectedLocation?.name || formData.location,
-          pickupTime: selectedTimeSlot?.pickup,
+          pickupTime: t(
+            `services.standard.atvExcurtionsForm.timeSlots.${formData.timeSlot}.pickup`
+          ),
         },
         totalPrice,
         bookingDate: bookingStartDate,
@@ -357,7 +339,11 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
         selectedItems: [
           {
             id: `atv-${formData.vehicleType}`,
-            name: `ATV Adventure - ${currentVehicle?.name}`,
+            name: `${t(
+              'services.standard.atvExcurtionsForm.header.title'
+            )} - ${t(
+              `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+            )}`,
             quantity: formData.vehicleCount,
             price: totalPrice,
             totalPrice,
@@ -369,7 +355,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
         clientInfo: undefined,
         atvSpecifics: {
           timeSlot: formData.timeSlot,
-          pickupTime: selectedTimeSlot?.pickup,
+          pickupTime: t(
+            `services.standard.atvExcurtionsForm.timeSlots.${formData.timeSlot}.pickup`
+          ),
           location: formData.location,
           locationName: selectedLocation?.name || formData.location,
           vehicleType: formData.vehicleType,
@@ -398,7 +386,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     } catch (error) {
       console.error('❌ AtvForm - Error submitting form:', error);
       setErrors({
-        submit: 'Failed to submit reservation. Please try again.',
+        submit: t('services.standard.atvExcurtionsForm.errors.submit'),
       });
     } finally {
       setIsSubmitting(false);
@@ -409,7 +397,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     formData.vehicleType === 'polaris' ||
     formData.vehicleType === 'polarisFamiliar';
 
-  // Counter component - mismo patrón que HorseBackRidingForm
   const Counter = ({
     label,
     value,
@@ -457,7 +444,13 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       </div>
       {value >= max && (
         <p className='text-xs text-amber-600 mt-1'>
-          Maximum {max} {label.toLowerCase()} allowed
+          {t(
+            'services.standard.atvExcurtionsForm.fields.participants.maxReached',
+            {
+              max,
+              label: label.toLowerCase(),
+            }
+          )}
         </p>
       )}
     </div>
@@ -471,10 +464,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     >
       <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
         <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-          {/* Form Header */}
           <FormHeader
-            title='ATVs Adventure'
-            subtitle='Explore tropical paradise through jungle trails and pristine beaches'
+            title={t('services.standard.atvExcurtionsForm.header.title')}
+            subtitle={t('services.standard.atvExcurtionsForm.header.subtitle')}
             icon={Mountain}
             isPremium={isPremium}
             onCancel={handleClose}
@@ -484,12 +476,11 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             gradientTo='amber-500'
           />
 
-          {/* Form Body */}
           <div className='p-8 space-y-8'>
             {/* Date and Time Section */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                Schedule Your Adventure
+                {t('services.standard.atvExcurtionsForm.sections.schedule')}
               </h3>
 
               {/* Date Selection */}
@@ -500,7 +491,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                       isPremium ? 'text-purple-600' : 'text-green-600'
                     }`}
                   />
-                  Select Date *
+                  {t('services.standard.atvExcurtionsForm.fields.date.label')} *
                 </label>
                 <input
                   type='date'
@@ -527,7 +518,10 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                       isPremium ? 'text-purple-600' : 'text-green-600'
                     }`}
                   />
-                  Time Slot *
+                  {t(
+                    'services.standard.atvExcurtionsForm.fields.timeSlot.label'
+                  )}{' '}
+                  *
                 </label>
 
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
@@ -575,12 +569,22 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                                 isPremium ? 'text-purple-500' : 'text-green-500'
                               }`}
                             />
-                            <span className='font-medium'>{slot.name}</span>
+                            <span className='font-medium'>
+                              {t(
+                                `services.standard.atvExcurtionsForm.timeSlots.${slot.id}.name`
+                              )}
+                            </span>
                           </div>
                         </div>
 
                         <p className='text-gray-400 text-xs mt-1 ml-8'>
-                          Pickup: {slot.pickup}
+                          {t(
+                            'services.standard.atvExcurtionsForm.fields.timeSlot.pickup'
+                          )}
+                          :{' '}
+                          {t(
+                            `services.standard.atvExcurtionsForm.timeSlots.${slot.id}.pickup`
+                          )}
                         </p>
                       </div>
                     );
@@ -596,7 +600,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             {/* Location Selection */}
             <div className='space-y-4'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                Pickup Location
+                {t('services.standard.atvExcurtionsForm.sections.location')}
               </h3>
 
               <LocationSelector
@@ -611,7 +615,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             {/* Vehicle Selection */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                Vehicle & Group Size
+                {t(
+                  'services.standard.atvExcurtionsForm.sections.vehicleAndGroup'
+                )}
               </h3>
 
               {/* Vehicle Type */}
@@ -622,7 +628,10 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                       isPremium ? 'text-purple-600' : 'text-green-600'
                     }`}
                   />
-                  Select Vehicle Type *
+                  {t(
+                    'services.standard.atvExcurtionsForm.fields.vehicleType.label'
+                  )}{' '}
+                  *
                 </label>
                 <select
                   name='vehicleType'
@@ -636,9 +645,10 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 >
                   {Object.entries(VEHICLE_TYPES).map(([key, vehicle]) => (
                     <option key={key} value={key}>
-                      {vehicle.name} - ${vehicle.price} (Max{' '}
-                      {vehicle.maxParticipants}{' '}
-                      {vehicle.maxParticipants === 1 ? 'person' : 'people'})
+                      {t(
+                        `services.standard.atvExcurtionsForm.vehicleTypes.${key}.name`
+                      )}{' '}
+                      - ${vehicle.price}
                     </option>
                   ))}
                 </select>
@@ -652,7 +662,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <Counter
-                  label='Number of People'
+                  label={t(
+                    'services.standard.atvExcurtionsForm.fields.participants.label'
+                  )}
                   value={formData.totalParticipants}
                   onIncrement={participantCounter.increment}
                   onDecrement={participantCounter.decrement}
@@ -662,7 +674,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 />
 
                 <Counter
-                  label='Number of Vehicles'
+                  label={t(
+                    'services.standard.atvExcurtionsForm.fields.vehicles.label'
+                  )}
                   value={formData.vehicleCount}
                   onIncrement={vehicleCounter.increment}
                   onDecrement={vehicleCounter.decrement}
@@ -692,22 +706,38 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                           <AlertTriangle className='w-5 h-5 text-red-600 flex-shrink-0 mt-0.5' />
                           <div>
                             <h4 className='font-semibold text-red-800 mb-2'>
-                              Capacity Exceeded!
+                              {t(
+                                'services.standard.atvExcurtionsForm.capacity.exceeded.title'
+                              )}
                             </h4>
                             <p className='text-red-700 text-sm mb-3'>
-                              <strong>
-                                {formData.totalParticipants} people
-                              </strong>{' '}
-                              cannot fit in{' '}
-                              <strong>
-                                {formData.vehicleCount}{' '}
-                                {currentVehicle?.name || 'vehicle'}
-                                {formData.vehicleCount !== 1 ? 's' : ''}
-                              </strong>
+                              <strong>{formData.totalParticipants}</strong>{' '}
+                              {t(
+                                'services.standard.atvExcurtionsForm.capacity.people'
+                              )}{' '}
+                              {t(
+                                'services.standard.atvExcurtionsForm.capacity.exceeded.message',
+                                {
+                                  participants: formData.totalParticipants,
+                                  vehicles: formData.vehicleCount,
+                                  vehicleName: t(
+                                    `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+                                  ),
+                                  plural:
+                                    formData.vehicleCount !== 1 ? 's' : '',
+                                }
+                              )
+                                .split(' ')
+                                .slice(2)
+                                .join(' ')}
                               <br />
-                              Maximum capacity:{' '}
-                              <strong>{maxCapacity} people</strong> (
-                              {currentVehicle?.maxParticipants} per vehicle)
+                              {t(
+                                'services.standard.atvExcurtionsForm.capacity.exceeded.maxCapacity',
+                                {
+                                  max: maxCapacity,
+                                  perVehicle: currentVehicle?.maxParticipants,
+                                }
+                              )}
                             </p>
                             <button
                               type='button'
@@ -719,7 +749,12 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                               }
                               className='px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition'
                             >
-                              Use {suggestedVehicles} vehicles
+                              {t(
+                                'services.standard.atvExcurtionsForm.capacity.exceeded.button',
+                                {
+                                  suggested: suggestedVehicles,
+                                }
+                              )}
                             </button>
                           </div>
                         </div>
@@ -732,20 +767,38 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                       <div className='flex items-center gap-2 mb-2'>
                         <CheckCircle className='w-4 h-4 text-green-600' />
                         <span className='text-sm font-medium text-green-800'>
-                          Perfect Fit!
+                          {t(
+                            'services.standard.atvExcurtionsForm.capacity.perfect.title'
+                          )}
                         </span>
                       </div>
                       <div className='text-xs text-green-700 space-y-1'>
                         <div>
-                          <strong>Capacity:</strong>{' '}
-                          {formData.totalParticipants}/{maxCapacity} people
+                          <strong>
+                            {t(
+                              'services.standard.atvExcurtionsForm.capacity.perfect.capacity'
+                            )}
+                          </strong>{' '}
+                          {formData.totalParticipants}/{maxCapacity}{' '}
                         </div>
                         <div>
-                          <strong>Vehicles:</strong> {formData.vehicleCount} ×{' '}
-                          {currentVehicle?.name}
+                          <strong>
+                            {t(
+                              'services.standard.atvExcurtionsForm.capacity.perfect.vehicles'
+                            )}
+                          </strong>{' '}
+                          {formData.vehicleCount} ×{' '}
+                          {t(
+                            `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+                          )}
                         </div>
                         <div>
-                          <strong>Cost:</strong> {formData.vehicleCount} × $
+                          <strong>
+                            {t(
+                              'services.standard.atvExcurtionsForm.capacity.perfect.cost'
+                            )}
+                          </strong>{' '}
+                          {formData.vehicleCount} × $
                           {currentVehicle?.price || 0} = ${basePrice}
                         </div>
                       </div>
@@ -758,7 +811,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             {/* Additional Information */}
             <div className='space-y-4'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                Additional Information
+                {t(
+                  'services.standard.atvExcurtionsForm.sections.additionalInfo'
+                )}
               </h3>
 
               <div>
@@ -768,7 +823,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                       isPremium ? 'text-purple-600' : 'text-green-600'
                     }`}
                   />
-                  Special Requests or Notes
+                  {t('services.standard.atvExcurtionsForm.fields.notes.label')}
                 </label>
                 <textarea
                   name='additionalNotes'
@@ -778,7 +833,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                   className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 ${
                     isPremium ? 'focus:ring-purple-500' : 'focus:ring-green-500'
                   } bg-gray-50`}
-                  placeholder='Celebration details, photo preferences, or any other special requests...'
+                  placeholder={t(
+                    'services.standard.atvExcurtionsForm.fields.notes.placeholder'
+                  )}
                 />
               </div>
             </div>
@@ -789,20 +846,49 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 <AlertTriangle className='w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5' />
                 <div>
                   <h4 className='font-medium text-red-800 mb-2'>
-                    Safety Requirements & Restrictions
+                    {t('services.standard.atvExcurtionsForm.safety.title')}
                   </h4>
                   <ul className='text-sm text-red-700 space-y-1'>
-                    <li>• Minimum age: 16 years old (18+ to drive solo)</li>
-                    <li>• Valid driver's license required</li>
-                    <li>• Closed-toe shoes mandatory (no sandals)</li>
-                    <li>• Not recommended for pregnant women</li>
-                    <li>• Weather dependent - may be rescheduled</li>
-                    <li>• Maximum 8 vehicles per group</li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.atvExcurtionsForm.safety.requirement1'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.atvExcurtionsForm.safety.requirement2'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.atvExcurtionsForm.safety.requirement3'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.atvExcurtionsForm.safety.requirement4'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.atvExcurtionsForm.safety.requirement5'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.atvExcurtionsForm.safety.requirement6'
+                      )}
+                    </li>
                   </ul>
                 </div>
               </div>
             </div>
-
             {/* Error Display */}
             {errors.submit && (
               <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
@@ -815,40 +901,61 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
           <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                Total Price
+                {t('services.standard.atvExcurtionsForm.pricing.totalPrice')}
               </span>
               <div className='flex items-center mt-1'>
                 <span className='text-3xl font-light'>
                   {currentVehicle?.price
                     ? `$${totalPrice.toFixed(2)}`
-                    : 'Contact Us'}
+                    : t('services.standard.atvExcurtionsForm.buttons.contact')}
                 </span>
                 <span className='ml-2 text-sm bg-green-800 px-2 py-1 rounded'>
                   {formData.totalParticipants}{' '}
-                  {formData.totalParticipants === 1 ? 'person' : 'people'}
+                  {formData.totalParticipants === 1
+                    ? t(
+                        'services.standard.atvExcurtionsForm.capacity.perfect.person'
+                      )
+                    : t(
+                        'services.standard.atvExcurtionsForm.capacity.perfect.people'
+                      )}
                 </span>
               </div>
 
-              {/* Price breakdown */}
               {currentVehicle?.price && (
                 <div className='text-xs text-gray-400 mt-2 space-y-1'>
                   <div className='text-green-400 font-medium'>
-                    {currentVehicle.name}
+                    {t(
+                      `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+                    )}
                   </div>
                   <div>
-                    {formData.vehicleCount} vehicle
-                    {formData.vehicleCount !== 1 ? 's' : ''} × $
-                    {currentVehicle.price} = ${basePrice.toFixed(2)}
+                    {formData.vehicleCount}{' '}
+                    {formData.vehicleCount === 1
+                      ? t(
+                          'services.standard.atvExcurtionsForm.pricing.vehicles'
+                        )
+                      : t(
+                          'services.standard.atvExcurtionsForm.pricing.vehiclesPlural'
+                        )}{' '}
+                    × ${currentVehicle.price} = ${basePrice.toFixed(2)}
                   </div>
-                  <div>Transport: ${transportCost.toFixed(2)}</div>
+                  <div>
+                    {t('services.standard.atvExcurtionsForm.pricing.transport')}
+                    : ${transportCost.toFixed(2)}
+                  </div>
                   {locationSurcharge > 0 && (
                     <div>
-                      Location surcharge: +${locationSurcharge.toFixed(2)}
+                      {t(
+                        'services.standard.atvExcurtionsForm.pricing.locationSurcharge'
+                      )}
+                      : +$
+                      {locationSurcharge.toFixed(2)}
                     </div>
                   )}
                   {selectedLocation && (
                     <div className='text-green-400'>
-                      Pickup: {selectedLocation.name}
+                      {t('services.standard.atvExcurtionsForm.pricing.pickup')}:{' '}
+                      {selectedLocation.name}
                     </div>
                   )}
                 </div>
@@ -862,7 +969,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 disabled={isSubmitting}
                 className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
               >
-                Cancel
+                {t('services.standard.atvExcurtionsForm.buttons.cancel')}
               </button>
 
               <button
@@ -876,10 +983,10 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               >
                 <CreditCard className='h-4 w-4 mr-2' />
                 {isSubmitting
-                  ? 'Booking...'
+                  ? t('services.standard.atvExcurtionsForm.buttons.booking')
                   : currentVehicle?.price
-                  ? 'Book Adventure'
-                  : 'Contact for Booking'}
+                  ? t('services.standard.atvExcurtionsForm.buttons.book')
+                  : t('services.standard.atvExcurtionsForm.buttons.contact')}
               </button>
             </div>
           </div>
