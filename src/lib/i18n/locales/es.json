@@ -740,6 +740,136 @@
           ]
         }
       },
+      "atvExcurtionsForm": {
+        "header": {
+          "title": "Aventura en ATVs",
+          "subtitle": "Explora el paraíso tropical a través de senderos en la selva y playas vírgenes"
+        },
+        "sections": {
+          "schedule": "Programa Tu Aventura",
+          "location": "Lugar de Recogida",
+          "vehicleAndGroup": "Vehículo y Tamaño del Grupo",
+          "additionalInfo": "Información Adicional",
+          "safetyInfo": "Requisitos y Restricciones de Seguridad"
+        },
+        "fields": {
+          "date": {
+            "label": "Seleccionar Fecha",
+            "required": "La fecha es requerida"
+          },
+          "timeSlot": {
+            "label": "Horario",
+            "required": "Por favor selecciona un horario",
+            "pickup": "Recogida"
+          },
+          "location": {
+            "label": "Lugar de Recogida",
+            "required": "Por favor selecciona un lugar de recogida"
+          },
+          "vehicleType": {
+            "label": "Seleccionar Tipo de Vehículo",
+            "required": "Por favor selecciona un vehículo",
+            "max": "Máx"
+          },
+          "participants": {
+            "label": "Número de Personas",
+            "min": "Se requiere al menos 1 persona",
+            "max": "Máximo 16 personas permitidas",
+            "maxReached": "Máximo {{max}} {{label}} permitido"
+          },
+          "vehicles": {
+            "label": "Número de Vehículos",
+            "min": "Se requiere al menos 1 vehículo",
+            "max": "Máximo 8 vehículos permitidos"
+          },
+          "notes": {
+            "label": "Solicitudes Especiales o Notas",
+            "placeholder": "Detalles de celebración, preferencias de fotos o cualquier otra solicitud especial..."
+          }
+        },
+        "vehicleTypes": {
+          "atv": {
+            "name": "ATV Quad",
+            "description": "Aventura todo terreno"
+          },
+          "buggy": {
+            "name": "Buggy de Dunas",
+            "description": "Perfecto para parejas"
+          },
+          "polaris": {
+            "name": "Polaris RZR",
+            "description": "Experiencia premium todo terreno"
+          },
+          "polarisFamiliar": {
+            "name": "Polaris Familiar",
+            "description": "Vehículo de aventura familiar"
+          }
+        },
+        "timeSlots": {
+          "8am": {
+            "name": "Aventura Matutina",
+            "time": "8:00 AM",
+            "pickup": "7:30 AM",
+            "description": "Perfecto para clima fresco"
+          },
+          "11am": {
+            "name": "Media Mañana",
+            "time": "11:00 AM",
+            "pickup": "10:30 AM",
+            "description": "Excelentes condiciones de iluminación"
+          },
+          "2pm": {
+            "name": "Aventura Vespertina",
+            "time": "2:00 PM",
+            "pickup": "1:30 PM",
+            "description": "Perfecto para fotos"
+          }
+        },
+        "capacity": {
+          "exceeded": {
+            "title": "¡Capacidad Excedida!",
+            "message": "{{participants}} personas no caben en {{vehicles}} {{vehicleName}}{{plural}}",
+            "maxCapacity": "Capacidad máxima: {{max}} personas ({{perVehicle}} por vehículo)",
+            "button": "Usar {{suggested}} vehículos"
+          },
+          "perfect": {
+            "title": "¡Ajuste Perfecto!",
+            "capacity": "Capacidad:",
+            "vehicles": "Vehículos:",
+            "cost": "Costo:",
+            "people": "personas",
+            "person": "persona"
+          }
+        },
+        "safety": {
+          "title": "Requisitos y Restricciones de Seguridad",
+          "requirement1": "Edad mínima: 16 años (18+ para conducir solo)",
+          "requirement2": "Licencia de conducir válida requerida",
+          "requirement3": "Zapatos cerrados obligatorios (sin sandalias)",
+          "requirement4": "No recomendado para mujeres embarazadas",
+          "requirement5": "Dependiente del clima - puede ser reprogramado",
+          "requirement6": "Máximo 8 vehículos por grupo"
+        },
+        "pricing": {
+          "totalPrice": "Precio Total",
+          "transport": "Transporte",
+          "locationSurcharge": "Recargo por ubicación",
+          "pickup": "Recogida",
+          "vehicles": "vehículo",
+          "vehiclesPlural": "vehículos"
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "book": "Reservar Aventura",
+          "booking": "Reservando...",
+          "contact": "Contactar para Reservar"
+        },
+        "errors": {
+          "submit": "Error al enviar la reserva. Por favor intenta de nuevo.",
+          "capacityExceeded": "No caben {{participants}} personas en {{vehicles}} vehículo(s). La capacidad máxima es {{max}} personas.",
+          "needMoreVehicles": "Se necesitan al menos {{needed}} vehículos para {{participants}} personas."
+        }
+      },
       "karaokeDetails": {
         "songLibrary": "Song Library",
         "songsAvailable": "{{count}}+ songs in multiple languages",

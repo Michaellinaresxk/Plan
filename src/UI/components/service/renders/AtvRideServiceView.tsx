@@ -1330,7 +1330,7 @@ const AtvRideServiceView = () => {
       <ReviewsSection />
 
       {/* Cenote Important Notice */}
-      <div className='mt-8 bg-red-50 border-2 border-red-300 rounded-xl p-6'>
+      <div className='mt-8   bg-red-50 border-2 border-red-300 rounded-xl p-6 mx-4 max-w-4xl lg:mx-auto'>
         <div className='flex items-start gap-4'>
           <Waves className='w-8 h-8 text-red-600 flex-shrink-0 mt-1' />
           <div>
@@ -1347,7 +1347,7 @@ const AtvRideServiceView = () => {
         </div>
       </div>
 
-      <div className='mt-6 text-center'>
+      <div className='mt-6 text-center mx-4 max-w-4xl lg:mx-auto'>
         <div className='inline-flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-full'>
           <Info className='w-4 h-4 text-blue-600' />
           <span className='text-blue-800 font-medium text-sm'>

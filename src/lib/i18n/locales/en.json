@@ -24,7 +24,7 @@
     },
     "mainText": {
       "title": "Xclusive Experiences",
-      "subtitle": "At Lux Punta Cana, we understand that the most precious moments are not born of chance, but are masterpieces of intentional design. Each of our services from luxurious SUV transfers that envelop you in comfort and elegance to serene private yacht cruises that cradle you in the calm of the sea and gourmet dining experiences that awaken your senses are meticulously crafted not just to create fleeting instants, but to forge memories that resonate in your heart. Because true luxury is not defined by the superficial, it is ",
+      "subtitle": "At Lux Punta Cana, we understand that the most precious moments are not born of chance, but are masterpieces of intentional design. Each of our services from luxurious SUV transfers that envelop you in comfort and elegance to serene private yacht cruises that cradle you in the calm of the sea and gourmet dining experiences that awaken your senses are meticulously crafted not just to create fleeting instants, but to forge memories that resonate in your heart. Because true luxury is not defined by the superficial; ",
       "slogan": "it is the ability to touch the soul and create connections that endure.",
       "experience": "Years of Experience",
       "happyClients": "Happy Clients",
@@ -571,6 +571,136 @@
             "Expert guide",
             "Photos"
           ]
+        }
+      },
+      "atvExcurtionsForm": {
+        "header": {
+          "title": "ATVs Adventure",
+          "subtitle": "Explore tropical paradise through jungle trails and pristine beaches"
+        },
+        "sections": {
+          "schedule": "Schedule Your Adventure",
+          "location": "Pickup Location",
+          "vehicleAndGroup": "Vehicle & Group Size",
+          "additionalInfo": "Additional Information",
+          "safetyInfo": "Safety Requirements & Restrictions"
+        },
+        "fields": {
+          "date": {
+            "label": "Select Date",
+            "required": "Date is required"
+          },
+          "timeSlot": {
+            "label": "Time Slot",
+            "required": "Please select a time slot",
+            "pickup": "Pickup"
+          },
+          "location": {
+            "label": "Pickup Location",
+            "required": "Please select a pickup location"
+          },
+          "vehicleType": {
+            "label": "Select Vehicle Type",
+            "required": "Please select a vehicle",
+            "max": "Max"
+          },
+          "participants": {
+            "label": "Number of People",
+            "min": "At least 1 person required",
+            "max": "Maximum 16 people allowed",
+            "maxReached": "Maximum {{max}} {{label}} allowed"
+          },
+          "vehicles": {
+            "label": "Number of Vehicles",
+            "min": "At least 1 vehicle required",
+            "max": "Maximum 8 vehicles allowed"
+          },
+          "notes": {
+            "label": "Special Requests or Notes",
+            "placeholder": "Celebration details, photo preferences, or any other special requests..."
+          }
+        },
+        "vehicleTypes": {
+          "atv": {
+            "name": "ATV Quad",
+            "description": "Off-Road adventure"
+          },
+          "buggy": {
+            "name": "Dune Buggy",
+            "description": "Perfect for couples"
+          },
+          "polaris": {
+            "name": "Polaris RZR",
+            "description": "Premium off-road experience"
+          },
+          "polarisFamiliar": {
+            "name": "Polaris Familiar",
+            "description": "Family adventure vehicle"
+          }
+        },
+        "timeSlots": {
+          "8am": {
+            "name": "Morning Adventure",
+            "time": "8:00 AM",
+            "pickup": "7:30 AM",
+            "description": "Perfect for cooler weather"
+          },
+          "11am": {
+            "name": "Mid-Morning",
+            "time": "11:00 AM",
+            "pickup": "10:30 AM",
+            "description": "Great lighting conditions"
+          },
+          "2pm": {
+            "name": "Afternoon Adventure",
+            "time": "2:00 PM",
+            "pickup": "1:30 PM",
+            "description": "Perfect for photos"
+          }
+        },
+        "capacity": {
+          "exceeded": {
+            "title": "Capacity Exceeded!",
+            "message": "{{participants}} people cannot fit in {{vehicles}} {{vehicleName}}{{plural}}",
+            "maxCapacity": "Maximum capacity: {{max}} people ({{perVehicle}} per vehicle)",
+            "button": "Use {{suggested}} vehicles"
+          },
+          "perfect": {
+            "title": "Perfect Fit!",
+            "capacity": "Capacity:",
+            "vehicles": "Vehicles:",
+            "cost": "Cost:",
+            "people": "people",
+            "person": "person"
+          }
+        },
+        "safety": {
+          "title": "Safety Requirements & Restrictions",
+          "requirement1": "Minimum age: 16 years old (18+ to drive solo)",
+          "requirement2": "Valid driver's license required",
+          "requirement3": "Closed-toe shoes mandatory (no sandals)",
+          "requirement4": "Not recommended for pregnant women",
+          "requirement5": "Weather dependent - may be rescheduled",
+          "requirement6": "Maximum 8 vehicles per group"
+        },
+        "pricing": {
+          "totalPrice": "Total Price",
+          "transport": "Transport",
+          "locationSurcharge": "Location surcharge",
+          "pickup": "Pickup",
+          "vehicles": "vehicle",
+          "vehiclesPlural": "vehicles"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "book": "Book Adventure",
+          "booking": "Booking...",
+          "contact": "Contact for Booking"
+        },
+        "errors": {
+          "submit": "Failed to submit reservation. Please try again.",
+          "capacityExceeded": "Cannot fit {{participants}} people in {{vehicles}} vehicle(s). Maximum capacity is {{max}} people.",
+          "needMoreVehicles": "Need at least {{needed}} vehicles for {{participants}} people."
         }
       },
       "deepSeaFishing": {
