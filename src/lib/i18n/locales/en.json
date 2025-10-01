@@ -771,7 +771,7 @@
           }
         }
       },
-       "babysitterForm": {
+      "babysitterForm": {
         "header": {
           "title": "Happy Kids Babysitting",
           "subtitle": "Professional childcare in the comfort of your accommodation"
@@ -844,8 +844,7 @@
           "specialNeedsDetails": "Special needs details are required",
           "bookingError": "Error processing booking. Please try again."
         }
-      }
-    },
+      },
       "horsebackRidingServiceView": {
         "hero": {
           "title": "Horseback Riding",
