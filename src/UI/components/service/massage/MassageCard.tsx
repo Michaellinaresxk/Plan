@@ -8,9 +8,11 @@ import {
   Users,
 } from 'lucide-react';
 import IntensityBadge from './IntensityBadge';
+import { useTranslation } from '@/lib/i18n/client';
 
 // Massage Card Component
 const MassageCard = ({ massage, isSelected, onSelect }) => {
+  const { t } = useTranslation();
   const prices = massage.durations.map((d) => d.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
@@ -37,24 +39,10 @@ const MassageCard = ({ massage, isSelected, onSelect }) => {
         <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
 
         <div className='absolute top-4 left-4 right-4 flex justify-between items-start'>
-          <div className='flex flex-col gap-2'>
-            {massage.isPremium && (
-              <div className='bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg'>
-                <Star className='w-3 h-3 inline mr-1' />
-                Premium
-              </div>
-            )}
-            {popularDuration && (
-              <div className='bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg'>
-                Most Popular
-              </div>
-            )}
-          </div>
-
           {isSelected && (
             <div className='bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg'>
               <CheckCircle className='w-3 h-3 inline mr-1' />
-              Selected
+              {t('services.standard.massageCard.selected')}
             </div>
           )}
         </div>
@@ -94,7 +82,9 @@ const MassageCard = ({ massage, isSelected, onSelect }) => {
           <IntensityBadge intensity={massage.intensity} />
           <div className='flex items-center gap-1 text-sm text-gray-500'>
             <Users className='w-4 h-4' />
-            <span>Up to {massage.maxPersons}</span>
+            <span>
+              {t('services.standard.massageCard.upTo')} {massage.maxPersons}
+            </span>
           </div>
         </div>
 
@@ -109,7 +99,9 @@ const MassageCard = ({ massage, isSelected, onSelect }) => {
           ))}
           {massage.benefits.length > 2 && (
             <span className='text-xs text-gray-500 px-2 py-1'>
-              +{massage.benefits.length - 2} more
+              {t('services.standard.massageCard.moreBenefits', {
+                count: massage.benefits.length - 2,
+              })}
             </span>
           )}
         </div>
@@ -120,7 +112,7 @@ const MassageCard = ({ massage, isSelected, onSelect }) => {
           className='w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg flex items-center justify-center gap-2'
         >
           <Calendar className='w-4 h-4' />
-          Book Experience
+          {t('services.standard.massageCard.bookButton')}
           <ArrowRight className='w-4 h-4' />
         </motion.button>
       </div>
