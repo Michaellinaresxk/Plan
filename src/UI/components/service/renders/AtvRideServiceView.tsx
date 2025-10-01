@@ -956,7 +956,7 @@ const IncludesSection = () => {
           <div>
             <h3 className='text-lg font-semibold text-orange-600 mb-4 flex items-center'>
               <X className='w-5 h-5 mr-2' />
-              {t('atvService.includes.notIncludedTitle')}
+              {t('services.standard.atvService.includes.notIncludedTitle')}
             </h3>
             <div className='space-y-3'>
               {notIncluded.map((item, idx) => {

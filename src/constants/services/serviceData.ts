@@ -1741,9 +1741,9 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     category: 'tours',
     packageType: ['standard'],
     imageUrl: '/img/horseback.jpeg',
-    duration: 2,
+    duration: 3,
     bookingDuration: {
-      min: 2,
+      min: 3,
       max: 4,
       unit: 'hours',
     },

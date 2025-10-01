@@ -38,121 +38,35 @@ interface BabysitterServiceViewProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Constants
 const GALLERY_IMAGES = [
   {
     src: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=2040&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Art & crafts time',
-    caption: 'Creative arts & crafts sessions',
   },
   {
     src: 'https://plus.unsplash.com/premium_photo-1661727647956-7d7d3e8ed550?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Outdoor exploration',
-    caption: 'Safe outdoor adventures',
   },
   {
     src: 'https://images.unsplash.com/photo-1587323655395-b1c77a12c89a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Storytime favorites',
-    caption: 'Interactive reading sessions',
   },
   {
     src: 'https://parentscanada.com/wp-content/uploads/2022/11/teenage-babysitter.jpg',
     alt: 'Learning through play',
-    caption: 'Educational play activities',
   },
 ];
 
-const ACTIVITIES = [
-  {
-    icon: <Palette className='w-6 h-6' />,
-    title: 'Creative Arts',
-    description: 'Drawing, painting, and craft projects that spark imagination',
-    color: 'bg-pink-50 text-pink-600',
-  },
-  {
-    icon: <BookOpen className='w-6 h-6' />,
-    title: 'Story Time',
-    description: 'Interactive reading sessions with age-appropriate books',
-    color: 'bg-blue-50 text-blue-600',
-  },
-  {
-    icon: <Music className='w-6 h-6' />,
-    title: 'Music & Dance',
-    description: 'Fun musical activities and movement games',
-    color: 'bg-purple-50 text-purple-600',
-  },
-  {
-    icon: <Gamepad2 className='w-6 h-6' />,
-    title: 'Educational Games',
-    description: 'Learning through play with puzzles and brain games',
-    color: 'bg-green-50 text-green-600',
-  },
-  {
-    icon: <Activity className='w-6 h-6' />,
-    title: 'Physical Activities',
-    description: 'Safe outdoor play and indoor movement activities',
-    color: 'bg-orange-50 text-orange-600',
-  },
-  {
-    icon: <Baby className='w-6 h-6' />,
-    title: 'Age-Appropriate Care',
-    description:
-      "Customized activities based on each child's developmental stage",
-    color: 'bg-yellow-50 text-yellow-600',
-  },
+const ACTIVITY_ICONS = [Palette, BookOpen, Music, Gamepad2, Activity, Baby];
+const ACTIVITY_COLORS = [
+  'bg-pink-50 text-pink-600',
+  'bg-blue-50 text-blue-600',
+  'bg-purple-50 text-purple-600',
+  'bg-green-50 text-green-600',
+  'bg-orange-50 text-orange-600',
+  'bg-yellow-50 text-yellow-600',
 ];
 
-const TESTIMONIALS = [
-  {
-    id: 1,
-    quote:
-      'Maria was absolutely wonderful with our twins. They were engaged and happy the entire evening!',
-    author: 'Sarah M.',
-    rating: 5,
-    children: 'Twins, age 4',
-  },
-  {
-    id: 2,
-    quote:
-      'Professional, caring, and the kids loved her. We felt completely at ease during our date night.',
-    author: 'David L.',
-    rating: 5,
-    children: '2 children, ages 6 & 8',
-  },
-  {
-    id: 3,
-    quote:
-      'Our babysitter came prepared with activities and even helped with bedtime routine. Highly recommend!',
-    author: 'Jessica R.',
-    rating: 5,
-    children: '1 child, age 3',
-  },
-];
-
-const FAQS = [
-  {
-    question: 'What ages do you provide babysitting services for?',
-    answer:
-      'We provide professional childcare for children from 6 months to 12 years old. Our sitters are trained to handle different age groups and developmental stages.',
-  },
-  {
-    question: 'Are your babysitters background checked?',
-    answer:
-      "Yes, all our babysitters undergo thorough background checks, reference verification, and childcare training. Your children's safety is our top priority.",
-  },
-  {
-    question: 'What if my child has special dietary requirements or allergies?',
-    answer:
-      'We carefully review all dietary restrictions and allergies before the service. Our sitters are trained to handle special dietary needs and can prepare appropriate snacks and meals.',
-  },
-  {
-    question: 'How far in advance should I book?',
-    answer:
-      "We recommend booking at least 24-48 hours in advance to ensure availability. For last-minute requests, please call us directly and we'll do our best to accommodate.",
-  },
-];
-
-// Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -212,14 +126,14 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               <div className='inline-flex items-center bg-gradient-to-r from-amber-100 to-orange-100 px-4 py-2 rounded-full border border-amber-200'>
                 <Sparkles className='w-5 h-5 text-amber-600 mr-2' />
                 <span className='text-sm font-semibold text-amber-700 uppercase tracking-wider'>
-                  Premium Experience
+                  {t('services.standard.babysitterView.hero.premiumBadge')}
                 </span>
               </div>
             ) : (
               <div className='inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-2 rounded-full border border-blue-200'>
                 <Heart className='w-5 h-5 text-blue-600 mr-2' />
                 <span className='text-sm font-semibold text-blue-700 uppercase tracking-wider'>
-                  Trusted Childcare
+                  {t('services.standard.babysitterView.hero.standardBadge')}
                 </span>
               </div>
             )}
@@ -228,38 +142,51 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
           <h1 className='text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight'>
             {isPremium ? (
               <>
-                Premium <span className='text-amber-600'>In-Villa</span>
+                {t('services.standard.babysitterView.hero.premiumTitle')}{' '}
+                <span className='text-amber-600'>
+                  {t(
+                    'services.standard.babysitterView.hero.premiumTitleHighlight'
+                  )}
+                </span>
                 <br />
-                Childcare Services
+                {t('services.standard.babysitterView.hero.premiumTitleSuffix')}
               </>
             ) : (
               <>
-                Professional <span className='text-blue-600'>Babysitting</span>
+                {t('services.standard.babysitterView.hero.standardTitle')}{' '}
+                <span className='text-blue-600'>
+                  {t(
+                    'services.standard.babysitterView.hero.standardTitleHighlight'
+                  )}
+                </span>
                 <br />
-                You Can Trust
+                {t('services.standard.babysitterView.hero.standardTitleSuffix')}
               </>
             )}
           </h1>
 
           <p className='text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl leading-relaxed'>
-            Experienced, background-checked caregivers who create magical
-            moments while keeping your children safe, happy, and engaged.
+            {t('services.standard.babysitterView.hero.description')}
           </p>
 
           <div className='flex flex-wrap gap-6 mb-8'>
             <div className='flex items-center bg-white/70 backdrop-blur-sm px-4 py-3 rounded-xl'>
               <Shield className='w-5 h-5 text-green-600 mr-2' />
               <span className='font-medium text-gray-700'>
-                Background Checked
+                {t('services.standard.babysitterView.hero.badge1')}
               </span>
             </div>
             <div className='flex items-center bg-white/70 backdrop-blur-sm px-4 py-3 rounded-xl'>
               <Users className='w-5 h-5 text-blue-600 mr-2' />
-              <span className='font-medium text-gray-700'>Ages 6M - 12Y</span>
+              <span className='font-medium text-gray-700'>
+                {t('services.standard.babysitterView.hero.badge2')}
+              </span>
             </div>
             <div className='flex items-center bg-white/70 backdrop-blur-sm px-4 py-3 rounded-xl'>
               <Clock className='w-5 h-5 text-purple-600 mr-2' />
-              <span className='font-medium text-gray-700'>24/7 Available</span>
+              <span className='font-medium text-gray-700'>
+                {t('services.standard.babysitterView.hero.badge3')}
+              </span>
             </div>
           </div>
 
@@ -267,7 +194,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
             onClick={() => setIsModalOpen(true)}
             className='bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold text-lg flex items-center gap-3 transition-colors group'
           >
-            Book Trusted Care
+            {t('services.standard.babysitterView.hero.bookButton')}
             <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
           </button>
         </div>
@@ -282,35 +209,41 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
       >
         <div className='text-center mb-12 mt-10'>
           <h2 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
-            Age-Appropriate Activities
+            {t('services.standard.babysitterView.activities.title')}
           </h2>
           <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-            Our caregivers come prepared with engaging activities tailored to
-            your child's age and interests
+            {t('services.standard.babysitterView.activities.subtitle')}
           </p>
         </div>
 
         <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 px-5'>
-          {ACTIVITIES.map((activity, index) => (
-            <motion.div
-              key={index}
-              className='group bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300'
-              variants={fadeInUp}
-              whileHover={{ y: -4 }}
-            >
-              <div
-                className={`w-12 h-12 rounded-xl ${activity.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
+          {[1, 2, 3, 4, 5, 6].map((num, index) => {
+            const IconComponent = ACTIVITY_ICONS[index];
+            return (
+              <motion.div
+                key={num}
+                className='group bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300'
+                variants={fadeInUp}
+                whileHover={{ y: -4 }}
               >
-                {activity.icon}
-              </div>
-              <h3 className='text-xl font-bold text-gray-900 mb-3'>
-                {activity.title}
-              </h3>
-              <p className='text-gray-600 leading-relaxed'>
-                {activity.description}
-              </p>
-            </motion.div>
-          ))}
+                <div
+                  className={`w-12 h-12 rounded-xl ${ACTIVITY_COLORS[index]} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
+                >
+                  <IconComponent className='w-6 h-6' />
+                </div>
+                <h3 className='text-xl font-bold text-gray-900 mb-3'>
+                  {t(
+                    `services.standard.babysitterView.activities.activity${num}.title`
+                  )}
+                </h3>
+                <p className='text-gray-600 leading-relaxed'>
+                  {t(
+                    `services.standard.babysitterView.activities.activity${num}.description`
+                  )}
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
 
@@ -324,11 +257,10 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
       >
         <h2 className='text-3xl font-bold text-gray-900 mb-8 flex items-center'>
           <Camera className='mr-4 w-8 h-8 text-gray-600' />
-          Moments of Joy
+          {t('services.standard.babysitterView.gallery.title')}
         </h2>
 
         <div className='grid md:grid-cols-2 gap-8'>
-          {/* Main Selected Image */}
           <div className='relative h-80 rounded-2xl overflow-hidden group'>
             <Image
               src={GALLERY_IMAGES[selectedImageIndex].src}
@@ -339,13 +271,16 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
             <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent'>
               <div className='absolute bottom-0 left-0 right-0 p-6'>
                 <p className='text-white text-lg font-medium'>
-                  {GALLERY_IMAGES[selectedImageIndex].caption}
+                  {t(
+                    `services.standard.babysitterView.gallery.caption${
+                      selectedImageIndex + 1
+                    }`
+                  )}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Thumbnail Grid */}
           <div className='grid grid-cols-3 gap-3'>
             {GALLERY_IMAGES.map((image, index) => (
               <button
@@ -379,7 +314,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
       >
         <div>
           <h2 className='text-3xl font-bold text-gray-900 mb-6'>
-            Safety & Trust First
+            {t('services.standard.babysitterView.safety.title')}
           </h2>
           <div className='space-y-6'>
             <div className='flex items-start'>
@@ -388,11 +323,12 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               </div>
               <div>
                 <h3 className='font-semibold text-gray-900 mb-2'>
-                  Background Verified
+                  {t('services.standard.babysitterView.safety.feature1.title')}
                 </h3>
                 <p className='text-gray-600'>
-                  All caregivers undergo thorough background checks and
-                  reference verification
+                  {t(
+                    'services.standard.babysitterView.safety.feature1.description'
+                  )}
                 </p>
               </div>
             </div>
@@ -403,11 +339,12 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
               </div>
               <div>
                 <h3 className='font-semibold text-gray-900 mb-2'>
-                  Genuine Care
+                  {t('services.standard.babysitterView.safety.feature2.title')}
                 </h3>
                 <p className='text-gray-600'>
-                  Selected for their natural ability to connect with and care
-                  for children
+                  {t(
+                    'services.standard.babysitterView.safety.feature2.description'
+                  )}
                 </p>
               </div>
             </div>
@@ -435,21 +372,18 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
         <div className='text-center mb-12'>
           <h2 className='text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center'>
             <MessageCircle className='mr-3 w-8 h-8' />
-            Happy Families
+            {t('services.standard.babysitterView.testimonials.title')}
           </h2>
           <p className='text-xl text-gray-600'>
-            See what parents are saying about our childcare services
+            {t('services.standard.babysitterView.testimonials.subtitle')}
           </p>
         </div>
 
         <div className='grid md:grid-cols-3 gap-8'>
-          {TESTIMONIALS.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className='bg-white rounded-2xl p-8 shadow-sm'
-            >
+          {[1, 2, 3].map((num) => (
+            <div key={num} className='bg-white rounded-2xl p-8 shadow-sm'>
               <div className='flex mb-4'>
-                {[...Array(testimonial.rating)].map((_, i) => (
+                {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className='w-5 h-5 text-yellow-400 fill-current'
@@ -457,14 +391,22 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
                 ))}
               </div>
               <blockquote className='text-gray-700 text-lg italic mb-6 leading-relaxed'>
-                "{testimonial.quote}"
+                "
+                {t(
+                  `services.standard.babysitterView.testimonials.testimonial${num}.quote`
+                )}
+                "
               </blockquote>
               <div>
                 <cite className='text-gray-900 font-semibold not-italic'>
-                  {testimonial.author}
+                  {t(
+                    `services.standard.babysitterView.testimonials.testimonial${num}.author`
+                  )}
                 </cite>
                 <div className='text-gray-500 text-sm'>
-                  {testimonial.children}
+                  {t(
+                    `services.standard.babysitterView.testimonials.testimonial${num}.children`
+                  )}
                 </div>
               </div>
             </div>
@@ -483,23 +425,29 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
         <div className='text-center mb-12'>
           <h2 className='text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center'>
             <Info className='mr-3 w-8 h-8' />
-            Frequently Asked Questions
+            {t('services.standard.babysitterView.faq.title')}
           </h2>
           <p className='text-xl text-gray-600'>
-            Everything you need to know about our babysitting services
+            {t('services.standard.babysitterView.faq.subtitle')}
           </p>
         </div>
 
         <div className='grid md:grid-cols-2 gap-6'>
-          {FAQS.map((faq, index) => (
+          {[1, 2, 3, 4].map((num) => (
             <div
-              key={index}
+              key={num}
               className='bg-white rounded-2xl p-8 shadow-sm border border-gray-100'
             >
               <h3 className='font-semibold text-gray-900 mb-4 text-lg'>
-                {faq.question}
+                {t(
+                  `services.standard.babysitterView.faq.question${num}.question`
+                )}
               </h3>
-              <p className='text-gray-600 leading-relaxed'>{faq.answer}</p>
+              <p className='text-gray-600 leading-relaxed'>
+                {t(
+                  `services.standard.babysitterView.faq.question${num}.answer`
+                )}
+              </p>
             </div>
           ))}
         </div>
