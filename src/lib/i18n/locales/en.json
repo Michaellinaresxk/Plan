@@ -1832,6 +1832,249 @@
           "durationRequired": "Please select a duration",
           "specificSongsRequired": "Please specify your song preferences"
         }
+      },
+      "massageView": {
+        "hero": {
+          "premiumBadge": "BF Paradise • Premium Wellness Sanctuary",
+          "title": "Therapeutic",
+          "titleHighlight": "Massage Sanctuary",
+          "description": "Experience the transformative power of healing touch with our collection of {count} expertly crafted therapeutic treatments",
+          "features": {
+            "licensed": "Licensed Therapists",
+            "inHome": "In-Home Service",
+            "premium": "Premium Experience",
+            "satisfaction": "Satisfaction Guaranteed"
+          }
+        },
+        "quote": {
+          "text": "Take time to make your soul happy. Your body deserves the gift of healing touch, and your mind craves the peace that only comes from true relaxation.",
+          "stats": {
+            "sessions": {
+              "count": "500+",
+              "label": "Blissful Sessions",
+              "detail": "completed this year"
+            },
+            "satisfaction": {
+              "count": "98%",
+              "label": "Satisfaction Rate",
+              "detail": "from our valued clients"
+            },
+            "availability": {
+              "count": "24/7",
+              "label": "Availability",
+              "detail": "for your convenience"
+            }
+          }
+        },
+        "services": {
+          "title": "Choose Your Perfect",
+          "titleHighlight": "Healing Experience",
+          "description": "Each treatment is thoughtfully designed to address your unique wellness needs, combining ancient wisdom with modern therapeutic techniques",
+          "resultsCount": "{count} therapeutic experiences available",
+          "viewAll": "View all treatments",
+          "noResults": {
+            "title": "No treatments match your search",
+            "description": "Try adjusting your filters to discover more healing experiences",
+            "button": "Show All Treatments"
+          }
+        },
+        "cta": {
+          "title": "Your Journey to",
+          "titleHighlight": "Complete Wellness",
+          "description": "Escape the stress of daily life and immerse yourself in pure tranquility. Our expert therapists bring the spa experience directly to you.",
+          "features": {
+            "therapists": "Certified massage therapists with 5+ years experience",
+            "premium": "Premium organic oils and heated massage tables",
+            "customized": "Customized treatments for your unique needs"
+          },
+          "button": "Start Your Wellness Journey",
+          "cards": {
+            "mindBalance": {
+              "title": "Mind Balance",
+              "description": "Achieve mental clarity and emotional harmony"
+            },
+            "bodyRenewal": {
+              "title": "Body Renewal",
+              "description": "Release tension and restore vitality"
+            },
+            "naturalHealing": {
+              "title": "Natural Healing",
+              "description": "Pure organic products for your wellness"
+            },
+            "homeComfort": {
+              "title": "Home Comfort",
+              "description": "Luxury spa experience in your space"
+            }
+          }
+        },
+        "massages": {
+          "swedish": {
+            "name": "Swedish Relaxation",
+            "description": "Gentle, flowing strokes to melt away tension and restore inner peace",
+            "longDescription": "Our signature Swedish massage combines traditional techniques with aromatherapy to create a deeply relaxing experience that soothes both body and mind.",
+            "benefits": [
+              "Stress Relief",
+              "Improved Circulation",
+              "Better Sleep",
+              "Muscle Relaxation"
+            ],
+            "perfectFor": [
+              "First-time clients",
+              "Stress relief",
+              "General wellness"
+            ],
+            "techniques": ["Long gliding strokes", "Kneading", "Aromatherapy"]
+          },
+          "deepTissue": {
+            "name": "Deep Tissue Therapy",
+            "description": "Intensive therapeutic massage targeting chronic tension and pain",
+            "longDescription": "Designed for those who need serious muscle work, this therapy focuses on the deeper layers of muscle tissue to release chronic patterns of tension.",
+            "benefits": [
+              "Pain Relief",
+              "Tension Release",
+              "Improved Mobility",
+              "Injury Recovery"
+            ],
+            "perfectFor": ["Athletes", "Chronic pain", "Injury recovery"],
+            "techniques": [
+              "Deep pressure",
+              "Trigger point therapy",
+              "Myofascial release"
+            ]
+          },
+          "hotStone": {
+            "name": "Sacred Stone Ritual",
+            "description": "Heated volcanic stones create deep warmth and profound relaxation",
+            "longDescription": "Ancient healing meets modern luxury. Smooth, heated stones are placed on key points while warm stone massage melts away every trace of stress.",
+            "benefits": [
+              "Deep Relaxation",
+              "Improved Blood Flow",
+              "Muscle Tension Relief",
+              "Spiritual Balance"
+            ],
+            "perfectFor": [
+              "Ultimate relaxation",
+              "Cold weather",
+              "Spiritual wellness"
+            ],
+            "techniques": [
+              "Hot stone placement",
+              "Stone massage",
+              "Energy balancing"
+            ]
+          },
+          "aromatherapy": {
+            "name": "Botanical Bliss",
+            "description": "A sensory journey with pure essential oils and healing touch",
+            "longDescription": "Customized essential oil blends enhance this therapeutic massage, creating a multi-sensory experience that harmonizes mind, body, and spirit.",
+            "benefits": [
+              "Mental Clarity",
+              "Emotional Balance",
+              "Stress Reduction",
+              "Mood Enhancement"
+            ],
+            "perfectFor": [
+              "Emotional wellness",
+              "Aromatherapy lovers",
+              "Holistic healing"
+            ],
+            "techniques": [
+              "Custom oil blending",
+              "Lymphatic drainage",
+              "Chakra balancing"
+            ]
+          },
+          "prenatal": {
+            "name": "Nurturing Mother",
+            "description": "Specialized care designed for the expecting mother's unique needs",
+            "longDescription": "Our certified prenatal therapists provide safe, effective massage therapy to support you through your pregnancy journey with comfort and care.",
+            "benefits": [
+              "Pregnancy Comfort",
+              "Swelling Reduction",
+              "Back Pain Relief",
+              "Improved Sleep"
+            ],
+            "perfectFor": [
+              "Pregnant women",
+              "Back pain relief",
+              "Emotional support"
+            ],
+            "techniques": [
+              "Side-lying positioning",
+              "Gentle pressure",
+              "Prenatal-safe techniques"
+            ]
+          },
+          "sports": {
+            "name": "Athletic Recovery",
+            "description": "Performance-focused therapy to enhance athletic potential",
+            "longDescription": "Designed specifically for athletes and active individuals, combining therapeutic techniques to improve performance and prevent injuries.",
+            "benefits": [
+              "Performance Enhancement",
+              "Injury Prevention",
+              "Faster Recovery",
+              "Flexibility"
+            ],
+            "perfectFor": ["Athletes", "Active lifestyle", "Performance goals"],
+            "techniques": [
+              "Sports massage",
+              "Stretching",
+              "Compression therapy"
+            ]
+          },
+          "couples": {
+            "name": "Romantic Escape",
+            "description": "Share the bliss of relaxation with your loved one",
+            "longDescription": "Side-by-side massage tables, candlelight, and synchronized treatments create an intimate wellness experience you'll treasure forever.",
+            "benefits": [
+              "Romantic Experience",
+              "Shared Relaxation",
+              "Bonding Time",
+              "Stress Relief"
+            ],
+            "perfectFor": ["Couples", "Anniversaries", "Date nights"],
+            "techniques": [
+              "Synchronized massage",
+              "Couples aromatherapy",
+              "Romantic ambiance"
+            ]
+          },
+          "thai": {
+            "name": "Ancient Thai Healing",
+            "description": "Traditional stretching and pressure point massage from Thailand",
+            "longDescription": "This ancient healing art combines acupressure, assisted yoga stretches, and energy work to restore balance and flexibility to your entire being.",
+            "benefits": [
+              "Flexibility",
+              "Energy Balance",
+              "Stress Relief",
+              "Spiritual Wellness"
+            ],
+            "perfectFor": [
+              "Flexibility needs",
+              "Energy work",
+              "Traditional healing"
+            ],
+            "techniques": ["Thai stretching", "Pressure points", "Energy lines"]
+          }
+        },
+
+        "filters": {
+          "search": "Search treatments...",
+          "category": "Category",
+          "intensity": "Intensity",
+          "priceRange": "Price Range",
+          "premiumOnly": "Premium Only",
+          "clearFilters": "Clear Filters"
+        },
+        "errors": {
+          "bookingError": "Error processing booking. Please try again."
+        }
+      },
+      "massageCard": {
+        "selected": "Selected",
+        "upTo": "Up to",
+        "moreBenefits": "+{{count}} more",
+        "bookButton": "Book Experience"
       }
     },
     "premium": {

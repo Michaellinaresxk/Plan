@@ -17,249 +17,145 @@ import {
 import MassageConfigModal from '../massage/MassageConfigModal';
 import FilterBar from '../massage/FilterBar';
 import MassageCard from '../massage/MassageCard';
+import { useTranslation } from '@/lib/i18n/client';
 
-// SPA_SERVICES data
-const SPA_SERVICES = {
-  massages: [
-    {
-      id: 'swedish',
-      name: 'Swedish Relaxation',
-      description:
-        'Gentle, flowing strokes to melt away tension and restore inner peace',
-      longDescription:
-        'Our signature Swedish massage combines traditional techniques with aromatherapy to create a deeply relaxing experience that soothes both body and mind.',
-      category: 'relaxation',
-      durations: [
-        { duration: 60, price: 120, popular: false },
-        { duration: 90, price: 160, popular: true },
-      ],
-      emoji: '🌿',
-      maxPersons: 4,
-      intensity: 'gentle',
-      isPremium: false,
-      imageUrl:
-        'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800',
-      benefits: [
-        'Stress Relief',
-        'Improved Circulation',
-        'Better Sleep',
-        'Muscle Relaxation',
-      ],
-      perfectFor: ['First-time clients', 'Stress relief', 'General wellness'],
-      techniques: ['Long gliding strokes', 'Kneading', 'Aromatherapy'],
-    },
-    {
-      id: 'deep-tissue',
-      name: 'Deep Tissue Therapy',
-      description:
-        'Intensive therapeutic massage targeting chronic tension and pain',
-      longDescription:
-        'Designed for those who need serious muscle work, this therapy focuses on the deeper layers of muscle tissue to release chronic patterns of tension.',
-      category: 'therapeutic',
-      durations: [
-        { duration: 60, price: 140, popular: false },
-        { duration: 90, price: 180, popular: true },
-      ],
-      emoji: '💪',
-      maxPersons: 2,
-      intensity: 'strong',
-      isPremium: true,
-      imageUrl:
-        'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800',
-      benefits: [
-        'Pain Relief',
-        'Tension Release',
-        'Improved Mobility',
-        'Injury Recovery',
-      ],
-      perfectFor: ['Athletes', 'Chronic pain', 'Injury recovery'],
-      techniques: [
-        'Deep pressure',
-        'Trigger point therapy',
-        'Myofascial release',
-      ],
-    },
-    {
-      id: 'hot-stone',
-      name: 'Sacred Stone Ritual',
-      description:
-        'Heated volcanic stones create deep warmth and profound relaxation',
-      longDescription:
-        'Ancient healing meets modern luxury. Smooth, heated stones are placed on key points while warm stone massage melts away every trace of stress.',
-      category: 'signature',
-      durations: [{ duration: 90, price: 200, popular: true }],
-      emoji: '🔥',
-      maxPersons: 2,
-      intensity: 'medium',
-      isPremium: true,
-      imageUrl:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800',
-      benefits: [
-        'Deep Relaxation',
-        'Improved Blood Flow',
-        'Muscle Tension Relief',
-        'Spiritual Balance',
-      ],
-      perfectFor: ['Ultimate relaxation', 'Cold weather', 'Spiritual wellness'],
-      techniques: ['Hot stone placement', 'Stone massage', 'Energy balancing'],
-    },
-    {
-      id: 'aromatherapy',
-      name: 'Botanical Bliss',
-      description:
-        'A sensory journey with pure essential oils and healing touch',
-      longDescription:
-        'Customized essential oil blends enhance this therapeutic massage, creating a multi-sensory experience that harmonizes mind, body, and spirit.',
-      category: 'relaxation',
-      durations: [
-        { duration: 60, price: 130, popular: false },
-        { duration: 90, price: 170, popular: true },
-      ],
-      emoji: '🌸',
-      maxPersons: 3,
-      intensity: 'gentle',
-      isPremium: false,
-      imageUrl:
-        'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800',
-      benefits: [
-        'Mental Clarity',
-        'Emotional Balance',
-        'Stress Reduction',
-        'Mood Enhancement',
-      ],
-      perfectFor: [
-        'Emotional wellness',
-        'Aromatherapy lovers',
-        'Holistic healing',
-      ],
-      techniques: [
-        'Custom oil blending',
-        'Lymphatic drainage',
-        'Chakra balancing',
-      ],
-    },
-    {
-      id: 'prenatal',
-      name: 'Nurturing Mother',
-      description:
-        "Specialized care designed for the expecting mother's unique needs",
-      longDescription:
-        'Our certified prenatal therapists provide safe, effective massage therapy to support you through your pregnancy journey with comfort and care.',
-      category: 'therapeutic',
-      durations: [{ duration: 60, price: 150, popular: true }],
-      emoji: '🤱',
-      maxPersons: 1,
-      intensity: 'gentle',
-      isPremium: true,
-      imageUrl:
-        'https://images.unsplash.com/photo-1527196850338-c9e2cfac4d5a?w=800',
-      benefits: [
-        'Pregnancy Comfort',
-        'Swelling Reduction',
-        'Back Pain Relief',
-        'Improved Sleep',
-      ],
-      perfectFor: ['Pregnant women', 'Back pain relief', 'Emotional support'],
-      techniques: [
-        'Side-lying positioning',
-        'Gentle pressure',
-        'Prenatal-safe techniques',
-      ],
-    },
-    {
-      id: 'sports',
-      name: 'Athletic Recovery',
-      description: 'Performance-focused therapy to enhance athletic potential',
-      longDescription:
-        'Designed specifically for athletes and active individuals, combining therapeutic techniques to improve performance and prevent injuries.',
-      category: 'therapeutic',
-      durations: [
-        { duration: 60, price: 155, popular: false },
-        { duration: 90, price: 195, popular: true },
-      ],
-      emoji: '🏃‍♂️',
-      maxPersons: 2,
-      intensity: 'strong',
-      isPremium: false,
-      imageUrl:
-        'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-      benefits: [
-        'Performance Enhancement',
-        'Injury Prevention',
-        'Faster Recovery',
-        'Flexibility',
-      ],
-      perfectFor: ['Athletes', 'Active lifestyle', 'Performance goals'],
-      techniques: ['Sports massage', 'Stretching', 'Compression therapy'],
-    },
-    {
-      id: 'couples',
-      name: 'Romantic Escape',
-      description: 'Share the bliss of relaxation with your loved one',
-      longDescription:
-        "Side-by-side massage tables, candlelight, and synchronized treatments create an intimate wellness experience you'll treasure forever.",
-      category: 'signature',
-      durations: [
-        { duration: 60, price: 240, popular: false },
-        { duration: 90, price: 320, popular: true },
-      ],
-      emoji: '💑',
-      maxPersons: 2,
-      intensity: 'gentle',
-      isPremium: true,
-      imageUrl:
-        'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800',
-      benefits: [
-        'Romantic Experience',
-        'Shared Relaxation',
-        'Bonding Time',
-        'Stress Relief',
-      ],
-      perfectFor: ['Couples', 'Anniversaries', 'Date nights'],
-      techniques: [
-        'Synchronized massage',
-        'Couples aromatherapy',
-        'Romantic ambiance',
-      ],
-    },
-    {
-      id: 'thai',
-      name: 'Ancient Thai Healing',
-      description:
-        'Traditional stretching and pressure point massage from Thailand',
-      longDescription:
-        'This ancient healing art combines acupressure, assisted yoga stretches, and energy work to restore balance and flexibility to your entire being.',
-      category: 'signature',
-      durations: [
-        { duration: 90, price: 180, popular: true },
-        { duration: 120, price: 220, popular: false },
-      ],
-      emoji: '🧘‍♀️',
-      maxPersons: 1,
-      intensity: 'medium',
-      isPremium: true,
-      imageUrl:
-        'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=800',
-      benefits: [
-        'Flexibility',
-        'Energy Balance',
-        'Stress Relief',
-        'Spiritual Wellness',
-      ],
-      perfectFor: ['Flexibility needs', 'Energy work', 'Traditional healing'],
-      techniques: ['Thai stretching', 'Pressure points', 'Energy lines'],
-    },
-  ],
+// Static configuration
+const MASSAGE_CONFIG = {
+  swedish: {
+    category: 'relaxation',
+    emoji: '🌿',
+    intensity: 'gentle',
+    isPremium: false,
+    maxPersons: 4,
+    durations: [
+      { duration: 60, price: 120, popular: false },
+      { duration: 90, price: 160, popular: true },
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800',
+  },
+  deepTissue: {
+    category: 'therapeutic',
+    emoji: '💪',
+    intensity: 'strong',
+    isPremium: true,
+    maxPersons: 2,
+    durations: [
+      { duration: 60, price: 140, popular: false },
+      { duration: 90, price: 180, popular: true },
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800',
+  },
+  hotStone: {
+    category: 'signature',
+    emoji: '🔥',
+    intensity: 'medium',
+    isPremium: true,
+    maxPersons: 2,
+    durations: [{ duration: 90, price: 200, popular: true }],
+    imageUrl:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800',
+  },
+  aromatherapy: {
+    category: 'relaxation',
+    emoji: '🌸',
+    intensity: 'gentle',
+    isPremium: false,
+    maxPersons: 3,
+    durations: [
+      { duration: 60, price: 130, popular: false },
+      { duration: 90, price: 170, popular: true },
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800',
+  },
+  prenatal: {
+    category: 'therapeutic',
+    emoji: '🤱',
+    intensity: 'gentle',
+    isPremium: true,
+    maxPersons: 1,
+    durations: [{ duration: 60, price: 150, popular: true }],
+    imageUrl:
+      'https://images.unsplash.com/photo-1527196850338-c9e2cfac4d5a?w=800',
+  },
+  sports: {
+    category: 'therapeutic',
+    emoji: '🏃‍♂️',
+    intensity: 'strong',
+    isPremium: false,
+    maxPersons: 2,
+    durations: [
+      { duration: 60, price: 155, popular: false },
+      { duration: 90, price: 195, popular: true },
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+  },
+  couples: {
+    category: 'signature',
+    emoji: '💑',
+    intensity: 'gentle',
+    isPremium: true,
+    maxPersons: 2,
+    durations: [
+      { duration: 60, price: 240, popular: false },
+      { duration: 90, price: 320, popular: true },
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800',
+  },
+  thai: {
+    category: 'signature',
+    emoji: '🧘‍♀️',
+    intensity: 'medium',
+    isPremium: true,
+    maxPersons: 1,
+    durations: [
+      { duration: 90, price: 180, popular: true },
+      { duration: 120, price: 220, popular: false },
+    ],
+    imageUrl:
+      'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=800',
+  },
 };
 
-// Main Component
+// Helper to get massage data with translations
+const getMassageData = (t) => {
+  return Object.entries(MASSAGE_CONFIG).map(([id, config]) => ({
+    id,
+    ...config,
+    name: t(`services.standard.massageView.massages.${id}.name`),
+    description: t(`services.standard.massageView.massages.${id}.description`),
+    longDescription: t(
+      `services.standard.massageView.massages.${id}.longDescription`
+    ),
+    // Access array items individually to avoid returnObjects
+    benefits: [
+      t(`services.standard.massageView.massages.${id}.benefits.0`),
+      t(`services.standard.massageView.massages.${id}.benefits.1`),
+      t(`services.standard.massageView.massages.${id}.benefits.2`),
+      t(`services.standard.massageView.massages.${id}.benefits.3`),
+    ].filter(Boolean),
+    perfectFor: [
+      t(`services.standard.massageView.massages.${id}.perfectFor.0`),
+      t(`services.standard.massageView.massages.${id}.perfectFor.1`),
+      t(`services.standard.massageView.massages.${id}.perfectFor.2`),
+    ].filter(Boolean),
+    techniques: [
+      t(`services.standard.massageView.massages.${id}.techniques.0`),
+      t(`services.standard.massageView.massages.${id}.techniques.1`),
+      t(`services.standard.massageView.massages.${id}.techniques.2`),
+    ].filter(Boolean),
+  }));
+};
+
 const MassageServiceView = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { setReservationData } = useReservation();
 
   const [currentMassage, setCurrentMassage] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
   const [filters, setFilters] = useState({
     search: '',
     category: '',
@@ -268,8 +164,11 @@ const MassageServiceView = () => {
     premiumOnly: false,
   });
 
+  // Get translated massage data
+  const massages = useMemo(() => getMassageData(t), [t]);
+
   const filteredMassages = useMemo(() => {
-    return SPA_SERVICES.massages.filter((massage) => {
+    return massages.filter((massage) => {
       if (
         filters.search &&
         !massage.name.toLowerCase().includes(filters.search.toLowerCase()) &&
@@ -303,7 +202,7 @@ const MassageServiceView = () => {
       if (filters.premiumOnly && !massage.isPremium) return false;
       return true;
     });
-  }, [filters]);
+  }, [filters, massages]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -338,14 +237,14 @@ const MassageServiceView = () => {
         setCurrentMassage(null);
       } catch (error) {
         console.error('Error processing massage booking:', error);
-        alert('Error processing booking. Please try again.');
+        alert(t('services.standard.massageView.errors.bookingError'));
       }
     },
-    [setReservationData, router]
+    [setReservationData, router, t]
   );
 
   const totalFilteredCount = filteredMassages.length;
-  const totalMassagesCount = SPA_SERVICES.massages.length;
+  const totalMassagesCount = massages.length;
 
   return (
     <div className='min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 relative'>
@@ -377,7 +276,7 @@ const MassageServiceView = () => {
           >
             <Leaf className='w-5 h-5 text-emerald-300 mr-3' />
             <span className='text-white font-medium'>
-              BF Paradise • Premium Wellness Sanctuary
+              {t('services.standard.massageView.hero.premiumBadge')}
             </span>
           </motion.div>
 
@@ -387,9 +286,9 @@ const MassageServiceView = () => {
             transition={{ delay: 0.2 }}
             className='text-4xl sm:text-6xl lg:text-7xl font-light text-white mb-6 leading-tight'
           >
-            Therapeutic
+            {t('services.standard.massageView.hero.title')}
             <span className='block text-emerald-300 font-normal'>
-              Massage Sanctuary
+              {t('services.standard.massageView.hero.titleHighlight')}
             </span>
           </motion.h1>
 
@@ -399,9 +298,9 @@ const MassageServiceView = () => {
             transition={{ delay: 0.4 }}
             className='text-xl sm:text-2xl text-white/90 mb-12 leading-relaxed font-light max-w-3xl mx-auto'
           >
-            Experience the transformative power of healing touch with our
-            collection of {totalMassagesCount} expertly crafted therapeutic
-            treatments
+            {t('services.standard.massageView.hero.description', {
+              count: totalMassagesCount,
+            })}
           </motion.p>
 
           <motion.div
@@ -412,19 +311,27 @@ const MassageServiceView = () => {
           >
             <div className='flex items-center gap-2'>
               <Shield className='w-4 h-4 text-emerald-300' />
-              <span>Licensed Therapists</span>
+              <span>
+                {t('services.standard.massageView.hero.features.licensed')}
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <Heart className='w-4 h-4 text-rose-300' />
-              <span>In-Home Service</span>
+              <span>
+                {t('services.standard.massageView.hero.features.inHome')}
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <Star className='w-4 h-4 text-amber-300' />
-              <span>Premium Experience</span>
+              <span>
+                {t('services.standard.massageView.hero.features.premium')}
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <CheckCircle className='w-4 h-4 text-green-300' />
-              <span>Satisfaction Guaranteed</span>
+              <span>
+                {t('services.standard.massageView.hero.features.satisfaction')}
+              </span>
             </div>
           </motion.div>
         </div>
@@ -449,7 +356,7 @@ const MassageServiceView = () => {
         </motion.div>
       </section>
 
-      {/* Inspirational Quote Section */}
+      {/* Quote Section */}
       <section className='py-20 px-4 sm:px-6 relative overflow-hidden bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50'>
         <div className='absolute inset-0 opacity-10'>
           <div className='absolute top-10 left-10 w-64 h-64 bg-emerald-300 rounded-full blur-3xl'></div>
@@ -465,9 +372,7 @@ const MassageServiceView = () => {
           >
             <div className='text-6xl text-emerald-600 mb-6'>🌸</div>
             <blockquote className='text-3xl lg:text-4xl font-light text-gray-800 leading-relaxed mb-8 italic'>
-              "Take time to make your soul happy. Your body deserves the gift of
-              healing touch, and your mind craves the peace that only comes from
-              true relaxation."
+              {t('services.standard.massageView.quote.text')}
             </blockquote>
             <div className='w-24 h-1 bg-gradient-to-r from-emerald-400 to-teal-400 mx-auto rounded-full'></div>
           </motion.div>
@@ -479,40 +384,29 @@ const MassageServiceView = () => {
             transition={{ delay: 0.2 }}
             className='grid grid-cols-2 md:grid-cols-3 gap-8 mt-16'
           >
-            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
-              <div className='text-emerald-600 text-4xl font-bold mb-2'>
-                500+
+            {['sessions', 'satisfaction', 'availability'].map((stat) => (
+              <div
+                key={stat}
+                className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'
+              >
+                <div className='text-emerald-600 text-4xl font-bold mb-2'>
+                  {t(`services.standard.massageView.quote.stats.${stat}.count`)}
+                </div>
+                <div className='text-gray-600 font-medium'>
+                  {t(`services.standard.massageView.quote.stats.${stat}.label`)}
+                </div>
+                <div className='text-sm text-gray-500 mt-2'>
+                  {t(
+                    `services.standard.massageView.quote.stats.${stat}.detail`
+                  )}
+                </div>
               </div>
-              <div className='text-gray-600 font-medium'>Blissful Sessions</div>
-              <div className='text-sm text-gray-500 mt-2'>
-                completed this year
-              </div>
-            </div>
-
-            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
-              <div className='text-emerald-600 text-4xl font-bold mb-2'>
-                98%
-              </div>
-              <div className='text-gray-600 font-medium'>Satisfaction Rate</div>
-              <div className='text-sm text-gray-500 mt-2'>
-                from our valued clients
-              </div>
-            </div>
-
-            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
-              <div className='text-emerald-600 text-4xl font-bold mb-2'>
-                24/7
-              </div>
-              <div className='text-gray-600 font-medium'>Availability</div>
-              <div className='text-sm text-gray-500 mt-2'>
-                for your convenience
-              </div>
-            </div>
+            ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Main Services Content */}
+      {/* Services Section */}
       <section id='massage-services' className='py-20 px-4 sm:px-6 relative'>
         <div className='max-w-7xl mx-auto'>
           <div className='text-center mb-16'>
@@ -522,8 +416,10 @@ const MassageServiceView = () => {
               viewport={{ once: true }}
               className='text-4xl lg:text-5xl font-light text-gray-900 mb-6'
             >
-              Choose Your Perfect
-              <span className='text-emerald-600 block'>Healing Experience</span>
+              {t('services.standard.massageView.services.title')}
+              <span className='text-emerald-600 block'>
+                {t('services.standard.massageView.services.titleHighlight')}
+              </span>
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -532,9 +428,7 @@ const MassageServiceView = () => {
               transition={{ delay: 0.1 }}
               className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'
             >
-              Each treatment is thoughtfully designed to address your unique
-              wellness needs, combining ancient wisdom with modern therapeutic
-              techniques
+              {t('services.standard.massageView.services.description')}
             </motion.p>
           </div>
 
@@ -547,15 +441,16 @@ const MassageServiceView = () => {
           <div className='mb-8'>
             <p className='text-gray-600 text-lg'>
               <span className='font-semibold text-emerald-600'>
-                {totalFilteredCount}
-              </span>{' '}
-              therapeutic experiences available
+                {t('services.standard.massageView.services.resultsCount', {
+                  count: totalFilteredCount,
+                })}
+              </span>
               {totalFilteredCount !== totalMassagesCount && (
                 <button
                   onClick={handleClearFilters}
                   className='ml-3 text-emerald-600 hover:text-emerald-700 underline font-medium'
                 >
-                  View all treatments
+                  {t('services.standard.massageView.services.viewAll')}
                 </button>
               )}
             </p>
@@ -586,23 +481,25 @@ const MassageServiceView = () => {
             >
               <div className='text-8xl mb-6'>🌿</div>
               <h3 className='text-2xl font-semibold text-gray-800 mb-4'>
-                No treatments match your search
+                {t('services.standard.massageView.services.noResults.title')}
               </h3>
               <p className='text-gray-600 mb-8 text-lg'>
-                Try adjusting your filters to discover more healing experiences
+                {t(
+                  'services.standard.massageView.services.noResults.description'
+                )}
               </p>
               <button
                 onClick={handleClearFilters}
                 className='px-8 py-4 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-colors font-semibold text-lg shadow-lg'
               >
-                Show All Treatments
+                {t('services.standard.massageView.services.noResults.button')}
               </button>
             </motion.div>
           )}
         </div>
       </section>
 
-      {/* Call to Action Section */}
+      {/* CTA Section */}
       <section className='py-20 px-4 sm:px-6 relative'>
         <div className='max-w-6xl mx-auto'>
           <div className='bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-12 relative overflow-hidden shadow-2xl'>
@@ -618,41 +515,32 @@ const MassageServiceView = () => {
                   viewport={{ once: true }}
                 >
                   <h3 className='text-4xl lg:text-5xl font-light text-white mb-6 leading-tight'>
-                    Your Journey to
+                    {t('services.standard.massageView.cta.title')}
                     <span className='block text-emerald-200 font-normal'>
-                      Complete Wellness
+                      {t('services.standard.massageView.cta.titleHighlight')}
                     </span>
                   </h3>
 
                   <p className='text-xl text-emerald-100 mb-8 leading-relaxed'>
-                    Escape the stress of daily life and immerse yourself in pure
-                    tranquility. Our expert therapists bring the spa experience
-                    directly to you.
+                    {t('services.standard.massageView.cta.description')}
                   </p>
 
                   <div className='space-y-4 mb-8'>
-                    <div className='flex items-center gap-4 text-emerald-100'>
-                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
-                        <CheckCircle className='w-5 h-5 text-white' />
+                    {['therapists', 'premium', 'customized'].map((feature) => (
+                      <div
+                        key={feature}
+                        className='flex items-center gap-4 text-emerald-100'
+                      >
+                        <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
+                          <CheckCircle className='w-5 h-5 text-white' />
+                        </div>
+                        <span>
+                          {t(
+                            `services.standard.massageView.cta.features.${feature}`
+                          )}
+                        </span>
                       </div>
-                      <span>
-                        Certified massage therapists with 5+ years experience
-                      </span>
-                    </div>
-                    <div className='flex items-center gap-4 text-emerald-100'>
-                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
-                        <Heart className='w-5 h-5 text-white' />
-                      </div>
-                      <span>
-                        Premium organic oils and heated massage tables
-                      </span>
-                    </div>
-                    <div className='flex items-center gap-4 text-emerald-100'>
-                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
-                        <Sparkles className='w-5 h-5 text-white' />
-                      </div>
-                      <span>Customized treatments for your unique needs</span>
-                    </div>
+                    ))}
                   </div>
 
                   <motion.button
@@ -661,12 +549,12 @@ const MassageServiceView = () => {
                     onClick={() =>
                       document
                         .getElementById('massage-services')
-                        .scrollIntoView({ behavior: 'smooth' })
+                        ?.scrollIntoView({ behavior: 'smooth' })
                     }
                     className='bg-white text-emerald-600 px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3'
                   >
                     <Play className='w-5 h-5' />
-                    Start Your Wellness Journey
+                    {t('services.standard.massageView.cta.button')}
                     <ArrowRight className='w-5 h-5' />
                   </motion.button>
                 </motion.div>
@@ -683,19 +571,27 @@ const MassageServiceView = () => {
                     <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
                       <div className='text-3xl mb-3'>🧘‍♀️</div>
                       <h4 className='text-white font-semibold mb-2'>
-                        Mind Balance
+                        {t(
+                          'services.standard.massageView.cta.cards.mindBalance.title'
+                        )}
                       </h4>
                       <p className='text-emerald-100 text-sm'>
-                        Achieve mental clarity and emotional harmony
+                        {t(
+                          'services.standard.massageView.cta.cards.mindBalance.description'
+                        )}
                       </p>
                     </div>
                     <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
                       <div className='text-3xl mb-3'>💆‍♀️</div>
                       <h4 className='text-white font-semibold mb-2'>
-                        Body Renewal
+                        {t(
+                          'services.standard.massageView.cta.cards.bodyRenewal.title'
+                        )}
                       </h4>
                       <p className='text-emerald-100 text-sm'>
-                        Release tension and restore vitality
+                        {t(
+                          'services.standard.massageView.cta.cards.bodyRenewal.description'
+                        )}
                       </p>
                     </div>
                   </div>
@@ -703,19 +599,27 @@ const MassageServiceView = () => {
                     <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
                       <div className='text-3xl mb-3'>🌿</div>
                       <h4 className='text-white font-semibold mb-2'>
-                        Natural Healing
+                        {t(
+                          'services.standard.massageView.cta.cards.naturalHealing.title'
+                        )}
                       </h4>
                       <p className='text-emerald-100 text-sm'>
-                        Pure organic products for your wellness
+                        {t(
+                          'services.standard.massageView.cta.cards.naturalHealing.description'
+                        )}
                       </p>
                     </div>
                     <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
                       <div className='text-3xl mb-3'>🏠</div>
                       <h4 className='text-white font-semibold mb-2'>
-                        Home Comfort
+                        {t(
+                          'services.standard.massageView.cta.cards.homeComfort.title'
+                        )}
                       </h4>
                       <p className='text-emerald-100 text-sm'>
-                        Luxury spa experience in your space
+                        {t(
+                          'services.standard.massageView.cta.cards.homeComfort.description'
+                        )}
                       </p>
                     </div>
                   </div>

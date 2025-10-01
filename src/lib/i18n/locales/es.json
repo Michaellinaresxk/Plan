@@ -1848,6 +1848,264 @@
           "specialNeedsDetails": "Los detalles de necesidades especiales son requeridos",
           "bookingError": "Error al procesar la reserva. Por favor intenta nuevamente."
         }
+      },
+      "massageView": {
+        "hero": {
+          "premiumBadge": "BF Paradise • Santuario de Bienestar Premium",
+          "title": "Santuario de Masajes",
+          "titleHighlight": "Terapéuticos",
+          "description": "Experimenta el poder transformador del toque sanador con nuestra colección de {count} tratamientos terapéuticos expertamente diseñados",
+          "features": {
+            "licensed": "Terapeutas Certificados",
+            "inHome": "Servicio a Domicilio",
+            "premium": "Experiencia Premium",
+            "satisfaction": "Satisfacción Garantizada"
+          }
+        },
+        "quote": {
+          "text": "Tómate el tiempo para hacer feliz a tu alma. Tu cuerpo merece el regalo del toque sanador, y tu mente anhela la paz que solo proviene de la verdadera relajación.",
+          "stats": {
+            "sessions": {
+              "count": "500+",
+              "label": "Sesiones de Bienestar",
+              "detail": "completadas este año"
+            },
+            "satisfaction": {
+              "count": "98%",
+              "label": "Tasa de Satisfacción",
+              "detail": "de nuestros valiosos clientes"
+            },
+            "availability": {
+              "count": "24/7",
+              "label": "Disponibilidad",
+              "detail": "para tu conveniencia"
+            }
+          }
+        },
+        "services": {
+          "title": "Elige Tu Perfecta",
+          "titleHighlight": "Experiencia Sanadora",
+          "description": "Cada tratamiento está cuidadosamente diseñado para abordar tus necesidades únicas de bienestar, combinando sabiduría ancestral con técnicas terapéuticas modernas",
+          "resultsCount": "{count} experiencias terapéuticas disponibles",
+          "viewAll": "Ver todos los tratamientos",
+          "noResults": {
+            "title": "No hay tratamientos que coincidan con tu búsqueda",
+            "description": "Intenta ajustar tus filtros para descubrir más experiencias sanadoras",
+            "button": "Mostrar Todos los Tratamientos"
+          }
+        },
+        "cta": {
+          "title": "Tu Viaje Hacia el",
+          "titleHighlight": "Bienestar Completo",
+          "description": "Escapa del estrés de la vida diaria y sumérgete en pura tranquilidad. Nuestros terapeutas expertos llevan la experiencia del spa directamente a ti.",
+          "features": {
+            "therapists": "Masajistas certificados con más de 5 años de experiencia",
+            "premium": "Aceites orgánicos premium y camillas de masaje con calefacción",
+            "customized": "Tratamientos personalizados para tus necesidades únicas"
+          },
+          "button": "Comienza Tu Viaje de Bienestar",
+          "cards": {
+            "mindBalance": {
+              "title": "Balance Mental",
+              "description": "Alcanza claridad mental y armonía emocional"
+            },
+            "bodyRenewal": {
+              "title": "Renovación Corporal",
+              "description": "Libera tensiones y restaura vitalidad"
+            },
+            "naturalHealing": {
+              "title": "Sanación Natural",
+              "description": "Productos orgánicos puros para tu bienestar"
+            },
+            "homeComfort": {
+              "title": "Comodidad del Hogar",
+              "description": "Experiencia de spa de lujo en tu espacio"
+            }
+          }
+        },
+        "massages": {
+          "swedish": {
+            "name": "Relajación Sueca",
+            "description": "Movimientos suaves y fluidos para derretir la tensión y restaurar la paz interior",
+            "longDescription": "Nuestro masaje sueco característico combina técnicas tradicionales con aromaterapia para crear una experiencia profundamente relajante que calma tanto el cuerpo como la mente.",
+            "benefits": [
+              "Alivio del Estrés",
+              "Mejora de la Circulación",
+              "Mejor Sueño",
+              "Relajación Muscular"
+            ],
+            "perfectFor": [
+              "Clientes primerizos",
+              "Alivio del estrés",
+              "Bienestar general"
+            ],
+            "techniques": [
+              "Movimientos largos deslizantes",
+              "Amasamiento",
+              "Aromaterapia"
+            ]
+          },
+          "deepTissue": {
+            "name": "Terapia de Tejido Profundo",
+            "description": "Masaje terapéutico intensivo dirigido a la tensión crónica y el dolor",
+            "longDescription": "Diseñado para quienes necesitan trabajo muscular serio, esta terapia se enfoca en las capas más profundas del tejido muscular para liberar patrones crónicos de tensión.",
+            "benefits": [
+              "Alivio del Dolor",
+              "Liberación de Tensión",
+              "Mejora de Movilidad",
+              "Recuperación de Lesiones"
+            ],
+            "perfectFor": [
+              "Atletas",
+              "Dolor crónico",
+              "Recuperación de lesiones"
+            ],
+            "techniques": [
+              "Presión profunda",
+              "Terapia de puntos gatillo",
+              "Liberación miofascial"
+            ]
+          },
+          "hotStone": {
+            "name": "Ritual de Piedras Sagradas",
+            "description": "Piedras volcánicas calientes crean calor profundo y relajación profunda",
+            "longDescription": "La sanación ancestral se encuentra con el lujo moderno. Piedras suaves y calientes se colocan en puntos clave mientras el masaje con piedras calientes derrite cada rastro de estrés.",
+            "benefits": [
+              "Relajación Profunda",
+              "Mejora del Flujo Sanguíneo",
+              "Alivio de Tensión Muscular",
+              "Balance Espiritual"
+            ],
+            "perfectFor": [
+              "Relajación máxima",
+              "Clima frío",
+              "Bienestar espiritual"
+            ],
+            "techniques": [
+              "Colocación de piedras calientes",
+              "Masaje con piedras",
+              "Balance energético"
+            ]
+          },
+          "aromatherapy": {
+            "name": "Dicha Botánica",
+            "description": "Un viaje sensorial con aceites esenciales puros y toque sanador",
+            "longDescription": "Mezclas personalizadas de aceites esenciales mejoran este masaje terapéutico, creando una experiencia multisensorial que armoniza mente, cuerpo y espíritu.",
+            "benefits": [
+              "Claridad Mental",
+              "Balance Emocional",
+              "Reducción del Estrés",
+              "Mejora del Estado de Ánimo"
+            ],
+            "perfectFor": [
+              "Bienestar emocional",
+              "Amantes de la aromaterapia",
+              "Sanación holística"
+            ],
+            "techniques": [
+              "Mezcla personalizada de aceites",
+              "Drenaje linfático",
+              "Balance de chakras"
+            ]
+          },
+          "prenatal": {
+            "name": "Madre Nutriente",
+            "description": "Cuidado especializado diseñado para las necesidades únicas de la futura madre",
+            "longDescription": "Nuestros terapeutas prenatales certificados brindan terapia de masaje segura y efectiva para apoyarte durante tu viaje de embarazo con comodidad y cuidado.",
+            "benefits": [
+              "Comodidad en el Embarazo",
+              "Reducción de Hinchazón",
+              "Alivio del Dolor de Espalda",
+              "Mejora del Sueño"
+            ],
+            "perfectFor": [
+              "Mujeres embarazadas",
+              "Alivio del dolor de espalda",
+              "Apoyo emocional"
+            ],
+            "techniques": [
+              "Posicionamiento lateral",
+              "Presión suave",
+              "Técnicas seguras prenatales"
+            ]
+          },
+          "sports": {
+            "name": "Recuperación Atlética",
+            "description": "Terapia enfocada en el rendimiento para mejorar el potencial atlético",
+            "longDescription": "Diseñado específicamente para atletas e individuos activos, combinando técnicas terapéuticas para mejorar el rendimiento y prevenir lesiones.",
+            "benefits": [
+              "Mejora del Rendimiento",
+              "Prevención de Lesiones",
+              "Recuperación Más Rápida",
+              "Flexibilidad"
+            ],
+            "perfectFor": [
+              "Atletas",
+              "Estilo de vida activo",
+              "Objetivos de rendimiento"
+            ],
+            "techniques": [
+              "Masaje deportivo",
+              "Estiramientos",
+              "Terapia de compresión"
+            ]
+          },
+          "couples": {
+            "name": "Escape Romántico",
+            "description": "Comparte la dicha de la relajación con tu ser amado",
+            "longDescription": "Camillas de masaje lado a lado, luz de velas y tratamientos sincronizados crean una experiencia de bienestar íntima que atesorarás para siempre.",
+            "benefits": [
+              "Experiencia Romántica",
+              "Relajación Compartida",
+              "Tiempo de Conexión",
+              "Alivio del Estrés"
+            ],
+            "perfectFor": ["Parejas", "Aniversarios", "Citas nocturnas"],
+            "techniques": [
+              "Masaje sincronizado",
+              "Aromaterapia para parejas",
+              "Ambiente romántico"
+            ]
+          },
+          "thai": {
+            "name": "Sanación Tailandesa Ancestral",
+            "description": "Estiramientos tradicionales y masaje de puntos de presión de Tailandia",
+            "longDescription": "Este arte de sanación ancestral combina acupresión, estiramientos asistidos de yoga y trabajo energético para restaurar el equilibrio y la flexibilidad en todo tu ser.",
+            "benefits": [
+              "Flexibilidad",
+              "Balance Energético",
+              "Alivio del Estrés",
+              "Bienestar Espiritual"
+            ],
+            "perfectFor": [
+              "Necesidades de flexibilidad",
+              "Trabajo energético",
+              "Sanación tradicional"
+            ],
+            "techniques": [
+              "Estiramientos tailandeses",
+              "Puntos de presión",
+              "Líneas de energía"
+            ]
+          }
+        },
+        "filters": {
+          "search": "Buscar tratamientos...",
+          "category": "Categoría",
+          "intensity": "Intensidad",
+          "priceRange": "Rango de Precio",
+          "premiumOnly": "Solo Premium",
+          "clearFilters": "Limpiar Filtros"
+        },
+        "errors": {
+          "bookingError": "Error al procesar la reserva. Por favor, intenta de nuevo."
+        }
+      },
+      "massageCard": {
+        "selected": "Seleccionado",
+        "upTo": "Hasta",
+        "moreBenefits": "+{{count}} más",
+        "bookButton": "Reservar Experiencia"
       }
     }
   },
