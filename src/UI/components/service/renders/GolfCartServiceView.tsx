@@ -14,84 +14,41 @@ import {
 } from 'lucide-react';
 import BookingModal from '../../modal/BookingModal';
 import { useBooking } from '@/context/BookingContext';
+import { useTranslation } from '@/lib/i18n/client';
 
 // Types
 interface GolfCartOption {
   id: string;
-  name: string;
-  spanishName: string;
   seats: number;
   price: number;
-  description: string;
-  spanishDescription: string;
   image: string;
-  features: string[];
-  spanishFeatures: string[];
-  isPopular: boolean;
   detailImages: string[];
+  isPopular: boolean;
 }
 
 const GOLF_CART_OPTIONS: GolfCartOption[] = [
   {
     id: '4-seater',
-    name: '4-Seater Cart',
-    spanishName: 'Carrito de 4 Plazas',
     seats: 4,
     price: 60,
-    description:
-      'Perfect for couples or small families. Compact and efficient for resort exploration.',
-    spanishDescription:
-      'Perfecto para parejas o familias pequeñas. Compacto y eficiente para explorar el resort.',
     image:
       'https://images.pexels.com/photos/9207174/pexels-photo-9207174.jpeg?_gl=1*1gvkela*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5ODY0JGoyMSRsMCRoMA..',
     detailImages: [
       'https://images.pexels.com/photos/9207175/pexels-photo-9207175.jpeg?_gl=1*1fk3hn7*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5OTY2JGo1OSRsMCRoMA..',
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756102920/14_l4wro8.jpg',
     ],
-    features: [
-      'Free delivery & pickup',
-      '24/7 support included',
-      'Quick orientation',
-    ],
-    spanishFeatures: [
-      'Entrega y recogida gratis',
-      'Soporte 24/7 incluido',
-      'Orientación rápida',
-    ],
     isPopular: false,
   },
   {
     id: '6-seater',
-    name: '6-Seater Cart',
-    spanishName: 'Carrito de 6 Plazas',
     seats: 6,
     price: 80,
-    description:
-      'Ideal for larger groups and families. More space and comfort for extended exploration.',
-    spanishDescription:
-      'Ideal para grupos grandes y familias. Más espacio y comodidad para exploración extendida.',
     image:
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947007/IMG_3224_he26bm.jpg',
     detailImages: [
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947017/IMG_3227_gktf9e.jpg',
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947007/IMG_3224_he26bm.jpg',
       'https://res.cloudinary.com/ddg92xar5/image/upload/v1756103011/IMG_3217_ep7kyr.jpg',
-    ],
-    features: [
-      'Fully charged battery',
-      'Free delivery & pickup',
-      '24/7 support included',
-      'Safety equipment',
-      'Quick orientation',
-      'Extra storage space',
-    ],
-    spanishFeatures: [
-      'Batería completamente cargada',
-      'Entrega y recogida gratis',
-      'Soporte 24/7 incluido',
-      'Equipo de seguridad',
-      'Orientación rápida',
-      'Espacio extra de almacenamiento',
     ],
     isPopular: true,
   },
@@ -102,58 +59,28 @@ const GALLERY_IMAGES = [
     id: 1,
     src: 'https://images.pexels.com/photos/9207175/pexels-photo-9207175.jpeg?_gl=1*1fk3hn7*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTQ3MjkzMzQkbzIwJGcxJHQxNzU0NzI5OTY2JGo1OSRsMCRoMA..',
     alt: 'Golf cart on tropical beach',
-    title: 'Beach Adventures',
   },
   {
     id: 2,
     src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755947017/IMG_3227_gktf9e.jpg',
     alt: 'Resort exploration',
-    title: 'Resort Exploration',
   },
   {
     id: 3,
     src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756103062/IMG_3212_ncjcc6.jpg',
     alt: 'Family fun',
-    title: 'Family Adventures',
   },
   {
     id: 4,
     src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1756102920/14_l4wro8.jpg',
     alt: 'Sunset rides',
-    title: 'Sunset Rides',
   },
 ];
 
 // Hero Section
-const HeroSection = ({ onExploreClick }) => {
-  const [language, setLanguage] = useState('en');
-
-  const content = {
-    en: {
-      badge: 'LUXURY MOBILITY',
-      title: 'Explore Paradise',
-      subtitle: 'Your Way',
-      description:
-        "Experience the ultimate freedom with our premium golf carts. Perfect for exploring Punta Cana's beautiful resorts, beaches, and hidden gems.",
-      cta: 'Explore Our Fleet',
-      features: ['Free Delivery', '24/7 Support', 'Luxury Experience'],
-    },
-    es: {
-      badge: 'MOVILIDAD DE LUJO',
-      title: 'Explora el Paraíso',
-      subtitle: 'A Tu Manera',
-      description:
-        'Experimenta la libertad total con nuestros carritos premium. Perfectos para explorar los hermosos resorts de Punta Cana, playas y joyas escondidas.',
-      cta: 'Explorar Nuestra Flota',
-      features: ['Entrega Gratis', 'Soporte 24/7', 'Experiencia de Lujo'],
-    },
-  };
-
-  const currentContent = content[language];
-
+const HeroSection = ({ onExploreClick, t }) => {
   return (
     <div className='relative min-h-screen overflow-hidden bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50'>
-      {/* Background Image */}
       <div className='absolute inset-0'>
         <img
           src='https://res.cloudinary.com/ddg92xar5/image/upload/v1756103062/IMG_3212_ncjcc6.jpg'
@@ -163,18 +90,15 @@ const HeroSection = ({ onExploreClick }) => {
         <div className='absolute inset-0 bg-gradient-to-br from-teal-900/20 via-transparent to-blue-900/20' />
       </div>
 
-      {/* Content */}
       <div className='relative z-10 flex flex-col justify-center min-h-screen px-6 lg:px-8'>
         <div className='max-w-7xl mx-auto w-full'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-            {/* Left Content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className='text-center lg:text-left'
             >
-              {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -182,34 +106,31 @@ const HeroSection = ({ onExploreClick }) => {
                 className='inline-flex items-center bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium text-teal-700 mb-6 shadow-sm'
               >
                 <Car className='w-4 h-4 mr-2' />
-                {currentContent.badge}
+                {t('services.standard.golfCartRentalView.hero.badge')}
               </motion.div>
 
-              {/* Title */}
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 className='text-5xl lg:text-7xl font-light text-slate-800 mb-4'
               >
-                {currentContent.title}
+                {t('services.standard.golfCartRentalView.hero.title')}
                 <br />
                 <span className='font-bold text-teal-600'>
-                  {currentContent.subtitle}
+                  {t('services.standard.golfCartRentalView.hero.subtitle')}
                 </span>
               </motion.h1>
 
-              {/* Description */}
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
                 className='text-lg text-slate-600 mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed'
               >
-                {currentContent.description}
+                {t('services.standard.golfCartRentalView.hero.description')}
               </motion.p>
 
-              {/* CTA Button */}
               <motion.button
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -217,30 +138,32 @@ const HeroSection = ({ onExploreClick }) => {
                 onClick={onExploreClick}
                 className='group bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white px-8 py-4 rounded-2xl font-medium text-lg flex items-center gap-3 mx-auto lg:mx-0 transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-2xl'
               >
-                {currentContent.cta}
+                {t('services.standard.golfCartRentalView.hero.cta')}
                 <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
               </motion.button>
 
-              {/* Features */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
                 className='flex flex-wrap justify-center lg:justify-start gap-6 mt-8'
               >
-                {currentContent.features.map((feature, index) => (
+                {[1, 2, 3].map((num) => (
                   <div
-                    key={index}
+                    key={num}
                     className='flex items-center gap-2 text-sm text-slate-600'
                   >
                     <CheckCircle className='w-4 h-4 text-teal-500' />
-                    <span>{feature}</span>
+                    <span>
+                      {t(
+                        `services.standard.golfCartRentalView.hero.feature${num}`
+                      )}
+                    </span>
                   </div>
                 ))}
               </motion.div>
             </motion.div>
 
-            {/* Right Content - Floating Cart */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -268,23 +191,31 @@ const HeroSection = ({ onExploreClick }) => {
                   <div className='mt-6'>
                     <div className='flex items-center justify-between mb-4'>
                       <h3 className='text-xl font-bold text-slate-800'>
-                        Premium 6-Seater
+                        {t(
+                          'services.standard.golfCartRentalView.carts.6seater.name'
+                        )}
                       </h3>
                       <div className='flex items-center gap-1 text-amber-500'>
-                        <Star className='w-4 h-4 fill-current' />
-                        <Star className='w-4 h-4 fill-current' />
-                        <Star className='w-4 h-4 fill-current' />
-                        <Star className='w-4 h-4 fill-current' />
-                        <Star className='w-4 h-4 fill-current' />
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className='w-4 h-4 fill-current' />
+                        ))}
                       </div>
                     </div>
                     <div className='flex items-center justify-between'>
                       <span className='text-2xl font-bold text-teal-600'>
-                        $80/night
+                        $80
+                        {t(
+                          'services.standard.golfCartRentalView.carts.perNight'
+                        )}
                       </span>
                       <div className='flex items-center gap-2 text-sm text-slate-600'>
                         <Users className='w-4 h-4' />
-                        <span>6 seats</span>
+                        <span>
+                          6{' '}
+                          {t(
+                            'services.standard.golfCartRentalView.carts.seats'
+                          )}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -298,9 +229,9 @@ const HeroSection = ({ onExploreClick }) => {
   );
 };
 
-// Simple Cart Card
-const CartCard = ({ cart, onClick, language }) => {
-  const displayName = language === 'es' ? cart.spanishName : cart.name;
+// Cart Card
+const CartCard = ({ cart, onClick, t }) => {
+  const cartKey = cart.id === '4-seater' ? '4seater' : '6seater';
 
   return (
     <motion.div
@@ -308,23 +239,20 @@ const CartCard = ({ cart, onClick, language }) => {
       className='group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer'
       onClick={onClick}
     >
-      {/* Popular Badge */}
       {cart.isPopular && (
         <div className='absolute top-4 left-4 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold z-10'>
-          {language === 'es' ? 'Popular' : 'Popular'}
+          {t('services.standard.golfCartRentalView.carts.popular')}
         </div>
       )}
 
-      {/* Image */}
       <div className='relative h-64 overflow-hidden'>
         <motion.img
           src={cart.image}
-          alt={displayName}
+          alt={t(`services.standard.golfCartRentalView.carts.${cartKey}.name`)}
           className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
         />
         <div className='absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent' />
 
-        {/* Hover Overlay */}
         <motion.div
           initial={{ opacity: 0 }}
           whileHover={{ opacity: 1 }}
@@ -336,18 +264,21 @@ const CartCard = ({ cart, onClick, language }) => {
         </motion.div>
       </div>
 
-      {/* Content */}
       <div className='p-6'>
         <h3 className='text-xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition-colors'>
-          {displayName}
+          {t(`services.standard.golfCartRentalView.carts.${cartKey}.name`)}
         </h3>
         <div className='flex items-center justify-between'>
           <span className='text-2xl font-bold text-teal-600'>
-            ${cart.price}/night
+            ${cart.price}
+            {t('services.standard.golfCartRentalView.carts.perNight')}
           </span>
           <div className='flex items-center gap-2 text-slate-600'>
             <Users className='w-4 h-4' />
-            <span className='text-sm'>{cart.seats} seats</span>
+            <span className='text-sm'>
+              {cart.seats}{' '}
+              {t('services.standard.golfCartRentalView.carts.seats')}
+            </span>
           </div>
         </div>
       </div>
@@ -355,34 +286,17 @@ const CartCard = ({ cart, onClick, language }) => {
   );
 };
 
-// SIDEBAR COMPONENT - NEW
-const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
+// Sidebar Component
+const CartDetailsSidebar = ({ cart, isOpen, onClose, t, onBookNow }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
   if (!cart) return null;
 
-  const displayName = language === 'es' ? cart.spanishName : cart.name;
-  const displayDescription =
-    language === 'es' ? cart.spanishDescription : cart.description;
-  const displayFeatures =
-    language === 'es' ? cart.spanishFeatures : cart.features;
+  const cartKey = cart.id === '4-seater' ? '4seater' : '6seater';
+  const featureCount = cart.id === '4-seater' ? 3 : 6;
 
-  const content = {
-    en: {
-      features: 'Features',
-      bookNow: 'Book Now',
-    },
-    es: {
-      features: 'Características',
-      bookNow: 'Reservar',
-    },
-  };
-
-  const currentContent = content[language];
-
-  // Swipe detection
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
@@ -402,12 +316,10 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
-      // Swipe left - next image
       setCurrentImageIndex((prev) => (prev + 1) % cart.detailImages.length);
     }
 
     if (isRightSwipe) {
-      // Swipe right - previous image
       setCurrentImageIndex(
         (prev) =>
           (prev - 1 + cart.detailImages.length) % cart.detailImages.length
@@ -419,7 +331,6 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -428,7 +339,6 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
             onClick={onClose}
           />
 
-          {/* Sidebar */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -436,10 +346,11 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             className='fixed right-0 top-0 h-full w-full max-w-lg bg-white shadow-2xl z-50 overflow-y-auto'
           >
-            {/* Header */}
             <div className='sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between'>
               <h2 className='text-2xl font-bold text-gray-900'>
-                {displayName}
+                {t(
+                  `services.standard.golfCartRentalView.carts.${cartKey}.name`
+                )}
               </h2>
               <button
                 onClick={onClose}
@@ -449,7 +360,6 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
               </button>
             </div>
 
-            {/* Swipeable Image Gallery */}
             <div
               className='relative h-64 overflow-hidden cursor-grab active:cursor-grabbing'
               onTouchStart={onTouchStart}
@@ -459,7 +369,9 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
               <motion.img
                 key={currentImageIndex}
                 src={cart.detailImages[currentImageIndex]}
-                alt={displayName}
+                alt={t(
+                  `services.standard.golfCartRentalView.carts.${cartKey}.name`
+                )}
                 className='w-full h-full object-cover select-none'
                 initial={{ x: 100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -468,17 +380,16 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
                 draggable={false}
               />
 
-              {/* Swipe Indicator */}
               <div className='absolute top-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2'>
-                <span>👈 Swipe 👉</span>
+                <span>
+                  {t('services.standard.golfCartRentalView.sidebar.swipeHint')}
+                </span>
               </div>
 
-              {/* Image Counter */}
               <div className='absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-medium'>
                 {currentImageIndex + 1} / {cart.detailImages.length}
               </div>
 
-              {/* Image Indicators - Clickable */}
               <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2'>
                 {cart.detailImages.map((_, index) => (
                   <button
@@ -494,45 +405,52 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
               </div>
             </div>
 
-            {/* Content */}
             <div className='p-6 space-y-6'>
-              {/* Price & Info */}
               <div className='flex items-center justify-between'>
                 <span className='text-3xl font-bold text-teal-600'>
-                  ${cart.price}/night
+                  ${cart.price}
+                  {t('services.standard.golfCartRentalView.carts.perNight')}
                 </span>
                 <div className='flex items-center gap-2 text-gray-600'>
                   <Users className='w-5 h-5' />
-                  <span>{cart.seats} seats</span>
+                  <span>
+                    {cart.seats}{' '}
+                    {t('services.standard.golfCartRentalView.carts.seats')}
+                  </span>
                 </div>
               </div>
 
-              {/* Description */}
               <p className='text-gray-600 leading-relaxed'>
-                {displayDescription}
+                {t(
+                  `services.standard.golfCartRentalView.carts.${cartKey}.description`
+                )}
               </p>
 
-              {/* Features */}
               <div>
                 <h3 className='font-bold text-gray-900 mb-3'>
-                  {currentContent.features}
+                  {t('services.standard.golfCartRentalView.sidebar.features')}
                 </h3>
                 <div className='space-y-2'>
-                  {displayFeatures.map((feature, index) => (
-                    <div key={index} className='flex items-center gap-3'>
-                      <CheckCircle className='w-4 h-4 text-teal-500 flex-shrink-0' />
-                      <span className='text-sm text-gray-600'>{feature}</span>
-                    </div>
-                  ))}
+                  {Array.from({ length: featureCount }, (_, i) => i + 1).map(
+                    (num) => (
+                      <div key={num} className='flex items-center gap-3'>
+                        <CheckCircle className='w-4 h-4 text-teal-500 flex-shrink-0' />
+                        <span className='text-sm text-gray-600'>
+                          {t(
+                            `services.standard.golfCartRentalView.carts.${cartKey}.feature${num}`
+                          )}
+                        </span>
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
 
-              {/* Book Now Button */}
               <button
                 onClick={onBookNow}
                 className='w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-4 px-8 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg'
               >
-                {currentContent.bookNow}
+                {t('services.standard.golfCartRentalView.sidebar.bookNow')}
               </button>
             </div>
           </motion.div>
@@ -543,21 +461,8 @@ const CartDetailsSidebar = ({ cart, isOpen, onClose, language, onBookNow }) => {
 };
 
 // Gallery Section
-const GallerySection = ({ language }) => {
+const GallerySection = ({ t }) => {
   const [selectedImage, setSelectedImage] = useState(null);
-
-  const content = {
-    en: {
-      title: 'Experience Paradise',
-      subtitle: 'Where luxury meets adventure',
-    },
-    es: {
-      title: 'Experimenta el Paraíso',
-      subtitle: 'Donde el lujo se encuentra con la aventura',
-    },
-  };
-
-  const currentContent = content[language];
 
   return (
     <section className='py-20 bg-gradient-to-br from-slate-50 to-teal-50'>
@@ -569,9 +474,11 @@ const GallerySection = ({ language }) => {
           className='text-center mb-16'
         >
           <h2 className='text-4xl lg:text-5xl font-light text-slate-800 mb-4'>
-            {currentContent.title}
+            {t('services.standard.golfCartRentalView.gallery.title')}
           </h2>
-          <p className='text-xl text-slate-600'>{currentContent.subtitle}</p>
+          <p className='text-xl text-slate-600'>
+            {t('services.standard.golfCartRentalView.gallery.subtitle')}
+          </p>
         </motion.div>
 
         <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
@@ -596,7 +503,9 @@ const GallerySection = ({ language }) => {
               <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
               <div className='absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                 <h3 className='font-bold text-sm md:text-base'>
-                  {image.title}
+                  {t(
+                    `services.standard.golfCartRentalView.gallery.image${image.id}Title`
+                  )}
                 </h3>
               </div>
               <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
@@ -608,7 +517,6 @@ const GallerySection = ({ language }) => {
           ))}
         </div>
 
-        {/* Gallery Modal */}
         <AnimatePresence>
           {selectedImage !== null && (
             <motion.div
@@ -646,24 +554,7 @@ const GallerySection = ({ language }) => {
 };
 
 // CTA Banner
-const CTABanner = ({ language, onGetStartedClick }) => {
-  const content = {
-    en: {
-      title: 'Ready for Your Adventure?',
-      subtitle: 'Book your luxury golf cart experience today',
-      cta: 'Get Started',
-      features: ['Free Delivery', 'Premium Service', '24/7 Support'],
-    },
-    es: {
-      title: '¿Listo para tu Aventura?',
-      subtitle: 'Reserva tu experiencia de lujo en carrito de golf hoy',
-      cta: 'Comenzar',
-      features: ['Entrega Gratis', 'Servicio Premium', 'Soporte 24/7'],
-    },
-  };
-
-  const currentContent = content[language];
-
+const CTABanner = ({ t, onGetStartedClick }) => {
   return (
     <section className='relative py-20 overflow-hidden'>
       <div className='absolute inset-0'>
@@ -682,28 +573,29 @@ const CTABanner = ({ language, onGetStartedClick }) => {
           viewport={{ once: true }}
         >
           <h2 className='text-4xl lg:text-5xl font-light mb-6'>
-            {currentContent.title}
+            {t('services.standard.golfCartRentalView.ctaBanner.title')}
           </h2>
           <p className='text-xl mb-8 max-w-2xl mx-auto opacity-90'>
-            {currentContent.subtitle}
+            {t('services.standard.golfCartRentalView.ctaBanner.subtitle')}
           </p>
 
           <button
             onClick={onGetStartedClick}
             className='group bg-white text-slate-800 hover:bg-slate-100 px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 mx-auto transition-all duration-300 hover:scale-105 shadow-xl'
           >
-            {currentContent.cta}
+            {t('services.standard.golfCartRentalView.ctaBanner.cta')}
             <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
           </button>
 
           <div className='flex flex-wrap justify-center gap-8 mt-12'>
-            {currentContent.features.map((feature, index) => (
-              <div
-                key={index}
-                className='flex items-center gap-2 text-white/80'
-              >
+            {[1, 2, 3].map((num) => (
+              <div key={num} className='flex items-center gap-2 text-white/80'>
                 <CheckCircle className='w-5 h-5 text-cyan-300' />
-                <span>{feature}</span>
+                <span>
+                  {t(
+                    `services.standard.golfCartRentalView.ctaBanner.feature${num}`
+                  )}
+                </span>
               </div>
             ))}
           </div>
@@ -713,15 +605,14 @@ const CTABanner = ({ language, onGetStartedClick }) => {
   );
 };
 
-// MAIN COMPONENT - UPDATED WITH SIDEBAR APPROACH
+// Main Component
 const GolfCartServiceView = () => {
-  const [language, setLanguage] = useState('en');
+  const { t } = useTranslation();
   const [selectedCart, setSelectedCart] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // ← SIDEBAR STATE
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const { bookService } = useBooking();
 
-  // ← DYNAMIC SERVICE OBJECT with preselected cart
   const getServiceForCart = (cart) => {
     return {
       id: 'golf-cart-rental',
@@ -731,18 +622,11 @@ const GolfCartServiceView = () => {
       description: 'Premium golf cart rental service for resort exploration',
       category: 'mobility',
       duration: 'flexible',
-      // ← PASS SELECTED CART INFO TO FORM (MAKES FORM HIDE CART SELECTION)
       selectedCartInfo: cart
         ? {
             id: cart.id,
-            name: cart.name,
-            spanishName: cart.spanishName,
             seats: cart.seats,
             price: cart.price,
-            features: cart.features,
-            spanishFeatures: cart.spanishFeatures,
-            description: cart.description,
-            spanishDescription: cart.spanishDescription,
           }
         : null,
     };
@@ -758,16 +642,14 @@ const GolfCartServiceView = () => {
     cartSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // ← UPDATED: Opens sidebar instead of modal
   const handleCartClick = (cart) => {
     setSelectedCart(cart);
     setIsSidebarOpen(true);
   };
 
-  // ← NEW: Close sidebar and open booking modal with preselected cart
   const handleBookNow = () => {
-    setIsSidebarOpen(false); // Close sidebar
-    setIsBookingModalOpen(true); // Open booking modal
+    setIsSidebarOpen(false);
+    setIsBookingModalOpen(true);
   };
 
   const handleBookingConfirm = (service, dates, guests) => {
@@ -781,34 +663,10 @@ const GolfCartServiceView = () => {
     setSelectedCart(null);
   };
 
-  const content = {
-    en: {
-      fleetTitle: 'Our Luxury Fleet',
-      fleetSubtitle: 'Choose your perfect ride',
-    },
-    es: {
-      fleetTitle: 'Nuestra Flota de Lujo',
-      fleetSubtitle: 'Elige tu viaje perfecto',
-    },
-  };
-
-  const currentContent = content[language];
-
-  const RENTAL_REQUIREMENTS = [
-    "Must be 18+ years old with a valid driver's license",
-    'Basic driving experience recommended',
-    'Drive responsibly and follow resort/community rules',
-    'Respect local driving laws and speed limits',
-    'Children must be supervised at all times while in cart',
-    'Available throughout Puntacana area',
-  ];
-
   return (
     <div className='min-h-screen bg-white'>
-      {/* Hero Section */}
-      <HeroSection onExploreClick={handleExploreClick} />
+      <HeroSection onExploreClick={handleExploreClick} t={t} />
 
-      {/* Cart Selection */}
       <section id='cart-selection' className='py-20 bg-white'>
         <div className='max-w-7xl mx-auto px-6'>
           <motion.div
@@ -818,10 +676,10 @@ const GolfCartServiceView = () => {
             className='text-center mb-16'
           >
             <h2 className='text-4xl lg:text-5xl font-light text-slate-800 mb-4'>
-              {currentContent.fleetTitle}
+              {t('services.standard.golfCartRentalView.fleet.title')}
             </h2>
             <p className='text-xl text-slate-600'>
-              {currentContent.fleetSubtitle}
+              {t('services.standard.golfCartRentalView.fleet.subtitle')}
             </p>
           </motion.div>
 
@@ -836,8 +694,8 @@ const GolfCartServiceView = () => {
               >
                 <CartCard
                   cart={cart}
-                  onClick={() => handleCartClick(cart)} // ← OPENS SIDEBAR
-                  language={language}
+                  onClick={() => handleCartClick(cart)}
+                  t={t}
                 />
               </motion.div>
             ))}
@@ -845,16 +703,10 @@ const GolfCartServiceView = () => {
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <GallerySection language={language} />
+      <GallerySection t={t} />
 
-      {/* CTA Banner */}
-      <CTABanner
-        language={language}
-        onGetStartedClick={handleGetStartedClick}
-      />
+      <CTABanner t={t} onGetStartedClick={handleGetStartedClick} />
 
-      {/* Mindfulness Quote Banner */}
       <motion.div
         className='px-4 mt-10 mb-10'
         initial='hidden'
@@ -870,52 +722,90 @@ const GolfCartServiceView = () => {
 
           <Quote className='w-12 h-12 text-emerald-500 mx-auto mb-6' />
           <blockquote className='text-3xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
-            "Success in this game depends less on strength of body than strength
-            of mind and character."
+            "{t('services.standard.golfCartRentalView.quote.text')}"
           </blockquote>
           <cite className='text-xl text-emerald-600 font-medium'>
-            - Arnold Palmer
+            - {t('services.standard.golfCartRentalView.quote.author')}
           </cite>
         </div>
       </motion.div>
 
-      {/* Requirements List */}
-      <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mt-10 mb-10 '>
-        <div className='flex items-start'>
-          <FileText className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
-          <div>
-            <h4 className='font-medium text-blue-800 mb-2'>
-              Driver Requirements
-            </h4>
-            <ul className='text-sm text-blue-700 space-y-1'>
-              {RENTAL_REQUIREMENTS.map((requirement, index) => (
-                <li key={index}>• {requirement}</li>
-              ))}
-            </ul>
+      <div className='max-w-7xl mx-auto px-6 mb-10'>
+        <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+          <div className='flex items-start'>
+            <FileText className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
+            <div>
+              <h4 className='font-medium text-blue-800 mb-2'>
+                {t('services.standard.golfCartRentalView.requirements.title')}
+              </h4>
+              <ul className='text-sm text-blue-700 space-y-1'>
+                <li>
+                  •{' '}
+                  {t(
+                    'services.standard.golfCartRentalView.requirements.requirement1'
+                  )}
+                </li>
+                <li>
+                  •{' '}
+                  {t(
+                    'services.standard.golfCartRentalView.requirements.requirement2'
+                  )}
+                </li>
+                <li>
+                  •{' '}
+                  {t(
+                    'services.standard.golfCartRentalView.requirements.requirement3'
+                  )}
+                </li>
+                <li>
+                  •{' '}
+                  {t(
+                    'services.standard.golfCartRentalView.requirements.requirement4'
+                  )}
+                </li>
+                <li>
+                  •{' '}
+                  {t(
+                    'services.standard.golfCartRentalView.requirements.requirement5'
+                  )}
+                </li>
+                <li>
+                  •{' '}
+                  {t(
+                    'services.standard.golfCartRentalView.requirements.requirement6'
+                  )}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className='bg-amber-50 border border-amber-200 rounded-lg p-4 mt-6'>
+          <div className='flex items-start'>
+            <AlertTriangle className='w-5 h-5 text-amber-600 mr-3 flex-shrink-0 mt-0.5' />
+            <div>
+              <h4 className='font-medium text-amber-800 mb-2'>
+                {t('services.standard.golfCartRentalView.disclaimer.title')}
+              </h4>
+              <p className='text-sm text-amber-700'>
+                <strong>
+                  {
+                    t(
+                      'services.standard.golfCartRentalView.disclaimer.text'
+                    ).split('.')[0]
+                  }
+                  .
+                </strong>{' '}
+                {t('services.standard.golfCartRentalView.disclaimer.text')
+                  .split('.')
+                  .slice(1)
+                  .join('.')}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
-        <div className='flex items-start'>
-          <AlertTriangle className='w-5 h-5 text-amber-600 mr-3 flex-shrink-0 mt-0.5' />
-          <div>
-            <h4 className='font-medium text-amber-800 mb-2'>
-              Important Disclaimer
-            </h4>
-            <p className='text-sm text-amber-700'>
-              <strong>Drive at your own discretion.</strong> Please follow all
-              community or resort rules and respect local driving laws. You are
-              responsible for the safe operation of the vehicle during the
-              rental period. Our carts are more than transportation—they're
-              freedom on wheels.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* SIDEBAR - SHOWS CART DETAILS */}
       <CartDetailsSidebar
         cart={selectedCart}
         isOpen={isSidebarOpen}
@@ -923,17 +813,16 @@ const GolfCartServiceView = () => {
           setIsSidebarOpen(false);
           setSelectedCart(null);
         }}
-        language={language}
+        t={t}
         onBookNow={handleBookNow}
       />
 
-      {/* BOOKING MODAL - ONLY ONE MODAL NOW, WITH PRESELECTED CART */}
       {isBookingModalOpen && (
         <BookingModal
           isOpen={isBookingModalOpen}
           onClose={() => setIsBookingModalOpen(false)}
           onConfirm={handleBookingConfirm}
-          service={getServiceForCart(selectedCart)} // ← PASSES CART INFO TO FORM
+          service={getServiceForCart(selectedCart)}
         />
       )}
     </div>

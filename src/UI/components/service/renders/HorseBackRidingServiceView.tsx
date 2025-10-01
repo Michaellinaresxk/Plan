@@ -50,114 +50,25 @@ interface BookingActions {
   service: Service;
 }
 
-// Itinerary data
+// Solo IDs y componentes no traducibles
 const ITINERARY_STEPS = [
-  {
-    id: 1,
-    icon: Info,
-    title: 'Safety Briefing',
-    description: 'Learn horse riding basics and safety instructions',
-  },
-  {
-    id: 2,
-    icon: Coffee,
-    title: 'Courtesy Stop',
-    description: 'Taste Dominican coffee, mamajuana, and enjoy shopping',
-  },
-  {
-    id: 3,
-    icon: Trees,
-    title: 'Forest Trail',
-    description: 'Ride through tropical forest to reach the river mouth',
-  },
-  {
-    id: 4,
-    icon: Waves,
-    title: 'River Recreation',
-    description: 'Enjoy recreation time at the beautiful river',
-  },
-  {
-    id: 5,
-    icon: Sun,
-    title: 'Macao Beach',
-    description: 'Experience the pristine Macao Beach',
-  },
-  {
-    id: 6,
-    icon: Droplets,
-    title: 'Beach Swimming',
-    description: 'Optional swimming and beach time',
-  },
-  {
-    id: 7,
-    icon: Navigation,
-    title: 'Return Journey',
-    description: 'Return to the ranch for transportation back',
-  },
+  { id: 1, icon: Info },
+  { id: 2, icon: Coffee },
+  { id: 3, icon: Trees },
+  { id: 4, icon: Waves },
+  { id: 5, icon: Sun },
+  { id: 6, icon: Droplets },
+  { id: 7, icon: Navigation },
 ];
 
-// What to bring data
-const WHAT_TO_BRING = [
-  {
-    icon: Shirt,
-    title: 'Comfortable Clothing',
-    description: 'Light, breathable clothes',
-  },
-  {
-    icon: Shield,
-    title: 'Closed-toe Shoes',
-    description: 'Sneakers or boots required',
-  },
-  {
-    icon: Bug,
-    title: 'Mosquito Repellent',
-    description: 'Essential protection',
-  },
-  {
-    icon: Eye,
-    title: 'Sunglasses',
-    description: 'Eye protection',
-  },
-];
-
-// Restrictions data
-const RESTRICTIONS_INFO = [
-  {
-    icon: Baby,
-    title: 'Age Requirements',
-    items: [
-      '6+ years can ride alone',
-      '3-5 years with adult',
-      'Under 3 not recommended',
-    ],
-  },
-  {
-    icon: Scale,
-    title: 'Weight Limit',
-    items: ['Maximum: 300 lbs (136 kg)', 'Weight verification required'],
-  },
-  {
-    icon: AlertTriangle,
-    title: 'Health Restrictions',
-    items: [
-      'Not for pregnant women',
-      'No back/neck problems',
-      'Heart conditions need clearance',
-    ],
-  },
-  {
-    icon: Globe,
-    title: 'Language & Safety',
-    items: [
-      'English-speaking guides',
-      'Safety helmets provided',
-      'Professional supervision',
-    ],
-  },
-];
+const WHAT_TO_BRING_ICONS = [Shirt, Shield, Bug, Eye];
+const RESTRICTIONS_ICONS = [Baby, Scale, AlertTriangle, Globe];
 
 // Hero Section Component
-const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
+const HeroSection: React.FC<BookingActions & { t: any }> = ({
+  onBookClick,
+  t,
+}) => {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -184,15 +95,14 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
       <div className='relative z-10 h-full flex flex-col justify-end px-4 md:px-8 pb-30'>
         <div className='max-w-4xl mx-auto w-full'>
           <h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 text-white'>
-            Horseback Riding
+            {t('services.standard.horsebackRidingServiceView.hero.title')}
             <span className='block text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-amber-400 mt-2'>
-              Macao Beach
+              {t('services.standard.horsebackRidingServiceView.hero.subtitle')}
             </span>
           </h1>
 
           <p className='text-base sm:text-lg md:text-xl text-white/90 mb-8 md:mb-10 max-w-2xl'>
-            Experience the magic of riding along pristine beaches. Perfect for
-            all skill levels.
+            {t('services.standard.horsebackRidingServiceView.hero.description')}
           </p>
 
           <div className='flex flex-col sm:flex-row gap-4 mb-8'>
@@ -204,7 +114,9 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
                 className='w-5 h-5 group-hover:translate-x-1 transition-transform'
                 fill='currentColor'
               />
-              Book Your Adventure
+              {t(
+                'services.standard.horsebackRidingServiceView.hero.bookButton'
+              )}
               <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
             </button>
           </div>
@@ -212,15 +124,23 @@ const HeroSection: React.FC<BookingActions> = ({ onBookClick }) => {
           <div className='flex flex-wrap gap-6 text-white/80 text-sm sm:text-base'>
             <div className='flex items-center gap-2'>
               <Star className='w-4 h-4 text-amber-400 fill-amber-400' />
-              <span>4.9 Rating</span>
+              <span>
+                {t('services.standard.horsebackRidingServiceView.hero.rating')}
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <Clock className='w-4 h-4' />
-              <span>3 Hours</span>
+              <span>
+                {t(
+                  'services.standard.horsebackRidingServiceView.hero.duration'
+                )}
+              </span>
             </div>
             <div className='flex items-center gap-2'>
               <Users className='w-4 h-4' />
-              <span>All Levels</span>
+              <span>
+                {t('services.standard.horsebackRidingServiceView.hero.level')}
+              </span>
             </div>
           </div>
         </div>
@@ -291,7 +211,6 @@ const PhotoGallery = () => {
           ))}
         </div>
 
-        {/* Gallery Modal */}
         <AnimatePresence>
           {selectedImage !== null && (
             <motion.div
@@ -329,27 +248,27 @@ const PhotoGallery = () => {
 };
 
 // Quick Info Section Component
-const QuickInfoSection: React.FC = () => {
+const QuickInfoSection: React.FC<{ t: any }> = ({ t }) => {
   const cards = [
     {
       icon: <MapPin className='w-5 h-5' />,
-      title: 'Macao Beach',
-      description: 'Pristine untouched paradise',
+      titleKey: 'location.title',
+      descriptionKey: 'location.description',
     },
     {
       icon: <Shield className='w-5 h-5' />,
-      title: 'Safety First',
-      description: 'Professional guides & equipment',
+      titleKey: 'safety.title',
+      descriptionKey: 'safety.description',
     },
     {
       icon: <Clock className='w-5 h-5' />,
-      title: '3 Hours',
-      description: 'Complete adventure experience',
+      titleKey: 'duration.title',
+      descriptionKey: 'duration.description',
     },
     {
       icon: <Star className='w-5 h-5' />,
-      title: '4.9 Rating',
-      description: 'From 847+ happy riders',
+      titleKey: 'rating.title',
+      descriptionKey: 'rating.description',
     },
   ];
 
@@ -362,8 +281,16 @@ const QuickInfoSection: React.FC = () => {
               <div className='inline-flex p-3 rounded-full bg-amber-100 text-amber-600 mb-3'>
                 {card.icon}
               </div>
-              <h3 className='font-semibold text-gray-800 mb-1'>{card.title}</h3>
-              <p className='text-sm text-gray-600'>{card.description}</p>
+              <h3 className='font-semibold text-gray-800 mb-1'>
+                {t(
+                  `services.standard.horsebackRidingServiceView.quickInfo.cards.${card.titleKey}`
+                )}
+              </h3>
+              <p className='text-sm text-gray-600'>
+                {t(
+                  `services.standard.horsebackRidingServiceView.quickInfo.cards.${card.descriptionKey}`
+                )}
+              </p>
             </div>
           ))}
         </div>
@@ -373,57 +300,30 @@ const QuickInfoSection: React.FC = () => {
 };
 
 // Trust Badges Component
-const TrustBadges: React.FC = () => {
+const TrustBadges: React.FC<{ t: any }> = ({ t }) => {
+  const badges = [
+    { key: 'riders', valueKey: 'value', labelKey: 'label' },
+    { key: 'rating', valueKey: 'value', labelKey: 'label' },
+    { key: 'years', valueKey: 'value', labelKey: 'label' },
+    { key: 'safe', valueKey: 'value', labelKey: 'label' },
+  ];
+
   return (
     <section className='py-16 px-4 bg-amber-500'>
       <div className='max-w-5xl mx-auto'>
         <div className='grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white'>
-          <div>
-            <div className='text-3xl font-bold'>847+</div>
-            <div className='text-sm opacity-90'>Happy Riders</div>
-          </div>
-          <div>
-            <div className='text-3xl font-bold'>4.9★</div>
-            <div className='text-sm opacity-90'>Rating</div>
-          </div>
-          <div>
-            <div className='text-3xl font-bold'>5+</div>
-            <div className='text-sm opacity-90'>Years</div>
-          </div>
-          <div>
-            <div className='text-3xl font-bold'>100%</div>
-            <div className='text-sm opacity-90'>Safe</div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Includes Section Component
-const IncludesSection: React.FC = () => {
-  const includes = [
-    'Round-trip transportation',
-    'Playa Macao experience',
-    '3-hour adventure',
-    'Shopping stop',
-    'Scenic river visit',
-    'Professional guide',
-    'Safety equipment',
-    'Forest trail ride',
-  ];
-
-  return (
-    <section className='py-16 px-4 bg-white'>
-      <div className='max-w-3xl mx-auto'>
-        <h2 className='text-3xl font-bold text-center mb-10 text-gray-800'>
-          Everything Included
-        </h2>
-        <div className='grid grid-cols-2 gap-4'>
-          {includes.map((item, idx) => (
-            <div key={idx} className='flex items-center gap-3'>
-              <Check className='w-5 h-5 text-amber-500 flex-shrink-0' />
-              <span className='text-gray-700'>{item}</span>
+          {badges.map((badge) => (
+            <div key={badge.key}>
+              <div className='text-3xl font-bold'>
+                {t(
+                  `services.standard.horsebackRidingServiceView.trustBadges.${badge.key}.${badge.valueKey}`
+                )}
+              </div>
+              <div className='text-sm opacity-90'>
+                {t(
+                  `services.standard.horsebackRidingServiceView.trustBadges.${badge.key}.${badge.labelKey}`
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -432,21 +332,63 @@ const IncludesSection: React.FC = () => {
   );
 };
 
-// Compact Itinerary Section (2 columns)
-const ItinerarySection: React.FC = () => {
+// Includes Section Component
+const IncludesSection: React.FC<{ t: any }> = ({ t }) => {
+  const includeKeys = [
+    'item1',
+    'item2',
+    'item3',
+    'item4',
+    'item5',
+    'item6',
+    'item7',
+    'item8',
+  ];
+
+  return (
+    <section className='py-16 px-4 bg-white'>
+      <div className='max-w-3xl mx-auto'>
+        <h2 className='text-3xl font-bold text-center mb-10 text-gray-800'>
+          {t('services.standard.horsebackRidingServiceView.includes.title')}
+        </h2>
+        <div className='grid grid-cols-2 gap-4'>
+          {includeKeys.map((key, idx) => (
+            <div key={idx} className='flex items-center gap-3'>
+              <Check className='w-5 h-5 text-amber-500 flex-shrink-0' />
+              <span className='text-gray-700'>
+                {t(
+                  `services.standard.horsebackRidingServiceView.includes.${key}`
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Itinerary Section
+const ItinerarySection: React.FC<{ t: any }> = ({ t }) => {
   return (
     <section className='py-16 bg-gradient-to-br from-amber-50 to-orange-50'>
       <div className='max-w-6xl mx-auto px-4'>
         <div className='text-center mb-12'>
           <h2 className='text-3xl font-bold text-gray-800 mb-4'>
-            Your Adventure <span className='text-amber-500'>Itinerary</span>
+            {t('services.standard.horsebackRidingServiceView.itinerary.title')}{' '}
+            <span className='text-amber-500'>
+              {t(
+                'services.standard.horsebackRidingServiceView.itinerary.titleHighlight'
+              )}
+            </span>
           </h2>
           <p className='text-gray-600'>
-            Approximately 3 hours of unforgettable experiences
+            {t(
+              'services.standard.horsebackRidingServiceView.itinerary.subtitle'
+            )}
           </p>
         </div>
         <div className='space-y-6'>
-          {/* Primeros 6 elementos en grid */}
           <div className='grid grid-cols-2 gap-6'>
             {ITINERARY_STEPS.slice(0, -1).map((step, index) => {
               const IconComponent = step.icon;
@@ -469,16 +411,21 @@ const ItinerarySection: React.FC = () => {
                       </span>
                     </div>
                     <h3 className='font-semibold text-gray-800 text-sm mb-1'>
-                      {step.title}
+                      {t(
+                        `services.standard.horsebackRidingServiceView.itinerary.step${step.id}.title`
+                      )}
                     </h3>
-                    <p className='text-gray-600 text-xs'>{step.description}</p>
+                    <p className='text-gray-600 text-xs'>
+                      {t(
+                        `services.standard.horsebackRidingServiceView.itinerary.step${step.id}.description`
+                      )}
+                    </p>
                   </div>
                 </motion.div>
               );
             })}
           </div>
 
-          {/* Último elemento centrado ocupando todo el ancho */}
           {(() => {
             const lastStep = ITINERARY_STEPS[ITINERARY_STEPS.length - 1];
             const IconComponent = lastStep.icon;
@@ -501,10 +448,14 @@ const ItinerarySection: React.FC = () => {
                     </span>
                   </div>
                   <h3 className='font-semibold text-gray-800 text-sm mb-1'>
-                    {lastStep.title}
+                    {t(
+                      `services.standard.horsebackRidingServiceView.itinerary.step${lastStep.id}.title`
+                    )}
                   </h3>
                   <p className='text-gray-600 text-xs'>
-                    {lastStep.description}
+                    {t(
+                      `services.standard.horsebackRidingServiceView.itinerary.step${lastStep.id}.description`
+                    )}
                   </p>
                 </div>
               </motion.div>
@@ -515,7 +466,9 @@ const ItinerarySection: React.FC = () => {
           <div className='inline-flex items-center gap-2 bg-amber-100 px-4 py-2 rounded-full'>
             <Clock className='w-4 h-4 text-amber-600' />
             <span className='text-amber-800 font-medium text-sm'>
-              Total Duration: ~3 hours
+              {t(
+                'services.standard.horsebackRidingServiceView.itinerary.totalDuration'
+              )}
             </span>
           </div>
         </div>
@@ -524,8 +477,8 @@ const ItinerarySection: React.FC = () => {
   );
 };
 
-// Compact What to Bring & Restrictions Section (2 columns)
-const InfoSection: React.FC = () => {
+// Info Section (What to Bring & Restrictions)
+const InfoSection: React.FC<{ t: any }> = ({ t }) => {
   return (
     <section className='py-16 bg-white'>
       <div className='max-w-6xl mx-auto px-4'>
@@ -533,14 +486,21 @@ const InfoSection: React.FC = () => {
           {/* What to Bring */}
           <div>
             <h2 className='text-2xl font-bold text-gray-800 mb-6'>
-              What to <span className='text-amber-500'>Bring</span>
+              {t(
+                'services.standard.horsebackRidingServiceView.whatToBring.title'
+              )}{' '}
+              <span className='text-amber-500'>
+                {t(
+                  'services.standard.horsebackRidingServiceView.whatToBring.titleHighlight'
+                )}
+              </span>
             </h2>
             <div className='grid grid-cols-2 gap-4'>
-              {WHAT_TO_BRING.map((item, index) => {
-                const IconComponent = item.icon;
+              {[1, 2, 3, 4].map((num, index) => {
+                const IconComponent = WHAT_TO_BRING_ICONS[index];
                 return (
                   <motion.div
-                    key={index}
+                    key={num}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -551,9 +511,15 @@ const InfoSection: React.FC = () => {
                       <IconComponent className='w-6 h-6 text-amber-600' />
                     </div>
                     <h3 className='font-semibold text-gray-800 text-sm mb-2'>
-                      {item.title}
+                      {t(
+                        `services.standard.horsebackRidingServiceView.whatToBring.item${num}.title`
+                      )}
                     </h3>
-                    <p className='text-gray-600 text-xs'>{item.description}</p>
+                    <p className='text-gray-600 text-xs'>
+                      {t(
+                        `services.standard.horsebackRidingServiceView.whatToBring.item${num}.description`
+                      )}
+                    </p>
                   </motion.div>
                 );
               })}
@@ -563,39 +529,61 @@ const InfoSection: React.FC = () => {
           {/* Restrictions */}
           <div>
             <h2 className='text-2xl font-bold text-gray-800 mb-6'>
-              Important <span className='text-red-500'>Information</span>
+              {t(
+                'services.standard.horsebackRidingServiceView.restrictions.title'
+              )}{' '}
+              <span className='text-red-500'>
+                {t(
+                  'services.standard.horsebackRidingServiceView.restrictions.titleHighlight'
+                )}
+              </span>
             </h2>
-            <div className='grid grid-cols-2 md:grid-cols-1 gap-4'>
-              {RESTRICTIONS_INFO.map((category, index) => {
-                const IconComponent = category.icon;
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className='bg-gray-50 rounded-xl p-4'
-                  >
-                    <div className='flex items-center gap-3 mb-3'>
-                      <div className='w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center'>
-                        <IconComponent className='w-4 h-4 text-red-600' />
+            <div className='grid grid-cols-2 md:grid-cols-2 gap-4'>
+              {['age', 'weight', 'health', 'language'].map(
+                (category, index) => {
+                  const IconComponent = RESTRICTIONS_ICONS[index];
+                  const itemCount =
+                    category === 'age' || category === 'health' ? 3 : 2;
+                  return (
+                    <motion.div
+                      key={category}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className='bg-gray-50 rounded-xl p-4'
+                    >
+                      <div className='flex items-center gap-3 mb-3'>
+                        <div className='w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center'>
+                          <IconComponent className='w-4 h-4 text-red-600' />
+                        </div>
+                        <h3 className='font-semibold text-gray-800 text-sm'>
+                          {t(
+                            `services.standard.horsebackRidingServiceView.restrictions.${category}.title`
+                          )}
+                        </h3>
                       </div>
-                      <h3 className='font-semibold text-gray-800 text-sm'>
-                        {category.title}
-                      </h3>
-                    </div>
-                    <ul className='space-y-1'>
-                      {category.items.map((item, itemIndex) => (
-                        <li key={itemIndex} className='flex items-start gap-2'>
-                          <Check className='w-3 h-3 text-green-500 flex-shrink-0 mt-0.5' />
-                          <span className='text-gray-600 text-xs'>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                );
-              })}
+                      <ul className='space-y-1'>
+                        {Array.from({ length: itemCount }, (_, i) => i + 1).map(
+                          (itemNum) => (
+                            <li
+                              key={itemNum}
+                              className='flex items-start gap-2'
+                            >
+                              <Check className='w-3 h-3 text-green-500 flex-shrink-0 mt-0.5' />
+                              <span className='text-gray-600 text-xs'>
+                                {t(
+                                  `services.standard.horsebackRidingServiceView.restrictions.${category}.item${itemNum}`
+                                )}
+                              </span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </motion.div>
+                  );
+                }
+              )}
             </div>
           </div>
         </div>
@@ -606,17 +594,19 @@ const InfoSection: React.FC = () => {
             <Heart className='w-6 h-6 text-amber-600 flex-shrink-0 mt-1' />
             <div>
               <h3 className='text-lg font-semibold text-amber-800 mb-3'>
-                About Our Dominican Horses
+                {t(
+                  'services.standard.horsebackRidingServiceView.horseDisclaimer.title'
+                )}
               </h3>
               <p className='text-amber-700 text-sm leading-relaxed mb-3'>
-                Dominican horses are different from European horses - they're
-                perfectly adapted to tropical climate and terrain. Our horses
-                are well-cared for, regularly veterinarian-checked, and trained
-                specifically for tourist activities.
+                {t(
+                  'services.standard.horsebackRidingServiceView.horseDisclaimer.paragraph1'
+                )}
               </p>
               <p className='text-amber-700 text-sm'>
-                We follow all animal welfare standards and treat our horses with
-                utmost respect and care.
+                {t(
+                  'services.standard.horsebackRidingServiceView.horseDisclaimer.paragraph2'
+                )}
               </p>
             </div>
           </div>
@@ -628,11 +618,14 @@ const InfoSection: React.FC = () => {
             <Info className='w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5' />
             <div>
               <h3 className='font-semibold text-blue-800 mb-1'>
-                Weather Policy
+                {t(
+                  'services.standard.horsebackRidingServiceView.weatherPolicy.title'
+                )}
               </h3>
               <p className='text-blue-700 text-sm'>
-                Tours continue rain or shine! We only cancel in extreme weather
-                conditions.
+                {t(
+                  'services.standard.horsebackRidingServiceView.weatherPolicy.description'
+                )}
               </p>
             </div>
           </div>
@@ -643,58 +636,55 @@ const InfoSection: React.FC = () => {
 };
 
 // Reviews Section Component
-const ReviewsSection: React.FC = () => {
-  const reviews = [
-    {
-      name: 'Sarah Johnson',
-      rating: 5,
-      text: 'Amazing experience! The ride was magical and our guide was excellent.',
-      date: '2 days ago',
-    },
-    {
-      name: 'Mike Chen',
-      rating: 5,
-      text: 'Perfect for beginners. Felt safe the whole time and the beach views were incredible.',
-      date: '1 week ago',
-    },
-    {
-      name: 'Emma Davis',
-      rating: 5,
-      text: 'Swimming with the horses was unforgettable. Highly recommend this tour!',
-      date: '2 weeks ago',
-    },
-  ];
-
+const ReviewsSection: React.FC<{ t: any }> = ({ t }) => {
   return (
     <section className='py-16 px-4 bg-gray-50'>
       <div className='max-w-5xl mx-auto'>
         <div className='text-center mb-10'>
           <h2 className='text-3xl font-bold mb-3 text-gray-800'>
-            What Riders Say
+            {t('services.standard.horsebackRidingServiceView.reviews.title')}
           </h2>
           <div className='flex justify-center items-center gap-1'>
             {[...Array(5)].map((_, i) => (
               <Star key={i} className='w-5 h-5 fill-amber-400 text-amber-400' />
             ))}
-            <span className='ml-2 text-gray-600'>4.9 from 847 reviews</span>
+            <span className='ml-2 text-gray-600'>
+              {t(
+                'services.standard.horsebackRidingServiceView.reviews.subtitle'
+              )}
+            </span>
           </div>
         </div>
 
         <div className='grid md:grid-cols-3 gap-6'>
-          {reviews.map((review, idx) => (
-            <div key={idx} className='bg-white rounded-xl p-6'>
+          {[1, 2, 3].map((num) => (
+            <div key={num} className='bg-white rounded-xl p-6'>
               <div className='flex gap-1 mb-3'>
-                {[...Array(review.rating)].map((_, i) => (
+                {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className='w-4 h-4 fill-amber-400 text-amber-400'
                   />
                 ))}
               </div>
-              <p className='text-gray-700 mb-4'>"{review.text}"</p>
+              <p className='text-gray-700 mb-4'>
+                "
+                {t(
+                  `services.standard.horsebackRidingServiceView.reviews.review${num}.text`
+                )}
+                "
+              </p>
               <div className='flex justify-between items-center text-sm'>
-                <span className='font-medium text-gray-800'>{review.name}</span>
-                <span className='text-gray-500'>{review.date}</span>
+                <span className='font-medium text-gray-800'>
+                  {t(
+                    `services.standard.horsebackRidingServiceView.reviews.review${num}.name`
+                  )}
+                </span>
+                <span className='text-gray-500'>
+                  {t(
+                    `services.standard.horsebackRidingServiceView.reviews.review${num}.date`
+                  )}
+                </span>
               </div>
             </div>
           ))}
@@ -705,84 +695,56 @@ const ReviewsSection: React.FC = () => {
 };
 
 // Adventure Banner Component
-const AdventureBanner: React.FC<BookingActions> = ({ onBookClick }) => {
+const AdventureBanner: React.FC<BookingActions & { t: any }> = ({
+  onBookClick,
+  t,
+}) => {
   return (
     <section className='relative py-24 overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50'>
       <div className='max-w-6xl mx-auto px-4'>
         <div className='grid lg:grid-cols-2 gap-12 items-center'>
           <div>
             <h2 className='text-3xl md:text-4xl font-bold text-gray-800 mb-6'>
-              Why Choose Our
-              <span className='text-amber-500'> Horseback Adventure?</span>
+              {t(
+                'services.standard.horsebackRidingServiceView.adventureBanner.title'
+              )}
+              <span className='text-amber-500'>
+                {' '}
+                {t(
+                  'services.standard.horsebackRidingServiceView.adventureBanner.titleHighlight'
+                )}
+              </span>
             </h2>
 
             <div className='space-y-4'>
-              <div className='flex items-start gap-3'>
-                <div className='w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1'>
-                  <Check className='w-4 h-4 text-amber-600' />
+              {[1, 2, 3, 4].map((num) => (
+                <div key={num} className='flex items-start gap-3'>
+                  <div className='w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1'>
+                    <Check className='w-4 h-4 text-amber-600' />
+                  </div>
+                  <div>
+                    <h3 className='font-semibold text-gray-800 mb-1'>
+                      {t(
+                        `services.standard.horsebackRidingServiceView.adventureBanner.benefit${num}.title`
+                      )}
+                    </h3>
+                    <p className='text-gray-600'>
+                      {t(
+                        `services.standard.horsebackRidingServiceView.adventureBanner.benefit${num}.description`
+                      )}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className='font-semibold text-gray-800 mb-1'>
-                    Expert Local Guides
-                  </h3>
-                  <p className='text-gray-600'>
-                    Our bilingual guides know every trail and ensure your safety
-                    and enjoyment throughout the journey.
-                  </p>
-                </div>
-              </div>
-
-              <div className='flex items-start gap-3'>
-                <div className='w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1'>
-                  <Check className='w-4 h-4 text-amber-600' />
-                </div>
-                <div>
-                  <h3 className='font-semibold text-gray-800 mb-1'>
-                    Well-Trained Horses
-                  </h3>
-                  <p className='text-gray-600'>
-                    Our horses are gentle, well-cared for, and perfectly trained
-                    for beach riding.
-                  </p>
-                </div>
-              </div>
-
-              <div className='flex items-start gap-3'>
-                <div className='w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1'>
-                  <Check className='w-4 h-4 text-amber-600' />
-                </div>
-                <div>
-                  <h3 className='font-semibold text-gray-800 mb-1'>
-                    Stunning Locations
-                  </h3>
-                  <p className='text-gray-600'>
-                    Ride through pristine beaches, crystal-clear rivers, and
-                    tropical landscapes.
-                  </p>
-                </div>
-              </div>
-
-              <div className='flex items-start gap-3'>
-                <div className='w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1'>
-                  <Check className='w-4 h-4 text-amber-600' />
-                </div>
-                <div>
-                  <h3 className='font-semibold text-gray-800 mb-1'>
-                    All-Inclusive Experience
-                  </h3>
-                  <p className='text-gray-600'>
-                    Transportation, equipment, and refreshments all included in
-                    one price.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
 
             <button
               onClick={onBookClick}
               className='mt-8 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-semibold transition-all transform hover:scale-105'
             >
-              Reserve Your Spot Today
+              {t(
+                'services.standard.horsebackRidingServiceView.adventureBanner.button'
+              )}
             </button>
           </div>
 
@@ -801,7 +763,11 @@ const AdventureBanner: React.FC<BookingActions> = ({ onBookClick }) => {
                 </div>
                 <div>
                   <p className='text-2xl font-bold text-gray-800'>4.9</p>
-                  <p className='text-xs text-gray-600'>847+ Reviews</p>
+                  <p className='text-xs text-gray-600'>
+                    {t(
+                      'services.standard.horsebackRidingServiceView.adventureBanner.statsLabel'
+                    )}
+                  </p>
                 </div>
               </div>
             </div>
@@ -813,7 +779,10 @@ const AdventureBanner: React.FC<BookingActions> = ({ onBookClick }) => {
 };
 
 // Special Banner Component
-const SpecialBanner: React.FC<BookingActions> = ({ onBookClick }) => {
+const SpecialBanner: React.FC<BookingActions & { t: any }> = ({
+  onBookClick,
+  t,
+}) => {
   return (
     <section className='relative py-32 overflow-hidden'>
       <div className='absolute inset-0'>
@@ -830,33 +799,53 @@ const SpecialBanner: React.FC<BookingActions> = ({ onBookClick }) => {
           <div className='inline-flex items-center gap-2 bg-amber-500/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-amber-400/30'>
             <Sparkles className='w-4 h-4 text-amber-400' />
             <span className='text-amber-200 text-sm font-medium'>
-              Limited Time Offer
+              {t(
+                'services.standard.horsebackRidingServiceView.specialBanner.badge'
+              )}
             </span>
           </div>
 
           <h2 className='text-4xl md:text-5xl font-bold text-white mb-6'>
-            Create Memories That
-            <span className='block text-amber-400'>Last a Lifetime</span>
+            {t(
+              'services.standard.horsebackRidingServiceView.specialBanner.title'
+            )}
+            <span className='block text-amber-400'>
+              {t(
+                'services.standard.horsebackRidingServiceView.specialBanner.titleHighlight'
+              )}
+            </span>
           </h2>
 
           <p className='text-lg text-white/90 mb-8'>
-            Join over 800+ happy riders who've experienced the magic of Macao
-            Beach on horseback. Our gentle horses and expert guides ensure a
-            safe, unforgettable adventure for riders of all levels.
+            {t(
+              'services.standard.horsebackRidingServiceView.specialBanner.description'
+            )}
           </p>
 
           <div className='flex flex-wrap gap-6 mb-8'>
             <div className='flex items-center gap-2 text-white'>
               <Heart className='w-5 h-5 text-red-400' />
-              <span>Family Friendly</span>
+              <span>
+                {t(
+                  'services.standard.horsebackRidingServiceView.specialBanner.tag1'
+                )}
+              </span>
             </div>
             <div className='flex items-center gap-2 text-white'>
               <Shield className='w-5 h-5 text-green-400' />
-              <span>100% Safe</span>
+              <span>
+                {t(
+                  'services.standard.horsebackRidingServiceView.specialBanner.tag2'
+                )}
+              </span>
             </div>
             <div className='flex items-center gap-2 text-white'>
               <Star className='w-5 h-5 text-amber-400' />
-              <span>Top Rated</span>
+              <span>
+                {t(
+                  'services.standard.horsebackRidingServiceView.specialBanner.tag3'
+                )}
+              </span>
             </div>
           </div>
 
@@ -864,7 +853,9 @@ const SpecialBanner: React.FC<BookingActions> = ({ onBookClick }) => {
             onClick={onBookClick}
             className='bg-amber-500 hover:bg-amber-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-2xl'
           >
-            Book Now
+            {t(
+              'services.standard.horsebackRidingServiceView.specialBanner.button'
+            )}
           </button>
         </div>
       </div>
@@ -915,21 +906,19 @@ const HorseBackRidingServiceView: React.FC<HorseBackRidingServiceViewProps> = ({
 
   return (
     <div className='min-h-screen bg-white'>
-      <HeroSection {...bookingActions} />
+      <HeroSection {...bookingActions} t={t} />
       <PhotoGallery />
-      <QuickInfoSection />
-      <IncludesSection />
-      <ItinerarySection />
-      <InfoSection />
-      <SpecialBanner {...bookingActions} />
-      <AdventureBanner {...bookingActions} />
-      <TrustBadges />
-      <ReviewsSection />
+      <QuickInfoSection t={t} />
+      <IncludesSection t={t} />
+      <ItinerarySection t={t} />
+      <InfoSection t={t} />
+      <SpecialBanner {...bookingActions} t={t} />
+      <AdventureBanner {...bookingActions} t={t} />
+      <TrustBadges t={t} />
+      <ReviewsSection t={t} />
 
-      {/* Floating Action Button */}
       <FloatingActionButton {...bookingActions} />
 
-      {/* Booking Modal */}
       {isModalOpen && (
         <BookingModal
           isOpen={isModalOpen}

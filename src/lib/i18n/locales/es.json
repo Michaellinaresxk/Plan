@@ -224,41 +224,6 @@
         "short": "Sesiones de fitness individuales con entrenadores certificados",
         "full": "Mantente en forma durante tus vacaciones con nuestras sesiones de entrenamiento personal. Entrena con profesionales certificados que se adaptan a tu nivel, tus objetivos y tu horario. Reserva hoy y alcanza tu mejor versión en Punta Cana."
       },
-      "babysitter": {
-        "chip": "Atención infantil profesional",
-        "headerOption1": "Comprobación de antecedentes y certificados",
-        "headerOption2": "Actividades adecuadas a la edad",
-        "headerOption3": "Horario flexible",
-        "name": "Niñera",
-        "short": "Confíe en nuestras niñeras experimentadas y con antecedentes comprobados para cuidar de sus pequeños en la comodidad de su villa o resort.",
-        "full": "Confía en nuestras niñeras experimentadas y con verificación de antecedentes para cuidar a tus pequeños en la comodidad de tu villa o resort. Ya sea para unas horas por la noche o cuidado diario, nuestros profesionales entretienen a los niños con actividades seguras y supervisión atenta.",
-        "slogan": "DISFRUTA DE TU TIEMPO SIN PREOCUPACIONES",
-        "ageRange": "Rango de edad:",
-        "ageRangeAnswer": "De 6 meses a 12 años",
-        "availability": "Disponibilidad:",
-        "availabilityAnswer": "Día, tarde y noche; servicio nocturno bajo petición",
-        "safety": "Estándares de Seguridad:",
-        "safetyAnswer": "Formación en RCP & primeros auxilios",
-        "subTitle1": "DISFRUTA TUS VACACIONES SIN PREOCUPACIONES",
-        "option1": "Cuidado Nocturno",
-        "option2": "Supervisión Diurna",
-        "option3": "Cuidado Grupal (hermanos)",
-        "option4": "Servicio Nocturno Completo",
-        "CTAHeaderSubTitle": "Tu Tranquilidad. Su Felicidad.",
-        "CTATitle": "¿Listo para disfrutar de su tiempo mientras sus hijos están en buenas manos?",
-        "CTASubTitle": "Programe un servicio de guardería profesional y fiable y disfrute de un tiempo libre sin preocupaciones.",
-        "faqsTitle": "Preguntas Frecuentes",
-        "faqQuestion1": " ¿Qué pasa si necesito extender el tiempo de la babysitter?",
-        "faqAnswer1": "Las extensiones son posibles sujeto a la niñera es la disponibilidad. Por favor, notifíquenos tan pronto como sea posible, y vamos a confirmar con su niñera asignado.",
-        "faqQuestion2": "Can I meet the babysitter before booking?",
-        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
-        "faqQuestion3": "¿Puedo conocer a la canguro antes de reservar?",
-        "faqAnswer3": "Por supuesto. Le animamos a que se reúna con nosotros antes del servicio programado. Esto se puede arreglar en persona o por videollamada.",
-        "testimonialTitle": "Qué dicen los padres",
-        "testimonial1": "'Nuestros hijos adoraban a su niñera. Era puntual, profesional y tenía una relación increíble con los niños. Pudimos disfrutar de nuestra velada sabiendo que estaban en buenas manos.'",
-        "testimonial2": "El nivel de profesionalidad fue excepcional. Nuestra niñera vino preparada con actividades apropiadas para cada edad que mantuvieron a nuestros hijos ocupados durante toda la velada.",
-        "testimonial3": "Este es el único servicio de canguro en el que confío a mis pequeños. El proceso de selección de los cuidadores es exhaustivo y la canguro que nos asignaron era excepcional."
-      },
       "horsebackRiding": {
         "name": "Paseos a Caballo",
         "short": "Disfruta de un paseo guiado por playas, senderos y paisajes impresionantes, perfecto para todos los niveles de experiencia.",
@@ -428,6 +393,819 @@
           "performerTypeRequired": "Por favor selecciona un tipo de intérprete",
           "durationRequired": "Por favor selecciona una duración",
           "specificSongsRequired": "Por favor especifica tus preferencias de canciones"
+        }
+      },
+      "horsebackRidingServiceView": {
+        "hero": {
+          "title": "Paseo a Caballo",
+          "subtitle": "Playa Macao",
+          "description": "Experimenta la magia de cabalgar por playas vírgenes. Perfecto para todos los niveles.",
+          "bookButton": "Reserva Tu Aventura",
+          "rating": "Calificación 4.9",
+          "duration": "3 Horas",
+          "level": "Todos los Niveles"
+        },
+        "quickInfo": {
+          "cards": {
+            "location": {
+              "title": "Playa Macao",
+              "description": "Paraíso prístino intacto"
+            },
+            "safety": {
+              "title": "Seguridad Primero",
+              "description": "Guías profesionales y equipo"
+            },
+            "duration": {
+              "title": "3 Horas",
+              "description": "Experiencia de aventura completa"
+            },
+            "rating": {
+              "title": "Calificación 4.9",
+              "description": "De más de 847 jinetes felices"
+            }
+          }
+        },
+        "trustBadges": {
+          "riders": {
+            "value": "847+",
+            "label": "Jinetes Felices"
+          },
+          "rating": {
+            "value": "4.9★",
+            "label": "Calificación"
+          },
+          "years": {
+            "value": "5+",
+            "label": "Años"
+          },
+          "safe": {
+            "value": "100%",
+            "label": "Seguro"
+          }
+        },
+        "includes": {
+          "title": "Todo Incluido",
+          "item1": "Transporte de ida y vuelta",
+          "item2": "Experiencia en Playa Macao",
+          "item3": "Aventura de 3 horas",
+          "item4": "Parada de compras",
+          "item5": "Visita panorámica al río",
+          "item6": "Guía profesional",
+          "item7": "Equipo de seguridad",
+          "item8": "Paseo por sendero del bosque"
+        },
+        "itinerary": {
+          "title": "Tu Aventura",
+          "titleHighlight": "Itinerario",
+          "subtitle": "Aproximadamente 3 horas de experiencias inolvidables",
+          "step1": {
+            "title": "Briefing de Seguridad",
+            "description": "Aprende lo básico de montar a caballo e instrucciones de seguridad"
+          },
+          "step2": {
+            "title": "Parada de Cortesía",
+            "description": "Prueba café dominicano, mamajuana y disfruta de compras"
+          },
+          "step3": {
+            "title": "Sendero del Bosque",
+            "description": "Cabalga por el bosque tropical hasta llegar a la desembocadura del río"
+          },
+          "step4": {
+            "title": "Recreación en el Río",
+            "description": "Disfruta del tiempo de recreación en el hermoso río"
+          },
+          "step5": {
+            "title": "Playa Macao",
+            "description": "Experimenta la prístina Playa Macao"
+          },
+          "step6": {
+            "title": "Natación en la Playa",
+            "description": "Tiempo opcional de natación y playa"
+          },
+          "step7": {
+            "title": "Viaje de Regreso",
+            "description": "Regreso al rancho para transporte de vuelta"
+          },
+          "totalDuration": "Duración Total: ~3 horas"
+        },
+        "whatToBring": {
+          "title": "Qué",
+          "titleHighlight": "Traer",
+          "item1": {
+            "title": "Ropa Cómoda",
+            "description": "Ropa ligera y transpirable"
+          },
+          "item2": {
+            "title": "Zapatos Cerrados",
+            "description": "Tenis o botas requeridos"
+          },
+          "item3": {
+            "title": "Repelente de Mosquitos",
+            "description": "Protección esencial"
+          },
+          "item4": {
+            "title": "Gafas de Sol",
+            "description": "Protección ocular"
+          }
+        },
+        "restrictions": {
+          "title": "Información",
+          "titleHighlight": "Importante",
+          "age": {
+            "title": "Requisitos de Edad",
+            "item1": "6+ años pueden montar solos",
+            "item2": "3-5 años con adulto",
+            "item3": "Menores de 3 no recomendado"
+          },
+          "weight": {
+            "title": "Límite de Peso",
+            "item1": "Máximo: 300 lbs (136 kg)",
+            "item2": "Se requiere verificación de peso"
+          },
+          "health": {
+            "title": "Restricciones de Salud",
+            "item1": "No para mujeres embarazadas",
+            "item2": "Sin problemas de espalda/cuello",
+            "item3": "Condiciones cardíacas necesitan autorización"
+          },
+          "language": {
+            "title": "Idioma y Seguridad",
+            "item1": "Guías que hablan inglés",
+            "item2": "Cascos de seguridad provistos",
+            "item3": "Supervisión profesional"
+          }
+        },
+        "horseDisclaimer": {
+          "title": "Sobre Nuestros Caballos Dominicanos",
+          "paragraph1": "Los caballos dominicanos son diferentes a los caballos europeos: están perfectamente adaptados al clima y terreno tropical. Nuestros caballos están bien cuidados, revisados regularmente por veterinarios y entrenados específicamente para actividades turísticas.",
+          "paragraph2": "Seguimos todos los estándares de bienestar animal y tratamos a nuestros caballos con el máximo respeto y cuidado."
+        },
+        "weatherPolicy": {
+          "title": "Política de Clima",
+          "description": "¡Los tours continúan llueva o haga sol! Solo cancelamos en condiciones climáticas extremas."
+        },
+        "reviews": {
+          "title": "Lo Que Dicen los Jinetes",
+          "subtitle": "4.9 de 847 reseñas",
+          "review1": {
+            "name": "Sarah Johnson",
+            "text": "¡Experiencia increíble! El paseo fue mágico y nuestro guía fue excelente.",
+            "date": "hace 2 días"
+          },
+          "review2": {
+            "name": "Mike Chen",
+            "text": "Perfecto para principiantes. Me sentí seguro todo el tiempo y las vistas de la playa fueron increíbles.",
+            "date": "hace 1 semana"
+          },
+          "review3": {
+            "name": "Emma Davis",
+            "text": "Nadar con los caballos fue inolvidable. ¡Recomiendo mucho este tour!",
+            "date": "hace 2 semanas"
+          }
+        },
+        "adventureBanner": {
+          "title": "¿Por Qué Elegir Nuestra",
+          "titleHighlight": "Aventura a Caballo?",
+          "benefit1": {
+            "title": "Guías Locales Expertos",
+            "description": "Nuestros guías bilingües conocen cada sendero y aseguran tu seguridad y disfrute durante todo el viaje."
+          },
+          "benefit2": {
+            "title": "Caballos Bien Entrenados",
+            "description": "Nuestros caballos son gentiles, bien cuidados y perfectamente entrenados para montar en la playa."
+          },
+          "benefit3": {
+            "title": "Ubicaciones Impresionantes",
+            "description": "Cabalga por playas vírgenes, ríos cristalinos y paisajes tropicales."
+          },
+          "benefit4": {
+            "title": "Experiencia Todo Incluido",
+            "description": "Transporte, equipo y refrescos todo incluido en un solo precio."
+          },
+          "button": "Reserva Tu Lugar Hoy",
+          "statsLabel": "847+ Reseñas"
+        },
+        "specialBanner": {
+          "badge": "Oferta por Tiempo Limitado",
+          "title": "Crea Recuerdos Que",
+          "titleHighlight": "Duran Toda la Vida",
+          "description": "Únete a más de 800 jinetes felices que han experimentado la magia de Playa Macao a caballo. Nuestros caballos gentiles y guías expertos aseguran una aventura segura e inolvidable para jinetes de todos los niveles.",
+          "tag1": "Familiar",
+          "tag2": "100% Seguro",
+          "tag3": "Mejor Calificado",
+          "button": "Reservar Ahora"
+        }
+      },
+      "horsebackRidingForm": {
+        "header": {
+          "title": "Aventura a Caballo",
+          "subtitle": "Experimenta la magia de cabalgar por la prístina Playa Macao"
+        },
+        "sections": {
+          "schedule": "Programa Tu Aventura",
+          "location": "Lugar de Recogida",
+          "participants": "Participantes (Máximo 8)",
+          "safetyInfo": "Requisitos y Restricciones de Seguridad"
+        },
+        "fields": {
+          "date": {
+            "label": "Seleccionar Fecha",
+            "required": "La fecha es requerida"
+          },
+          "timeSlot": {
+            "label": "Horario",
+            "required": "Por favor selecciona un horario"
+          },
+          "location": {
+            "required": "Por favor selecciona un lugar de recogida"
+          },
+          "totalParticipants": {
+            "label": "Total de Participantes",
+            "min": "Se requiere al menos un participante",
+            "max": "Máximo 8 participantes permitidos por seguridad",
+            "maxReached": "Máximo 8 participantes permitidos"
+          },
+          "minors": {
+            "label": "Número de participantes menores de 18",
+            "error": "El número de menores no puede exceder el total de participantes",
+            "info": "Los niños menores de 6 años deben estar acompañados por un adulto. La edad mínima es de 6 años para montar solo."
+          }
+        },
+        "timeSlots": {
+          "8am": {
+            "name": "Inicio Matutino",
+            "time": "8:00 AM",
+            "description": "Perfecto para clima fresco"
+          },
+          "10am": {
+            "name": "Media Mañana",
+            "time": "10:00 AM",
+            "description": "Excelentes condiciones de iluminación"
+          }
+        },
+        "capacity": {
+          "person": "persona",
+          "people": "personas"
+        },
+        "safety": {
+          "title": "Requisitos y Restricciones de Seguridad",
+          "requirement1": "Edad mínima: 6 años (con supervisión de un adulto)",
+          "requirement2": "Peso máximo: 300 lbs (136 kg)",
+          "requirement3": "Zapatos cerrados requeridos (sin sandalias)",
+          "requirement4": "No recomendado para mujeres embarazadas",
+          "requirement5": "Dependiente del clima - puede ser reprogramado",
+          "requirement6": "Todos los jinetes deben seguir las instrucciones del guía",
+          "requirement7": "Máximo 8 participantes por grupo por seguridad"
+        },
+        "pricing": {
+          "totalPrice": "Precio Total",
+          "adventureType": "Aventura Clásica en la Playa",
+          "package": "Paquete:",
+          "transport": "Transporte:",
+          "location": "Ubicación:",
+          "pickup": "Recogida:"
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "book": "Reservar Aventura",
+          "booking": "Reservando..."
+        },
+        "errors": {
+          "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
+        }
+      },
+      "golfCartRentalView": {
+        "hero": {
+          "badge": "MOVILIDAD DE LUJO",
+          "title": "Explora el Paraíso",
+          "subtitle": "A Tu Manera",
+          "description": "Experimenta la libertad total con nuestros carritos premium. Perfectos para explorar los hermosos resorts de Punta Cana, playas y joyas escondidas.",
+          "cta": "Explorar Nuestra Flota",
+          "feature1": "Entrega Gratis",
+          "feature2": "Soporte 24/7",
+          "feature3": "Experiencia de Lujo"
+        },
+        "fleet": {
+          "title": "Nuestra Flota de Lujo",
+          "subtitle": "Elige tu viaje perfecto"
+        },
+        "carts": {
+          "4seater": {
+            "name": "Carrito de 4 Plazas",
+            "description": "Perfecto para parejas o familias pequeñas. Compacto y eficiente para explorar el resort.",
+            "feature1": "Entrega y recogida gratis",
+            "feature2": "Soporte 24/7 incluido",
+            "feature3": "Orientación rápida"
+          },
+          "6seater": {
+            "name": "Carrito de 6 Plazas",
+            "description": "Ideal para grupos grandes y familias. Más espacio y comodidad para exploración extendida.",
+            "feature1": "Batería completamente cargada",
+            "feature2": "Entrega y recogida gratis",
+            "feature3": "Soporte 24/7 incluido",
+            "feature4": "Equipo de seguridad",
+            "feature5": "Orientación rápida",
+            "feature6": "Espacio extra de almacenamiento"
+          },
+          "popular": "Popular",
+          "perNight": "/noche",
+          "seats": "plazas"
+        },
+        "sidebar": {
+          "features": "Características",
+          "bookNow": "Reservar",
+          "swipeHint": "👈 Desliza 👉"
+        },
+        "gallery": {
+          "title": "Experimenta el Paraíso",
+          "subtitle": "Donde el lujo se encuentra con la aventura",
+          "image1Title": "Aventuras en la Playa",
+          "image2Title": "Exploración del Resort",
+          "image3Title": "Aventuras Familiares",
+          "image4Title": "Paseos al Atardecer"
+        },
+        "ctaBanner": {
+          "title": "¿Listo para tu Aventura?",
+          "subtitle": "Reserva tu experiencia de lujo en carrito de golf hoy",
+          "cta": "Comenzar",
+          "feature1": "Entrega Gratis",
+          "feature2": "Servicio Premium",
+          "feature3": "Soporte 24/7"
+        },
+        "quote": {
+          "text": "El éxito en este juego depende menos de la fuerza del cuerpo que de la fuerza de la mente y el carácter.",
+          "author": "Arnold Palmer"
+        },
+        "requirements": {
+          "title": "Requisitos del Conductor",
+          "requirement1": "Debe tener 18+ años con licencia de conducir válida",
+          "requirement2": "Se recomienda experiencia básica de conducción",
+          "requirement3": "Conduce responsablemente y sigue las reglas del resort/comunidad",
+          "requirement4": "Respeta las leyes de tránsito locales y límites de velocidad",
+          "requirement5": "Los niños deben estar supervisados en todo momento mientras estén en el carrito",
+          "requirement6": "Disponible en toda el área de Puntacana"
+        },
+        "disclaimer": {
+          "title": "Aviso Importante",
+          "text": "Conduce bajo tu propia discreción. Por favor sigue todas las reglas de la comunidad o resort y respeta las leyes de tránsito locales. Eres responsable de la operación segura del vehículo durante el período de alquiler. Nuestros carritos son más que transporte: son libertad sobre ruedas."
+        }
+      },
+      "golfCartForm": {
+        "header": {
+          "title": "Alquiler de Carrito de Golf",
+          "subtitle": "Muévete Libremente. Explora Cómodamente."
+        },
+        "sections": {
+          "cartSelection": "Elige Tus Carritos de Golf",
+          "rentalPeriod": "Período de Alquiler",
+          "deliveryLocation": "Lugar de Entrega",
+          "whatToExpect": "Qué Esperar",
+          "whatsIncluded": "Qué Está Incluido",
+          "notIncluded": "No Incluido:",
+          "additionalInfo": "Información Adicional",
+          "requirementsDisclaimer": "Requisitos del Conductor y Aviso Legal"
+        },
+        "carts": {
+          "4seater": {
+            "name": "Carrito de 4 Plazas",
+            "description": "Perfecto para parejas o familias pequeñas. Compacto y eficiente para explorar el resort.",
+            "feature1": "Entrega y recogida gratis",
+            "feature2": "Soporte 24/7 incluido",
+            "feature3": "Orientación rápida incluida"
+          },
+          "6seater": {
+            "name": "Carrito de 6 Plazas",
+            "description": "Ideal para grupos grandes y familias. Más espacio y comodidad para exploración extendida.",
+            "feature1": "Entrega y recogida gratis",
+            "feature2": "Soporte 24/7 incluido",
+            "feature3": "Orientación rápida incluida"
+          },
+          "perNight": "por noche",
+          "quantity": "Cantidad:",
+          "subtotal": "Subtotal:"
+        },
+        "fields": {
+          "startDate": {
+            "label": "Fecha de Inicio",
+            "required": "La fecha de inicio es requerida"
+          },
+          "returnDate": {
+            "label": "Fecha de Devolución",
+            "required": "La fecha de devolución es requerida"
+          },
+          "deliveryLocation": {
+            "required": "El lugar de entrega es requerido"
+          },
+          "specificAddress": {
+            "label": "Dirección Específica",
+            "placeholder": "Por favor proporciona la dirección exacta de entrega...",
+            "required": "Por favor especifica la dirección de entrega"
+          },
+          "specialRequests": {
+            "label": "Solicitudes o Requisitos Especiales",
+            "placeholder": "Cualquier requisito especial, necesidades de accesibilidad o información adicional..."
+          }
+        },
+        "locations": {
+          "puntacanaResorts": "Resorts de Puntacana",
+          "capCana": "Capcana",
+          "bavaro": "Bavaro",
+          "puntaVillage": "Pueblo de Puntacana",
+          "uveroAlto": "Uvero Alto",
+          "macao": "Área de Playa Macao",
+          "other": "Otro (Especificar abajo)"
+        },
+        "whatToExpect": {
+          "title": "Qué Esperar",
+          "step1": "Entregamos tu(s) carrito(s) de golf en tu ubicación",
+          "step2": "Orientación rápida y resumen de seguridad para cada carrito",
+          "step3": "Conduces y disfrutas de tu entorno",
+          "step4": "Los recogemos en tu horario programado"
+        },
+        "included": {
+          "feature1": "Tanque de combustible lleno (si aplica)",
+          "feature2": "Entrega y recogida gratis",
+          "feature3": "Soporte 24/7",
+          "feature4": "Orientación rápida"
+        },
+        "notIncluded": {
+          "item1": "Propina (opcional, apreciada)"
+        },
+        "requirements": {
+          "title": "Requisitos del Conductor",
+          "requirement1": "Debe tener 18+ años con licencia de conducir válida",
+          "requirement2": "Se recomienda experiencia básica de conducción",
+          "requirement3": "Conduce responsablemente y sigue las reglas del resort/comunidad",
+          "requirement4": "Respeta las leyes de tránsito locales y límites de velocidad",
+          "requirement5": "Los niños deben estar supervisados en todo momento mientras estén en el carrito",
+          "requirement6": "Disponible en toda el área de Puntacana"
+        },
+        "disclaimer": {
+          "title": "Aviso Importante",
+          "text": "Conduce bajo tu propia discreción. Por favor sigue todas las reglas de la comunidad o resort y respeta las leyes de tránsito locales. Eres responsable de la operación segura del vehículo durante el período de alquiler. Nuestros carritos son más que transporte: son libertad sobre ruedas."
+        },
+        "confirmations": {
+          "driverLicense": "Confirmo que tengo una licencia de conducir válida y cumplo con todos los requisitos de conducción",
+          "ageConfirmation": "Confirmo que tengo 18 años de edad o más",
+          "termsAccepted": "Acepto los términos y condiciones y el aviso legal anterior"
+        },
+        "warnings": {
+          "sameDayBooking": "Reserva del mismo día: Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad.",
+          "advanceBooking": "Se requiere reserva anticipada: Por favor reserva con al menos 24 horas de anticipación.",
+          "sameDayConfirm": "Estás reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?"
+        },
+        "validation": {
+          "noCartsSelected": "Por favor selecciona al menos un carrito de golf",
+          "endDateInvalid": "La fecha de devolución debe ser igual o posterior a la fecha de inicio",
+          "advance24Hours": "Las reservas deben hacerse con al menos 24 horas de anticipación",
+          "driverLicenseRequired": "Se requiere confirmación de licencia de conducir válida",
+          "ageRequired": "Se requiere confirmación de edad",
+          "termsRequired": "Debes aceptar los términos y condiciones"
+        },
+        "pricing": {
+          "totalPrice": "Precio Total",
+          "night": "noche",
+          "nights": "noches",
+          "cartsSelected": "carritos seleccionados",
+          "cartSelected": "carrito seleccionado",
+          "includes": "Incluye: Entrega y recogida gratis, soporte 24/7, equipo de seguridad"
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "book": "Reservar",
+          "booking": "Reservando...",
+          "cart": "Carrito",
+          "carts": "Carritos"
+        },
+        "errors": {
+          "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
+        }
+      },
+      "saonaIslandView": {
+        "hero": {
+          "locationBadge": "Saona Tour",
+          "title": "Isla Saona",
+          "subtitle": "Excursión de Un Día",
+          "description": "Disfruta de un día completo en una de las islas más hermosas del Caribe. Playa, naturaleza y cultura dominicana en una sola excursión.",
+          "priceFrom": "Desde",
+          "priceNote": "por persona + transporte",
+          "pricingDetails": "Niños 0-4 años gratis • Máximo 15 personas",
+          "bookButton": "Reservar Excursión",
+          "rating": "4.8/5",
+          "excursionists": "Más de 1,000 excursionistas",
+          "guides": "Guías profesionales"
+        },
+        "itinerary": {
+          "title": "Itinerario Completo",
+          "subtitle": "Conoce paso a paso tu aventura en Isla Saona",
+          "step1": {
+            "time": "7:00 - 7:45 AM",
+            "title": "Recogida en Hotel",
+            "description": "Recogida en tu hotel o resort. Nuestro equipo te llevará al punto de encuentro principal.",
+            "duration": "30-45 min",
+            "highlight1": "Transporte cómodo",
+            "highlight2": "Guía local",
+            "highlight3": "Recogida puntual"
+          },
+          "step2": {
+            "time": "8:00 - 8:30 AM",
+            "title": "Punto de Encuentro y Opciones",
+            "description": "Llegada al punto de encuentro donde puedes elegir transporte regular grupal o upgrade a transporte privado para llegar más rápido.",
+            "highlight1": "Opción de transporte privado",
+            "highlight2": "Menos espera",
+            "highlight3": "Llegada más rápida"
+          },
+          "step3": {
+            "time": "8:30 - 9:00 AM",
+            "title": "Parada de Souvenirs",
+            "description": "Parada en tienda local para comprar souvenirs, usar el baño y prepararse para la aventura.",
+            "duration": "15-20 min",
+            "highlight1": "Artesanías locales",
+            "highlight2": "Servicios sanitarios",
+            "highlight3": "Últimas compras"
+          },
+          "step4": {
+            "time": "9:30 - 11:00 AM",
+            "title": "Experiencia en Catamarán",
+            "description": "Viaje en catamarán con música, animación, bailarines y bebidas incluidas (refresco, hielo, ron). Los fotógrafos ofrecen servicios adicionales.",
+            "duration": "1.5 horas",
+            "highlight1": "Música y animación",
+            "highlight2": "Bebidas incluidas",
+            "highlight3": "Bailarines profesionales",
+            "highlight4": "Fotógrafos (servicio adicional)"
+          },
+          "step5": {
+            "time": "11:00 - 11:15 AM",
+            "title": "Parada en Piscina Natural",
+            "description": "Parada de 15 minutos en la famosa piscina natural con aguas cristalinas y estrellas de mar.",
+            "duration": "15 min",
+            "highlight1": "Aguas cristalinas",
+            "highlight2": "Estrellas de mar",
+            "highlight3": "Fotos perfectas"
+          },
+          "step6": {
+            "time": "11:30 AM - 3:00 PM",
+            "title": "Paraíso de Isla Saona",
+            "description": "Llegada a Isla Saona. Disfruta del buffet típico dominicano con bebidas, área de recreo con tumbonas en la playa.",
+            "duration": "3.5 horas",
+            "highlight1": "Buffet dominicano",
+            "highlight2": "Bebidas gaseosas, ron, agua",
+            "highlight3": "Tumbonas en la playa",
+            "highlight4": "Tiempo libre",
+            "highlight5": "Servicios adicionales externos"
+          },
+          "step7": {
+            "time": "3:00 - 4:30 PM",
+            "title": "Regreso en Lancha Rápida",
+            "description": "Regreso en lancha rápida (sin refrigerio) directamente al punto de partida.",
+            "duration": "1.5 horas",
+            "highlight1": "Viaje más rápido",
+            "highlight2": "Vistas espectaculares",
+            "highlight3": "Llegada directa"
+          },
+          "step8": {
+            "time": "5:00 - 6:00 PM",
+            "title": "Regreso al Hotel",
+            "description": "Transporte de regreso a tu hotel o resort, llegada aproximada entre 5:00 y 6:00 PM.",
+            "duration": "30-60 min",
+            "highlight1": "Transporte incluido",
+            "highlight2": "Llegada cómoda",
+            "highlight3": "Día completo terminado"
+          }
+        },
+        "whatToBring": {
+          "title": "Qué Llevar",
+          "subtitle": "Prepárate para el día perfecto en el paraíso",
+          "item1": {
+            "title": "Toalla",
+            "description": "Para secarte después de nadar"
+          },
+          "item2": {
+            "title": "Sandalias",
+            "description": "Calzado cómodo para la playa"
+          },
+          "item3": {
+            "title": "Gafas de Sol",
+            "description": "Protección esencial del sol caribeño"
+          },
+          "item4": {
+            "title": "Efectivo",
+            "description": "Para souvenirs, propinas y servicios adicionales"
+          },
+          "item5": {
+            "title": "Cámara",
+            "description": "Para capturar momentos inolvidables"
+          },
+          "item6": {
+            "title": "Protector Solar",
+            "description": "SPF 30+ recomendado"
+          },
+          "importantTip": {
+            "title": "Consejo Importante",
+            "text": "Lleva ropa cómoda y traje de baño. El protector solar es esencial - ¡el sol caribeño es fuerte! No olvides efectivo para propinas y souvenirs locales."
+          }
+        },
+        "weatherDisclaimer": {
+          "title": "Política de Cancelaciones por Clima",
+          "noRainCancel": "La excursión NO se cancela por lluvia.",
+          "description": "El Caribe tropical puede tener lluvias breves que no afectan la experiencia. Nuestros catamaranes y áreas de la isla están preparados para condiciones climáticas normales.",
+          "onlyCancelled": "La excursión únicamente se cancela en casos de",
+          "extremeConditions": "condiciones climáticas extremas",
+          "safetyRisk": "que representen un riesgo para la seguridad de los pasajeros, como:",
+          "condition1": "Tormentas tropicales o huracanes",
+          "condition2": "Condiciones marítimas peligrosas",
+          "condition3": "Alertas meteorológicas oficiales",
+          "guarantee": "Garantía:",
+          "guaranteeText": "Si cancelamos por condiciones extremas, te ofrecemos reembolso completo o cambio de fecha sin costo adicional."
+        },
+        "gallery": {
+          "title": "Conoce la Isla",
+          "subtitle": "Un vistazo a lo que vas a descubrir",
+          "image1": "Playa de Arena Blanca",
+          "image2": "Piscina Natural",
+          "image3": "Estrellas de Mar",
+          "image4": "Transporte Marítimo"
+        },
+        "experience": {
+          "title": "Qué Vas a Vivir",
+          "subtitle": "Una excursión auténtica por la naturaleza caribeña",
+          "feature1": {
+            "title": "Piscina Natural",
+            "description": "Aguas cristalinas de medio metro de profundidad con estrellas de mar"
+          },
+          "feature2": {
+            "title": "Vida Marina",
+            "description": "Observa peces tropicales y estrellas de mar en su hábitat natural"
+          },
+          "feature3": {
+            "title": "Comida Criolla",
+            "description": "Almuerzo buffet con platos típicos dominicanos preparados localmente"
+          },
+          "feature4": {
+            "title": "Playa Virgen",
+            "description": "Kilómetros de playa de arena blanca rodeada de palmeras"
+          }
+        },
+        "practicalInfo": {
+          "title": "Información Práctica",
+          "info1": "Recogida en hoteles: 7:00 AM - 7:45 AM",
+          "info2": "Regreso aproximado: 5:00 PM - 6:00 PM",
+          "info3": "Incluye almuerzo y bebidas",
+          "info4": "Máximo 15 personas por grupo",
+          "info5": "Edad mínima: Sin restricciones (bebés bienvenidos)",
+          "info6": "No apta para mayores de 75 años",
+          "info7": "Ropa cómoda y traje de baño recomendado",
+          "info8": "Actividad familiar"
+        },
+        "specialBanner": {
+          "badge": "Experiencia Exclusiva",
+          "title": "Crea Recuerdos Que",
+          "titleHighlight": "Durarán Toda la Vida",
+          "description": "Únete a más de 1,000 viajeros que han experimentado la magia de Isla Saona. Nuestros guías expertos y catamaranes cómodos aseguran una aventura segura e inolvidable para toda la familia.",
+          "badge1": "Familiar",
+          "badge2": "100% Seguro",
+          "badge3": "Mejor Valorado",
+          "button": "Reservar Ahora"
+        },
+        "decorationBanners": {
+          "banner1": {
+            "title": "Piscina Natural",
+            "subtitle": "Un escape tropical de ensueño para fundirse en aguas turquesa"
+          },
+          "banner2": {
+            "title": "Experiencia en Catamarán",
+            "subtitle": "Música, animación y bebidas mientras navegas hacia el paraíso"
+          },
+          "banner3": {
+            "title": "Paraíso Playero",
+            "subtitle": "Tumbonas, buffet dominicano y tiempo libre en arena blanca"
+          }
+        }
+      },
+      "saonaIslandForm": {
+        "header": {
+          "title": "Tour Isla Saona",
+          "subtitle": "Aventura paradisíaca con catamarán, piscinas naturales y playas vírgenes"
+        },
+        "sections": {
+          "tourDate": "Fecha del Tour",
+          "pickupLocation": "Lugar de Recogida",
+          "participants": "Participantes (Máximo 15)",
+          "whatsIncluded": "Qué Está Incluido",
+          "additionalInfo": "Información Adicional",
+          "restrictions": "Restricciones del Tour e Información Importante"
+        },
+        "transportPricing": {
+          "title": "Información de Precios de Transporte",
+          "description": "Costo base de transporte: $120 (1-8 personas) o $160 (9-15 personas). Las ubicaciones de Cap Cana y Uvero Alto incluyen un recargo adicional de $15."
+        },
+        "fields": {
+          "tourDate": {
+            "label": "Seleccionar Fecha del Tour",
+            "error": "La fecha del tour es requerida"
+          },
+          "pickupTime": {
+            "label": "Hora de Recogida",
+            "fixed": "(Fija)",
+            "note": "Ventana de tiempo de recogida para todos los participantes"
+          },
+          "location": {
+            "label": "Selecciona tu lugar de recogida",
+            "error": "Por favor selecciona un lugar de recogida"
+          },
+          "adults": {
+            "label": "Adultos (7+ años) - $55 cada uno"
+          },
+          "children": {
+            "label": "Niños (0-17 años)",
+            "detailsTitle": "Detalles de los Niños",
+            "childLabel": "Niño",
+            "childAge": "Edad"
+          },
+          "specialRequests": {
+            "label": "Solicitudes Especiales o Requisitos Dietéticos",
+            "placeholder": "Cualquier solicitud especial, requisitos dietéticos, necesidades de asistencia de movilidad o información adicional..."
+          }
+        },
+        "locations": {
+          "puntaCanaResorts": {
+            "name": "Puntacana Resorts"
+          },
+          "bavaro": {
+            "name": "Bavaro"
+          },
+          "capCana": {
+            "name": "Cap Cana"
+          },
+          "uveroAlto": {
+            "name": "Uvero Alto"
+          }
+        },
+        "pricing": {
+          "title": "Precios por Edad",
+          "free": "0-4 años: Gratis",
+          "child": "5-6 años: $27.50 (Precio de niño - 50% descuento)",
+          "adult": "7+ años: $55 (Precio de adulto)",
+          "priceLabels": {
+            "free": "Gratis",
+            "child": "Precio de Niño",
+            "adult": "Precio de Adulto"
+          },
+          "ageOptions": {
+            "baby": "Bebé (menor de 1)",
+            "yearsOld": "años"
+          }
+        },
+        "included": {
+          "item1": "Transporte de ida y vuelta",
+          "item2": "Viaje en catamarán o lancha rápida",
+          "item3": "Nado en piscina natural (parada de 15 min)",
+          "item4": "Tiempo en la playa de Isla Saona",
+          "item5": "Almuerzo buffet dominicano",
+          "item6": "Bebidas (refrescos, ron, agua)",
+          "item7": "Animación y música en el catamarán",
+          "item8": "Guía profesional",
+          "item9": "Chalecos salvavidas"
+        },
+        "restrictions": {
+          "item1": "No recomendado para mujeres embarazadas",
+          "item2": "No apto para personas con problemas de movilidad",
+          "item3": "No apto para personas mayores de 75 años",
+          "item4": "Edad mínima: Sin restricciones (bebés bienvenidos)",
+          "item5": "Los niños deben estar supervisados en todo momento",
+          "item6": "El tour no se cancela por lluvia - solo en condiciones climáticas extremas"
+        },
+        "warnings": {
+          "sameDayBooking": "Reserva del mismo día: Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad.",
+          "advanceBooking": "Se requiere reserva anticipada: Por favor reserva con al menos 24 horas de anticipación.",
+          "sameDayConfirm": "Estás reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?",
+          "maxParticipants": "Máximo 15 participantes permitidos"
+        },
+        "validation": {
+          "advance24Hours": "Las reservas deben hacerse con al menos 24 horas de anticipación",
+          "minParticipants": "Se requiere al menos un participante",
+          "maxParticipants": "Máximo 15 participantes permitidos",
+          "childAgeRange": "La edad del niño debe estar entre 0 y 17"
+        },
+        "priceBreakdown": {
+          "totalPrice": "Precio Total",
+          "person": "persona",
+          "people": "personas",
+          "perPerson": "Por persona:",
+          "transport": "Transporte",
+          "transportRange1": "1-8",
+          "transportRange2": "9-15",
+          "transportLabel": "personas",
+          "locationSurcharge": "Recargo por ubicación:",
+          "pickupFrom": "Recogida desde:"
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "book": "Reservar Tour",
+          "booking": "Reservando..."
+        },
+        "errors": {
+          "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
         }
       },
       "atvService": {
@@ -894,56 +1672,226 @@
         "spaceNeeded": "Space Requirements",
         "powerAccess": "Power Access",
         "customOptions": "Additional Options"
+      },
+      "babysitterView": {
+        "hero": {
+          "premiumBadge": "Servicio Premium",
+          "standardBadge": "Cuidado Confiable",
+          "premiumTitle": "Cuidado Infantil",
+          "premiumTitleHighlight": "Premium",
+          "premiumTitleSuffix": "de Excelencia",
+          "standardTitle": "Servicios de",
+          "standardTitleHighlight": "Niñera",
+          "standardTitleSuffix": "Profesional",
+          "description": "Brinda a tus hijos el cuidado que merecen con nuestras niñeras experimentadas y certificadas que crean experiencias divertidas, seguras y atractivas.",
+          "badge1": "Verificación de Antecedentes",
+          "badge2": "Equipo Experimentado",
+          "badge3": "Horarios Flexibles",
+          "bookButton": "Reservar Ahora"
+        },
+        "activities": {
+          "title": "Lo Que Ofrecemos",
+          "subtitle": "Actividades atractivas diseñadas para nutrir el crecimiento y la felicidad de tu hijo",
+          "activity1": {
+            "title": "Artes Creativas",
+            "description": "Pintura, dibujo y manualidades que despiertan la imaginación y desarrollan habilidades motoras finas a través de la expresión creativa colorida."
+          },
+          "activity2": {
+            "title": "Cuentos y Lectura",
+            "description": "Sesiones de lectura interactivas que construyen vocabulario, comprensión y un amor por los libros y el aprendizaje de por vida."
+          },
+          "activity3": {
+            "title": "Música y Movimiento",
+            "description": "Canciones, baile y actividades rítmicas que mejoran la coordinación, la autoexpresión y la conciencia musical."
+          },
+          "activity4": {
+            "title": "Juegos Educativos",
+            "description": "Actividades de aprendizaje divertidas que desarrollan la resolución de problemas, el pensamiento crítico y las habilidades sociales a través del juego."
+          },
+          "activity5": {
+            "title": "Actividades Físicas",
+            "description": "Juegos y ejercicios apropiados para la edad que promueven el desarrollo físico, la liberación de energía y hábitos saludables."
+          },
+          "activity6": {
+            "title": "Cuidado de Bebés",
+            "description": "Cuidado especializado para bebés que incluye alimentación, cambio de pañales, rutinas de siesta y actividades de estimulación suave."
+          }
+        },
+        "gallery": {
+          "title": "Momentos de Alegría",
+          "caption1": "Tiempo de arte y manualidades",
+          "caption2": "Exploración al aire libre",
+          "caption3": "Cuentos favoritos",
+          "caption4": "Aprendiendo a través del juego"
+        },
+        "safety": {
+          "title": "La Seguridad de Tu Hijo es Nuestra Prioridad",
+          "feature1": {
+            "title": "Certificadas y Verificadas",
+            "description": "Todas nuestras niñeras se someten a verificaciones exhaustivas de antecedentes, verificación de referencias y tienen certificaciones vigentes en RCP y Primeros Auxilios."
+          },
+          "feature2": {
+            "title": "Cuidadoras Experimentadas",
+            "description": "Nuestro equipo está formado por profesionales experimentados con años de experiencia en cuidado infantil, capacitados para manejar diversas situaciones con paciencia y cuidado."
+          }
+        },
+        "testimonials": {
+          "title": "Lo Que Dicen Los Padres",
+          "subtitle": "Confiado por familias en nuestra comunidad",
+          "testimonial1": {
+            "quote": "¡Nuestra niñera fue increíble! Mis hijos la adoraron y me sentí completamente tranquila sabiendo que estaban en manos tan capaces.",
+            "author": "Sarah Johnson",
+            "children": "Madre de 2"
+          },
+          "testimonial2": {
+            "quote": "Profesional, puntual y maravillosa con nuestros hijos. ¡Hemos encontrado nuestro servicio de niñera de confianza!",
+            "author": "Michael Chen",
+            "children": "Padre de 3"
+          },
+          "testimonial3": {
+            "quote": "La tranquilidad de saber que mi bebé está con una cuidadora certificada y experimentada no tiene precio. ¡Altamente recomendado!",
+            "author": "Emma Rodríguez",
+            "children": "Madre de 1"
+          }
+        },
+        "faq": {
+          "title": "Preguntas Frecuentes",
+          "subtitle": "Todo lo que necesitas saber sobre nuestro servicio de niñera",
+          "question1": {
+            "question": "¿Para qué edades proporcionan cuidado?",
+            "answer": "Proporcionamos cuidado para niños desde bebés (6 meses+) hasta preadolescentes (12 años), con niñeras especialmente capacitadas para diferentes grupos de edad."
+          },
+          "question2": {
+            "question": "¿Sus niñeras están certificadas?",
+            "answer": "¡Sí! Todas nuestras niñeras están certificadas en RCP y Primeros Auxilios, han completado verificaciones de antecedentes y tienen experiencia verificable en cuidado infantil y referencias."
+          },
+          "question3": {
+            "question": "¿Cuál es su política de cancelación?",
+            "answer": "Requerimos un aviso de 24 horas para cancelaciones para recibir un reembolso completo. Las cancelaciones dentro de las 24 horas pueden incurrir en una tarifa de cancelación."
+          },
+          "question4": {
+            "question": "¿Puedo solicitar la misma niñera?",
+            "answer": "¡Por supuesto! Fomentamos la construcción de relaciones consistentes. Puedes solicitar tu niñera preferida para futuras reservas según su disponibilidad."
+          }
+        }
+      },
+      "babysitterForm": {
+        "header": {
+          "title": "Cuidado de Niños Happy Kids",
+          "subtitle": "Cuidado infantil profesional en la comodidad de tu alojamiento"
+        },
+        "scheduling": {
+          "title": "Programación",
+          "date": {
+            "label": "Fecha",
+            "required": "*"
+          },
+          "startTime": {
+            "label": "Hora de inicio",
+            "required": "*"
+          },
+          "endTime": {
+            "label": "Hora de fin",
+            "required": "*"
+          },
+          "minimumBooking": "La duración mínima de reserva es de {{hours}} horas. Las reservas más cortas se cobrarán a la tarifa de {{hours}} horas."
+        },
+        "location": {
+          "title": "Ubicación",
+          "label": "Selecciona tu ubicación",
+          "required": "*",
+          "selected": "Seleccionado:"
+        },
+        "children": {
+          "title": "Cuéntanos sobre tus hijos",
+          "count": {
+            "label": "¿Cuántos niños necesitan cuidado?",
+            "additionalFee": "+$10 por niño adicional"
+          },
+          "ages": {
+            "label": "¿Qué edad tienen?",
+            "required": "*",
+            "placeholder": "ej. 3 años"
+          },
+          "specialNeeds": {
+            "toggle": "Niño con necesidades especiales o discapacidades",
+            "label": "Por favor, cuéntanos sobre cualquier necesidad especial",
+            "required": "*",
+            "placeholder": "Por favor describe cualquier requerimiento especial, condiciones médicas, alergias, etc.",
+            "additionalFee": "+$15 por cuidado especializado"
+          }
+        },
+        "additionalInfo": {
+          "title": "Información adicional",
+          "label": "¿Algo más que deberíamos saber?",
+          "placeholder": "Actividades favoritas, rutinas, horarios de siesta, preferencias dietéticas, o cualquier otra cosa que ayude a nuestro/a cuidador/a a brindar el mejor cuidado"
+        },
+        "footer": {
+          "totalPrice": "Precio total",
+          "priceBreakdown": {
+            "location": "Cuidado de niños en {{locationName}}",
+            "children": "{{count}} niños (+$10 por niño adicional)",
+            "specialNeeds": "Cuidado especial: +$15"
+          },
+          "buttons": {
+            "cancel": "Cancelar",
+            "submit": "Reserva tu Cuidador/a",
+            "processing": "Procesando..."
+          }
+        },
+        "errors": {
+          "date": "La fecha es requerida",
+          "startTime": "La hora de inicio es requerida",
+          "endTime": "La hora de fin es requerida",
+          "location": "Por favor selecciona una ubicación",
+          "childrenAges": "Por favor completa todas las edades de los niños",
+          "specialNeedsDetails": "Los detalles de necesidades especiales son requeridos",
+          "bookingError": "Error al procesar la reserva. Por favor intenta nuevamente."
+        }
       }
+    }
+  },
+  "premium": {
+    "luxeYacht": {
+      "name": "Yate de Lujo",
+      "short": "Alquiler de yate de lujo privado con tripulación",
+      "full": "Experimenta el máximo lujo con nuestro chárter privado de yate. Navega por las prístinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades. Disfruta de comidas gourmet, bebidas premium y actividades acuáticas exclusivas."
     },
-    "premium": {
-      "luxeYacht": {
-        "name": "Yate de Lujo",
-        "short": "Alquiler de yate de lujo privado con tripulación",
-        "full": "Experimenta el máximo lujo con nuestro chárter privado de yate. Navega por las prístinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades. Disfruta de comidas gourmet, bebidas premium y actividades acuáticas exclusivas."
-      },
-      "luxeEBikes": {
-        "name": "Bicicletas Eléctricas de Lujo",
-        "short": "Bicicletas eléctricas premium para una exploración sin esfuerzo",
-        "full": "Descubre Punta Cana con estilo con nuestras bicicletas eléctricas premium. Disfruta de una exploración sin esfuerzo de playas, senderos y atracciones locales con e-bikes de primera línea que cuentan con batería de larga duración y ergonomía confortable."
-      },
-      "luxeGolfCart": {
-        "name": "Carrito de Golf de Lujo",
-        "short": "Carrito de golf premium con características extendidas",
-        "full": "Viaja con estilo con nuestros carritos de golf de lujo con asientos de cuero premium, batería de mayor autonomía y características mejoradas. Perfectos para explorar resorts y áreas locales con elegancia y comodidad."
-      },
-      "luxeYoga": {
-        "name": "Sesiones de Yoga de Lujo",
-        "short": "Yoga privado frente a la playa con amenidades premium",
-        "full": "Eleva tu camino de bienestar con nuestras exclusivas sesiones privadas de yoga realizadas en lugares impresionantes. Experimenta instrucción personalizada, colchonetas y equipos premium, y refrigerios orgánicos después de la sesión."
-      },
-      "luxeFitness": {
-        "name": "Sesiones de Fitness de Lujo",
-        "short": "Entrenamiento personal de élite con equipo especializado",
-        "full": "Transforma tu rutina de fitness con nuestras sesiones de entrenamiento de élite. Trabaja con entrenadores personales de primer nivel utilizando equipos premium y técnicas de vanguardia adaptadas específicamente a tus objetivos y nivel de condición física."
-      },
-      "luxeCulinary": {
-        "name": "Servicio Culinario de Lujo",
-        "short": "Experiencia de chef gourmet con ingredientes premium",
-        "full": "Disfruta de la experiencia gastronómica definitiva con nuestro servicio de chef gourmet. Disfruta de exquisitas comidas de varios platos preparadas con los mejores ingredientes locales e importados, combinadas con vinos premium y servidas en la comodidad de tu alojamiento."
-      },
-      "luxeMasseuse": {
-        "name": "Servicio de Masajes de Lujo",
-        "short": "Tratamientos de spa premium en tu alojamiento",
-        "full": "Relájate con nuestra experiencia de spa de lujo llevada directamente a tu alojamiento. Nuestros terapeutas de masaje de élite proporcionan tratamientos premium utilizando aceites orgánicos y técnicas de primer nivel, complementados con aromaterapia y música ambiental."
-      },
-      "luxeArrival": {
-        "name": "Llegada Lujosa - Servicio SUV",
-        "short": "Traslado al aeropuerto en SUV de lujo con amenidades premium",
-        "full": "Comienza tu experiencia de lujo desde el momento en que aterrizas con nuestro servicio premium de traslado al aeropuerto en SUV. Disfruta de asientos de cuero de lujo, control de clima, refrescos de cortesía y un chófer profesional listo para garantizar una llegada perfecta a tu destino."
-      }
+    "luxeEBikes": {
+      "name": "Bicicletas Eléctricas de Lujo",
+      "short": "Bicicletas eléctricas premium para una exploración sin esfuerzo",
+      "full": "Descubre Punta Cana con estilo con nuestras bicicletas eléctricas premium. Disfruta de una exploración sin esfuerzo de playas, senderos y atracciones locales con e-bikes de primera línea que cuentan con batería de larga duración y ergonomía confortable."
     },
-    "hours": {
-      "one": "hora",
-      "multiple": "horas",
-      "duration": "Duración"
+    "luxeGolfCart": {
+      "name": "Carrito de Golf de Lujo",
+      "short": "Carrito de golf premium con características extendidas",
+      "full": "Viaja con estilo con nuestros carritos de golf de lujo con asientos de cuero premium, batería de mayor autonomía y características mejoradas. Perfectos para explorar resorts y áreas locales con elegancia y comodidad."
     },
-    "price": "Precio"
+    "luxeYoga": {
+      "name": "Sesiones de Yoga de Lujo",
+      "short": "Yoga privado frente a la playa con amenidades premium",
+      "full": "Eleva tu camino de bienestar con nuestras exclusivas sesiones privadas de yoga realizadas en lugares impresionantes. Experimenta instrucción personalizada, colchonetas y equipos premium, y refrigerios orgánicos después de la sesión."
+    },
+    "luxeFitness": {
+      "name": "Sesiones de Fitness de Lujo",
+      "short": "Entrenamiento personal de élite con equipo especializado",
+      "full": "Transforma tu rutina de fitness con nuestras sesiones de entrenamiento de élite. Trabaja con entrenadores personales de primer nivel utilizando equipos premium y técnicas de vanguardia adaptadas específicamente a tus objetivos y nivel de condición física."
+    },
+    "luxeCulinary": {
+      "name": "Servicio Culinario de Lujo",
+      "short": "Experiencia de chef gourmet con ingredientes premium",
+      "full": "Disfruta de la experiencia gastronómica definitiva con nuestro servicio de chef gourmet. Disfruta de exquisitas comidas de varios platos preparadas con los mejores ingredientes locales e importados, combinadas con vinos premium y servidas en la comodidad de tu alojamiento."
+    },
+    "luxeMasseuse": {
+      "name": "Servicio de Masajes de Lujo",
+      "short": "Tratamientos de spa premium en tu alojamiento",
+      "full": "Relájate con nuestra experiencia de spa de lujo llevada directamente a tu alojamiento. Nuestros terapeutas de masaje de élite proporcionan tratamientos premium utilizando aceites orgánicos y técnicas de primer nivel, complementados con aromaterapia y música ambiental."
+    },
+    "luxeArrival": {
+      "name": "Llegada Lujosa - Servicio SUV",
+      "short": "Traslado al aeropuerto en SUV de lujo con amenidades premium",
+      "full": "Comienza tu experiencia de lujo desde el momento en que aterrizas con nuestro servicio premium de traslado al aeropuerto en SUV. Disfruta de asientos de cuero de lujo, control de clima, refrescos de cortesía y un chófer profesional listo para garantizar una llegada perfecta a tu destino."
+    }
   },
   "customPackagePage": {
     "title": "Crea tu propio paquete",

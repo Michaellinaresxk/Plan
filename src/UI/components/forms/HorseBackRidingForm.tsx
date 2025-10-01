@@ -41,28 +41,20 @@ interface FormErrors {
   [key: string]: string;
 }
 
-// Time slot configuration
 const TIME_SLOTS = [
   {
     id: '8am',
-    name: 'Morning Start',
-    time: '8:00 AM',
     icon: Sunrise,
-    description: 'Perfect for cooler weather',
   },
   {
     id: '10am',
-    name: 'Mid-Morning',
-    time: '10:00 AM',
     icon: Sun,
-    description: 'Great lighting conditions',
   },
 ] as const;
 
-// Transport pricing
 const HORSEBACK_TRANSPORT_PRICING = {
-  small: 80, // 1-6 people
-  large: 120, // 7-8 people (max for safety)
+  small: 80,
+  large: 120,
   maxCapacity: 8,
 };
 
@@ -76,7 +68,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   const { setReservationData } = useReservation();
   const { handleClose } = useFormModal({ onCancel });
 
-  // Form state - same pattern as SaonaIslandForm
   const [formData, setFormData] = useState<FormData>({
     date: '',
     timeSlot: '',
@@ -88,14 +79,12 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Helper to update form fields - same as SaonaIslandForm
   const updateFormField = useCallback((field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
 
-    // Clear error when field is updated
     setErrors((prev) => {
       if (prev[field]) {
         const newErrors = { ...prev };
@@ -106,7 +95,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     });
   }, []);
 
-  // Use location pricing hook
   const {
     locationOptions,
     selectedLocation,
@@ -119,17 +107,14 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     servicePricing: HORSEBACK_TRANSPORT_PRICING,
   });
 
-  // Calculate base price
   const basePrice = useMemo(() => {
     return service.price * formData.participantCount;
   }, [formData.participantCount, service.price]);
 
-  // Calculate total price
   const totalPrice = useMemo(() => {
     return basePrice + totalLocationCost;
   }, [basePrice, totalLocationCost]);
 
-  // Generic input handler - same as SaonaIslandForm
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
@@ -138,7 +123,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     [updateFormField]
   );
 
-  // Handle location selection - same pattern as SaonaIslandForm
   const handleLocationSelect = useCallback(
     (locationId: string) => {
       updateFormField('location', locationId);
@@ -146,7 +130,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     [updateFormField]
   );
 
-  // Counter handlers - same pattern as SaonaIslandForm
   const createCounterHandler = (field: keyof FormData, min = 0, max = 8) => ({
     increment: () =>
       setFormData((prev) => ({
@@ -162,7 +145,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
   const participantCounter = createCounterHandler('participantCount', 1);
 
-  // Update minors count when participant count changes
   useEffect(() => {
     if (formData.minorsCount > formData.participantCount) {
       setFormData((prev) => ({
@@ -172,41 +154,48 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     }
   }, [formData.participantCount]);
 
-  // Validation function - exact same pattern as SaonaIslandForm
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
-    // Required fields
     if (!formData.date) {
-      newErrors.date = 'Date is required';
+      newErrors.date = t(
+        'services.standard.horsebackRidingForm.fields.date.required'
+      );
     }
 
     if (!formData.location) {
-      newErrors.location = 'Please select a pickup location';
+      newErrors.location = t(
+        'services.standard.horsebackRidingForm.fields.location.required'
+      );
     }
 
     if (!formData.timeSlot) {
-      newErrors.timeSlot = 'Please select a time slot';
+      newErrors.timeSlot = t(
+        'services.standard.horsebackRidingForm.fields.timeSlot.required'
+      );
     }
 
-    // Participant validation
     if (formData.participantCount < 1) {
-      newErrors.participantCount = 'At least one participant is required';
+      newErrors.participantCount = t(
+        'services.standard.horsebackRidingForm.fields.totalParticipants.min'
+      );
     }
 
     if (formData.participantCount > 8) {
-      newErrors.participantCount = 'Maximum 8 participants allowed for safety';
+      newErrors.participantCount = t(
+        'services.standard.horsebackRidingForm.fields.totalParticipants.max'
+      );
     }
 
     if (formData.minorsCount > formData.participantCount) {
-      newErrors.minorsCount =
-        'Number of minors cannot exceed total participants';
+      newErrors.minorsCount = t(
+        'services.standard.horsebackRidingForm.fields.minors.error'
+      );
     }
 
     return newErrors;
   };
 
-  // Submit handler - exact same pattern as SaonaIslandForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -225,7 +214,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
       const bookingStartDate = new Date(selectedDate);
       const bookingEndDate = new Date(selectedDate);
 
-      // Set times based on time slot
       switch (formData.timeSlot) {
         case '8am':
           bookingStartDate.setHours(8, 0, 0, 0);
@@ -259,7 +247,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
         selectedItems: [
           {
             id: 'horseback-classic',
-            name: 'Horseback Riding Adventure',
+            name: t('services.standard.horsebackRidingForm.header.title'),
             quantity: 1,
             price: totalPrice,
             totalPrice,
@@ -298,14 +286,13 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     } catch (error) {
       console.error('❌ HorseBackForm - Error submitting form:', error);
       setErrors({
-        submit: 'Failed to submit reservation. Please try again.',
+        submit: t('services.standard.horsebackRidingForm.errors.submit'),
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Counter component - same as SaonaIslandForm
   const Counter = ({
     label,
     value,
@@ -349,7 +336,9 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
       </div>
       {value >= max && (
         <p className='text-xs text-amber-600 mt-1'>
-          Maximum {max} participants allowed
+          {t(
+            'services.standard.horsebackRidingForm.fields.totalParticipants.maxReached'
+          )}
         </p>
       )}
     </div>
@@ -363,29 +352,32 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     >
       <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
         <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-          {/* Form Header */}
           <FormHeader
-            title='Horseback Riding Adventure'
-            subtitle='Experience the magic of riding along pristine Macao Beach'
+            title={t('services.standard.horsebackRidingForm.header.title')}
+            subtitle={t(
+              'services.standard.horsebackRidingForm.header.subtitle'
+            )}
             icon={Mountain}
             isPremium={false}
             onCancel={handleClose}
             showCloseButton={true}
           />
 
-          {/* Form Body */}
           <div className='p-8 space-y-8'>
             {/* Date and Time Section */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                Schedule Your Adventure
+                {t('services.standard.horsebackRidingForm.sections.schedule')}
               </h3>
 
               {/* Date Selection */}
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar className='w-4 h-4 mr-2 text-amber-600' />
-                  Select Date *
+                  {t(
+                    'services.standard.horsebackRidingForm.fields.date.label'
+                  )}{' '}
+                  *
                 </label>
                 <input
                   type='date'
@@ -406,7 +398,10 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Clock className='w-4 h-4 mr-2 text-amber-600' />
-                  Time Slot *
+                  {t(
+                    'services.standard.horsebackRidingForm.fields.timeSlot.label'
+                  )}{' '}
+                  *
                 </label>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -442,14 +437,22 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                           </div>
                           <div className='flex items-center'>
                             <IconComponent className='w-5 h-5 mr-2 text-amber-500' />
-                            <span className='font-medium'>{slot.name}</span>
+                            <span className='font-medium'>
+                              {t(
+                                `services.standard.horsebackRidingForm.timeSlots.${slot.id}.name`
+                              )}
+                            </span>
                           </div>
                         </div>
                         <p className='text-gray-500 text-sm mt-2 ml-8'>
-                          {slot.time}
+                          {t(
+                            `services.standard.horsebackRidingForm.timeSlots.${slot.id}.time`
+                          )}
                         </p>
                         <p className='text-gray-400 text-xs mt-1 ml-8'>
-                          {slot.description}
+                          {t(
+                            `services.standard.horsebackRidingForm.timeSlots.${slot.id}.description`
+                          )}
                         </p>
                       </div>
                     );
@@ -465,7 +468,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             {/* Location Selection */}
             <div className='space-y-4'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                Pickup Location
+                {t('services.standard.horsebackRidingForm.sections.location')}
               </h3>
 
               <LocationSelector
@@ -480,12 +483,16 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             {/* Participants Section */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                Participants (Maximum 8)
+                {t(
+                  'services.standard.horsebackRidingForm.sections.participants'
+                )}
               </h3>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <Counter
-                  label='Total Participants'
+                  label={t(
+                    'services.standard.horsebackRidingForm.fields.totalParticipants.label'
+                  )}
                   value={formData.participantCount}
                   onIncrement={participantCounter.increment}
                   onDecrement={participantCounter.decrement}
@@ -497,7 +504,9 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 <div>
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                     <Baby className='w-4 h-4 mr-2 text-amber-600' />
-                    Number of participants under 18
+                    {t(
+                      'services.standard.horsebackRidingForm.fields.minors.label'
+                    )}
                   </label>
                   <input
                     type='number'
@@ -521,8 +530,9 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                     <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200 mt-3'>
                       <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
                       <p className='text-xs text-blue-700'>
-                        Children under 6 must be accompanied by an adult.
-                        Minimum age is 6 years for solo riding.
+                        {t(
+                          'services.standard.horsebackRidingForm.fields.minors.info'
+                        )}
                       </p>
                     </div>
                   )}
@@ -536,16 +546,51 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 <AlertTriangle className='w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5' />
                 <div>
                   <h4 className='font-medium text-red-800 mb-2'>
-                    Safety Requirements & Restrictions
+                    {t('services.standard.horsebackRidingForm.safety.title')}
                   </h4>
                   <ul className='text-sm text-red-700 space-y-1'>
-                    <li>• Minimum age: 6 years old (with adult supervision)</li>
-                    <li>• Maximum weight: 300 lbs (136 kg)</li>
-                    <li>• Closed-toe shoes required (no sandals)</li>
-                    <li>• Not recommended for pregnant women</li>
-                    <li>• Weather dependent - may be rescheduled</li>
-                    <li>• All riders must follow guide instructions</li>
-                    <li>• Maximum 8 participants per group for safety</li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement1'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement2'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement3'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement4'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement5'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement6'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement7'
+                      )}
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -563,7 +608,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                Total Price
+                {t('services.standard.horsebackRidingForm.pricing.totalPrice')}
               </span>
               <div className='flex items-center mt-1'>
                 <span className='text-3xl font-light'>
@@ -571,23 +616,42 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 </span>
                 <span className='ml-2 text-sm bg-amber-800 px-2 py-1 rounded'>
                   {formData.participantCount}{' '}
-                  {formData.participantCount === 1 ? 'person' : 'people'}
+                  {formData.participantCount === 1
+                    ? t('services.standard.horsebackRidingForm.capacity.person')
+                    : t(
+                        'services.standard.horsebackRidingForm.capacity.people'
+                      )}
                 </span>
               </div>
 
               {/* Price breakdown */}
               <div className='text-xs text-gray-400 mt-2 space-y-1'>
                 <div className='text-amber-400 font-medium'>
-                  Classic Beach Adventure
+                  {t(
+                    'services.standard.horsebackRidingForm.pricing.adventureType'
+                  )}
                 </div>
-                <div>Package: ${basePrice.toFixed(2)}</div>
-                <div>Transport: ${transportCost.toFixed(2)}</div>
+                <div>
+                  {t('services.standard.horsebackRidingForm.pricing.package')} $
+                  {basePrice.toFixed(2)}
+                </div>
+                <div>
+                  {t('services.standard.horsebackRidingForm.pricing.transport')}{' '}
+                  ${transportCost.toFixed(2)}
+                </div>
                 {locationSurcharge > 0 && (
-                  <div>Location: +${locationSurcharge.toFixed(2)}</div>
+                  <div>
+                    {t(
+                      'services.standard.horsebackRidingForm.pricing.location'
+                    )}{' '}
+                    +$
+                    {locationSurcharge.toFixed(2)}
+                  </div>
                 )}
                 {selectedLocation && (
                   <div className='text-amber-400'>
-                    Pickup: {selectedLocation.name}
+                    {t('services.standard.horsebackRidingForm.pricing.pickup')}{' '}
+                    {selectedLocation.name}
                   </div>
                 )}
               </div>
@@ -600,7 +664,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 disabled={isSubmitting}
                 className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
               >
-                Cancel
+                {t('services.standard.horsebackRidingForm.buttons.cancel')}
               </button>
 
               <button
@@ -609,7 +673,9 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 className='px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition flex items-center disabled:opacity-50'
               >
                 <CreditCard className='h-4 w-4 mr-2' />
-                {isSubmitting ? 'Booking...' : 'Book Adventure'}
+                {isSubmitting
+                  ? t('services.standard.horsebackRidingForm.buttons.booking')
+                  : t('services.standard.horsebackRidingForm.buttons.book')}
               </button>
             </div>
           </div>

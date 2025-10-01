@@ -222,45 +222,11 @@
         "short": "Cruise your resort, villa community, or local beach town with one of our fully charged, comfortable golf carts.",
         "full": "Enjoy the freedom to explore Punta Cana at your own pace with our golf cart rentals. Perfect for getting around resorts, beaches, and local trails in comfort. Drive, explore, and enjoy at your own pace. Book your cart today and discover Punta Cana."
       },
+
       "personalTraining": {
         "name": "Personal Training",
         "short": "One-on-one fitness sessions with certified trainers",
         "full": "Stay in shape during your vacation with our personal training sessions. Work out with certified professionals who tailor each session to your level, goals, and schedule. Book today and become your best self in Punta Cana."
-      },
-      "babysitter": {
-        "chip": "Professional Childcare",
-        "headerOption1": "Certified & Background-Checked",
-        "headerOption2": "Age-Appropriate Activities",
-        "headerOption3": "Flexible Scheduling",
-        "name": "Babysitter",
-        "short": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort",
-        "full": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort. Whether you need a few hours of evening respite or full-day childcare, our professionals engage children with safe, age-appropriate activities and attentive supervision.",
-        "slogan": "ENJOY WORRY-FREE VACATION TIME",
-        "ageRange": "Age Range",
-        "ageRangeAnswer": "From 6 months - 12 years",
-        "availability": "Availability:",
-        "availabilityAnswer": "Day, afternoon and evening; night service on request.",
-        "safety": "Estándares de Seguridad:",
-        "safetyAnswer": "CPR-trained, first-aid certified",
-        "subTitle1": "ENJOY WORRY-FREE VACATION TIME",
-        "option1": "Evening Babysitting",
-        "option2": "Daytime Supervision",
-        "option3": "Group Care (siblings)",
-        "option4": "Overnight Sitting",
-        "CTAHeaderSubTitle": "Your Peace of Mind. Their Happiness.",
-        "CTATitle": "Ready to Enjoy Your Time While Your Children are in Great Hands?",
-        "CTASubTitle": "Schedule professional, reliable childcare and treat yourself to worry-free time away",
-        "faqsTitle": "Frequently Asked Questions",
-        "faqQuestion1": "What if I need to extend the babysitting time?",
-        "faqAnswer1": "Extensions are possible subject to the babysitter is availability. Please notify us as soon as possible, and we will confirm with your assigned sitter.",
-        "faqQuestion2": "Can I meet the babysitter before booking?",
-        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
-        "faqQuestion3": "What happens if my child gets sick?",
-        "faqAnswer3": "Our babysitters are trained to handle minor health concerns. For emergencies, they will contact you immediately and follow predetermined emergency protocols.",
-        "testimonialTitle": "What Parents Say",
-        "testimonial1": "'Our children absolutely adored their babysitter! She was punctual, professional, and had an amazing rapport with the kids. We could enjoy our evening knowing they were in safe, caring hands.'",
-        "testimonial2": "The level of professionalism was outstanding. Our babysitter came prepared with age-appropriate activities that kept our children engaged throughout the evening.",
-        "testimonial3": "This is the only babysitting service I trust with my little ones. The screening process for caregivers is thorough, and the sitter assigned to us was exceptional."
       },
       "horsebackRiding": {
         "name": "Horseback Riding",
@@ -701,6 +667,997 @@
           "submit": "Failed to submit reservation. Please try again.",
           "capacityExceeded": "Cannot fit {{participants}} people in {{vehicles}} vehicle(s). Maximum capacity is {{max}} people.",
           "needMoreVehicles": "Need at least {{needed}} vehicles for {{participants}} people."
+        }
+      },
+      "babysitterView": {
+        "hero": {
+          "premiumBadge": "Premium Service",
+          "standardBadge": "Trusted Care",
+          "premiumTitle": "Premium",
+          "premiumTitleHighlight": "Childcare",
+          "premiumTitleSuffix": "Excellence",
+          "standardTitle": "Professional",
+          "standardTitleHighlight": "Babysitting",
+          "standardTitleSuffix": "Services",
+          "description": "Give your children the care they deserve with our experienced, certified babysitters who create fun, safe, and engaging experiences.",
+          "badge1": "Background Verified",
+          "badge2": "Experienced Team",
+          "badge3": "Flexible Hours",
+          "bookButton": "Book Now"
+        },
+        "activities": {
+          "title": "What We Offer",
+          "subtitle": "Engaging activities designed to nurture your child's growth and happiness",
+          "activity1": {
+            "title": "Creative Arts",
+            "description": "Painting, drawing, and crafts that spark imagination and develop fine motor skills through colorful creative expression."
+          },
+          "activity2": {
+            "title": "Storytime & Reading",
+            "description": "Interactive reading sessions that build vocabulary, comprehension, and a lifelong love of books and learning."
+          },
+          "activity3": {
+            "title": "Music & Movement",
+            "description": "Songs, dancing, and rhythm activities that enhance coordination, self-expression, and musical awareness."
+          },
+          "activity4": {
+            "title": "Educational Games",
+            "description": "Fun learning activities that develop problem-solving, critical thinking, and social skills through play."
+          },
+          "activity5": {
+            "title": "Physical Activities",
+            "description": "Age-appropriate games and exercises that promote physical development, energy release, and healthy habits."
+          },
+          "activity6": {
+            "title": "Infant Care",
+            "description": "Specialized care for babies including feeding, diaper changes, nap routines, and gentle stimulation activities."
+          }
+        },
+        "gallery": {
+          "title": "Moments of Joy",
+          "caption1": "Art & crafts time",
+          "caption2": "Outdoor exploration",
+          "caption3": "Storytime favorites",
+          "caption4": "Learning through play"
+        },
+        "safety": {
+          "title": "Your Child's Safety is Our Priority",
+          "feature1": {
+            "title": "Certified & Background Checked",
+            "description": "All our babysitters undergo comprehensive background checks, reference verification, and hold current certifications in CPR and First Aid."
+          },
+          "feature2": {
+            "title": "Experienced Care Providers",
+            "description": "Our team consists of experienced professionals with years of childcare expertise, trained to handle various situations with patience and care."
+          }
+        },
+        "testimonials": {
+          "title": "What Parents Say",
+          "subtitle": "Trusted by families in our community",
+          "testimonial1": {
+            "quote": "Our babysitter was amazing! My kids loved her and I felt completely at ease knowing they were in such capable hands.",
+            "author": "Sarah Johnson",
+            "children": "Mother of 2"
+          },
+          "testimonial2": {
+            "quote": "Professional, punctual, and wonderful with our children. We've found our go-to babysitting service!",
+            "author": "Michael Chen",
+            "children": "Father of 3"
+          },
+          "testimonial3": {
+            "quote": "The peace of mind knowing my baby is with a certified and experienced caregiver is priceless. Highly recommend!",
+            "author": "Emma Rodriguez",
+            "children": "Mother of 1"
+          }
+        },
+        "faq": {
+          "title": "Frequently Asked Questions",
+          "subtitle": "Everything you need to know about our babysitting service",
+          "question1": {
+            "question": "What ages do you provide care for?",
+            "answer": "We provide care for children from infants (6 months+) to pre-teens (12 years old), with babysitters specially trained for different age groups."
+          },
+          "question2": {
+            "question": "Are your babysitters certified?",
+            "answer": "Yes! All our babysitters are CPR and First Aid certified, have completed background checks, and have verifiable childcare experience and references."
+          },
+          "question3": {
+            "question": "What's your cancellation policy?",
+            "answer": "We require 24 hours notice for cancellations to receive a full refund. Cancellations within 24 hours may incur a cancellation fee."
+          },
+          "question4": {
+            "question": "Can I request the same babysitter?",
+            "answer": "Absolutely! We encourage building consistent relationships. You can request your preferred babysitter for future bookings based on their availability."
+          }
+        }
+      },
+      "babysitterForm": {
+        "header": {
+          "title": "Happy Kids Babysitting",
+          "subtitle": "Professional childcare in the comfort of your accommodation"
+        },
+        "scheduling": {
+          "title": "Scheduling",
+          "date": {
+            "label": "Date",
+            "required": "*"
+          },
+          "startTime": {
+            "label": "Start Time",
+            "required": "*"
+          },
+          "endTime": {
+            "label": "End Time",
+            "required": "*"
+          },
+          "minimumBooking": "Minimum booking duration is {{hours}} hours. Shorter bookings will be charged at the {{hours}}-hour rate."
+        },
+        "location": {
+          "title": "Location",
+          "label": "Select your location",
+          "required": "*",
+          "selected": "Selected:"
+        },
+        "children": {
+          "title": "Tell Us About Your Children",
+          "count": {
+            "label": "How many children need care?",
+            "additionalFee": "+$10 per additional child"
+          },
+          "ages": {
+            "label": "How old are they?",
+            "required": "*",
+            "placeholder": "e.g., 3 years"
+          },
+          "specialNeeds": {
+            "toggle": "Child with special needs or disabilities",
+            "label": "Please tell us about any special needs",
+            "required": "*",
+            "placeholder": "Please describe any special requirements, medical conditions, allergies, etc.",
+            "additionalFee": "+$15 additional fee for specialized care"
+          }
+        },
+        "additionalInfo": {
+          "title": "Additional Information",
+          "label": "Anything else we should know?",
+          "placeholder": "Favorite activities, routines, nap times, dietary preferences, or anything else that would help our babysitter provide the best care"
+        },
+        "footer": {
+          "totalPrice": "Total Price",
+          "priceBreakdown": {
+            "location": "Babysitting at {{locationName}}",
+            "children": "{{count}} children (+$10 per additional child)",
+            "specialNeeds": "Special care needs: +$15"
+          },
+          "buttons": {
+            "cancel": "Cancel",
+            "submit": "Book Your Sitter",
+            "processing": "Processing..."
+          }
+        },
+        "errors": {
+          "date": "Date is required",
+          "startTime": "Start time is required",
+          "endTime": "End time is required",
+          "location": "Please select a location",
+          "childrenAges": "Please fill all children ages",
+          "specialNeedsDetails": "Special needs details are required",
+          "bookingError": "Error processing booking. Please try again."
+        }
+      },
+      "horsebackRidingServiceView": {
+        "hero": {
+          "title": "Horseback Riding",
+          "subtitle": "Playa Macao",
+          "description": "Experience the magic of riding along pristine beaches. Perfect for all skill levels.",
+          "bookButton": "Reserva Ahora",
+          "rating": "4.9 Calificación",
+          "duration": "3 Horas",
+          "level": "Todos los niveles"
+        },
+        "quickInfo": {
+          "cards": {
+            "location": {
+              "title": "Macao Beach",
+              "description": "Pristine untouched paradise"
+            },
+            "safety": {
+              "title": "Safety First",
+              "description": "Professional guides & equipment"
+            },
+            "duration": {
+              "title": "3 Hours",
+              "description": "Complete adventure experience"
+            },
+            "rating": {
+              "title": "4.9 Rating",
+              "description": "From 847+ happy riders"
+            }
+          }
+        },
+        "trustBadges": {
+          "riders": {
+            "value": "847+",
+            "label": "Happy Riders"
+          },
+          "rating": {
+            "value": "4.9★",
+            "label": "Rating"
+          },
+          "years": {
+            "value": "5+",
+            "label": "Years"
+          },
+          "safe": {
+            "value": "100%",
+            "label": "Safe"
+          }
+        },
+        "includes": {
+          "title": "Everything Included",
+          "item1": "Round-trip transportation",
+          "item2": "Playa Macao experience",
+          "item3": "3-hour adventure",
+          "item4": "Shopping stop",
+          "item5": "Scenic river visit",
+          "item6": "Professional guide",
+          "item7": "Safety equipment",
+          "item8": "Forest trail ride"
+        },
+        "itinerary": {
+          "title": "Your Adventure",
+          "titleHighlight": "Itinerary",
+          "subtitle": "Approximately 3 hours of unforgettable experiences",
+          "step1": {
+            "title": "Safety Briefing",
+            "description": "Learn horse riding basics and safety instructions"
+          },
+          "step2": {
+            "title": "Courtesy Stop",
+            "description": "Taste Dominican coffee, mamajuana, and enjoy shopping"
+          },
+          "step3": {
+            "title": "Forest Trail",
+            "description": "Ride through tropical forest to reach the river mouth"
+          },
+          "step4": {
+            "title": "River Recreation",
+            "description": "Enjoy recreation time at the beautiful river"
+          },
+          "step5": {
+            "title": "Macao Beach",
+            "description": "Experience the pristine Macao Beach"
+          },
+          "step6": {
+            "title": "Beach Swimming",
+            "description": "Optional swimming and beach time"
+          },
+          "step7": {
+            "title": "Return Journey",
+            "description": "Return to the ranch for transportation back"
+          },
+          "totalDuration": "Total Duration: ~3 hours"
+        },
+        "whatToBring": {
+          "title": "What to",
+          "titleHighlight": "Bring",
+          "item1": {
+            "title": "Comfortable Clothing",
+            "description": "Light, breathable clothes"
+          },
+          "item2": {
+            "title": "Closed-toe Shoes",
+            "description": "Sneakers or boots required"
+          },
+          "item3": {
+            "title": "Mosquito Repellent",
+            "description": "Essential protection"
+          },
+          "item4": {
+            "title": "Sunglasses",
+            "description": "Eye protection"
+          }
+        },
+        "restrictions": {
+          "title": "Important",
+          "titleHighlight": "Information",
+          "age": {
+            "title": "Age Requirements",
+            "item1": "6+ years can ride alone",
+            "item2": "3-5 years with adult",
+            "item3": "Under 3 not recommended"
+          },
+          "weight": {
+            "title": "Weight Limit",
+            "item1": "Maximum: 300 lbs (136 kg)",
+            "item2": "Weight verification required"
+          },
+          "health": {
+            "title": "Health Restrictions",
+            "item1": "Not for pregnant women",
+            "item2": "No back/neck problems",
+            "item3": "Heart conditions need clearance"
+          },
+          "language": {
+            "title": "Language & Safety",
+            "item1": "English-speaking guides",
+            "item2": "Safety helmets provided",
+            "item3": "Professional supervision"
+          }
+        },
+        "horseDisclaimer": {
+          "title": "About Our Dominican Horses",
+          "paragraph1": "Dominican horses are different from European horses - they're perfectly adapted to tropical climate and terrain. Our horses are well-cared for, regularly veterinarian-checked, and trained specifically for tourist activities.",
+          "paragraph2": "We follow all animal welfare standards and treat our horses with utmost respect and care."
+        },
+        "weatherPolicy": {
+          "title": "Weather Policy",
+          "description": "Tours continue rain or shine! We only cancel in extreme weather conditions."
+        },
+        "reviews": {
+          "title": "What Riders Say",
+          "subtitle": "4.9 from 847 reviews",
+          "review1": {
+            "name": "Sarah Johnson",
+            "text": "Amazing experience! The ride was magical and our guide was excellent.",
+            "date": "2 days ago"
+          },
+          "review2": {
+            "name": "Mike Chen",
+            "text": "Perfect for beginners. Felt safe the whole time and the beach views were incredible.",
+            "date": "1 week ago"
+          },
+          "review3": {
+            "name": "Emma Davis",
+            "text": "Swimming with the horses was unforgettable. Highly recommend this tour!",
+            "date": "2 weeks ago"
+          }
+        },
+        "adventureBanner": {
+          "title": "Why Choose Our",
+          "titleHighlight": "Horseback Adventure?",
+          "benefit1": {
+            "title": "Expert Local Guides",
+            "description": "Our bilingual guides know every trail and ensure your safety and enjoyment throughout the journey."
+          },
+          "benefit2": {
+            "title": "Well-Trained Horses",
+            "description": "Our horses are gentle, well-cared for, and perfectly trained for beach riding."
+          },
+          "benefit3": {
+            "title": "Stunning Locations",
+            "description": "Ride through pristine beaches, crystal-clear rivers, and tropical landscapes."
+          },
+          "benefit4": {
+            "title": "All-Inclusive Experience",
+            "description": "Transportation, equipment, and refreshments all included in one price."
+          },
+          "button": "Reserve Your Spot Today",
+          "statsLabel": "847+ Reviews"
+        },
+        "specialBanner": {
+          "badge": "Limited Time Offer",
+          "title": "Create Memories That",
+          "titleHighlight": "Last a Lifetime",
+          "description": "Join over 800+ happy riders who've experienced the magic of Macao Beach on horseback. Our gentle horses and expert guides ensure a safe, unforgettable adventure for riders of all levels.",
+          "tag1": "Family Friendly",
+          "tag2": "100% Safe",
+          "tag3": "Top Rated",
+          "button": "Book Now"
+        }
+      },
+      "horsebackRidingForm": {
+        "header": {
+          "title": "Horseback Riding Adventure",
+          "subtitle": "Experience the magic of riding along pristine Macao Beach"
+        },
+        "sections": {
+          "schedule": "Schedule Your Adventure",
+          "location": "Pickup Location",
+          "participants": "Participants (Maximum 8)",
+          "safetyInfo": "Safety Requirements & Restrictions"
+        },
+        "fields": {
+          "date": {
+            "label": "Select Date",
+            "required": "Date is required"
+          },
+          "timeSlot": {
+            "label": "Time Slot",
+            "required": "Please select a time slot"
+          },
+          "location": {
+            "required": "Please select a pickup location"
+          },
+          "totalParticipants": {
+            "label": "Total Participants",
+            "min": "At least one participant is required",
+            "max": "Maximum 8 participants allowed for safety",
+            "maxReached": "Maximum 8 participants allowed"
+          },
+          "minors": {
+            "label": "Number of participants under 18",
+            "error": "Number of minors cannot exceed total participants",
+            "info": "Children under 6 must be accompanied by an adult. Minimum age is 6 years for solo riding."
+          }
+        },
+        "timeSlots": {
+          "8am": {
+            "name": "Morning Start",
+            "time": "8:00 AM",
+            "description": "Perfect for cooler weather"
+          },
+          "10am": {
+            "name": "Mid-Morning",
+            "time": "10:00 AM",
+            "description": "Great lighting conditions"
+          }
+        },
+        "capacity": {
+          "person": "person",
+          "people": "people"
+        },
+        "safety": {
+          "title": "Safety Requirements & Restrictions",
+          "requirement1": "Minimum age: 6 years old (with adult supervision)",
+          "requirement2": "Maximum weight: 300 lbs (136 kg)",
+          "requirement3": "Closed-toe shoes required (no sandals)",
+          "requirement4": "Not recommended for pregnant women",
+          "requirement5": "Weather dependent - may be rescheduled",
+          "requirement6": "All riders must follow guide instructions",
+          "requirement7": "Maximum 8 participants per group for safety"
+        },
+        "pricing": {
+          "totalPrice": "Total Price",
+          "adventureType": "Classic Beach Adventure",
+          "package": "Package:",
+          "transport": "Transport:",
+          "location": "Location:",
+          "pickup": "Pickup:"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "book": "Book Adventure",
+          "booking": "Booking..."
+        },
+        "errors": {
+          "submit": "Failed to submit reservation. Please try again."
+        }
+      },
+      "golfCartRentalView": {
+        "hero": {
+          "badge": "LUXURY MOBILITY",
+          "title": "Explore Paradise",
+          "subtitle": "Your Way",
+          "description": "Experience the ultimate freedom with our premium golf carts. Perfect for exploring Punta Cana's beautiful resorts, beaches, and hidden gems.",
+          "cta": "Explore Our Fleet",
+          "feature1": "Free Delivery",
+          "feature2": "24/7 Support",
+          "feature3": "Luxury Experience"
+        },
+        "fleet": {
+          "title": "Our Luxury Fleet",
+          "subtitle": "Choose your perfect ride"
+        },
+        "carts": {
+          "4seater": {
+            "name": "4-Seater Cart",
+            "description": "Perfect for couples or small families. Compact and efficient for resort exploration.",
+            "feature1": "Free delivery & pickup",
+            "feature2": "24/7 support included",
+            "feature3": "Quick orientation"
+          },
+          "6seater": {
+            "name": "6-Seater Cart",
+            "description": "Ideal for larger groups and families. More space and comfort for extended exploration.",
+            "feature1": "Fully charged battery",
+            "feature2": "Free delivery & pickup",
+            "feature3": "24/7 support included",
+            "feature4": "Safety equipment",
+            "feature5": "Quick orientation",
+            "feature6": "Extra storage space"
+          },
+          "popular": "Popular",
+          "perNight": "/night",
+          "seats": "seats"
+        },
+        "sidebar": {
+          "features": "Features",
+          "bookNow": "Book Now",
+          "swipeHint": "👈 Swipe 👉"
+        },
+        "gallery": {
+          "title": "Experience Paradise",
+          "subtitle": "Where luxury meets adventure",
+          "image1Title": "Beach Adventures",
+          "image2Title": "Resort Exploration",
+          "image3Title": "Family Adventures",
+          "image4Title": "Sunset Rides"
+        },
+        "ctaBanner": {
+          "title": "Ready for Your Adventure?",
+          "subtitle": "Book your luxury golf cart experience today",
+          "cta": "Get Started",
+          "feature1": "Free Delivery",
+          "feature2": "Premium Service",
+          "feature3": "24/7 Support"
+        },
+        "quote": {
+          "text": "Success in this game depends less on strength of body than strength of mind and character.",
+          "author": "Arnold Palmer"
+        },
+        "requirements": {
+          "title": "Driver Requirements",
+          "requirement1": "Must be 18+ years old with a valid driver's license",
+          "requirement2": "Basic driving experience recommended",
+          "requirement3": "Drive responsibly and follow resort/community rules",
+          "requirement4": "Respect local driving laws and speed limits",
+          "requirement5": "Children must be supervised at all times while in cart",
+          "requirement6": "Available throughout Puntacana area"
+        },
+        "disclaimer": {
+          "title": "Important Disclaimer",
+          "text": "Drive at your own discretion. Please follow all community or resort rules and respect local driving laws. You are responsible for the safe operation of the vehicle during the rental period. Our carts are more than transportation—they're freedom on wheels."
+        }
+      },
+      "golfCartForm": {
+        "header": {
+          "title": "Golf Cart Rental",
+          "subtitle": "Move Freely. Explore Comfortably."
+        },
+        "sections": {
+          "cartSelection": "Choose Your Golf Carts",
+          "rentalPeriod": "Rental Period",
+          "deliveryLocation": "Delivery Location",
+          "whatToExpect": "What to Expect",
+          "whatsIncluded": "What's Included",
+          "notIncluded": "Not Included:",
+          "additionalInfo": "Additional Information",
+          "requirementsDisclaimer": "Driver Requirements & Disclaimer"
+        },
+        "carts": {
+          "4seater": {
+            "name": "4-Seater Cart",
+            "description": "Perfect for couples or small families. Compact and efficient for resort exploration.",
+            "feature1": "Free delivery & pickup",
+            "feature2": "24/7 support included",
+            "feature3": "Quick orientation included"
+          },
+          "6seater": {
+            "name": "6-Seater Cart",
+            "description": "Ideal for larger groups and families. More space and comfort for extended exploration.",
+            "feature1": "Free delivery & pickup",
+            "feature2": "24/7 support included",
+            "feature3": "Quick orientation included"
+          },
+          "perNight": "per night",
+          "quantity": "Quantity:",
+          "subtotal": "Subtotal:"
+        },
+        "fields": {
+          "startDate": {
+            "label": "Start Date",
+            "required": "Start date is required"
+          },
+          "returnDate": {
+            "label": "Return Date",
+            "required": "End date is required"
+          },
+          "deliveryLocation": {
+            "required": "Delivery location is required"
+          },
+          "specificAddress": {
+            "label": "Specific Address",
+            "placeholder": "Please provide the exact delivery address...",
+            "required": "Please specify the delivery address"
+          },
+          "specialRequests": {
+            "label": "Special Requests or Requirements",
+            "placeholder": "Any special requirements, accessibility needs, or additional information..."
+          }
+        },
+        "locations": {
+          "puntacanaResorts": "Puntacana Resorts",
+          "capCana": "Capcana",
+          "bavaro": "Bavaro",
+          "puntaVillage": "Puntacana Village",
+          "uveroAlto": "Uvero Alto",
+          "macao": "Macao Beach Area",
+          "other": "Other (Specify below)"
+        },
+        "whatToExpect": {
+          "title": "What to Expect",
+          "step1": "We deliver your golf cart(s) to your location",
+          "step2": "Quick orientation & safety overview for each cart",
+          "step3": "You drive & enjoy your surroundings",
+          "step4": "We pick them up at your scheduled time"
+        },
+        "included": {
+          "feature1": "Full fuel tank (if applicable)",
+          "feature2": "Free delivery & pickup",
+          "feature3": "24/7 support",
+          "feature4": "Quick orientation"
+        },
+        "notIncluded": {
+          "item1": "Gratuity (optional, appreciated)"
+        },
+        "requirements": {
+          "title": "Driver Requirements",
+          "requirement1": "Must be 18+ years old with a valid driver's license",
+          "requirement2": "Basic driving experience recommended",
+          "requirement3": "Drive responsibly and follow resort/community rules",
+          "requirement4": "Respect local driving laws and speed limits",
+          "requirement5": "Children must be supervised at all times while in cart",
+          "requirement6": "Available throughout Puntacana area"
+        },
+        "disclaimer": {
+          "title": "Important Disclaimer",
+          "text": "Drive at your own discretion. Please follow all community or resort rules and respect local driving laws. You are responsible for the safe operation of the vehicle during the rental period. Our carts are more than transportation—they're freedom on wheels."
+        },
+        "confirmations": {
+          "driverLicense": "I confirm that I have a valid driver's license and meet all driving requirements",
+          "ageConfirmation": "I confirm that I am 18 years of age or older",
+          "termsAccepted": "I accept the terms and conditions and disclaimer above"
+        },
+        "warnings": {
+          "sameDayBooking": "Same-day booking: Requires immediate confirmation from our team. Subject to availability.",
+          "advanceBooking": "Advance booking required: Please book at least 24 hours in advance.",
+          "sameDayConfirm": "You are booking for today. This requires immediate confirmation from our team. Continue?"
+        },
+        "validation": {
+          "noCartsSelected": "Please select at least one golf cart",
+          "endDateInvalid": "End date must be same or after start date",
+          "advance24Hours": "Bookings must be made at least 24 hours in advance",
+          "driverLicenseRequired": "Valid driver's license confirmation is required",
+          "ageRequired": "Age confirmation is required",
+          "termsRequired": "You must accept the terms and conditions"
+        },
+        "pricing": {
+          "totalPrice": "Total Price",
+          "night": "night",
+          "nights": "nights",
+          "cartsSelected": "carts selected",
+          "cartSelected": "cart selected",
+          "includes": "Includes: Free delivery & pickup, 24/7 support, safety equipment"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "book": "Book",
+          "booking": "Booking...",
+          "cart": "Cart",
+          "carts": "Carts"
+        },
+        "errors": {
+          "submit": "Failed to submit reservation. Please try again."
+        }
+      },
+      "saonaIslandView": {
+        "hero": {
+          "locationBadge": "Saona Tour",
+          "title": "Saona Island",
+          "subtitle": "Full Day Excursion",
+          "description": "Enjoy a full day on one of the most beautiful islands in the Caribbean. Beach, nature and Dominican culture in one excursion.",
+          "priceFrom": "From",
+          "priceNote": "per person + transport",
+          "pricingDetails": "Children 0-4 years free • Maximum 15 people",
+          "bookButton": "Book Excursion",
+          "rating": "4.8/5",
+          "excursionists": "Over 1,000 excursionists",
+          "guides": "Professional guides"
+        },
+        "itinerary": {
+          "title": "Complete Itinerary",
+          "subtitle": "Discover step by step your adventure in Saona Island",
+          "step1": {
+            "time": "7:00 - 7:45 AM",
+            "title": "Hotel Pickup",
+            "description": "Pickup at your hotel or resort. Our team will take you to the main meeting point.",
+            "duration": "30-45 min",
+            "highlight1": "Comfortable transportation",
+            "highlight2": "Local guide",
+            "highlight3": "Punctual pickup"
+          },
+          "step2": {
+            "time": "8:00 - 8:30 AM",
+            "title": "Meeting Point & Options",
+            "description": "Arrival at the meeting point where you can choose regular group transport or upgrade to private transport to arrive faster.",
+            "highlight1": "Private transport option",
+            "highlight2": "Less waiting",
+            "highlight3": "Faster arrival"
+          },
+          "step3": {
+            "time": "8:30 - 9:00 AM",
+            "title": "Souvenir Stop",
+            "description": "Stop at local store to buy souvenirs, use the restroom and prepare for the adventure.",
+            "duration": "15-20 min",
+            "highlight1": "Local handicrafts",
+            "highlight2": "Restroom facilities",
+            "highlight3": "Last shopping"
+          },
+          "step4": {
+            "time": "9:30 - 11:00 AM",
+            "title": "Catamaran Experience",
+            "description": "Catamaran trip with music, entertainment, dancers and drinks included (soft drinks, ice, rum). Photographers offer additional services.",
+            "duration": "1.5 hours",
+            "highlight1": "Music and entertainment",
+            "highlight2": "Drinks included",
+            "highlight3": "Professional dancers",
+            "highlight4": "Photographers (additional service)"
+          },
+          "step5": {
+            "time": "11:00 - 11:15 AM",
+            "title": "Natural Pool Stop",
+            "description": "15-minute stop at the famous natural pool with crystal clear waters and starfish.",
+            "duration": "15 min",
+            "highlight1": "Crystal clear waters",
+            "highlight2": "Starfish",
+            "highlight3": "Perfect photos"
+          },
+          "step6": {
+            "time": "11:30 AM - 3:00 PM",
+            "title": "Saona Island Paradise",
+            "description": "Arrival at Saona Island. Enjoy the typical Dominican buffet with drinks, recreation area with beach loungers.",
+            "duration": "3.5 hours",
+            "highlight1": "Dominican buffet",
+            "highlight2": "Soft drinks, rum, water",
+            "highlight3": "Beach loungers",
+            "highlight4": "Free time",
+            "highlight5": "External additional services"
+          },
+          "step7": {
+            "time": "3:00 - 4:30 PM",
+            "title": "Speedboat Return",
+            "description": "Return on speedboat (no refreshments) directly to the starting point.",
+            "duration": "1.5 hours",
+            "highlight1": "Faster journey",
+            "highlight2": "Spectacular views",
+            "highlight3": "Direct arrival"
+          },
+          "step8": {
+            "time": "5:00 - 6:00 PM",
+            "title": "Return to Hotel",
+            "description": "Transport back to your hotel or resort, approximate arrival between 5:00 and 6:00 PM.",
+            "duration": "30-60 min",
+            "highlight1": "Transport included",
+            "highlight2": "Comfortable arrival",
+            "highlight3": "Full day finished"
+          }
+        },
+        "whatToBring": {
+          "title": "What to Bring",
+          "subtitle": "Get ready for the perfect day in paradise",
+          "item1": {
+            "title": "Towel",
+            "description": "To dry off after swimming"
+          },
+          "item2": {
+            "title": "Flip Flops",
+            "description": "Comfortable footwear for the beach"
+          },
+          "item3": {
+            "title": "Sunglasses",
+            "description": "Essential protection from Caribbean sun"
+          },
+          "item4": {
+            "title": "Cash",
+            "description": "For souvenirs, tips and additional services"
+          },
+          "item5": {
+            "title": "Camera",
+            "description": "To capture unforgettable moments"
+          },
+          "item6": {
+            "title": "Sunscreen",
+            "description": "SPF 30+ recommended"
+          },
+          "importantTip": {
+            "title": "Important Tip",
+            "text": "Wear comfortable clothes and swimsuit. Sunscreen is essential - the Caribbean sun is strong! Don't forget cash for tips and local souvenirs."
+          }
+        },
+        "weatherDisclaimer": {
+          "title": "Weather Cancellation Policy",
+          "noRainCancel": "The excursion is NOT cancelled due to rain.",
+          "description": "The tropical Caribbean may have brief showers that do not affect the experience. Our catamarans and island areas are prepared for normal weather conditions.",
+          "onlyCancelled": "The excursion is only cancelled in cases of",
+          "extremeConditions": "extreme weather conditions",
+          "safetyRisk": "that pose a risk to passenger safety, such as:",
+          "condition1": "Tropical storms or hurricanes",
+          "condition2": "Dangerous sea conditions",
+          "condition3": "Official weather alerts",
+          "guarantee": "Guarantee:",
+          "guaranteeText": "If we cancel due to extreme conditions, we offer full refund or date change at no additional cost."
+        },
+        "gallery": {
+          "title": "Discover the Island",
+          "subtitle": "A glimpse of what you're going to discover",
+          "image1": "White Sand Beach",
+          "image2": "Natural Pool",
+          "image3": "Starfish",
+          "image4": "Water Transport"
+        },
+        "experience": {
+          "title": "What You'll Experience",
+          "subtitle": "An authentic excursion through Caribbean nature",
+          "feature1": {
+            "title": "Natural Pool",
+            "description": "Crystal clear waters half a meter deep with starfish"
+          },
+          "feature2": {
+            "title": "Marine Life",
+            "description": "Watch tropical fish and starfish in their natural habitat"
+          },
+          "feature3": {
+            "title": "Local Food",
+            "description": "Buffet lunch with typical Dominican dishes prepared locally"
+          },
+          "feature4": {
+            "title": "Virgin Beach",
+            "description": "Miles of white sand beach surrounded by palm trees"
+          }
+        },
+        "practicalInfo": {
+          "title": "Practical Information",
+          "info1": "Hotel pickup: 7:00 AM - 7:45 AM",
+          "info2": "Approximate return: 5:00 PM - 6:00 PM",
+          "info3": "Includes lunch and drinks",
+          "info4": "Maximum 15 people per group",
+          "info5": "Minimum age: No restrictions (babies welcome)",
+          "info6": "Not suitable for people over 75 years",
+          "info7": "Comfortable clothes and swimsuit recommended",
+          "info8": "Family activity"
+        },
+        "specialBanner": {
+          "badge": "Xclusive Experience",
+          "title": "Create Memories That",
+          "titleHighlight": "Last a Lifetime",
+          "description": "Join over 1,000 travelers who have experienced the magic of Saona Island. Our expert guides and comfortable catamarans ensure a safe and unforgettable adventure for the whole family.",
+          "badge1": "Family-friendly",
+          "badge2": "100% Safe",
+          "badge3": "Top Rated",
+          "button": "Book Now"
+        },
+        "decorationBanners": {
+          "banner1": {
+            "title": "Natural Pool",
+            "subtitle": "A dream tropical escape to melt into iridescent turquoise waters"
+          },
+          "banner2": {
+            "title": "Catamaran Experience",
+            "subtitle": "Music, entertainment and drinks while sailing to paradise"
+          },
+          "banner3": {
+            "title": "Beach Paradise",
+            "subtitle": "Loungers, Dominican buffet and free time on white sand"
+          }
+        }
+      },
+      "saonaIslandForm": {
+        "header": {
+          "title": "Saona Island Tour",
+          "subtitle": "Paradise adventure with catamaran, natural pools, and pristine beaches"
+        },
+        "sections": {
+          "tourDate": "Tour Date",
+          "pickupLocation": "Pickup Location",
+          "participants": "Participants (Maximum 15)",
+          "whatsIncluded": "What's Included",
+          "additionalInfo": "Additional Information",
+          "restrictions": "Tour Restrictions & Important Information"
+        },
+        "fields": {
+          "tourDate": {
+            "label": "Select Tour Date",
+            "error": "Tour date is required"
+          },
+          "pickupTime": {
+            "label": "Pickup Time",
+            "fixed": "(Fixed)",
+            "note": "Pickup time window for all participants"
+          },
+          "location": {
+            "label": "Select your pickup location",
+            "error": "Please select a pickup location"
+          },
+          "adults": {
+            "label": "Adults (7+ years) - $55 each"
+          },
+          "children": {
+            "label": "Children (0-17 years)",
+            "detailsTitle": "Children Details",
+            "childLabel": "Child",
+            "childAge": "Age"
+          },
+          "specialRequests": {
+            "label": "Special Requests or Dietary Requirements",
+            "placeholder": "Any special requests, dietary requirements, mobility assistance needs, or additional information..."
+          }
+        },
+
+        "transportPricing": {
+          "title": "Transport Pricing Information",
+          "description": "Base transport cost: $120 (1-8 people) or $160 (9-15 people). Cap Cana and Uvero Alto locations include an additional $15 surcharge."
+        },
+
+        "locations": {
+          "puntaCanaResorts": {
+            "name": "Punta Cana Resorts"
+          },
+          "bavaro": {
+            "name": "Bavaro"
+          },
+          "capCana": {
+            "name": "Cap Cana"
+          },
+          "uveroAlto": {
+            "name": "Uvero Alto"
+          }
+        },
+        "pricing": {
+          "title": "Age-Based Pricing",
+          "free": "0-4 years: Free",
+          "child": "5-6 years: $27.50 (Child price - 50% off)",
+          "adult": "7+ years: $55 (Adult price)",
+          "priceLabels": {
+            "free": "Free",
+            "child": "Child Price",
+            "adult": "Adult Price"
+          },
+          "ageOptions": {
+            "baby": "Baby (under 1)",
+            "yearsOld": "years old"
+          }
+        },
+        "included": {
+          "item1": "Round-trip transportation",
+          "item2": "Catamaran or speedboat ride",
+          "item3": "Natural pool swimming (15 min stop)",
+          "item4": "Beach time at Saona Island",
+          "item5": "Dominican buffet lunch",
+          "item6": "Drinks (soft drinks, rum, water)",
+          "item7": "Animation and music on catamaran",
+          "item8": "Professional guide",
+          "item9": "Life jackets"
+        },
+        "restrictions": {
+          "item1": "Not recommended for pregnant women",
+          "item2": "Not suitable for people with mobility issues",
+          "item3": "Not suitable for people over 75 years old",
+          "item4": "Minimum age: No restrictions (babies welcome)",
+          "item5": "Children must be supervised at all times",
+          "item6": "Tour does not cancel for rain - only in extreme weather conditions"
+        },
+        "warnings": {
+          "sameDayBooking": "Same-day booking: Requires immediate confirmation from our team. Subject to availability.",
+          "advanceBooking": "Advance booking required: Please book at least 24 hours in advance.",
+          "sameDayConfirm": "You are booking for today. This requires immediate confirmation from our team. Continue?",
+          "maxParticipants": "Maximum 15 participants allowed"
+        },
+        "validation": {
+          "advance24Hours": "Bookings must be made at least 24 hours in advance",
+          "minParticipants": "At least one participant is required",
+          "maxParticipants": "Maximum 15 participants allowed",
+          "childAgeRange": "Child age must be between 0 and 17"
+        },
+        "priceBreakdown": {
+          "totalPrice": "Total Price",
+          "person": "person",
+          "people": "people",
+          "perPerson": "Per person:",
+          "transport": "Transport",
+          "transportRange1": "1-8",
+          "transportRange2": "9-15",
+          "transportLabel": "people",
+          "locationSurcharge": "Location surcharge:",
+          "pickupFrom": "Pickup from:"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "book": "Book Tour",
+          "booking": "Booking..."
+        },
+        "errors": {
+          "submit": "Failed to submit reservation. Please try again."
         }
       },
       "deepSeaFishing": {
