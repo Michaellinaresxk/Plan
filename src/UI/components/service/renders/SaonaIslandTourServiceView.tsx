@@ -56,16 +56,6 @@ interface ItineraryStep {
   duration?: string;
 }
 
-const ITINERARY_ICONS = [
-  Car,
-  MapPin,
-  ShoppingBag,
-  Music,
-  Waves,
-  Palmtree,
-  Anchor,
-  Sunset,
-];
 const ITINERARY_STEPS: ItineraryStep[] = [
   { time: '7:00 - 7:45 AM', icon: Car, duration: '30-45 min' },
   { time: '8:00 - 8:30 AM', icon: MapPin },
@@ -151,7 +141,7 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
         />
       </video>
 
-      <div className='absolute top-4 right-4 flex gap-2'>
+      {/* <div className='absolute top-4 right-4 flex gap-2'>
         <button
           onClick={togglePlay}
           className='w-10 h-10 bg-black/30 rounded-lg flex items-center justify-center hover:bg-black/50 transition-colors text-white'
@@ -172,7 +162,7 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
             <Volume2 className='w-5 h-5' />
           )}
         </button>
-      </div>
+      </div> */}
 
       <div className='absolute inset-0 bg-black/30' />
 

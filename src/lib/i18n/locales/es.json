@@ -224,6 +224,41 @@
         "short": "Sesiones de fitness individuales con entrenadores certificados",
         "full": "Mantente en forma durante tus vacaciones con nuestras sesiones de entrenamiento personal. Entrena con profesionales certificados que se adaptan a tu nivel, tus objetivos y tu horario. Reserva hoy y alcanza tu mejor versión en Punta Cana."
       },
+      "babysitter": {
+        "chip": "Atención infantil profesional",
+        "headerOption1": "Comprobación de antecedentes y certificados",
+        "headerOption2": "Actividades adecuadas a la edad",
+        "headerOption3": "Horario flexible",
+        "name": "Niñera",
+        "short": "Confíe en nuestras niñeras experimentadas y con antecedentes comprobados para cuidar de sus pequeños en la comodidad de su villa o resort.",
+        "full": "Confía en nuestras niñeras experimentadas y con verificación de antecedentes para cuidar a tus pequeños en la comodidad de tu villa o resort. Ya sea para unas horas por la noche o cuidado diario, nuestros profesionales entretienen a los niños con actividades seguras y supervisión atenta.",
+        "slogan": "DISFRUTA DE TU TIEMPO SIN PREOCUPACIONES",
+        "ageRange": "Rango de edad:",
+        "ageRangeAnswer": "De 6 meses a 12 años",
+        "availability": "Disponibilidad:",
+        "availabilityAnswer": "Día, tarde y noche; servicio nocturno bajo petición",
+        "safety": "Estándares de Seguridad:",
+        "safetyAnswer": "Formación en RCP & primeros auxilios",
+        "subTitle1": "DISFRUTA TUS VACACIONES SIN PREOCUPACIONES",
+        "option1": "Cuidado Nocturno",
+        "option2": "Supervisión Diurna",
+        "option3": "Cuidado Grupal (hermanos)",
+        "option4": "Servicio Nocturno Completo",
+        "CTAHeaderSubTitle": "Tu Tranquilidad. Su Felicidad.",
+        "CTATitle": "¿Listo para disfrutar de su tiempo mientras sus hijos están en buenas manos?",
+        "CTASubTitle": "Programe un servicio de guardería profesional y fiable y disfrute de un tiempo libre sin preocupaciones.",
+        "faqsTitle": "Preguntas Frecuentes",
+        "faqQuestion1": " ¿Qué pasa si necesito extender el tiempo de la babysitter?",
+        "faqAnswer1": "Las extensiones son posibles sujeto a la niñera es la disponibilidad. Por favor, notifíquenos tan pronto como sea posible, y vamos a confirmar con su niñera asignado.",
+        "faqQuestion2": "Can I meet the babysitter before booking?",
+        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
+        "faqQuestion3": "¿Puedo conocer a la canguro antes de reservar?",
+        "faqAnswer3": "Por supuesto. Le animamos a que se reúna con nosotros antes del servicio programado. Esto se puede arreglar en persona o por videollamada.",
+        "testimonialTitle": "Qué dicen los padres",
+        "testimonial1": "'Nuestros hijos adoraban a su niñera. Era puntual, profesional y tenía una relación increíble con los niños. Pudimos disfrutar de nuestra velada sabiendo que estaban en buenas manos.'",
+        "testimonial2": "El nivel de profesionalidad fue excepcional. Nuestra niñera vino preparada con actividades apropiadas para cada edad que mantuvieron a nuestros hijos ocupados durante toda la velada.",
+        "testimonial3": "Este es el único servicio de canguro en el que confío a mis pequeños. El proceso de selección de los cuidadores es exhaustivo y la canguro que nos asignaron era excepcional."
+      },
       "horsebackRiding": {
         "name": "Paseos a Caballo",
         "short": "Disfruta de un paseo guiado por playas, senderos y paisajes impresionantes, perfecto para todos los niveles de experiencia.",
@@ -395,6 +430,7 @@
           "specificSongsRequired": "Por favor especifica tus preferencias de canciones"
         }
       },
+
       "horsebackRidingServiceView": {
         "hero": {
           "title": "Paseo a Caballo",
@@ -879,6 +915,284 @@
         },
         "errors": {
           "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
+        }
+      },
+      "babysitterView": {
+        "hero": {
+          "premiumBadge": "Experiencia Premium",
+          "standardBadge": "Cuidado Infantil Confiable",
+          "premiumTitle": "Premium",
+          "premiumTitleHighlight": "En Villa",
+          "premiumTitleSuffix": "Servicios de Cuidado Infantil",
+          "standardTitle": "Niñeras",
+          "standardTitleHighlight": "Profesionales",
+          "standardTitleSuffix": "En Quien Confiar",
+          "description": "Cuidadores experimentados y verificados que crean momentos mágicos mientras mantienen a tus hijos seguros, felices y comprometidos.",
+          "badge1": "Verificación de Antecedentes",
+          "badge2": "Edades 6M - 12A",
+          "badge3": "Disponible 24/7",
+          "bookButton": "Reservar Cuidado Confiable"
+        },
+        "activities": {
+          "title": "Actividades Apropiadas para la Edad",
+          "subtitle": "Nuestros cuidadores vienen preparados con actividades atractivas adaptadas a la edad e intereses de tu hijo",
+          "activity1": {
+            "title": "Artes Creativas",
+            "description": "Dibujo, pintura y proyectos de manualidades que despiertan la imaginación"
+          },
+          "activity2": {
+            "title": "Hora del Cuento",
+            "description": "Sesiones de lectura interactiva con libros apropiados para la edad"
+          },
+          "activity3": {
+            "title": "Música y Baile",
+            "description": "Actividades musicales divertidas y juegos de movimiento"
+          },
+          "activity4": {
+            "title": "Juegos Educativos",
+            "description": "Aprendizaje a través del juego con rompecabezas y juegos mentales"
+          },
+          "activity5": {
+            "title": "Actividades Físicas",
+            "description": "Juego al aire libre seguro y actividades de movimiento en interiores"
+          },
+          "activity6": {
+            "title": "Cuidado Apropiado para la Edad",
+            "description": "Actividades personalizadas basadas en la etapa de desarrollo de cada niño"
+          }
+        },
+        "gallery": {
+          "title": "Momentos de Alegría",
+          "caption1": "Sesiones creativas de artes y manualidades",
+          "caption2": "Aventuras seguras al aire libre",
+          "caption3": "Sesiones de lectura interactiva",
+          "caption4": "Actividades de juego educativo"
+        },
+        "safety": {
+          "title": "Seguridad y Confianza Primero",
+          "feature1": {
+            "title": "Antecedentes Verificados",
+            "description": "Todos los cuidadores pasan por verificaciones exhaustivas de antecedentes y referencias"
+          },
+          "feature2": {
+            "title": "Cuidado Genuino",
+            "description": "Seleccionados por su habilidad natural para conectarse y cuidar a los niños"
+          }
+        },
+        "testimonials": {
+          "title": "Familias Felices",
+          "subtitle": "Mira lo que los padres dicen sobre nuestros servicios de cuidado infantil",
+          "testimonial1": {
+            "quote": "María fue absolutamente maravillosa con nuestros gemelos. ¡Estuvieron comprometidos y felices toda la tarde!",
+            "author": "Sarah M.",
+            "children": "Gemelos, 4 años"
+          },
+          "testimonial2": {
+            "quote": "Profesional, cariñosa, y a los niños les encantó. Nos sentimos completamente tranquilos durante nuestra noche de cita.",
+            "author": "David L.",
+            "children": "2 niños, edades 6 y 8"
+          },
+          "testimonial3": {
+            "quote": "Nuestra niñera vino preparada con actividades e incluso ayudó con la rutina de dormir. ¡Muy recomendable!",
+            "author": "Jessica R.",
+            "children": "1 niño, 3 años"
+          }
+        },
+        "faq": {
+          "title": "Preguntas Frecuentes",
+          "subtitle": "Todo lo que necesitas saber sobre nuestros servicios de niñeras",
+          "question1": {
+            "question": "¿Para qué edades proporcionan servicios de niñera?",
+            "answer": "Proporcionamos cuidado infantil profesional para niños de 6 meses a 12 años. Nuestras niñeras están capacitadas para manejar diferentes grupos de edad y etapas de desarrollo."
+          },
+          "question2": {
+            "question": "¿Sus niñeras tienen verificación de antecedentes?",
+            "answer": "Sí, todas nuestras niñeras pasan por verificaciones exhaustivas de antecedentes, verificación de referencias y capacitación en cuidado infantil. La seguridad de sus hijos es nuestra máxima prioridad."
+          },
+          "question3": {
+            "question": "¿Qué pasa si mi hijo tiene requisitos dietéticos especiales o alergias?",
+            "answer": "Revisamos cuidadosamente todas las restricciones dietéticas y alergias antes del servicio. Nuestras niñeras están capacitadas para manejar necesidades dietéticas especiales y pueden preparar bocadillos y comidas apropiadas."
+          },
+          "question4": {
+            "question": "¿Con cuánta anticipación debo reservar?",
+            "answer": "Recomendamos reservar con al menos 24-48 horas de anticipación para garantizar disponibilidad. Para solicitudes de último minuto, por favor llámenos directamente y haremos nuestro mejor esfuerzo para acomodar."
+          }
+        }
+      },
+      "babysitterForm": {
+        "header": {
+          "title": "Cuidado Infantil Happy Kids",
+          "subtitle": "Cuidado infantil profesional en la comodidad de tu alojamiento"
+        },
+        "sections": {
+          "scheduling": "Programación",
+          "location": "Ubicación",
+          "childrenInfo": "Cuéntanos Sobre Tus Hijos",
+          "additionalInfo": "Información Adicional"
+        },
+        "fields": {
+          "date": {
+            "label": "Fecha",
+            "error": "La fecha es requerida"
+          },
+          "startTime": {
+            "label": "Hora de Inicio",
+            "error": "La hora de inicio es requerida"
+          },
+          "endTime": {
+            "label": "Hora de Finalización",
+            "error": "La hora de finalización es requerida"
+          },
+          "location": {
+            "label": "Selecciona tu ubicación",
+            "error": "Por favor selecciona una ubicación",
+            "selected": "Seleccionado:"
+          },
+          "childrenCount": {
+            "label": "¿Cuántos niños necesitan cuidado?"
+          },
+          "childrenAges": {
+            "label": "¿Qué edad tienen?",
+            "placeholder": "ej., 3 años",
+            "error": "Por favor completa todas las edades de los niños"
+          },
+          "specialNeeds": {
+            "toggle": "Niño con necesidades especiales o discapacidades",
+            "label": "Por favor cuéntanos sobre cualquier necesidad especial",
+            "placeholder": "Por favor describe cualquier requisito especial, condiciones médicas, alergias, etc.",
+            "error": "Los detalles de necesidades especiales son requeridos"
+          },
+          "specialRequests": {
+            "label": "¿Algo más que debamos saber?",
+            "placeholder": "Actividades favoritas, rutinas, horas de siesta, preferencias dietéticas, o cualquier otra cosa que ayude a nuestra niñera a brindar el mejor cuidado"
+          }
+        },
+        "info": {
+          "minimumBooking": "La duración mínima de reserva es de {hours} horas. Las reservas más cortas se cobrarán a la tarifa de {hours} horas.",
+          "additionalChild": "+$10 por niño adicional",
+          "specialCareFee": "+$15 tarifa adicional por cuidado especializado"
+        },
+        "pricing": {
+          "totalPrice": "Precio Total",
+          "babysittingAt": "Cuidado infantil en",
+          "childrenCount": "{count} niños (+$10 por niño adicional)",
+          "specialCare": "Necesidades de cuidado especial: +$15"
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "submit": "Reservar Tu Niñera",
+          "processing": "Procesando..."
+        }
+      },
+      "luxCatamaran": {
+        "serviceView": {
+          "hero": {
+            "badge": "Aventura Caribeña",
+            "title": "Paraíso Caribeño",
+            "subtitle": "Experiencia de Catamarán de Lujo",
+            "description": "Descubre el paraíso a bordo de nuestros catamaranes de lujo. Elige entre nuestra experiencia clásica o mejora a nuestra embarcación premium con tobogán acuático para la aventura definitiva.",
+            "ctaButton": "Explorar Opciones"
+          },
+          "catamaranTypes": {
+            "classic": {
+              "name": "Aventura Clásica",
+              "features": {
+                "openBar": "Barra Libre",
+                "gourmetBuffet": "Buffet Gourmet",
+                "snorkelingEquipment": "Equipo de Snorkel",
+                "professionalCrew": "Tripulación Profesional"
+              }
+            },
+            "premium": {
+              "name": "Premium con Tobogán Acuático",
+              "badge": "Premium",
+              "waterSlideBadge": "Tobogán Acuático",
+              "features": {
+                "allClassic": "Todas las Características Clásicas",
+                "waterSlide": "Tobogán Acuático",
+                "premiumBar": "Barra Premium",
+                "vipService": "Servicio VIP",
+                "photoPackage": "Paquete de Fotos"
+              }
+            },
+            "perPerson": "/persona",
+            "guests": "personas",
+            "moreFeatures": "características más"
+          },
+          "sections": {
+            "chooseAdventure": {
+              "title": "Elige Tu Aventura",
+              "subtitle": "Selecciona la experiencia de catamarán perfecta para tu grupo"
+            },
+            "chooseTime": {
+              "title": "Elige Tu Hora de Salida",
+              "subtitle": "Selecciona el momento perfecto para tu aventura",
+              "mostPopular": "Más Popular",
+              "selectButton": "Seleccionar"
+            },
+            "experienceGallery": {
+              "title": "Galería de Experiencias",
+              "subtitle": "Mira lo que te espera en este increíble viaje",
+              "experiences": {
+                "crystalWaters": {
+                  "title": "Aguas Cristalinas",
+                  "description": "Nada en aguas caribeñas prístinas"
+                },
+                "snorkeling": {
+                  "title": "Aventura de Snorkel",
+                  "description": "Descubre vibrante vida marina"
+                },
+                "waterSlide": {
+                  "title": "Diversión en Tobogán",
+                  "description": "Emocionantes toboganes hacia el océano"
+                },
+                "dining": {
+                  "title": "Comida Gourmet",
+                  "description": "Mariscos frescos y cocina tropical"
+                },
+                "beach": {
+                  "title": "Exploración de Playas",
+                  "description": "Playas aisladas y calas escondidas"
+                },
+                "sunset": {
+                  "title": "Vistas del Atardecer",
+                  "description": "Impresionantes atardeceres caribeños"
+                }
+              }
+            }
+          },
+          "timeSlots": {
+            "morning": {
+              "label": "Aventura Matutina"
+            },
+            "afternoon": {
+              "label": "Experiencia al Atardecer"
+            }
+          },
+          "details": {
+            "classicDescription": "Disfruta de nuestra experiencia clásica en catamarán con todos los elementos esenciales para una perfecta aventura caribeña, incluyendo snorkel, comida y relajación en el paraíso.",
+            "premiumDescription": "Experimenta el lujo definitivo con nuestro catamarán premium que cuenta con un emocionante tobogán acuático, servicio VIP y comodidades exclusivas. Perfecto para grupos que buscan una aventura inolvidable con emociones adicionales.",
+            "perPerson": "por persona",
+            "maxGuests": "personas máx.",
+            "hours": "horas",
+            "bookButton": "Reservar Esta Experiencia"
+          },
+          "cta": {
+            "title": "¿Listo para el Paraíso?",
+            "subtitle": "Reserva tu aventura en catamarán hoy y crea recuerdos que durarán toda la vida. ¡Plazas limitadas disponibles!",
+            "bookButton": "Reservar Ahora",
+            "guarantee": "Cancelación gratuita • Confirmación instantánea • Garantía del mejor precio"
+          },
+          "importantInfo": {
+            "title": "Información Importante",
+            "points": {
+              "weather": "Los tours dependen del clima y pueden reprogramarse por seguridad",
+              "booking": "Recomendamos reservar con 24-48 horas de anticipación",
+              "refund": "Reembolso completo disponible por cancelaciones climáticas",
+              "safety": "Chalecos salvavidas y equipo de seguridad proporcionados para todos los huéspedes",
+              "ageLimit": "Edad mínima para el tobogán acuático: 8 años"
+            }
+          }
         }
       },
       "saonaIslandView": {
@@ -1672,484 +1986,56 @@
         "spaceNeeded": "Space Requirements",
         "powerAccess": "Power Access",
         "customOptions": "Additional Options"
-      },
-      "babysitterView": {
-        "hero": {
-          "premiumBadge": "Servicio Premium",
-          "standardBadge": "Cuidado Confiable",
-          "premiumTitle": "Cuidado Infantil",
-          "premiumTitleHighlight": "Premium",
-          "premiumTitleSuffix": "de Excelencia",
-          "standardTitle": "Servicios de",
-          "standardTitleHighlight": "Niñera",
-          "standardTitleSuffix": "Profesional",
-          "description": "Brinda a tus hijos el cuidado que merecen con nuestras niñeras experimentadas y certificadas que crean experiencias divertidas, seguras y atractivas.",
-          "badge1": "Verificación de Antecedentes",
-          "badge2": "Equipo Experimentado",
-          "badge3": "Horarios Flexibles",
-          "bookButton": "Reservar Ahora"
-        },
-        "activities": {
-          "title": "Lo Que Ofrecemos",
-          "subtitle": "Actividades atractivas diseñadas para nutrir el crecimiento y la felicidad de tu hijo",
-          "activity1": {
-            "title": "Artes Creativas",
-            "description": "Pintura, dibujo y manualidades que despiertan la imaginación y desarrollan habilidades motoras finas a través de la expresión creativa colorida."
-          },
-          "activity2": {
-            "title": "Cuentos y Lectura",
-            "description": "Sesiones de lectura interactivas que construyen vocabulario, comprensión y un amor por los libros y el aprendizaje de por vida."
-          },
-          "activity3": {
-            "title": "Música y Movimiento",
-            "description": "Canciones, baile y actividades rítmicas que mejoran la coordinación, la autoexpresión y la conciencia musical."
-          },
-          "activity4": {
-            "title": "Juegos Educativos",
-            "description": "Actividades de aprendizaje divertidas que desarrollan la resolución de problemas, el pensamiento crítico y las habilidades sociales a través del juego."
-          },
-          "activity5": {
-            "title": "Actividades Físicas",
-            "description": "Juegos y ejercicios apropiados para la edad que promueven el desarrollo físico, la liberación de energía y hábitos saludables."
-          },
-          "activity6": {
-            "title": "Cuidado de Bebés",
-            "description": "Cuidado especializado para bebés que incluye alimentación, cambio de pañales, rutinas de siesta y actividades de estimulación suave."
-          }
-        },
-        "gallery": {
-          "title": "Momentos de Alegría",
-          "caption1": "Tiempo de arte y manualidades",
-          "caption2": "Exploración al aire libre",
-          "caption3": "Cuentos favoritos",
-          "caption4": "Aprendiendo a través del juego"
-        },
-        "safety": {
-          "title": "La Seguridad de Tu Hijo es Nuestra Prioridad",
-          "feature1": {
-            "title": "Certificadas y Verificadas",
-            "description": "Todas nuestras niñeras se someten a verificaciones exhaustivas de antecedentes, verificación de referencias y tienen certificaciones vigentes en RCP y Primeros Auxilios."
-          },
-          "feature2": {
-            "title": "Cuidadoras Experimentadas",
-            "description": "Nuestro equipo está formado por profesionales experimentados con años de experiencia en cuidado infantil, capacitados para manejar diversas situaciones con paciencia y cuidado."
-          }
-        },
-        "testimonials": {
-          "title": "Lo Que Dicen Los Padres",
-          "subtitle": "Confiado por familias en nuestra comunidad",
-          "testimonial1": {
-            "quote": "¡Nuestra niñera fue increíble! Mis hijos la adoraron y me sentí completamente tranquila sabiendo que estaban en manos tan capaces.",
-            "author": "Sarah Johnson",
-            "children": "Madre de 2"
-          },
-          "testimonial2": {
-            "quote": "Profesional, puntual y maravillosa con nuestros hijos. ¡Hemos encontrado nuestro servicio de niñera de confianza!",
-            "author": "Michael Chen",
-            "children": "Padre de 3"
-          },
-          "testimonial3": {
-            "quote": "La tranquilidad de saber que mi bebé está con una cuidadora certificada y experimentada no tiene precio. ¡Altamente recomendado!",
-            "author": "Emma Rodríguez",
-            "children": "Madre de 1"
-          }
-        },
-        "faq": {
-          "title": "Preguntas Frecuentes",
-          "subtitle": "Todo lo que necesitas saber sobre nuestro servicio de niñera",
-          "question1": {
-            "question": "¿Para qué edades proporcionan cuidado?",
-            "answer": "Proporcionamos cuidado para niños desde bebés (6 meses+) hasta preadolescentes (12 años), con niñeras especialmente capacitadas para diferentes grupos de edad."
-          },
-          "question2": {
-            "question": "¿Sus niñeras están certificadas?",
-            "answer": "¡Sí! Todas nuestras niñeras están certificadas en RCP y Primeros Auxilios, han completado verificaciones de antecedentes y tienen experiencia verificable en cuidado infantil y referencias."
-          },
-          "question3": {
-            "question": "¿Cuál es su política de cancelación?",
-            "answer": "Requerimos un aviso de 24 horas para cancelaciones para recibir un reembolso completo. Las cancelaciones dentro de las 24 horas pueden incurrir en una tarifa de cancelación."
-          },
-          "question4": {
-            "question": "¿Puedo solicitar la misma niñera?",
-            "answer": "¡Por supuesto! Fomentamos la construcción de relaciones consistentes. Puedes solicitar tu niñera preferida para futuras reservas según su disponibilidad."
-          }
-        }
-      },
-      "babysitterForm": {
-        "header": {
-          "title": "Cuidado de Niños Happy Kids",
-          "subtitle": "Cuidado infantil profesional en la comodidad de tu alojamiento"
-        },
-        "scheduling": {
-          "title": "Programación",
-          "date": {
-            "label": "Fecha",
-            "required": "*"
-          },
-          "startTime": {
-            "label": "Hora de inicio",
-            "required": "*"
-          },
-          "endTime": {
-            "label": "Hora de fin",
-            "required": "*"
-          },
-          "minimumBooking": "La duración mínima de reserva es de {{hours}} horas. Las reservas más cortas se cobrarán a la tarifa de {{hours}} horas."
-        },
-        "location": {
-          "title": "Ubicación",
-          "label": "Selecciona tu ubicación",
-          "required": "*",
-          "selected": "Seleccionado:"
-        },
-        "children": {
-          "title": "Cuéntanos sobre tus hijos",
-          "count": {
-            "label": "¿Cuántos niños necesitan cuidado?",
-            "additionalFee": "+$10 por niño adicional"
-          },
-          "ages": {
-            "label": "¿Qué edad tienen?",
-            "required": "*",
-            "placeholder": "ej. 3 años"
-          },
-          "specialNeeds": {
-            "toggle": "Niño con necesidades especiales o discapacidades",
-            "label": "Por favor, cuéntanos sobre cualquier necesidad especial",
-            "required": "*",
-            "placeholder": "Por favor describe cualquier requerimiento especial, condiciones médicas, alergias, etc.",
-            "additionalFee": "+$15 por cuidado especializado"
-          }
-        },
-        "additionalInfo": {
-          "title": "Información adicional",
-          "label": "¿Algo más que deberíamos saber?",
-          "placeholder": "Actividades favoritas, rutinas, horarios de siesta, preferencias dietéticas, o cualquier otra cosa que ayude a nuestro/a cuidador/a a brindar el mejor cuidado"
-        },
-        "footer": {
-          "totalPrice": "Precio total",
-          "priceBreakdown": {
-            "location": "Cuidado de niños en {{locationName}}",
-            "children": "{{count}} niños (+$10 por niño adicional)",
-            "specialNeeds": "Cuidado especial: +$15"
-          },
-          "buttons": {
-            "cancel": "Cancelar",
-            "submit": "Reserva tu Cuidador/a",
-            "processing": "Procesando..."
-          }
-        },
-        "errors": {
-          "date": "La fecha es requerida",
-          "startTime": "La hora de inicio es requerida",
-          "endTime": "La hora de fin es requerida",
-          "location": "Por favor selecciona una ubicación",
-          "childrenAges": "Por favor completa todas las edades de los niños",
-          "specialNeedsDetails": "Los detalles de necesidades especiales son requeridos",
-          "bookingError": "Error al procesar la reserva. Por favor intenta nuevamente."
-        }
-      },
-      "massageView": {
-        "hero": {
-          "premiumBadge": "BF Paradise • Santuario de Bienestar Premium",
-          "title": "Santuario de Masajes",
-          "titleHighlight": "Terapéuticos",
-          "description": "Experimenta el poder transformador del toque sanador con nuestra colección de {count} tratamientos terapéuticos expertamente diseñados",
-          "features": {
-            "licensed": "Terapeutas Certificados",
-            "inHome": "Servicio a Domicilio",
-            "premium": "Experiencia Premium",
-            "satisfaction": "Satisfacción Garantizada"
-          }
-        },
-        "quote": {
-          "text": "Tómate el tiempo para hacer feliz a tu alma. Tu cuerpo merece el regalo del toque sanador, y tu mente anhela la paz que solo proviene de la verdadera relajación.",
-          "stats": {
-            "sessions": {
-              "count": "500+",
-              "label": "Sesiones de Bienestar",
-              "detail": "completadas este año"
-            },
-            "satisfaction": {
-              "count": "98%",
-              "label": "Tasa de Satisfacción",
-              "detail": "de nuestros valiosos clientes"
-            },
-            "availability": {
-              "count": "24/7",
-              "label": "Disponibilidad",
-              "detail": "para tu conveniencia"
-            }
-          }
-        },
-        "services": {
-          "title": "Elige Tu Perfecta",
-          "titleHighlight": "Experiencia Sanadora",
-          "description": "Cada tratamiento está cuidadosamente diseñado para abordar tus necesidades únicas de bienestar, combinando sabiduría ancestral con técnicas terapéuticas modernas",
-          "resultsCount": "{count} experiencias terapéuticas disponibles",
-          "viewAll": "Ver todos los tratamientos",
-          "noResults": {
-            "title": "No hay tratamientos que coincidan con tu búsqueda",
-            "description": "Intenta ajustar tus filtros para descubrir más experiencias sanadoras",
-            "button": "Mostrar Todos los Tratamientos"
-          }
-        },
-        "cta": {
-          "title": "Tu Viaje Hacia el",
-          "titleHighlight": "Bienestar Completo",
-          "description": "Escapa del estrés de la vida diaria y sumérgete en pura tranquilidad. Nuestros terapeutas expertos llevan la experiencia del spa directamente a ti.",
-          "features": {
-            "therapists": "Masajistas certificados con más de 5 años de experiencia",
-            "premium": "Aceites orgánicos premium y camillas de masaje con calefacción",
-            "customized": "Tratamientos personalizados para tus necesidades únicas"
-          },
-          "button": "Comienza Tu Viaje de Bienestar",
-          "cards": {
-            "mindBalance": {
-              "title": "Balance Mental",
-              "description": "Alcanza claridad mental y armonía emocional"
-            },
-            "bodyRenewal": {
-              "title": "Renovación Corporal",
-              "description": "Libera tensiones y restaura vitalidad"
-            },
-            "naturalHealing": {
-              "title": "Sanación Natural",
-              "description": "Productos orgánicos puros para tu bienestar"
-            },
-            "homeComfort": {
-              "title": "Comodidad del Hogar",
-              "description": "Experiencia de spa de lujo en tu espacio"
-            }
-          }
-        },
-        "massages": {
-          "swedish": {
-            "name": "Relajación Sueca",
-            "description": "Movimientos suaves y fluidos para derretir la tensión y restaurar la paz interior",
-            "longDescription": "Nuestro masaje sueco característico combina técnicas tradicionales con aromaterapia para crear una experiencia profundamente relajante que calma tanto el cuerpo como la mente.",
-            "benefits": [
-              "Alivio del Estrés",
-              "Mejora de la Circulación",
-              "Mejor Sueño",
-              "Relajación Muscular"
-            ],
-            "perfectFor": [
-              "Clientes primerizos",
-              "Alivio del estrés",
-              "Bienestar general"
-            ],
-            "techniques": [
-              "Movimientos largos deslizantes",
-              "Amasamiento",
-              "Aromaterapia"
-            ]
-          },
-          "deepTissue": {
-            "name": "Terapia de Tejido Profundo",
-            "description": "Masaje terapéutico intensivo dirigido a la tensión crónica y el dolor",
-            "longDescription": "Diseñado para quienes necesitan trabajo muscular serio, esta terapia se enfoca en las capas más profundas del tejido muscular para liberar patrones crónicos de tensión.",
-            "benefits": [
-              "Alivio del Dolor",
-              "Liberación de Tensión",
-              "Mejora de Movilidad",
-              "Recuperación de Lesiones"
-            ],
-            "perfectFor": [
-              "Atletas",
-              "Dolor crónico",
-              "Recuperación de lesiones"
-            ],
-            "techniques": [
-              "Presión profunda",
-              "Terapia de puntos gatillo",
-              "Liberación miofascial"
-            ]
-          },
-          "hotStone": {
-            "name": "Ritual de Piedras Sagradas",
-            "description": "Piedras volcánicas calientes crean calor profundo y relajación profunda",
-            "longDescription": "La sanación ancestral se encuentra con el lujo moderno. Piedras suaves y calientes se colocan en puntos clave mientras el masaje con piedras calientes derrite cada rastro de estrés.",
-            "benefits": [
-              "Relajación Profunda",
-              "Mejora del Flujo Sanguíneo",
-              "Alivio de Tensión Muscular",
-              "Balance Espiritual"
-            ],
-            "perfectFor": [
-              "Relajación máxima",
-              "Clima frío",
-              "Bienestar espiritual"
-            ],
-            "techniques": [
-              "Colocación de piedras calientes",
-              "Masaje con piedras",
-              "Balance energético"
-            ]
-          },
-          "aromatherapy": {
-            "name": "Dicha Botánica",
-            "description": "Un viaje sensorial con aceites esenciales puros y toque sanador",
-            "longDescription": "Mezclas personalizadas de aceites esenciales mejoran este masaje terapéutico, creando una experiencia multisensorial que armoniza mente, cuerpo y espíritu.",
-            "benefits": [
-              "Claridad Mental",
-              "Balance Emocional",
-              "Reducción del Estrés",
-              "Mejora del Estado de Ánimo"
-            ],
-            "perfectFor": [
-              "Bienestar emocional",
-              "Amantes de la aromaterapia",
-              "Sanación holística"
-            ],
-            "techniques": [
-              "Mezcla personalizada de aceites",
-              "Drenaje linfático",
-              "Balance de chakras"
-            ]
-          },
-          "prenatal": {
-            "name": "Madre Nutriente",
-            "description": "Cuidado especializado diseñado para las necesidades únicas de la futura madre",
-            "longDescription": "Nuestros terapeutas prenatales certificados brindan terapia de masaje segura y efectiva para apoyarte durante tu viaje de embarazo con comodidad y cuidado.",
-            "benefits": [
-              "Comodidad en el Embarazo",
-              "Reducción de Hinchazón",
-              "Alivio del Dolor de Espalda",
-              "Mejora del Sueño"
-            ],
-            "perfectFor": [
-              "Mujeres embarazadas",
-              "Alivio del dolor de espalda",
-              "Apoyo emocional"
-            ],
-            "techniques": [
-              "Posicionamiento lateral",
-              "Presión suave",
-              "Técnicas seguras prenatales"
-            ]
-          },
-          "sports": {
-            "name": "Recuperación Atlética",
-            "description": "Terapia enfocada en el rendimiento para mejorar el potencial atlético",
-            "longDescription": "Diseñado específicamente para atletas e individuos activos, combinando técnicas terapéuticas para mejorar el rendimiento y prevenir lesiones.",
-            "benefits": [
-              "Mejora del Rendimiento",
-              "Prevención de Lesiones",
-              "Recuperación Más Rápida",
-              "Flexibilidad"
-            ],
-            "perfectFor": [
-              "Atletas",
-              "Estilo de vida activo",
-              "Objetivos de rendimiento"
-            ],
-            "techniques": [
-              "Masaje deportivo",
-              "Estiramientos",
-              "Terapia de compresión"
-            ]
-          },
-          "couples": {
-            "name": "Escape Romántico",
-            "description": "Comparte la dicha de la relajación con tu ser amado",
-            "longDescription": "Camillas de masaje lado a lado, luz de velas y tratamientos sincronizados crean una experiencia de bienestar íntima que atesorarás para siempre.",
-            "benefits": [
-              "Experiencia Romántica",
-              "Relajación Compartida",
-              "Tiempo de Conexión",
-              "Alivio del Estrés"
-            ],
-            "perfectFor": ["Parejas", "Aniversarios", "Citas nocturnas"],
-            "techniques": [
-              "Masaje sincronizado",
-              "Aromaterapia para parejas",
-              "Ambiente romántico"
-            ]
-          },
-          "thai": {
-            "name": "Sanación Tailandesa Ancestral",
-            "description": "Estiramientos tradicionales y masaje de puntos de presión de Tailandia",
-            "longDescription": "Este arte de sanación ancestral combina acupresión, estiramientos asistidos de yoga y trabajo energético para restaurar el equilibrio y la flexibilidad en todo tu ser.",
-            "benefits": [
-              "Flexibilidad",
-              "Balance Energético",
-              "Alivio del Estrés",
-              "Bienestar Espiritual"
-            ],
-            "perfectFor": [
-              "Necesidades de flexibilidad",
-              "Trabajo energético",
-              "Sanación tradicional"
-            ],
-            "techniques": [
-              "Estiramientos tailandeses",
-              "Puntos de presión",
-              "Líneas de energía"
-            ]
-          }
-        },
-        "filters": {
-          "search": "Buscar tratamientos...",
-          "category": "Categoría",
-          "intensity": "Intensidad",
-          "priceRange": "Rango de Precio",
-          "premiumOnly": "Solo Premium",
-          "clearFilters": "Limpiar Filtros"
-        },
-        "errors": {
-          "bookingError": "Error al procesar la reserva. Por favor, intenta de nuevo."
-        }
-      },
-      "massageCard": {
-        "selected": "Seleccionado",
-        "upTo": "Hasta",
-        "moreBenefits": "+{{count}} más",
-        "bookButton": "Reservar Experiencia"
       }
-    }
-  },
-  "premium": {
-    "luxeYacht": {
-      "name": "Yate de Lujo",
-      "short": "Alquiler de yate de lujo privado con tripulación",
-      "full": "Experimenta el máximo lujo con nuestro chárter privado de yate. Navega por las prístinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades. Disfruta de comidas gourmet, bebidas premium y actividades acuáticas exclusivas."
     },
-    "luxeEBikes": {
-      "name": "Bicicletas Eléctricas de Lujo",
-      "short": "Bicicletas eléctricas premium para una exploración sin esfuerzo",
-      "full": "Descubre Punta Cana con estilo con nuestras bicicletas eléctricas premium. Disfruta de una exploración sin esfuerzo de playas, senderos y atracciones locales con e-bikes de primera línea que cuentan con batería de larga duración y ergonomía confortable."
+    "premium": {
+      "luxeYacht": {
+        "name": "Yate de Lujo",
+        "short": "Alquiler de yate de lujo privado con tripulación",
+        "full": "Experimenta el máximo lujo con nuestro chárter privado de yate. Navega por las prístinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades. Disfruta de comidas gourmet, bebidas premium y actividades acuáticas exclusivas."
+      },
+      "luxeEBikes": {
+        "name": "Bicicletas Eléctricas de Lujo",
+        "short": "Bicicletas eléctricas premium para una exploración sin esfuerzo",
+        "full": "Descubre Punta Cana con estilo con nuestras bicicletas eléctricas premium. Disfruta de una exploración sin esfuerzo de playas, senderos y atracciones locales con e-bikes de primera línea que cuentan con batería de larga duración y ergonomía confortable."
+      },
+      "luxeGolfCart": {
+        "name": "Carrito de Golf de Lujo",
+        "short": "Carrito de golf premium con características extendidas",
+        "full": "Viaja con estilo con nuestros carritos de golf de lujo con asientos de cuero premium, batería de mayor autonomía y características mejoradas. Perfectos para explorar resorts y áreas locales con elegancia y comodidad."
+      },
+      "luxeYoga": {
+        "name": "Sesiones de Yoga de Lujo",
+        "short": "Yoga privado frente a la playa con amenidades premium",
+        "full": "Eleva tu camino de bienestar con nuestras exclusivas sesiones privadas de yoga realizadas en lugares impresionantes. Experimenta instrucción personalizada, colchonetas y equipos premium, y refrigerios orgánicos después de la sesión."
+      },
+      "luxeFitness": {
+        "name": "Sesiones de Fitness de Lujo",
+        "short": "Entrenamiento personal de élite con equipo especializado",
+        "full": "Transforma tu rutina de fitness con nuestras sesiones de entrenamiento de élite. Trabaja con entrenadores personales de primer nivel utilizando equipos premium y técnicas de vanguardia adaptadas específicamente a tus objetivos y nivel de condición física."
+      },
+      "luxeCulinary": {
+        "name": "Servicio Culinario de Lujo",
+        "short": "Experiencia de chef gourmet con ingredientes premium",
+        "full": "Disfruta de la experiencia gastronómica definitiva con nuestro servicio de chef gourmet. Disfruta de exquisitas comidas de varios platos preparadas con los mejores ingredientes locales e importados, combinadas con vinos premium y servidas en la comodidad de tu alojamiento."
+      },
+      "luxeMasseuse": {
+        "name": "Servicio de Masajes de Lujo",
+        "short": "Tratamientos de spa premium en tu alojamiento",
+        "full": "Relájate con nuestra experiencia de spa de lujo llevada directamente a tu alojamiento. Nuestros terapeutas de masaje de élite proporcionan tratamientos premium utilizando aceites orgánicos y técnicas de primer nivel, complementados con aromaterapia y música ambiental."
+      },
+      "luxeArrival": {
+        "name": "Llegada Lujosa - Servicio SUV",
+        "short": "Traslado al aeropuerto en SUV de lujo con amenidades premium",
+        "full": "Comienza tu experiencia de lujo desde el momento en que aterrizas con nuestro servicio premium de traslado al aeropuerto en SUV. Disfruta de asientos de cuero de lujo, control de clima, refrescos de cortesía y un chófer profesional listo para garantizar una llegada perfecta a tu destino."
+      }
     },
-    "luxeGolfCart": {
-      "name": "Carrito de Golf de Lujo",
-      "short": "Carrito de golf premium con características extendidas",
-      "full": "Viaja con estilo con nuestros carritos de golf de lujo con asientos de cuero premium, batería de mayor autonomía y características mejoradas. Perfectos para explorar resorts y áreas locales con elegancia y comodidad."
+    "hours": {
+      "one": "hora",
+      "multiple": "horas",
+      "duration": "Duración"
     },
-    "luxeYoga": {
-      "name": "Sesiones de Yoga de Lujo",
-      "short": "Yoga privado frente a la playa con amenidades premium",
-      "full": "Eleva tu camino de bienestar con nuestras exclusivas sesiones privadas de yoga realizadas en lugares impresionantes. Experimenta instrucción personalizada, colchonetas y equipos premium, y refrigerios orgánicos después de la sesión."
-    },
-    "luxeFitness": {
-      "name": "Sesiones de Fitness de Lujo",
-      "short": "Entrenamiento personal de élite con equipo especializado",
-      "full": "Transforma tu rutina de fitness con nuestras sesiones de entrenamiento de élite. Trabaja con entrenadores personales de primer nivel utilizando equipos premium y técnicas de vanguardia adaptadas específicamente a tus objetivos y nivel de condición física."
-    },
-    "luxeCulinary": {
-      "name": "Servicio Culinario de Lujo",
-      "short": "Experiencia de chef gourmet con ingredientes premium",
-      "full": "Disfruta de la experiencia gastronómica definitiva con nuestro servicio de chef gourmet. Disfruta de exquisitas comidas de varios platos preparadas con los mejores ingredientes locales e importados, combinadas con vinos premium y servidas en la comodidad de tu alojamiento."
-    },
-    "luxeMasseuse": {
-      "name": "Servicio de Masajes de Lujo",
-      "short": "Tratamientos de spa premium en tu alojamiento",
-      "full": "Relájate con nuestra experiencia de spa de lujo llevada directamente a tu alojamiento. Nuestros terapeutas de masaje de élite proporcionan tratamientos premium utilizando aceites orgánicos y técnicas de primer nivel, complementados con aromaterapia y música ambiental."
-    },
-    "luxeArrival": {
-      "name": "Llegada Lujosa - Servicio SUV",
-      "short": "Traslado al aeropuerto en SUV de lujo con amenidades premium",
-      "full": "Comienza tu experiencia de lujo desde el momento en que aterrizas con nuestro servicio premium de traslado al aeropuerto en SUV. Disfruta de asientos de cuero de lujo, control de clima, refrescos de cortesía y un chófer profesional listo para garantizar una llegada perfecta a tu destino."
-    }
+    "price": "Precio"
   },
   "customPackagePage": {
     "title": "Crea tu propio paquete",

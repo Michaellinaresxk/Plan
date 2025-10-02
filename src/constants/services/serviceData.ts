@@ -1496,88 +1496,88 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   },
 
   // Add additional premium services as needed
-  [SERVICE_IDS.LUXE_YOGA]: {
-    id: SERVICE_IDS.LUXE_YOGA,
-    titleKey: 'services.premium.luxeYoga.name',
-    descriptionKey: 'services.premium.luxeYoga.description',
-    fullDescriptionKey: 'services.premium.luxeYoga.full',
-    basePrice: 120,
-    priceUnit: 'services.priceUnits.perSession',
-    category: 'wellness',
-    packageType: ['premium'],
-    imageUrl:
-      'https://www.guardian.in/cdn/shop/articles/yoga-asans-for-weight-loss.jpg?v=1705486602&width=1000',
-    duration: 1.5,
-    bookingDuration: {
-      min: 1,
-      max: 7,
-      unit: 'hours',
-    },
-    options: {
-      yogaStyle: {
-        id: 'yogaStyle',
-        nameKey: 'services.luxeYoga.options.yogaStyle.title',
-        subOptions: {
-          hatha: {
-            id: 'hatha',
-            nameKey: 'services.luxeYoga.options.yogaStyle.options.hatha',
-            price: 0,
-          },
-          vinyasa: {
-            id: 'vinyasa',
-            nameKey: 'services.luxeYoga.options.yogaStyle.options.vinyasa',
-            price: 0,
-          },
-          aerial: {
-            id: 'aerial',
-            nameKey: 'services.luxeYoga.options.yogaStyle.options.aerial',
-            price: 50,
-          },
-          couples: {
-            id: 'couples',
-            nameKey: 'services.luxeYoga.options.yogaStyle.options.couples',
-            price: 80,
-          },
-        },
-      },
-      location: {
-        id: 'location',
-        nameKey: 'services.luxeYoga.options.location.title',
-        subOptions: {
-          beach: {
-            id: 'beach',
-            nameKey: 'services.luxeYoga.options.location.options.beach',
-            price: 30,
-          },
-          pool: {
-            id: 'pool',
-            nameKey: 'services.luxeYoga.options.location.options.pool',
-            price: 0,
-          },
-          indoors: {
-            id: 'indoors',
-            nameKey: 'services.luxeYoga.options.location.options.indoors',
-            price: 0,
-          },
-        },
-      },
-    },
-    specialRender: 'yoga',
-    includes: [
-      'services.luxeYoga.includes.1',
-      'services.luxeYoga.includes.2',
-      'services.luxeYoga.includes.3',
-    ],
-    relatedServices: [SERVICE_IDS.LUXE_FITNESS, SERVICE_IDS.LUXE_MASSEUSE],
-    tags: ['wellness', 'fitness', 'premium', 'relaxation'],
-    metaData: {
-      equipmentProvided: true,
-      languages: 'english,spanish,french',
-      experienceLevel: 'beginner,intermediate,advanced',
-      yogaStyles: ['hatha', 'vinyasa', 'power', 'aerial', 'meditation'],
-      refreshmentsIncluded: true,
-    },
-  },
+  // [SERVICE_IDS.LUXE_YOGA]: {
+  //   id: SERVICE_IDS.LUXE_YOGA,
+  //   titleKey: 'services.premium.luxeYoga.name',
+  //   descriptionKey: 'services.premium.luxeYoga.description',
+  //   fullDescriptionKey: 'services.premium.luxeYoga.full',
+  //   basePrice: 120,
+  //   priceUnit: 'services.priceUnits.perSession',
+  //   category: 'wellness',
+  //   packageType: ['premium'],
+  //   imageUrl:
+  //     'https://www.guardian.in/cdn/shop/articles/yoga-asans-for-weight-loss.jpg?v=1705486602&width=1000',
+  //   duration: 1.5,
+  //   bookingDuration: {
+  //     min: 1,
+  //     max: 7,
+  //     unit: 'hours',
+  //   },
+  //   options: {
+  //     yogaStyle: {
+  //       id: 'yogaStyle',
+  //       nameKey: 'services.luxeYoga.options.yogaStyle.title',
+  //       subOptions: {
+  //         hatha: {
+  //           id: 'hatha',
+  //           nameKey: 'services.luxeYoga.options.yogaStyle.options.hatha',
+  //           price: 0,
+  //         },
+  //         vinyasa: {
+  //           id: 'vinyasa',
+  //           nameKey: 'services.luxeYoga.options.yogaStyle.options.vinyasa',
+  //           price: 0,
+  //         },
+  //         aerial: {
+  //           id: 'aerial',
+  //           nameKey: 'services.luxeYoga.options.yogaStyle.options.aerial',
+  //           price: 50,
+  //         },
+  //         couples: {
+  //           id: 'couples',
+  //           nameKey: 'services.luxeYoga.options.yogaStyle.options.couples',
+  //           price: 80,
+  //         },
+  //       },
+  //     },
+  //     location: {
+  //       id: 'location',
+  //       nameKey: 'services.luxeYoga.options.location.title',
+  //       subOptions: {
+  //         beach: {
+  //           id: 'beach',
+  //           nameKey: 'services.luxeYoga.options.location.options.beach',
+  //           price: 30,
+  //         },
+  //         pool: {
+  //           id: 'pool',
+  //           nameKey: 'services.luxeYoga.options.location.options.pool',
+  //           price: 0,
+  //         },
+  //         indoors: {
+  //           id: 'indoors',
+  //           nameKey: 'services.luxeYoga.options.location.options.indoors',
+  //           price: 0,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   specialRender: 'yoga',
+  //   includes: [
+  //     'services.luxeYoga.includes.1',
+  //     'services.luxeYoga.includes.2',
+  //     'services.luxeYoga.includes.3',
+  //   ],
+  //   relatedServices: [SERVICE_IDS.LUXE_FITNESS, SERVICE_IDS.LUXE_MASSEUSE],
+  //   tags: ['wellness', 'fitness', 'premium', 'relaxation'],
+  //   metaData: {
+  //     equipmentProvided: true,
+  //     languages: 'english,spanish,french',
+  //     experienceLevel: 'beginner,intermediate,advanced',
+  //     yogaStyles: ['hatha', 'vinyasa', 'power', 'aerial', 'meditation'],
+  //     refreshmentsIncluded: true,
+  //   },
+  // },
 
   [SERVICE_IDS.LUX_CATAMARAN]: {
     id: SERVICE_IDS.LUX_CATAMARAN,

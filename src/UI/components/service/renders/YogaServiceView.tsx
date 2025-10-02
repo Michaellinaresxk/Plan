@@ -13,23 +13,15 @@ import {
   Leaf,
   Shield,
   Clock,
-  CalendarDays,
   Heart,
-  Award,
   Sparkles,
-  Star,
   ArrowRight,
-  Instagram,
-  Sunrise,
   Wind,
   Waves,
-  Mountain,
   CheckCircle,
   Play,
   Quote,
-  Zap,
   Moon,
-  Sun,
   Info,
   XCircle,
   Gift,
@@ -111,36 +103,6 @@ const LOCATIONS = [
   },
 ];
 
-const BENEFITS = [
-  {
-    icon: <Heart className='w-6 h-6' />,
-    title: 'Mind-Body Connection',
-    description:
-      'Develop awareness and harmony between physical movement and mental clarity',
-    color: 'from-rose-500 to-pink-500',
-  },
-  {
-    icon: <Leaf className='w-6 h-6' />,
-    title: 'Flexibility & Strength',
-    description:
-      'Improve range of motion while building functional strength and stability',
-    color: 'from-green-500 to-emerald-500',
-  },
-  {
-    icon: <Wind className='w-6 h-6' />,
-    title: 'Stress Relief',
-    description:
-      'Release tension and find inner peace through breathwork and meditation',
-    color: 'from-blue-500 to-cyan-500',
-  },
-  {
-    icon: <Sunrise className='w-6 h-6' />,
-    title: 'Energy & Vitality',
-    description: 'Boost natural energy levels and enhance overall well-being',
-    color: 'from-amber-500 to-orange-500',
-  },
-];
-
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -152,15 +114,7 @@ const slideIn = {
   visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
 };
 
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } },
-};
-
-const YogaServiceView: React.FC<YogaServiceViewProps> = ({
-  service,
-  serviceData,
-  viewContext,
-}) => {
+const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
   const { t } = useTranslation();
   const { bookService } = useBooking();
   const [isModalOpen, setIsModalOpen] = useState(false);
