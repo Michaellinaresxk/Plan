@@ -144,10 +144,15 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     viewContext === 'premium-view' || packageType === 'premium';
 
   const getTranslationPath = (serviceId: string) => {
-    const type = serviceId.startsWith('luxe-') ? 'premium' : 'standard';
-    let key = serviceId.replace(/^luxe-/, '');
-    key = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-    return `services.${type}.${key}`;
+    // Convertir ID completo a camelCase (luxe-yacht → luxeYacht)
+    const camelCaseKey = serviceId.replace(/-([a-z])/g, (_, letter) =>
+      letter.toUpperCase()
+    );
+
+    // Detectar tipo: si empieza con 'luxe' es premium, sino standard
+    const type = camelCaseKey.startsWith('luxe') ? 'premium' : 'standard';
+
+    return `services.${type}.${camelCaseKey}`;
   };
 
   const translationPath = getTranslationPath(service.id);
@@ -277,7 +282,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <h3
                   className={`${sizeConfig.title} font-bold mb-3 text-white tracking-tight group-hover:text-amber-100 transition-colors duration-300`}
                 >
-                  {t('services.premium.luxeYacht.name')}
+                  {t(`${translationPath}.name`, { fallback: service.name })}
                 </h3>
 
                 {/* Service Details - Compact */}
@@ -285,7 +290,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   <div className='flex items-center bg-amber-500/10 rounded-full px-3 py-1.5 border border-amber-500/20'>
                     <Clock className='h-3 w-3 mr-1.5 text-amber-400' />
                     <span className='text-xs font-semibold text-amber-300'>
-                      {service.duration}h
+                      {service.duration}
                     </span>
                   </div>
                   <div className='flex items-center bg-amber-500/10 rounded-full px-3 py-1.5 border border-amber-500/20'>
@@ -300,7 +305,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <p
                   className={`mb-5 text-gray-300 leading-relaxed line-clamp-2 ${sizeConfig.description}`}
                 >
-                  {t('services.premium.luxeYacht.short')}
+                  {t(`${translationPath}.short`, {
+                    fallback: service.description,
+                  })}
                 </p>
 
                 {/* Action Buttons - Compact */}
