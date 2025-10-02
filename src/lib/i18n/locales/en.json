@@ -98,7 +98,7 @@
   "home": {
     "hero": {
       "title": "Lux Punta Cana",
-      "subtitle": "Elevate your experience with Premium services",
+      "subtitle": "Elevate your experience with Xclusive services",
       "subtitle2": "Unique moments • Eternal memories",
       "exploreButton": "Explore Packages",
       "learnMoreButton": "Learn More"
@@ -164,7 +164,7 @@
           "description": "Discover our complete collection of lux experiences, designed to create unique moments in the paradise of Punta Cana."
         },
         "packageTypes": {
-          "premium": "Premium",
+          "premium": "Xclusive",
           "standard": "Standard"
         },
         "emptyState": {
@@ -248,7 +248,7 @@
           "title": "Choose Your",
           "titleHighlight": "Adventure",
           "subtitle": "Four unique experiences, each designed to create unforgettable Caribbean memories.",
-          "premium": "Premium",
+          "premium": "Xclusive",
           "perPerson": "/person"
         },
         "featuresComparison": {
@@ -332,7 +332,7 @@
         },
         "restrictions": {
           "notRecommendedPregnant": "Not recommended for pregnant women",
-          "waterSlideAge": "Children under 8 cannot use the water slide (Premium options)",
+          "waterSlideAge": "Children under 8 cannot use the water slide (Xclusive options)",
           "minimumAge": "Minimum age: No restrictions (babies welcome)",
           "supervisionRequired": "Children must be supervised at all times",
           "weatherDependent": "Weather dependent - may be rescheduled"
@@ -458,13 +458,13 @@
               }
             },
             "premium": {
-              "name": "Premium with Water Slide",
-              "badge": "Premium",
+              "name": "Xclusive with Water Slide",
+              "badge": "Xclusive",
               "waterSlideBadge": "Water Slide",
               "features": {
                 "allClassic": "All Classic Features",
                 "waterSlide": "Water Slide",
-                "premiumBar": "Premium Bar",
+                "premiumBar": "Xclusive Bar",
                 "vipService": "VIP Service",
                 "photoPackage": "Photo Package"
               }
@@ -585,13 +585,13 @@
             }
           },
           "premium": {
-            "name": "Premium with Water Slide",
-            "badge": "Premium",
+            "name": "Xclusive with Water Slide",
+            "badge": "Xclusive",
             "description": "Ultimate luxury experience with water slide, premium amenities, and VIP treatment for special celebrations.",
             "features": {
               "allClassic": "All Classic Features Included",
               "waterSlide": "Thrilling Water Slide",
-              "premiumBar": "Premium Bar with Craft Cocktails",
+              "premiumBar": "Xclusive Bar with Craft Cocktails",
               "vipService": "VIP Service & Priority Boarding",
               "photoPackage": "Professional Photo Package",
               "exclusiveBeach": "Exclusive Beach Areas",
@@ -647,7 +647,7 @@
           "title": "Tour Restrictions & Important Information",
           "items": {
             "pregnant": "Not recommended for pregnant women",
-            "waterSlide": "Children under 8 cannot use the water slide (Premium option)",
+            "waterSlide": "Children under 8 cannot use the water slide (Xclusive option)",
             "minAge": "Minimum age: No restrictions (babies welcome)",
             "supervision": "Children must be supervised at all times",
             "weather": "Weather dependent - may be rescheduled"
@@ -747,7 +747,7 @@
           },
           "polaris": {
             "name": "Polaris RZR",
-            "description": "Premium off-road experience",
+            "description": "Xclusive off-road experience",
             "features": {
               "performance": "High performance",
               "suspension": "Advanced suspension",
@@ -756,7 +756,7 @@
           },
           "polarisFamiliar": {
             "name": "Polaris Familiar",
-            "description": "Premium off-road experience",
+            "description": "Xclusive off-road experience",
             "features": {
               "performance": "High performance",
               "suspension": "Advanced suspension",
@@ -934,7 +934,7 @@
           "features": {
             "ecoFriendly": "Eco-Friendly",
             "guides": "Certified Guides",
-            "equipment": "Premium Equipment"
+            "equipment": "Xclusive Equipment"
           },
           "ctaButton": "Book Your ATV Adventure"
         },
@@ -1062,7 +1062,7 @@
           },
           "polaris": {
             "name": "Polaris RZR",
-            "description": "Premium off-road experience"
+            "description": "Xclusive off-road experience"
           },
           "polarisFamiliar": {
             "name": "Polaris Familiar",
@@ -1137,12 +1137,12 @@
       "horsebackRidingServiceView": {
         "hero": {
           "title": "Horseback Riding",
-          "subtitle": "Playa Macao",
+          "subtitle": "Macao Beach",
           "description": "Experience the magic of riding along pristine beaches. Perfect for all skill levels.",
-          "bookButton": "Reserva Ahora",
-          "rating": "4.9 Calificación",
-          "duration": "3 Horas",
-          "level": "Todos los niveles"
+          "bookButton": "Book Now",
+          "rating": "4.9",
+          "duration": "3 Hours",
+          "level": "All Levels"
         },
         "quickInfo": {
           "cards": {
@@ -1458,7 +1458,7 @@
         "gallery": {
           "title": "Experience Paradise",
           "subtitle": "Where luxury meets adventure",
-          "image1Title": "Beach Adventures",
+          "image1Title": "The official transportation of the good life",
           "image2Title": "Resort Exploration",
           "image3Title": "Family Adventures",
           "image4Title": "Sunset Rides"
@@ -1468,7 +1468,7 @@
           "subtitle": "Book your luxury golf cart experience today",
           "cta": "Get Started",
           "feature1": "Free Delivery",
-          "feature2": "Premium Service",
+          "feature2": "Xclusive Service",
           "feature3": "24/7 Support"
         },
         "quote": {
@@ -1622,9 +1622,9 @@
       },
       "babysitterView": {
         "hero": {
-          "premiumBadge": "Premium Experience",
+          "premiumBadge": "Xclusive Experience",
           "standardBadge": "Trusted Childcare",
-          "premiumTitle": "Premium",
+          "premiumTitle": "Xclusive",
           "premiumTitleHighlight": "In-Villa",
           "premiumTitleSuffix": "Childcare Services",
           "standardTitle": "Professional",
@@ -2139,7 +2139,7 @@
         "title": "Masssage Experience",
         "short": "yeafh",
         "experience": "Experience",
-        "premiumExperience": "Premium Massage Experience",
+        "premiumExperience": "Xclusive Massage Experience",
         "professionalExperience": "Professional Massage Experience",
         "sessionDuration": "Session Duration",
         "massageTypes": "Massage Types",
@@ -2305,14 +2305,14 @@
           "description": "Discover the world's most exclusive yacht collection. Where every journey becomes an unforgettable masterpiece."
         },
         "yachtGrid": {
-          "badgeLabel": "Premium Fleet",
+          "badgeLabel": "Xclusive Fleet",
           "titlePrefix": "Caribbean",
           "titleSuffix": "Luxury",
           "description": "Handpicked yachts for the ultimate Caribbean experience",
           "filterAll": "All Yachts",
           "filterCatamaran": "Catamaran",
           "filterLuxury": "Luxury",
-          "cardPremiumBadge": "Premium"
+          "cardPremiumBadge": "Xclusive"
         },
         "gallery": {
           "badgeLabel": "Experience Gallery",
@@ -2338,7 +2338,7 @@
           "jacketTitle": "Light Jacket",
           "jacketDesc": "For evening ocean breeze",
           "weProvideTitle": "We Provide Everything Else",
-          "weProvideDesc": "Premium towels, snorkeling equipment, life jackets, fresh water showers, restrooms, refreshments, and climate-controlled comfort. Just bring yourself and get ready for an unforgettable Caribbean adventure."
+          "weProvideDesc": "Xclusive towels, snorkeling equipment, life jackets, fresh water showers, restrooms, refreshments, and climate-controlled comfort. Just bring yourself and get ready for an unforgettable Caribbean adventure."
         },
         "privateService": {
           "badgeLabel": "Private Service",
@@ -2378,7 +2378,7 @@
           "serviceFood": "Gourmet Catering",
           "serviceDecoration": "Event Decoration",
           "serviceEntertainment": "Live Entertainment",
-          "serviceRefreshments": "Premium Beverages",
+          "serviceRefreshments": "Xclusive Beverages",
           "paymentTitle": "Secure Payment",
           "paymentDesc": "Payment details and methods will be discussed and confirmed with our team after availability is verified."
         },
@@ -2508,12 +2508,12 @@
 
       "luxeEBikes": {
         "name": "Lux E-Bikes",
-        "short": "Premium electric bikes for effortless exploration",
+        "short": "Xclusive electric bikes for effortless exploration",
         "full": "Discover Punta Cana in style with our premium electric bikes. Enjoy effortless exploration of beaches, trails, and local attractions with top-of-the-line e-bikes featuring extended battery life and comfortable ergonomics."
       },
       "luxeGolfCart": {
         "name": "Lux Golf Cart",
-        "short": "Premium golf cart with extended features",
+        "short": "Xclusive golf cart with extended features",
         "full": "Travel in style with our luxury golf carts featuring premium leather seats, extended battery range, and upgraded features. Perfect for exploring resorts and local areas with elegance and comfort."
       },
       "luxeYoga": {
@@ -2533,7 +2533,7 @@
       },
       "luxeMasseuse": {
         "name": "Lux Masseuse Service",
-        "short": "Premium spa treatments in your accommodation",
+        "short": "Xclusive spa treatments in your accommodation",
         "full": "Unwind with our luxury spa experience brought directly to your accommodation. Our elite massage therapists provide premium treatments using organic oils and top-tier techniques, complete with aromatherapy and ambient music."
       },
       "luxeArrival": {
@@ -2636,7 +2636,7 @@
 
   "contact": {
     "headerChip": "We are here to help you",
-    "headerTitle": "Contact Our Premium Team",
+    "headerTitle": "Contact Our Xclusive Team",
     "headerSubTitle": "Our vacation experience specialists are ready to assist you and make your stay in Punta Cana an unforgettable memory an unforgettable memory.",
     "title": "Contact Us",
     "subtitle": "We're here to answer your questions and help you plan your perfect stay in Punta Cana.",
@@ -2725,11 +2725,11 @@
       "list2Text": "Our residences are carefully selected for their privileged location, design and premium amenities.",
       "list3": "Local Expert Team",
       "list3Text": "Our team of local professionals knows Punta Cana inside out and is available 24/7 to guarantee your satisfaction.",
-      "list4": "Premium Concierge Services",
+      "list4": "Xclusive Concierge Services",
       "list4Text": "From private chefs to exclusive excursions, our concierge team takes care of every detail.",
       "answer": "Answer",
       "answerText": "Always available",
-      "answer2": "Locations Premium",
+      "answer2": "Locations Xclusive",
       "answer2Text": "The best areas"
     }
   },
@@ -2782,7 +2782,7 @@
     "subTitle": "We guarantee the perfect vacation experience with essential services that transform your stay in Punta Cana into unforgettable memories, where adventure and relaxation are lived intensely.",
     "rating": "rating",
     "rastingText": "Standard Experience",
-    "btn1": "Explore Premium Services",
+    "btn1": "Explore Xclusive Services",
     "btn2": "Customize Your Package",
     "tab1": "Overview",
     "tab2": "Included Services",
@@ -2803,7 +2803,7 @@
       "title": "Ready for Your Dominican Adventure?",
       "subtitle": "Book your Lux Punta Cana package now and get ready for an unforgettable Caribbean experience with all the essential services included.",
       "btn1": "Customize Your Package",
-      "btn2": "View Premium Package"
+      "btn2": "View Xclusive Package"
     }
   },
   "premiumPage": {

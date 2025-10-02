@@ -1023,7 +1023,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     category: 'leisure',
     packageType: ['standard'],
     imageUrl:
-      'https://www.ymcalouisville.org/sites/default/files/styles/medium_landscape_4x3/public/2021-11/baby-sitter-training-2.jpg?h=140c1f52&itok=Xyr5JUxS',
+      'https://res.cloudinary.com/ddg92xar5/image/upload/v1759444117/44_cwmyje.jpg',
     duration: 1,
     specialRender: 'babysitter',
     bookingDuration: {
@@ -1581,8 +1581,8 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
 
   [SERVICE_IDS.LUX_CATAMARAN]: {
     id: SERVICE_IDS.LUX_CATAMARAN,
-    titleKey: 'services.standard.privateCatamaran.name',
-    descriptionKey: 'services.standard.privateCatamaran.short',
+    titleKey: 'services.premium.privateCatamaran.name',
+    descriptionKey: 'services.premium.privateCatamaran.short',
     fullDescriptionKey: 'services.standard.privateCatamaran.full',
     basePrice: 450,
     priceUnit: 'services.priceUnits.perTrip',

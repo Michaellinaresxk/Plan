@@ -40,20 +40,28 @@ interface BabysitterServiceViewProps {
 
 const GALLERY_IMAGES = [
   {
-    src: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=2040&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1759442426/6_rlq0uf.jpg',
     alt: 'Art & crafts time',
   },
   {
-    src: 'https://plus.unsplash.com/premium_photo-1661727647956-7d7d3e8ed550?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1759442423/7_jtfnid.jpg',
     alt: 'Outdoor exploration',
   },
   {
-    src: 'https://images.unsplash.com/photo-1587323655395-b1c77a12c89a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1759442432/3_wxyhdf.jpg',
     alt: 'Storytime favorites',
   },
   {
-    src: 'https://parentscanada.com/wp-content/uploads/2022/11/teenage-babysitter.jpg',
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1759442428/5_otojjf.jpg',
     alt: 'Learning through play',
+  },
+  {
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1759442436/1_ochogf.jpg',
+    alt: 'Happy kids',
+  },
+  {
+    src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1759442422/8_i1rwgs.jpg',
+    alt: 'Having fun together',
   },
 ];
 
@@ -113,7 +121,7 @@ const BabysitterServiceView: React.FC<BabysitterServiceViewProps> = ({
       >
         <div className='absolute top-0 right-0 w-full h-full opacity-10'>
           <Image
-            src='https://integrity-asia.com/wp-content/uploads/indoor-image-young-female-babysitter-sitting-dining-table-spacious-living-room-teaching-children-how-make-origami-three-kids-making-paper-planes-together-with-their-mother-home.jpg'
+            src='https://res.cloudinary.com/ddg92xar5/image/upload/v1759444117/44_cwmyje.jpg'
             alt='Children playing'
             fill
             className='object-cover'

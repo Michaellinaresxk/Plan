@@ -108,7 +108,7 @@
   "home": {
     "hero": {
       "title": "Lux Punta Cana",
-      "subtitle": "Eleva tu experiencia con servicios Premium",
+      "subtitle": "Eleva tu experiencia con servicios Exclusivos",
       "subtitle2": "Momentos únicos • Recuerdos eternos",
       "exploreButton": "Explorar Paquetes",
       "learnMoreButton": "Conocer Más"
@@ -161,7 +161,7 @@
           "description": "Descubre nuestra colección completa de experiencias de lujo, diseñadas para crear momentos únicos en el paraíso de Punta Cana"
         },
         "packageTypes": {
-          "premium": "Premium",
+          "premium": "Exclusivo",
           "standard": "Standard"
         },
         "emptyState": {
@@ -245,7 +245,7 @@
           "title": "Elige Tu",
           "titleHighlight": "Aventura",
           "subtitle": "Cuatro experiencias únicas, cada una diseñada para crear recuerdos caribeños inolvidables.",
-          "premium": "Premium",
+          "premium": "Exclusivo",
           "perPerson": "/persona"
         },
         "featuresComparison": {
@@ -329,7 +329,7 @@
         },
         "restrictions": {
           "notRecommendedPregnant": "No recomendado para mujeres embarazadas",
-          "waterSlideAge": "Niños menores de 8 años no pueden usar el tobogán de agua (opciones Premium)",
+          "waterSlideAge": "Niños menores de 8 años no pueden usar el tobogán de agua (opciones Exclusivas)",
           "minimumAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
           "supervisionRequired": "Los niños deben estar supervisados en todo momento",
           "weatherDependent": "Dependiente del clima - puede ser reprogramado"
@@ -427,7 +427,7 @@
         "title": "Experiencia Wellness",
         "short": "yea",
         "experience": "Experience",
-        "premiumExperience": "Premium Massage Experience",
+        "premiumExperience": "Xclusive Massage Experience",
         "professionalExperience": "Professional Massage Experience",
         "sessionDuration": "Session Duration",
         "massageTypes": "Massage Types",
@@ -891,7 +891,7 @@
         "gallery": {
           "title": "Experimenta el Paraíso",
           "subtitle": "Donde el lujo se encuentra con la aventura",
-          "image1Title": "Aventuras en la Playa",
+          "image1Title": "El transporte oficial de la buena vida",
           "image2Title": "Exploración del Resort",
           "image3Title": "Aventuras Familiares",
           "image4Title": "Paseos al Atardecer"
@@ -901,7 +901,7 @@
           "subtitle": "Reserva tu experiencia de lujo en carrito de golf hoy",
           "cta": "Comenzar",
           "feature1": "Entrega Gratis",
-          "feature2": "Servicio Premium",
+          "feature2": "Servicio Xclusive",
           "feature3": "Soporte 24/7"
         },
         "quote": {
@@ -1053,11 +1053,46 @@
           "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
         }
       },
+      "babysitter": {
+        "chip": "Professional Childcare",
+        "headerOption1": "Certified & Background-Checked",
+        "headerOption2": "Age-Appropriate Activities",
+        "headerOption3": "Flexible Scheduling",
+        "name": "Babysitter",
+        "short": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort",
+        "full": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort. Whether you need a few hours of evening respite or full-day childcare, our professionals engage children with safe, age-appropriate activities and attentive supervision.",
+        "slogan": "ENJOY WORRY-FREE VACATION TIME",
+        "ageRange": "Age Range",
+        "ageRangeAnswer": "From 6 months - 12 years",
+        "availability": "Availability:",
+        "availabilityAnswer": "Day, afternoon and evening; night service on request.",
+        "safety": "Estándares de Seguridad:",
+        "safetyAnswer": "CPR-trained, first-aid certified",
+        "subTitle1": "ENJOY WORRY-FREE VACATION TIME",
+        "option1": "Evening Babysitting",
+        "option2": "Daytime Supervision",
+        "option3": "Group Care (siblings)",
+        "option4": "Overnight Sitting",
+        "CTAHeaderSubTitle": "Your Peace of Mind. Their Happiness.",
+        "CTATitle": "Ready to Enjoy Your Time While Your Children are in Great Hands?",
+        "CTASubTitle": "Schedule professional, reliable childcare and treat yourself to worry-free time away",
+        "faqsTitle": "Frequently Asked Questions",
+        "faqQuestion1": "What if I need to extend the babysitting time?",
+        "faqAnswer1": "Extensions are possible subject to the babysitter is availability. Please notify us as soon as possible, and we will confirm with your assigned sitter.",
+        "faqQuestion2": "Can I meet the babysitter before booking?",
+        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
+        "faqQuestion3": "What happens if my child gets sick?",
+        "faqAnswer3": "Our babysitters are trained to handle minor health concerns. For emergencies, they will contact you immediately and follow predetermined emergency protocols.",
+        "testimonialTitle": "What Parents Say",
+        "testimonial1": "'Our children absolutely adored their babysitter! She was punctual, professional, and had an amazing rapport with the kids. We could enjoy our evening knowing they were in safe, caring hands.'",
+        "testimonial2": "The level of professionalism was outstanding. Our babysitter came prepared with age-appropriate activities that kept our children engaged throughout the evening.",
+        "testimonial3": "This is the only babysitting service I trust with my little ones. The screening process for caregivers is thorough, and the sitter assigned to us was exceptional."
+      },
       "babysitterView": {
         "hero": {
-          "premiumBadge": "Experiencia Premium",
+          "premiumBadge": "Experiencia Xclusivo",
           "standardBadge": "Cuidado Infantil Confiable",
-          "premiumTitle": "Premium",
+          "premiumTitle": "Xclusivo",
           "premiumTitleHighlight": "En Villa",
           "premiumTitleSuffix": "Servicios de Cuidado Infantil",
           "standardTitle": "Niñeras",
@@ -1240,13 +1275,13 @@
               }
             },
             "premium": {
-              "name": "Premium con Tobogán Acuático",
-              "badge": "Premium",
+              "name": "Exclusivo con Tobogán Acuático",
+              "badge": "Exclusivo",
               "waterSlideBadge": "Tobogán Acuático",
               "features": {
                 "allClassic": "Todas las Características Clásicas",
                 "waterSlide": "Tobogán Acuático",
-                "premiumBar": "Barra Premium",
+                "premiumBar": "Barra Exclusiva",
                 "vipService": "Servicio VIP",
                 "photoPackage": "Paquete de Fotos"
               }
@@ -1366,13 +1401,13 @@
             }
           },
           "premium": {
-            "name": "Premium con Tobogán Acuático",
-            "badge": "Premium",
+            "name": "Exclusivo con Tobogán Acuático",
+            "badge": "Exclusivo",
             "description": "Experiencia de lujo definitiva con tobogán acuático, comodidades premium y tratamiento VIP para celebraciones especiales.",
             "features": {
               "allClassic": "Todas las Características Clásicas Incluidas",
               "waterSlide": "Tobogán Acuático Emocionante",
-              "premiumBar": "Barra Premium con Cócteles Artesanales",
+              "premiumBar": "Barra Exclusivo con Cócteles Artesanales",
               "vipService": "Servicio VIP y Embarque Prioritario",
               "photoPackage": "Paquete Fotográfico Profesional",
               "exclusiveBeach": "Áreas de Playa Exclusivas",
@@ -1428,7 +1463,7 @@
           "title": "Restricciones del Tour e Información Importante",
           "items": {
             "pregnant": "No recomendado para mujeres embarazadas",
-            "waterSlide": "Niños menores de 8 años no pueden usar el tobogán acuático (opción Premium)",
+            "waterSlide": "Niños menores de 8 años no pueden usar el tobogán acuático (opción Exclusiva)",
             "minAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
             "supervision": "Los niños deben estar supervisados en todo momento",
             "weather": "Dependiente del clima - puede reprogramarse"
@@ -2287,14 +2322,14 @@
           "description": "Descubre la colección de yates más exclusiva del mundo. Donde cada viaje se convierte en una obra maestra inolvidable."
         },
         "yachtGrid": {
-          "badgeLabel": "Flota Premium",
+          "badgeLabel": "Flota Exclusivo",
           "titlePrefix": "Lujo",
           "titleSuffix": "Caribeño",
           "description": "Yates seleccionados para la mejor experiencia caribeña",
           "filterAll": "Todos los Yates",
           "filterCatamaran": "Catamarán",
           "filterLuxury": "Lujo",
-          "cardPremiumBadge": "Premium"
+          "cardPremiumBadge": "Exclusivo"
         },
         "gallery": {
           "badgeLabel": "Galería de Experiencias",
@@ -2360,7 +2395,7 @@
           "serviceFood": "Catering Gourmet",
           "serviceDecoration": "Decoración de Eventos",
           "serviceEntertainment": "Entretenimiento en Vivo",
-          "serviceRefreshments": "Bebidas Premium",
+          "serviceRefreshments": "Bebidas Exclusivas",
           "paymentTitle": "Pago Seguro",
           "paymentDesc": "Los detalles y métodos de pago se discutirán y confirmarán con nuestro equipo después de verificar la disponibilidad."
         },
@@ -2617,7 +2652,7 @@
   },
   "contact": {
     "headerChip": "Estamos aquí para ayudarle",
-    "headerTitle": "Contacte con Nuestro Equipo Premium",
+    "headerTitle": "Contacte con Nuestro Equipo Exclusivo",
     "headerSubTitle": "Nuestros especialistas en experiencias vacacionales están listos para asistirle y convertir su estancia en Punta Cana en un recuerdo inolvidable.",
     "multipleChanelChip": "Múltiples Canales",
     "multipleChanelTitle": "Cómo Puede Contactarnos",
@@ -2705,11 +2740,11 @@
       "list2Text": "Nuestras residencias son cuidadosamente seleccionadas por su ubicación privilegiada, diseño y comodidades premium.",
       "list3": "Equipo Local Experto",
       "list3Text": "Nuestro equipo de profesionales locales conoce Punta Cana a la perfección y está disponible 24/7 para garantizar su satisfacción.",
-      "list4": "Servicios de Concierge Premium",
+      "list4": "Servicios de Concierge Exclusivos",
       "list4Text": "Desde chefs privados hasta excursiones exclusivas, nuestro equipo de concierge se encarga de todos los detalles.",
       "answer": "Respuesta",
       "answerText": "Siempre disponibles",
-      "answer2": "Ubicaciones Premium",
+      "answer2": "Ubicaciones Exclusivas",
       "answer2Text": " Las mejores zonas"
     }
   },
@@ -2762,7 +2797,7 @@
     "subTitle": "Te garantizamos la experiencia vacacional perfecta: servicios esenciales que transforman tu estancia en Punta Cana en recuerdos inolvidables, donde la aventura y la relajación se viven intensamente.",
     "rating": "Valoración",
     "rastingText": "Experiencia estándar",
-    "btn1": "Explorar los servicios Premium",
+    "btn1": "Explorar los servicios Exclusivo",
     "btn2": "Personalice su paquete",
     "tab1": "Panorama general",
     "tab2": "Servicios incluidos",
@@ -2783,7 +2818,7 @@
       "title": "¿Listo para su aventura dominicana?",
       "subtitle": "Reserve ahora su paquete Lux Punta Cana y prepárese para vivir una experiencia caribeña inolvidable con todos los servicios esenciales incluidos.",
       "btn1": "Personaliza tu paquete",
-      "btn2": "Ver Paquete Premium"
+      "btn2": "Ver Paquete Exclusivo"
     }
   },
   "premiumPage": {
@@ -2824,7 +2859,7 @@
       }
     },
     "cta": {
-      "backgroundImageAlt": "Atardecer de Yate de Lujo",
+      "backgroundImageAlt": "Atardecer en Yate de Lujo",
       "title": "Experimenta el Lujo Definitivo",
       "description": "Reserva tu paquete Lux Punta Cana ahora y disfruta de la experiencia caribeña más exclusiva con servicio personalizado y comodidades premium.",
       "contactButton": "Contactar Conserje"
