@@ -28,7 +28,8 @@
       "slogan": "it is the ability to touch the soul and create connections that endure.",
       "experience": "Years of Experience",
       "happyClients": "Happy Clients",
-      "exclusiveServices": "Xclusive Services"
+      "exclusiveServices": "Xclusive Services",
+      "xclusive": "Xclusive"
     },
     "gallery": {
       "title": "Our Luxury Gallery",
@@ -1987,7 +1988,7 @@
       },
       "privateCatamaran": {
         "name": "Catamaran Experience",
-        "short": "Experiencias culinarias personalizadas en tu alojamiento",
+        "short": "Enjoy stunning landscapes, crystal-clear waters, and the tranquility of sailing along the coast of Punta Cana.",
         "full": "Deleita tu paladar con creaciones gourmet personalizadas por un chef privado en tu villa, apartamento o yate. Nuestro equipo elabora menús a tu medida, usando ingredientes frescos y sabores locales para convertir cada comida en un momento inolvidable. Reserva tu chef privado hoy y disfruta de una experiencia culinaria única en Punta Cana."
       },
       "customDecorations": {
@@ -2123,7 +2124,7 @@
     "premium": {
       "luxeYacht": {
         "name": "Lux Yacht",
-        "short": "Private luxury yacht charter with crew",
+        "short": "Cruise the pristine Caribbean waters with a professional crew catering to your every need",
         "full": "Experience ultimate luxury with our private yacht charter. Cruise the pristine Caribbean waters with a professional crew catering to your every need. Indulge in gourmet meals, premium beverages, and exclusive water activities."
       },
       "luxeEBikes": {

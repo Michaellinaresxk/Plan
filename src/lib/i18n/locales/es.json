@@ -28,7 +28,8 @@
       "slogan": "es la capacidad de tocar el alma y crear conexiones que perduren.",
       "experience": "Años de Experiencia",
       "happyClients": "Clientes Felices",
-      "exclusiveServices": "Servicios Ecxclusivos"
+      "exclusiveServices": "Servicios Ecxclusivos",
+      "xclusive": "Exclusivo"
     },
     "gallery": {
       "title": "Galeria de Experiencias",
@@ -276,7 +277,7 @@
       },
       "privateCatamaran": {
         "name": "Private Catamaran",
-        "short": "Experiencias culinarias personalizadas en tu alojamiento",
+        "short": "Disfrute de paisajes impresionantes, aguas cristalinas y la tranquilidad de navegar por la costa de Punta Cana.",
         "full": "Deleita tu paladar con creaciones gourmet personalizadas por un chef privado en tu villa, apartamento o yate. Nuestro equipo elabora menús a tu medida, usando ingredientes frescos y sabores locales para convertir cada comida en un momento inolvidable. Reserva tu chef privado hoy y disfruta de una experiencia culinaria única en Punta Cana."
       },
       "standardMassage": {
@@ -2289,8 +2290,8 @@
     "premium": {
       "luxeYacht": {
         "name": "Yate de Lujo",
-        "short": "Alquiler de yate de lujo privado con tripulación",
-        "full": "Experimenta el máximo lujo con nuestro chárter privado de yate. Navega por las prístinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades. Disfruta de comidas gourmet, bebidas premium y actividades acuáticas exclusivas."
+        "short": "Navega por las cristalinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades.",
+        "full": "Experimenta el máximo lujo con nuestro chárter privado de yate. Navega por las cristalinas aguas del Caribe con una tripulación profesional que atiende todas tus necesidades. Disfruta de comidas gourmet, bebidas premium y actividades acuáticas exclusivas."
       },
       "luxeEBikes": {
         "name": "Bicicletas Eléctricas de Lujo",

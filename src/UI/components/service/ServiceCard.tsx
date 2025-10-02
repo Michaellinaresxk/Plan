@@ -199,7 +199,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                   <div className='flex items-center px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40'>
                     <Crown className='text-amber-400 mr-1.5 h-3 w-3' />
                     <span className='text-xs font-bold uppercase tracking-wider text-amber-300'>
-                      Premium
+                      {t('common.mainText.xclusive')}
                     </span>
                   </div>
                 </motion.div>
@@ -277,7 +277,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <h3
                   className={`${sizeConfig.title} font-bold mb-3 text-white tracking-tight group-hover:text-amber-100 transition-colors duration-300`}
                 >
-                  {t(`${translationPath}.name`, { fallback: service.name })}
+                  {t('services.premium.luxeYacht.name')}
                 </h3>
 
                 {/* Service Details - Compact */}
@@ -300,9 +300,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <p
                   className={`mb-5 text-gray-300 leading-relaxed line-clamp-2 ${sizeConfig.description}`}
                 >
-                  {t(`${translationPath}.short`, {
-                    fallback: service.description,
-                  })}
+                  {t('services.premium.luxeYacht.short')}
                 </p>
 
                 {/* Action Buttons - Compact */}
@@ -323,7 +321,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       <ArrowUpRight size={14} className='ml-1.5' />
                     </span> */}
                     <span className='flex items-center'>
-                      Details
+                      {t(`common.button.details`)}
                       <ArrowUpRight size={14} className='ml-1.5' />
                     </span>
                   </motion.div>
