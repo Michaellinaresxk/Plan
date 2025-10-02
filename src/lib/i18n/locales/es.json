@@ -1195,6 +1195,304 @@
           }
         }
       },
+
+      "luxCatamaranForm": {
+        "header": {
+          "title": "Reserva de Aventura en Catamarán",
+          "subtitle": "Elige tu experiencia perfecta en catamarán en el Caribe"
+        },
+        "sections": {
+          "chooseCatamaran": "Elige Tu Catamarán",
+          "tourDateTime": "Fecha y Hora del Tour",
+          "pickupLocation": "Ubicación de Recogida",
+          "participants": "Participantes",
+          "whatsIncluded": "Qué Incluye",
+          "additionalInfo": "Información Adicional"
+        },
+        "locations": {
+          "puntaCanaResorts": "Resorts de Punta Cana",
+          "capCana": "Cap Cana",
+          "bavaro": "Bávaro",
+          "puntaVillage": "Puntacana Village",
+          "uveroAlto": "Uvero Alto",
+          "macao": "Zona de Playa Macao"
+        },
+        "catamarans": {
+          "classic": {
+            "name": "Aventura Clásica",
+            "description": "Perfecto para grupos que buscan una experiencia completa en catamarán caribeño con todo lo esencial.",
+            "features": {
+              "openBar": "Barra Libre con Bebidas Estándar",
+              "gourmetBuffet": "Almuerzo Buffet Gourmet",
+              "snorkeling": "Equipo Profesional de Snorkel",
+              "crew": "Tripulación Experimentada",
+              "beach": "Acceso a la Playa",
+              "safety": "Chalecos Salvavidas y Equipo de Seguridad"
+            }
+          },
+          "premium": {
+            "name": "Premium con Tobogán Acuático",
+            "badge": "Premium",
+            "description": "Experiencia de lujo definitiva con tobogán acuático, comodidades premium y tratamiento VIP para celebraciones especiales.",
+            "features": {
+              "allClassic": "Todas las Características Clásicas Incluidas",
+              "waterSlide": "Tobogán Acuático Emocionante",
+              "premiumBar": "Barra Premium con Cócteles Artesanales",
+              "vipService": "Servicio VIP y Embarque Prioritario",
+              "photoPackage": "Paquete Fotográfico Profesional",
+              "exclusiveBeach": "Áreas de Playa Exclusivas",
+              "soundSystem": "Sistema de Sonido Mejorado"
+            }
+          },
+          "perAdult": "por adulto",
+          "guests": "personas"
+        },
+        "timeSlots": {
+          "morning": {
+            "label": "Aventura Matutina"
+          },
+          "afternoon": {
+            "label": "Experiencia al Atardecer"
+          },
+          "mostPopular": "Más Popular"
+        },
+        "form": {
+          "tourDate": {
+            "label": "Selecciona Fecha del Tour",
+            "required": "*"
+          },
+          "timeSlot": {
+            "label": "Hora de Salida",
+            "required": "*"
+          },
+          "location": {
+            "label": "Selecciona Ubicación de Recogida",
+            "required": "*"
+          },
+          "adults": {
+            "label": "Adultos (13+)"
+          },
+          "children": {
+            "label": "Niños (0-17)",
+            "detailsTitle": "Detalles de Niños",
+            "ageLabel": "Edad",
+            "baby": "Bebé (menor de 1)",
+            "yearsOld": "años"
+          },
+          "specialRequests": {
+            "label": "Solicitudes Especiales o Requisitos",
+            "placeholder": "Detalles de celebración, requisitos dietéticos, asistencia de movilidad o cualquier solicitud especial..."
+          }
+        },
+        "pricing": {
+          "free": "Gratis",
+          "childPrice": "Precio Niño",
+          "adultPrice": "Precio Adulto"
+        },
+        "restrictions": {
+          "title": "Restricciones del Tour e Información Importante",
+          "items": {
+            "pregnant": "No recomendado para mujeres embarazadas",
+            "waterSlide": "Niños menores de 8 años no pueden usar el tobogán acuático (opción Premium)",
+            "minAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
+            "supervision": "Los niños deben estar supervisados en todo momento",
+            "weather": "Dependiente del clima - puede reprogramarse"
+          }
+        },
+        "warnings": {
+          "sameDayBooking": {
+            "title": "Reserva del mismo día:",
+            "message": "Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad."
+          },
+          "advanceBooking": {
+            "title": "Reserva anticipada requerida:",
+            "message": "Por favor reserve con al menos 24 horas de anticipación."
+          },
+          "capacity": {
+            "message": "Capacidad máxima para el catamarán seleccionado:",
+            "exceeds": "La capacidad del catamarán seleccionado es de {{capacity}} personas. Por favor reduzca los participantes o elija una opción diferente."
+          },
+          "waterSlideAge": "Nota: Niños menores de 8 años no pueden usar el tobogán acuático",
+          "sameDayConfirm": "Está reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?"
+        },
+        "validation": {
+          "tourDateRequired": "La fecha del tour es requerida",
+          "locationRequired": "La ubicación de recogida es requerida",
+          "timeSlotRequired": "El horario es requerido",
+          "catamaranRequired": "Por favor seleccione una opción de catamarán",
+          "advanceBooking": "Las reservas deben hacerse con al menos 24 horas de anticipación",
+          "minParticipants": "Se requiere al menos un participante",
+          "childAge": "La edad del niño debe estar entre 0 y 17",
+          "submitError": "Error al enviar la reserva. Por favor intente de nuevo."
+        },
+        "footer": {
+          "totalPrice": "Precio Total",
+          "person": "persona",
+          "people": "personas",
+          "priceBreakdown": {
+            "adults": "Adultos:",
+            "child": "Niño",
+            "years": "años",
+            "includes": "Incluye:",
+            "premiumIncludes": "Tobogán acuático, barra premium, buffet, snorkel y todo el equipo",
+            "classicIncludes": "Barra libre, buffet, snorkel y todo el equipo"
+          },
+          "buttons": {
+            "cancel": "Cancelar",
+            "book": "Reservar Catamarán",
+            "booking": "Reservando..."
+          }
+        }
+      },
+      "luxCatamaranForm": {
+        "header": {
+          "title": "Reserva de Aventura en Catamarán",
+          "subtitle": "Elige tu experiencia perfecta en catamarán en el Caribe"
+        },
+        "sections": {
+          "chooseCatamaran": "Elige Tu Catamarán",
+          "tourDateTime": "Fecha y Hora del Tour",
+          "pickupLocation": "Ubicación de Recogida",
+          "participants": "Participantes",
+          "whatsIncluded": "Qué Incluye",
+          "additionalInfo": "Información Adicional"
+        },
+        "locations": {
+          "puntaCanaResorts": "Resorts de Punta Cana",
+          "capCana": "Cap Cana",
+          "bavaro": "Bávaro",
+          "puntaVillage": "Puntacana Village",
+          "uveroAlto": "Uvero Alto",
+          "macao": "Zona de Playa Macao"
+        },
+        "catamarans": {
+          "classic": {
+            "name": "Aventura Clásica",
+            "description": "Perfecto para grupos que buscan una experiencia completa en catamarán caribeño con todo lo esencial.",
+            "features": {
+              "openBar": "Barra Libre con Bebidas Estándar",
+              "gourmetBuffet": "Almuerzo Buffet Gourmet",
+              "snorkeling": "Equipo Profesional de Snorkel",
+              "crew": "Tripulación Experimentada",
+              "beach": "Acceso a la Playa",
+              "safety": "Chalecos Salvavidas y Equipo de Seguridad"
+            }
+          },
+          "premium": {
+            "name": "Premium con Tobogán Acuático",
+            "badge": "Premium",
+            "description": "Experiencia de lujo definitiva con tobogán acuático, comodidades premium y tratamiento VIP para celebraciones especiales.",
+            "features": {
+              "allClassic": "Todas las Características Clásicas Incluidas",
+              "waterSlide": "Tobogán Acuático Emocionante",
+              "premiumBar": "Barra Premium con Cócteles Artesanales",
+              "vipService": "Servicio VIP y Embarque Prioritario",
+              "photoPackage": "Paquete Fotográfico Profesional",
+              "exclusiveBeach": "Áreas de Playa Exclusivas",
+              "soundSystem": "Sistema de Sonido Mejorado"
+            }
+          },
+          "perAdult": "por adulto",
+          "guests": "personas"
+        },
+        "timeSlots": {
+          "morning": {
+            "label": "Aventura Matutina"
+          },
+          "afternoon": {
+            "label": "Experiencia al Atardecer"
+          },
+          "mostPopular": "Más Popular"
+        },
+        "form": {
+          "tourDate": {
+            "label": "Selecciona Fecha del Tour",
+            "required": "*"
+          },
+          "timeSlot": {
+            "label": "Hora de Salida",
+            "required": "*"
+          },
+          "location": {
+            "label": "Selecciona Ubicación de Recogida",
+            "required": "*"
+          },
+          "adults": {
+            "label": "Adultos (13+)"
+          },
+          "children": {
+            "label": "Niños (0-17)",
+            "detailsTitle": "Detalles de Niños",
+            "ageLabel": "Edad",
+            "baby": "Bebé (menor de 1)",
+            "yearsOld": "años"
+          },
+          "specialRequests": {
+            "label": "Solicitudes Especiales o Requisitos",
+            "placeholder": "Detalles de celebración, requisitos dietéticos, asistencia de movilidad o cualquier solicitud especial..."
+          }
+        },
+        "pricing": {
+          "free": "Gratis",
+          "childPrice": "Precio Niño",
+          "adultPrice": "Precio Adulto"
+        },
+        "restrictions": {
+          "title": "Restricciones del Tour e Información Importante",
+          "items": {
+            "pregnant": "No recomendado para mujeres embarazadas",
+            "waterSlide": "Niños menores de 8 años no pueden usar el tobogán acuático (opción Premium)",
+            "minAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
+            "supervision": "Los niños deben estar supervisados en todo momento",
+            "weather": "Dependiente del clima - puede reprogramarse"
+          }
+        },
+        "warnings": {
+          "sameDayBooking": {
+            "title": "Reserva del mismo día:",
+            "message": "Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad."
+          },
+          "advanceBooking": {
+            "title": "Reserva anticipada requerida:",
+            "message": "Por favor reserve con al menos 24 horas de anticipación."
+          },
+          "capacity": {
+            "message": "Capacidad máxima para el catamarán seleccionado:",
+            "exceeds": "La capacidad del catamarán seleccionado es de {{capacity}} personas. Por favor reduzca los participantes o elija una opción diferente."
+          },
+          "waterSlideAge": "Nota: Niños menores de 8 años no pueden usar el tobogán acuático",
+          "sameDayConfirm": "Está reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?"
+        },
+        "validation": {
+          "tourDateRequired": "La fecha del tour es requerida",
+          "locationRequired": "La ubicación de recogida es requerida",
+          "timeSlotRequired": "El horario es requerido",
+          "catamaranRequired": "Por favor seleccione una opción de catamarán",
+          "advanceBooking": "Las reservas deben hacerse con al menos 24 horas de anticipación",
+          "minParticipants": "Se requiere al menos un participante",
+          "childAge": "La edad del niño debe estar entre 0 y 17",
+          "submitError": "Error al enviar la reserva. Por favor intente de nuevo."
+        },
+        "footer": {
+          "totalPrice": "Precio Total",
+          "person": "persona",
+          "people": "personas",
+          "priceBreakdown": {
+            "adults": "Adultos:",
+            "child": "Niño",
+            "years": "años",
+            "includes": "Incluye:",
+            "premiumIncludes": "Tobogán acuático, barra premium, buffet, snorkel y todo el equipo",
+            "classicIncludes": "Barra libre, buffet, snorkel y todo el equipo"
+          },
+          "buttons": {
+            "cancel": "Cancelar",
+            "book": "Reservar Catamarán",
+            "booking": "Reservando..."
+          }
+        }
+      },
+
       "saonaIslandView": {
         "hero": {
           "locationBadge": "Saona Tour",

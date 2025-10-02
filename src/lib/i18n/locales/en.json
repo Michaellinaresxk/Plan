@@ -378,6 +378,155 @@
           }
         }
       },
+
+      "luxCatamaranForm": {
+        "header": {
+          "title": "Catamaran Adventure Booking",
+          "subtitle": "Choose your perfect Caribbean catamaran experience"
+        },
+        "sections": {
+          "chooseCatamaran": "Choose Your Catamaran",
+          "tourDateTime": "Tour Date & Time",
+          "pickupLocation": "Pickup Location",
+          "participants": "Participants",
+          "whatsIncluded": "What's Included",
+          "additionalInfo": "Additional Information"
+        },
+        "locations": {
+          "puntaCanaResorts": "Punta Cana Resorts",
+          "capCana": "Cap Cana",
+          "bavaro": "Bavaro",
+          "puntaVillage": "Puntacana Village",
+          "uveroAlto": "Uvero Alto",
+          "macao": "Macao Beach Area"
+        },
+        "catamarans": {
+          "classic": {
+            "name": "Classic Adventure",
+            "description": "Perfect for groups looking for a complete Caribbean catamaran experience with all the essentials.",
+            "features": {
+              "openBar": "Open Bar with Standard Drinks",
+              "gourmetBuffet": "Gourmet Buffet Lunch",
+              "snorkeling": "Professional Snorkeling Equipment",
+              "crew": "Experienced Crew",
+              "beach": "Beach Access",
+              "safety": "Life Jackets & Safety Equipment"
+            }
+          },
+          "premium": {
+            "name": "Premium with Water Slide",
+            "badge": "Premium",
+            "description": "Ultimate luxury experience with water slide, premium amenities, and VIP treatment for special celebrations.",
+            "features": {
+              "allClassic": "All Classic Features Included",
+              "waterSlide": "Thrilling Water Slide",
+              "premiumBar": "Premium Bar with Craft Cocktails",
+              "vipService": "VIP Service & Priority Boarding",
+              "photoPackage": "Professional Photo Package",
+              "exclusiveBeach": "Exclusive Beach Areas",
+              "soundSystem": "Enhanced Sound System"
+            }
+          },
+          "perAdult": "per adult",
+          "guests": "guests"
+        },
+        "timeSlots": {
+          "morning": {
+            "label": "Morning Adventure"
+          },
+          "afternoon": {
+            "label": "Sunset Experience"
+          },
+          "mostPopular": "Most Popular"
+        },
+        "form": {
+          "tourDate": {
+            "label": "Select Tour Date",
+            "required": "*"
+          },
+          "timeSlot": {
+            "label": "Departure Time",
+            "required": "*"
+          },
+          "location": {
+            "label": "Select Pickup Location",
+            "required": "*"
+          },
+          "adults": {
+            "label": "Adults (13+)"
+          },
+          "children": {
+            "label": "Children (0-17)",
+            "detailsTitle": "Children Details",
+            "ageLabel": "Age",
+            "baby": "Baby (under 1)",
+            "yearsOld": "years old"
+          },
+          "specialRequests": {
+            "label": "Special Requests or Requirements",
+            "placeholder": "Celebration details, dietary requirements, mobility assistance, or any special requests..."
+          }
+        },
+        "pricing": {
+          "free": "Free",
+          "childPrice": "Child Price",
+          "adultPrice": "Adult Price"
+        },
+        "restrictions": {
+          "title": "Tour Restrictions & Important Information",
+          "items": {
+            "pregnant": "Not recommended for pregnant women",
+            "waterSlide": "Children under 8 cannot use the water slide (Premium option)",
+            "minAge": "Minimum age: No restrictions (babies welcome)",
+            "supervision": "Children must be supervised at all times",
+            "weather": "Weather dependent - may be rescheduled"
+          }
+        },
+        "warnings": {
+          "sameDayBooking": {
+            "title": "Same-day booking:",
+            "message": "Requires immediate confirmation from our team. Subject to availability."
+          },
+          "advanceBooking": {
+            "title": "Advance booking required:",
+            "message": "Please book at least 24 hours in advance."
+          },
+          "capacity": {
+            "message": "Maximum capacity for selected catamaran:",
+            "exceeds": "Selected catamaran capacity is {{capacity}} people. Please reduce participants or choose a different option."
+          },
+          "waterSlideAge": "Note: Children under 8 cannot use the water slide",
+          "sameDayConfirm": "You are booking for today. This requires immediate confirmation from our team. Continue?"
+        },
+        "validation": {
+          "tourDateRequired": "Tour date is required",
+          "locationRequired": "Pickup location is required",
+          "timeSlotRequired": "Time slot is required",
+          "catamaranRequired": "Please select a catamaran option",
+          "advanceBooking": "Bookings must be made at least 24 hours in advance",
+          "minParticipants": "At least one participant is required",
+          "childAge": "Child age must be between 0 and 17",
+          "submitError": "Failed to submit reservation. Please try again."
+        },
+        "footer": {
+          "totalPrice": "Total Price",
+          "person": "person",
+          "people": "people",
+          "priceBreakdown": {
+            "adults": "Adults:",
+            "child": "Child",
+            "years": "years",
+            "includes": "Includes:",
+            "premiumIncludes": "Water slide, premium bar, buffet, snorkeling & all equipment",
+            "classicIncludes": "Open bar, buffet, snorkeling & all equipment"
+          },
+          "buttons": {
+            "cancel": "Cancel",
+            "book": "Book Catamaran",
+            "booking": "Booking..."
+          }
+        }
+      },
       "atvService": {
         "hero": {
           "imageAlt": "ATV adventures in tropical paradise",
