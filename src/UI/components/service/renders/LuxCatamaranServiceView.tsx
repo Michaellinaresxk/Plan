@@ -6,11 +6,8 @@ import {
   Utensils,
   ArrowRight,
   Check,
-  ChevronRight,
-  ChevronLeft,
   LifeBuoy,
   AlertCircle,
-  CreditCard,
   Waves,
   MapPin,
   Calendar,
@@ -19,6 +16,7 @@ import {
   Fish,
 } from 'lucide-react';
 import { useBooking } from '@/context/BookingContext';
+import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
 import { ServiceData } from '@/types/services';
 import { BookingDate } from '@/types/type';
@@ -42,56 +40,20 @@ interface CatamaranServiceViewProps {
   primaryColor: string;
 }
 
-// Mock data for catamaran types
-const catamaranTypes: CatamaranType[] = [
-  {
-    id: 'classic',
-    name: 'Classic Adventure',
-    price: 89,
-    image:
-      'https://res.cloudinary.com/michaelxk-com/image/upload/v1625794349/nuestra%20flota/lagoon%2042/1_uspfu7.jpg',
-    features: [
-      'Open Bar',
-      'Gourmet Buffet',
-      'Snorkeling Equipment',
-      'Professional Crew',
-    ],
-    capacity: 40,
-    hasWaterSlide: false,
-    premium: false,
-  },
-  {
-    id: 'premium-slide',
-    name: 'Premium with Water Slide',
-    price: 129,
-    image:
-      'https://www.whitesandwatersports.com/assets/images/2020-09-02-11-41-55-IMG0606.JPG',
-    features: [
-      'All Classic Features',
-      'Water Slide',
-      'Premium Bar',
-      'VIP Service',
-      'Photo Package',
-    ],
-    capacity: 30,
-    hasWaterSlide: true,
-    premium: true,
-  },
-];
-
+// Time slots data (times don't need translation)
 const timeSlots = [
   {
     id: 'morning',
     time: '9:00 AM',
     endTime: '1:00 PM',
-    label: 'Morning Adventure',
+    labelKey: 'morning',
     popular: false,
   },
   {
     id: 'afternoon',
     time: '2:00 PM',
     endTime: '6:00 PM',
-    label: 'Sunset Experience',
+    labelKey: 'afternoon',
     popular: true,
   },
 ];
@@ -102,11 +64,13 @@ const HeroSection: React.FC<{
   onImageChange: (index: number) => void;
   onBookClick: () => void;
 }> = ({ currentImage, onImageChange, onBookClick }) => {
+  const { t } = useTranslation();
+
   const heroImages = [
     {
       src: 'https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg?_gl=1*1c89csu*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTkxOTkkajU5JGwwJGgw',
-      title: 'Caribbean Paradise',
-      subtitle: 'Luxury Catamaran Experience',
+      title: t('services.standard.luxCatamaran.serviceView.hero.title'),
+      subtitle: t('services.standard.luxCatamaran.serviceView.hero.subtitle'),
     },
   ];
 
@@ -129,10 +93,8 @@ const HeroSection: React.FC<{
         </motion.div>
       </AnimatePresence>
 
-      {/* Modern gradient overlay */}
       <div className='absolute inset-0 bg-gradient-to-br from-slate-900/60 via-blue-900/40 to-cyan-900/60' />
 
-      {/* Image indicators */}
       <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2'>
         {heroImages.map((_, index) => (
           <button
@@ -147,7 +109,6 @@ const HeroSection: React.FC<{
         ))}
       </div>
 
-      {/* Hero content */}
       <div className='absolute inset-0 flex items-center justify-center text-center text-white p-8'>
         <div className='max-w-5xl'>
           <motion.div
@@ -157,7 +118,9 @@ const HeroSection: React.FC<{
             className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8'
           >
             <Waves className='w-5 h-5 mr-3 text-cyan-300' />
-            <span className='font-semibold text-lg'>Caribbean Adventure</span>
+            <span className='font-semibold text-lg'>
+              {t('services.standard.luxCatamaran.serviceView.hero.badge')}
+            </span>
           </motion.div>
 
           <motion.h1
@@ -184,9 +147,7 @@ const HeroSection: React.FC<{
             transition={{ delay: 0.9, duration: 0.8 }}
             className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
           >
-            Discover paradise aboard our luxury catamarans. Choose between our
-            classic experience or upgrade to our premium vessel with water slide
-            for the ultimate adventure.
+            {t('services.standard.luxCatamaran.serviceView.hero.description')}
           </motion.p>
 
           <motion.button
@@ -198,7 +159,7 @@ const HeroSection: React.FC<{
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Explore Options
+            {t('services.standard.luxCatamaran.serviceView.hero.ctaButton')}
             <ArrowRight className='w-6 h-6' />
           </motion.button>
         </div>
@@ -213,6 +174,8 @@ const CatamaranCard: React.FC<{
   isSelected: boolean;
   onSelect: () => void;
 }> = ({ catamaran, isSelected, onSelect }) => {
+  const { t } = useTranslation();
+
   return (
     <motion.div
       className={`relative overflow-hidden rounded-3xl cursor-pointer transition-all duration-500 ${
@@ -234,14 +197,18 @@ const CatamaranCard: React.FC<{
 
         {catamaran.premium && (
           <div className='absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg'>
-            Premium
+            {t(
+              'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.badge'
+            )}
           </div>
         )}
 
         {catamaran.hasWaterSlide && (
           <div className='absolute top-4 left-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2'>
             <Waves className='w-4 h-4' />
-            Water Slide
+            {t(
+              'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.waterSlideBadge'
+            )}
           </div>
         )}
       </div>
@@ -251,11 +218,20 @@ const CatamaranCard: React.FC<{
         <div className='flex items-center justify-between mb-4'>
           <span className='text-3xl font-bold text-cyan-300'>
             ${catamaran.price}
-            <span className='text-lg text-white/70'>/person</span>
+            <span className='text-lg text-white/70'>
+              {t(
+                'services.standard.luxCatamaran.serviceView.catamaranTypes.perPerson'
+              )}
+            </span>
           </span>
           <div className='flex items-center gap-2 text-white/80'>
             <Users className='w-4 h-4' />
-            <span>{catamaran.capacity} guests</span>
+            <span>
+              {catamaran.capacity}{' '}
+              {t(
+                'services.standard.luxCatamaran.serviceView.catamaranTypes.guests'
+              )}
+            </span>
           </div>
         </div>
 
@@ -271,7 +247,10 @@ const CatamaranCard: React.FC<{
           ))}
           {catamaran.features.length > 3 && (
             <div className='text-sm text-cyan-300'>
-              +{catamaran.features.length - 3} more features
+              +{catamaran.features.length - 3}{' '}
+              {t(
+                'services.standard.luxCatamaran.serviceView.catamaranTypes.moreFeatures'
+              )}
             </div>
           )}
         </div>
@@ -282,47 +261,43 @@ const CatamaranCard: React.FC<{
 
 // Experience Gallery Component
 const ExperienceGallery: React.FC = () => {
+  const { t } = useTranslation();
+
   const experiences = [
     {
       image:
         'https://images.pexels.com/photos/4600762/pexels-photo-4600762.jpeg?_gl=1*mwst98*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg1NzMkajU1JGwwJGgw',
-      title: 'Crystal Clear Waters',
-      description: 'Swim in pristine Caribbean waters',
+      titleKey: 'crystalWaters',
       icon: Waves,
     },
     {
       image:
         'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?q=80&w=800',
-      title: 'Snorkeling Adventure',
-      description: 'Discover vibrant marine life',
+      titleKey: 'snorkeling',
       icon: Fish,
     },
     {
       image:
         'https://www.puntacanabestexcursions.com//assets/Uploads/BEBE_CATAMARAN_22.jpeg',
-      title: 'Water Slide Fun',
-      description: 'Thrilling slides into the ocean',
+      titleKey: 'waterSlide',
       icon: Waves,
     },
     {
       image:
         'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800',
-      title: 'Gourmet Dining',
-      description: 'Fresh seafood and tropical cuisine',
+      titleKey: 'dining',
       icon: Utensils,
     },
     {
       image:
         'https://images.pexels.com/photos/4319028/pexels-photo-4319028.jpeg?_gl=1*wp3wc8*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5MTYkajUwJGwwJGgw',
-      title: 'Beach Exploration',
-      description: 'Secluded beaches and hidden coves',
+      titleKey: 'beach',
       icon: MapPin,
     },
     {
       image:
         'https://images.pexels.com/photos/5006967/pexels-photo-5006967.jpeg?_gl=1*dlck0v*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTg5NzgkajUxJGwwJGgw',
-      title: 'Sunset Views',
-      description: 'Breathtaking Caribbean sunsets',
+      titleKey: 'sunset',
       icon: Sun,
     },
   ];
@@ -331,10 +306,14 @@ const ExperienceGallery: React.FC = () => {
     <section className='bg-white rounded-3xl p-2 shadow-xl'>
       <div className='text-center mb-12'>
         <h2 className='text-4xl font-bold text-slate-800 mb-4'>
-          Experience Gallery
+          {t(
+            'services.standard.luxCatamaran.serviceView.sections.experienceGallery.title'
+          )}
         </h2>
         <p className='text-xl text-slate-600'>
-          See what awaits you on this incredible journey
+          {t(
+            'services.standard.luxCatamaran.serviceView.sections.experienceGallery.subtitle'
+          )}
         </p>
       </div>
 
@@ -350,7 +329,9 @@ const ExperienceGallery: React.FC = () => {
           >
             <img
               src={experience.image}
-              alt={experience.title}
+              alt={t(
+                `services.standard.luxCatamaran.serviceView.sections.experienceGallery.experiences.${experience.titleKey}.title`
+              )}
               className='w-full h-full object-cover transition-all duration-500 group-hover:scale-110'
             />
             <div className='absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300' />
@@ -360,9 +341,15 @@ const ExperienceGallery: React.FC = () => {
             </div>
 
             <div className='absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
-              <h3 className='text-xl font-bold mb-2'>{experience.title}</h3>
+              <h3 className='text-xl font-bold mb-2'>
+                {t(
+                  `services.standard.luxCatamaran.serviceView.sections.experienceGallery.experiences.${experience.titleKey}.title`
+                )}
+              </h3>
               <p className='text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                {experience.description}
+                {t(
+                  `services.standard.luxCatamaran.serviceView.sections.experienceGallery.experiences.${experience.titleKey}.description`
+                )}
               </p>
             </div>
           </motion.div>
@@ -376,14 +363,20 @@ const ExperienceGallery: React.FC = () => {
 const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
   onSelect,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <section className='bg-white rounded-3xl p-4 shadow-xl'>
       <div className='text-center mb-12'>
-        <h2 className='text-2xl  md:text-4xl mt-5 font-bold text-slate-800 mb-4'>
-          Choose Your Departure Time
+        <h2 className='text-2xl md:text-4xl mt-5 font-bold text-slate-800 mb-4'>
+          {t(
+            'services.standard.luxCatamaran.serviceView.sections.chooseTime.title'
+          )}
         </h2>
         <p className='text-xl text-slate-600'>
-          Select the perfect time for your adventure
+          {t(
+            'services.standard.luxCatamaran.serviceView.sections.chooseTime.subtitle'
+          )}
         </p>
       </div>
 
@@ -403,7 +396,9 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
           >
             {slot.popular && (
               <div className='absolute top-0 right-0 bg-amber-500 text-white px-4 py-2 text-sm font-bold rounded-bl-2xl'>
-                Most Popular
+                {t(
+                  'services.standard.luxCatamaran.serviceView.sections.chooseTime.mostPopular'
+                )}
               </div>
             )}
 
@@ -428,7 +423,9 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
                   slot.popular ? 'text-blue-100' : 'text-slate-600'
                 }`}
               >
-                {slot.label}
+                {t(
+                  `services.standard.luxCatamaran.serviceView.timeSlots.${slot.labelKey}.label`
+                )}
               </p>
 
               <button
@@ -438,7 +435,10 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
                     : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
               >
-                Select {slot.time}
+                {t(
+                  'services.standard.luxCatamaran.serviceView.sections.chooseTime.selectButton'
+                )}{' '}
+                {slot.time}
               </button>
             </div>
           </motion.div>
@@ -451,12 +451,71 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
 // Main Component
 const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
   service,
-  serviceData,
 }) => {
   const { bookService } = useBooking();
+  const { t } = useTranslation();
   const [selectedCatamaran, setSelectedCatamaran] = useState<string>('classic');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Catamaran types with translations
+  const catamaranTypes: CatamaranType[] = [
+    {
+      id: 'classic',
+      name: t(
+        'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.name'
+      ),
+      price: 89,
+      image:
+        'https://res.cloudinary.com/michaelxk-com/image/upload/v1625794349/nuestra%20flota/lagoon%2042/1_uspfu7.jpg',
+      features: [
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.openBar'
+        ),
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.gourmetBuffet'
+        ),
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.snorkelingEquipment'
+        ),
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.professionalCrew'
+        ),
+      ],
+      capacity: 40,
+      hasWaterSlide: false,
+      premium: false,
+    },
+    {
+      id: 'premium-slide',
+      name: t(
+        'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.name'
+      ),
+      price: 129,
+      image:
+        'https://www.whitesandwatersports.com/assets/images/2020-09-02-11-41-55-IMG0606.JPG',
+      features: [
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.allClassic'
+        ),
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.waterSlide'
+        ),
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.premiumBar'
+        ),
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.vipService'
+        ),
+        t(
+          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.photoPackage'
+        ),
+      ],
+      capacity: 30,
+      hasWaterSlide: true,
+      premium: true,
+    },
+  ];
 
   const selectedCatamaranData = catamaranTypes.find(
     (c) => c.id === selectedCatamaran
@@ -477,23 +536,25 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-slate-50 to-blue-50'>
-      {/* Hero Section - Full width, no margins/padding */}
       <HeroSection
         currentImage={currentImageIndex}
         onImageChange={setCurrentImageIndex}
         onBookClick={handleBookNow}
       />
 
-      {/* Content sections with proper spacing */}
       <div className='max-w-7xl mx-auto px-2 py-10 space-y-16'>
         {/* Catamaran Selection */}
         <section className='bg-white rounded-3xl p-2 shadow-xl'>
           <div className='text-center mb-12'>
             <h2 className='text-2xl md:text-4xl font-bold text-slate-800 mb-4'>
-              Choose Your Adventure
+              {t(
+                'services.standard.luxCatamaran.serviceView.sections.chooseAdventure.title'
+              )}
             </h2>
             <p className='text-xl-1 text-xl text-slate-600'>
-              Select the perfect catamaran experience for your group
+              {t(
+                'services.standard.luxCatamaran.serviceView.sections.chooseAdventure.subtitle'
+              )}
             </p>
           </div>
 
@@ -522,8 +583,12 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                 </h3>
                 <p className='text-xl text-blue-100 mb-8 leading-relaxed'>
                   {selectedCatamaranData.hasWaterSlide
-                    ? 'Experience the ultimate luxury with our premium catamaran featuring an exciting water slide, VIP service, and exclusive amenities. Perfect for groups looking for an unforgettable adventure with extra thrills.'
-                    : 'Enjoy our classic catamaran experience with all the essentials for a perfect Caribbean adventure, including snorkeling, dining, and relaxation in paradise.'}
+                    ? t(
+                        'services.standard.luxCatamaran.serviceView.details.premiumDescription'
+                      )
+                    : t(
+                        'services.standard.luxCatamaran.serviceView.details.classicDescription'
+                      )}
                 </p>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-8'>
@@ -542,17 +607,29 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                     <div className='text-3xl font-bold'>
                       ${selectedCatamaranData.price}
                     </div>
-                    <div className='text-blue-200'>per person</div>
+                    <div className='text-blue-200'>
+                      {t(
+                        'services.standard.luxCatamaran.serviceView.details.perPerson'
+                      )}
+                    </div>
                   </div>
                   <div className='text-center'>
                     <div className='text-3xl font-bold'>
                       {selectedCatamaranData.capacity}
                     </div>
-                    <div className='text-blue-200'>max guests</div>
+                    <div className='text-blue-200'>
+                      {t(
+                        'services.standard.luxCatamaran.serviceView.details.maxGuests'
+                      )}
+                    </div>
                   </div>
                   <div className='text-center'>
                     <div className='text-3xl font-bold'>4-6</div>
-                    <div className='text-blue-200'>hours</div>
+                    <div className='text-blue-200'>
+                      {t(
+                        'services.standard.luxCatamaran.serviceView.details.hours'
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -561,7 +638,9 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                   className='bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-lg'
                 >
                   <Calendar className='w-5 h-5' />
-                  Book This Experience
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.details.bookButton'
+                  )}
                 </button>
               </div>
 
@@ -576,10 +655,7 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
           </motion.section>
         )}
 
-        {/* Time Selection */}
         <TimeSelection onSelect={handleBookNow} />
-
-        {/* Experience Gallery */}
         <ExperienceGallery />
 
         {/* Call to Action */}
@@ -598,16 +674,15 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 className='text-3xl md:text-4xl font-bold mb-6 p-2'
               >
-                Ready for Paradise?
+                {t('services.standard.luxCatamaran.serviceView.cta.title')}
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className='text-xl-1 px-2 md:text-4xl  text-white/90 mb-8'
+                className='text-xl-1 px-2 md:text-4xl text-white/90 mb-8'
               >
-                Book your catamaran adventure today and create memories that
-                will last a lifetime. Limited spots available!
+                {t('services.standard.luxCatamaran.serviceView.cta.subtitle')}
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -620,11 +695,14 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                   className='bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 transition-all duration-300 hover:scale-105 shadow-2xl'
                 >
                   <Anchor className='w-6 h-6' />
-                  Book Now
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.cta.bookButton'
+                  )}
                 </button>
                 <div className='text-white/80 text-sm'>
-                  Free cancellation • Instant confirmation • Best price
-                  guarantee
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.cta.guarantee'
+                  )}
                 </div>
               </motion.div>
             </div>
@@ -643,26 +721,47 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
             </div>
             <div>
               <h3 className='font-bold text-amber-800 mb-3 text-lg'>
-                Important Information
+                {t(
+                  'services.standard.luxCatamaran.serviceView.importantInfo.title'
+                )}
               </h3>
               <div className='text-amber-700 leading-relaxed space-y-2'>
                 <p>
-                  • Tours are weather dependent and may be rescheduled for
-                  safety
+                  •{' '}
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.importantInfo.points.weather'
+                  )}
                 </p>
-                <p>• We recommend booking 24-48 hours in advance</p>
-                <p>• Full refund available for weather cancellations</p>
                 <p>
-                  • Life jackets and safety equipment provided for all guests
+                  •{' '}
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.importantInfo.points.booking'
+                  )}
                 </p>
-                <p>• Minimum age for water slide: 8 years old</p>
+                <p>
+                  •{' '}
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.importantInfo.points.refund'
+                  )}
+                </p>
+                <p>
+                  •{' '}
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.importantInfo.points.safety'
+                  )}
+                </p>
+                <p>
+                  •{' '}
+                  {t(
+                    'services.standard.luxCatamaran.serviceView.importantInfo.points.ageLimit'
+                  )}
+                </p>
               </div>
             </div>
           </div>
         </motion.div>
       </div>
 
-      {/* Booking Modal */}
       {isModalOpen && (
         <BookingModal
           isOpen={isModalOpen}

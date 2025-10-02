@@ -222,16 +222,161 @@
         "short": "Cruise your resort, villa community, or local beach town with one of our fully charged, comfortable golf carts.",
         "full": "Enjoy the freedom to explore Punta Cana at your own pace with our golf cart rentals. Perfect for getting around resorts, beaches, and local trails in comfort. Drive, explore, and enjoy at your own pace. Book your cart today and discover Punta Cana."
       },
-
       "personalTraining": {
         "name": "Personal Training",
         "short": "One-on-one fitness sessions with certified trainers",
         "full": "Stay in shape during your vacation with our personal training sessions. Work out with certified professionals who tailor each session to your level, goals, and schedule. Book today and become your best self in Punta Cana."
       },
+      "babysitter": {
+        "chip": "Professional Childcare",
+        "headerOption1": "Certified & Background-Checked",
+        "headerOption2": "Age-Appropriate Activities",
+        "headerOption3": "Flexible Scheduling",
+        "name": "Babysitter",
+        "short": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort",
+        "full": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort. Whether you need a few hours of evening respite or full-day childcare, our professionals engage children with safe, age-appropriate activities and attentive supervision.",
+        "slogan": "ENJOY WORRY-FREE VACATION TIME",
+        "ageRange": "Age Range",
+        "ageRangeAnswer": "From 6 months - 12 years",
+        "availability": "Availability:",
+        "availabilityAnswer": "Day, afternoon and evening; night service on request.",
+        "safety": "Estándares de Seguridad:",
+        "safetyAnswer": "CPR-trained, first-aid certified",
+        "subTitle1": "ENJOY WORRY-FREE VACATION TIME",
+        "option1": "Evening Babysitting",
+        "option2": "Daytime Supervision",
+        "option3": "Group Care (siblings)",
+        "option4": "Overnight Sitting",
+        "CTAHeaderSubTitle": "Your Peace of Mind. Their Happiness.",
+        "CTATitle": "Ready to Enjoy Your Time While Your Children are in Great Hands?",
+        "CTASubTitle": "Schedule professional, reliable childcare and treat yourself to worry-free time away",
+        "faqsTitle": "Frequently Asked Questions",
+        "faqQuestion1": "What if I need to extend the babysitting time?",
+        "faqAnswer1": "Extensions are possible subject to the babysitter is availability. Please notify us as soon as possible, and we will confirm with your assigned sitter.",
+        "faqQuestion2": "Can I meet the babysitter before booking?",
+        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
+        "faqQuestion3": "What happens if my child gets sick?",
+        "faqAnswer3": "Our babysitters are trained to handle minor health concerns. For emergencies, they will contact you immediately and follow predetermined emergency protocols.",
+        "testimonialTitle": "What Parents Say",
+        "testimonial1": "'Our children absolutely adored their babysitter! She was punctual, professional, and had an amazing rapport with the kids. We could enjoy our evening knowing they were in safe, caring hands.'",
+        "testimonial2": "The level of professionalism was outstanding. Our babysitter came prepared with age-appropriate activities that kept our children engaged throughout the evening.",
+        "testimonial3": "This is the only babysitting service I trust with my little ones. The screening process for caregivers is thorough, and the sitter assigned to us was exceptional."
+      },
       "horsebackRiding": {
         "name": "Horseback Riding",
         "short": "Enjoy a guided ride along beaches, trails, and breathtaking landscapes—perfect for all experience levels. Book your horseback adventure and live an unforgettable experience.",
         "full": "Discover the natural beauty of Punta Cana on horseback. Enjoy a guided ride along beaches, trails, and breathtaking landscapes—perfect for all experience levels. Book your horseback adventure and live an unforgettable experience."
+      },
+      "luxCatamaran": {
+        "serviceView": {
+          "hero": {
+            "badge": "Caribbean Adventure",
+            "title": "Caribbean Paradise",
+            "subtitle": "Luxury Catamaran Experience",
+            "description": "Discover paradise aboard our luxury catamarans. Choose between our classic experience or upgrade to our premium vessel with water slide for the ultimate adventure.",
+            "ctaButton": "Explore Options"
+          },
+          "catamaranTypes": {
+            "classic": {
+              "name": "Classic Adventure",
+              "features": {
+                "openBar": "Open Bar",
+                "gourmetBuffet": "Gourmet Buffet",
+                "snorkelingEquipment": "Snorkeling Equipment",
+                "professionalCrew": "Professional Crew"
+              }
+            },
+            "premium": {
+              "name": "Premium with Water Slide",
+              "badge": "Premium",
+              "waterSlideBadge": "Water Slide",
+              "features": {
+                "allClassic": "All Classic Features",
+                "waterSlide": "Water Slide",
+                "premiumBar": "Premium Bar",
+                "vipService": "VIP Service",
+                "photoPackage": "Photo Package"
+              }
+            },
+            "perPerson": "/person",
+            "guests": "guests",
+            "moreFeatures": "more features"
+          },
+          "sections": {
+            "chooseAdventure": {
+              "title": "Choose Your Adventure",
+              "subtitle": "Select the perfect catamaran experience for your group"
+            },
+            "chooseTime": {
+              "title": "Choose Your Departure Time",
+              "subtitle": "Select the perfect time for your adventure",
+              "mostPopular": "Most Popular",
+              "selectButton": "Select"
+            },
+            "experienceGallery": {
+              "title": "Experience Gallery",
+              "subtitle": "See what awaits you on this incredible journey",
+              "experiences": {
+                "crystalWaters": {
+                  "title": "Crystal Clear Waters",
+                  "description": "Swim in pristine Caribbean waters"
+                },
+                "snorkeling": {
+                  "title": "Snorkeling Adventure",
+                  "description": "Discover vibrant marine life"
+                },
+                "waterSlide": {
+                  "title": "Water Slide Fun",
+                  "description": "Thrilling slides into the ocean"
+                },
+                "dining": {
+                  "title": "Gourmet Dining",
+                  "description": "Fresh seafood and tropical cuisine"
+                },
+                "beach": {
+                  "title": "Beach Exploration",
+                  "description": "Secluded beaches and hidden coves"
+                },
+                "sunset": {
+                  "title": "Sunset Views",
+                  "description": "Breathtaking Caribbean sunsets"
+                }
+              }
+            }
+          },
+          "timeSlots": {
+            "morning": {
+              "label": "Morning Adventure"
+            },
+            "afternoon": {
+              "label": "Sunset Experience"
+            }
+          },
+          "details": {
+            "classicDescription": "Enjoy our classic catamaran experience with all the essentials for a perfect Caribbean adventure, including snorkeling, dining, and relaxation in paradise.",
+            "premiumDescription": "Experience the ultimate luxury with our premium catamaran featuring an exciting water slide, VIP service, and exclusive amenities. Perfect for groups looking for an unforgettable adventure with extra thrills.",
+            "perPerson": "per person",
+            "maxGuests": "max guests",
+            "hours": "hours",
+            "bookButton": "Book This Experience"
+          },
+          "cta": {
+            "title": "Ready for Paradise?",
+            "subtitle": "Book your catamaran adventure today and create memories that will last a lifetime. Limited spots available!",
+            "bookButton": "Book Now",
+            "guarantee": "Free cancellation • Instant confirmation • Best price guarantee"
+          },
+          "importantInfo": {
+            "title": "Important Information",
+            "points": {
+              "weather": "Tours are weather dependent and may be rescheduled for safety",
+              "booking": "We recommend booking 24-48 hours in advance",
+              "refund": "Full refund available for weather cancellations",
+              "safety": "Life jackets and safety equipment provided for all guests",
+              "ageLimit": "Minimum age for water slide: 8 years old"
+            }
+          }
+        }
       },
       "atvService": {
         "hero": {
@@ -667,182 +812,6 @@
           "submit": "Failed to submit reservation. Please try again.",
           "capacityExceeded": "Cannot fit {{participants}} people in {{vehicles}} vehicle(s). Maximum capacity is {{max}} people.",
           "needMoreVehicles": "Need at least {{needed}} vehicles for {{participants}} people."
-        }
-      },
-      "babysitterView": {
-        "hero": {
-          "premiumBadge": "Premium Service",
-          "standardBadge": "Trusted Care",
-          "premiumTitle": "Premium",
-          "premiumTitleHighlight": "Childcare",
-          "premiumTitleSuffix": "Excellence",
-          "standardTitle": "Professional",
-          "standardTitleHighlight": "Babysitting",
-          "standardTitleSuffix": "Services",
-          "description": "Give your children the care they deserve with our experienced, certified babysitters who create fun, safe, and engaging experiences.",
-          "badge1": "Background Verified",
-          "badge2": "Experienced Team",
-          "badge3": "Flexible Hours",
-          "bookButton": "Book Now"
-        },
-        "activities": {
-          "title": "What We Offer",
-          "subtitle": "Engaging activities designed to nurture your child's growth and happiness",
-          "activity1": {
-            "title": "Creative Arts",
-            "description": "Painting, drawing, and crafts that spark imagination and develop fine motor skills through colorful creative expression."
-          },
-          "activity2": {
-            "title": "Storytime & Reading",
-            "description": "Interactive reading sessions that build vocabulary, comprehension, and a lifelong love of books and learning."
-          },
-          "activity3": {
-            "title": "Music & Movement",
-            "description": "Songs, dancing, and rhythm activities that enhance coordination, self-expression, and musical awareness."
-          },
-          "activity4": {
-            "title": "Educational Games",
-            "description": "Fun learning activities that develop problem-solving, critical thinking, and social skills through play."
-          },
-          "activity5": {
-            "title": "Physical Activities",
-            "description": "Age-appropriate games and exercises that promote physical development, energy release, and healthy habits."
-          },
-          "activity6": {
-            "title": "Infant Care",
-            "description": "Specialized care for babies including feeding, diaper changes, nap routines, and gentle stimulation activities."
-          }
-        },
-        "gallery": {
-          "title": "Moments of Joy",
-          "caption1": "Art & crafts time",
-          "caption2": "Outdoor exploration",
-          "caption3": "Storytime favorites",
-          "caption4": "Learning through play"
-        },
-        "safety": {
-          "title": "Your Child's Safety is Our Priority",
-          "feature1": {
-            "title": "Certified & Background Checked",
-            "description": "All our babysitters undergo comprehensive background checks, reference verification, and hold current certifications in CPR and First Aid."
-          },
-          "feature2": {
-            "title": "Experienced Care Providers",
-            "description": "Our team consists of experienced professionals with years of childcare expertise, trained to handle various situations with patience and care."
-          }
-        },
-        "testimonials": {
-          "title": "What Parents Say",
-          "subtitle": "Trusted by families in our community",
-          "testimonial1": {
-            "quote": "Our babysitter was amazing! My kids loved her and I felt completely at ease knowing they were in such capable hands.",
-            "author": "Sarah Johnson",
-            "children": "Mother of 2"
-          },
-          "testimonial2": {
-            "quote": "Professional, punctual, and wonderful with our children. We've found our go-to babysitting service!",
-            "author": "Michael Chen",
-            "children": "Father of 3"
-          },
-          "testimonial3": {
-            "quote": "The peace of mind knowing my baby is with a certified and experienced caregiver is priceless. Highly recommend!",
-            "author": "Emma Rodriguez",
-            "children": "Mother of 1"
-          }
-        },
-        "faq": {
-          "title": "Frequently Asked Questions",
-          "subtitle": "Everything you need to know about our babysitting service",
-          "question1": {
-            "question": "What ages do you provide care for?",
-            "answer": "We provide care for children from infants (6 months+) to pre-teens (12 years old), with babysitters specially trained for different age groups."
-          },
-          "question2": {
-            "question": "Are your babysitters certified?",
-            "answer": "Yes! All our babysitters are CPR and First Aid certified, have completed background checks, and have verifiable childcare experience and references."
-          },
-          "question3": {
-            "question": "What's your cancellation policy?",
-            "answer": "We require 24 hours notice for cancellations to receive a full refund. Cancellations within 24 hours may incur a cancellation fee."
-          },
-          "question4": {
-            "question": "Can I request the same babysitter?",
-            "answer": "Absolutely! We encourage building consistent relationships. You can request your preferred babysitter for future bookings based on their availability."
-          }
-        }
-      },
-      "babysitterForm": {
-        "header": {
-          "title": "Happy Kids Babysitting",
-          "subtitle": "Professional childcare in the comfort of your accommodation"
-        },
-        "scheduling": {
-          "title": "Scheduling",
-          "date": {
-            "label": "Date",
-            "required": "*"
-          },
-          "startTime": {
-            "label": "Start Time",
-            "required": "*"
-          },
-          "endTime": {
-            "label": "End Time",
-            "required": "*"
-          },
-          "minimumBooking": "Minimum booking duration is {{hours}} hours. Shorter bookings will be charged at the {{hours}}-hour rate."
-        },
-        "location": {
-          "title": "Location",
-          "label": "Select your location",
-          "required": "*",
-          "selected": "Selected:"
-        },
-        "children": {
-          "title": "Tell Us About Your Children",
-          "count": {
-            "label": "How many children need care?",
-            "additionalFee": "+$10 per additional child"
-          },
-          "ages": {
-            "label": "How old are they?",
-            "required": "*",
-            "placeholder": "e.g., 3 years"
-          },
-          "specialNeeds": {
-            "toggle": "Child with special needs or disabilities",
-            "label": "Please tell us about any special needs",
-            "required": "*",
-            "placeholder": "Please describe any special requirements, medical conditions, allergies, etc.",
-            "additionalFee": "+$15 additional fee for specialized care"
-          }
-        },
-        "additionalInfo": {
-          "title": "Additional Information",
-          "label": "Anything else we should know?",
-          "placeholder": "Favorite activities, routines, nap times, dietary preferences, or anything else that would help our babysitter provide the best care"
-        },
-        "footer": {
-          "totalPrice": "Total Price",
-          "priceBreakdown": {
-            "location": "Babysitting at {{locationName}}",
-            "children": "{{count}} children (+$10 per additional child)",
-            "specialNeeds": "Special care needs: +$15"
-          },
-          "buttons": {
-            "cancel": "Cancel",
-            "submit": "Book Your Sitter",
-            "processing": "Processing..."
-          }
-        },
-        "errors": {
-          "date": "Date is required",
-          "startTime": "Start time is required",
-          "endTime": "End time is required",
-          "location": "Please select a location",
-          "childrenAges": "Please fill all children ages",
-          "specialNeedsDetails": "Special needs details are required",
-          "bookingError": "Error processing booking. Please try again."
         }
       },
       "horsebackRidingServiceView": {
@@ -1331,6 +1300,174 @@
           "submit": "Failed to submit reservation. Please try again."
         }
       },
+      "babysitterView": {
+        "hero": {
+          "premiumBadge": "Premium Experience",
+          "standardBadge": "Trusted Childcare",
+          "premiumTitle": "Premium",
+          "premiumTitleHighlight": "In-Villa",
+          "premiumTitleSuffix": "Childcare Services",
+          "standardTitle": "Professional",
+          "standardTitleHighlight": "Babysitting",
+          "standardTitleSuffix": "You Can Trust",
+          "description": "Experienced, background-checked caregivers who create magical moments while keeping your children safe, happy, and engaged.",
+          "badge1": "Background Checked",
+          "badge2": "Ages 6M - 12Y",
+          "badge3": "24/7 Available",
+          "bookButton": "Book Trusted Care"
+        },
+        "activities": {
+          "title": "Age-Appropriate Activities",
+          "subtitle": "Our caregivers come prepared with engaging activities tailored to your child's age and interests",
+          "activity1": {
+            "title": "Creative Arts",
+            "description": "Drawing, painting, and craft projects that spark imagination"
+          },
+          "activity2": {
+            "title": "Story Time",
+            "description": "Interactive reading sessions with age-appropriate books"
+          },
+          "activity3": {
+            "title": "Music & Dance",
+            "description": "Fun musical activities and movement games"
+          },
+          "activity4": {
+            "title": "Educational Games",
+            "description": "Learning through play with puzzles and brain games"
+          },
+          "activity5": {
+            "title": "Physical Activities",
+            "description": "Safe outdoor play and indoor movement activities"
+          },
+          "activity6": {
+            "title": "Age-Appropriate Care",
+            "description": "Customized activities based on each child's developmental stage"
+          }
+        },
+        "gallery": {
+          "title": "Moments of Joy",
+          "caption1": "Creative arts & crafts sessions",
+          "caption2": "Safe outdoor adventures",
+          "caption3": "Interactive reading sessions",
+          "caption4": "Educational play activities"
+        },
+        "safety": {
+          "title": "Safety & Trust First",
+          "feature1": {
+            "title": "Background Verified",
+            "description": "All caregivers undergo thorough background checks and reference verification"
+          },
+          "feature2": {
+            "title": "Genuine Care",
+            "description": "Selected for their natural ability to connect with and care for children"
+          }
+        },
+        "testimonials": {
+          "title": "Happy Families",
+          "subtitle": "See what parents are saying about our childcare services",
+          "testimonial1": {
+            "quote": "Maria was absolutely wonderful with our twins. They were engaged and happy the entire evening!",
+            "author": "Sarah M.",
+            "children": "Twins, age 4"
+          },
+          "testimonial2": {
+            "quote": "Professional, caring, and the kids loved her. We felt completely at ease during our date night.",
+            "author": "David L.",
+            "children": "2 children, ages 6 & 8"
+          },
+          "testimonial3": {
+            "quote": "Our babysitter came prepared with activities and even helped with bedtime routine. Highly recommend!",
+            "author": "Jessica R.",
+            "children": "1 child, age 3"
+          }
+        },
+        "faq": {
+          "title": "Frequently Asked Questions",
+          "subtitle": "Everything you need to know about our babysitting services",
+          "question1": {
+            "question": "What ages do you provide babysitting services for?",
+            "answer": "We provide professional childcare for children from 6 months to 12 years old. Our sitters are trained to handle different age groups and developmental stages."
+          },
+          "question2": {
+            "question": "Are your babysitters background checked?",
+            "answer": "Yes, all our babysitters undergo thorough background checks, reference verification, and childcare training. Your children's safety is our top priority."
+          },
+          "question3": {
+            "question": "What if my child has special dietary requirements or allergies?",
+            "answer": "We carefully review all dietary restrictions and allergies before the service. Our sitters are trained to handle special dietary needs and can prepare appropriate snacks and meals."
+          },
+          "question4": {
+            "question": "How far in advance should I book?",
+            "answer": "We recommend booking at least 24-48 hours in advance to ensure availability. For last-minute requests, please call us directly and we'll do our best to accommodate."
+          }
+        }
+      },
+      "babysitterForm": {
+        "header": {
+          "title": "Happy Kids Babysitting",
+          "subtitle": "Professional childcare in the comfort of your accommodation"
+        },
+        "sections": {
+          "scheduling": "Scheduling",
+          "location": "Location",
+          "childrenInfo": "Tell Us About Your Children",
+          "additionalInfo": "Additional Information"
+        },
+        "fields": {
+          "date": {
+            "label": "Date",
+            "error": "Date is required"
+          },
+          "startTime": {
+            "label": "Start Time",
+            "error": "Start time is required"
+          },
+          "endTime": {
+            "label": "End Time",
+            "error": "End time is required"
+          },
+          "location": {
+            "label": "Select your location",
+            "error": "Please select a location",
+            "selected": "Selected:"
+          },
+          "childrenCount": {
+            "label": "How many children need care?"
+          },
+          "childrenAges": {
+            "label": "How old are they?",
+            "placeholder": "e.g., 3 years",
+            "error": "Please fill all children ages"
+          },
+          "specialNeeds": {
+            "toggle": "Child with special needs or disabilities",
+            "label": "Please tell us about any special needs",
+            "placeholder": "Please describe any special requirements, medical conditions, allergies, etc.",
+            "error": "Special needs details are required"
+          },
+          "specialRequests": {
+            "label": "Anything else we should know?",
+            "placeholder": "Favorite activities, routines, nap times, dietary preferences, or anything else that would help our babysitter provide the best care"
+          }
+        },
+        "info": {
+          "minimumBooking": "Minimum booking duration is {hours} hours. Shorter bookings will be charged at the {hours}-hour rate.",
+          "additionalChild": "+$10 per additional child",
+          "specialCareFee": "+$15 additional fee for specialized care"
+        },
+        "pricing": {
+          "totalPrice": "Total Price",
+          "babysittingAt": "Babysitting at",
+          "childrenCount": "{count} children (+$10 per additional child)",
+          "specialCare": "Special care needs: +$15"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "submit": "Book Your Sitter",
+          "processing": "Processing..."
+        }
+      },
+
       "saonaIslandView": {
         "hero": {
           "locationBadge": "Saona Tour",
@@ -1832,249 +1969,6 @@
           "durationRequired": "Please select a duration",
           "specificSongsRequired": "Please specify your song preferences"
         }
-      },
-      "massageView": {
-        "hero": {
-          "premiumBadge": "BF Paradise • Premium Wellness Sanctuary",
-          "title": "Therapeutic",
-          "titleHighlight": "Massage Sanctuary",
-          "description": "Experience the transformative power of healing touch with our collection of {count} expertly crafted therapeutic treatments",
-          "features": {
-            "licensed": "Licensed Therapists",
-            "inHome": "In-Home Service",
-            "premium": "Premium Experience",
-            "satisfaction": "Satisfaction Guaranteed"
-          }
-        },
-        "quote": {
-          "text": "Take time to make your soul happy. Your body deserves the gift of healing touch, and your mind craves the peace that only comes from true relaxation.",
-          "stats": {
-            "sessions": {
-              "count": "500+",
-              "label": "Blissful Sessions",
-              "detail": "completed this year"
-            },
-            "satisfaction": {
-              "count": "98%",
-              "label": "Satisfaction Rate",
-              "detail": "from our valued clients"
-            },
-            "availability": {
-              "count": "24/7",
-              "label": "Availability",
-              "detail": "for your convenience"
-            }
-          }
-        },
-        "services": {
-          "title": "Choose Your Perfect",
-          "titleHighlight": "Healing Experience",
-          "description": "Each treatment is thoughtfully designed to address your unique wellness needs, combining ancient wisdom with modern therapeutic techniques",
-          "resultsCount": "{count} therapeutic experiences available",
-          "viewAll": "View all treatments",
-          "noResults": {
-            "title": "No treatments match your search",
-            "description": "Try adjusting your filters to discover more healing experiences",
-            "button": "Show All Treatments"
-          }
-        },
-        "cta": {
-          "title": "Your Journey to",
-          "titleHighlight": "Complete Wellness",
-          "description": "Escape the stress of daily life and immerse yourself in pure tranquility. Our expert therapists bring the spa experience directly to you.",
-          "features": {
-            "therapists": "Certified massage therapists with 5+ years experience",
-            "premium": "Premium organic oils and heated massage tables",
-            "customized": "Customized treatments for your unique needs"
-          },
-          "button": "Start Your Wellness Journey",
-          "cards": {
-            "mindBalance": {
-              "title": "Mind Balance",
-              "description": "Achieve mental clarity and emotional harmony"
-            },
-            "bodyRenewal": {
-              "title": "Body Renewal",
-              "description": "Release tension and restore vitality"
-            },
-            "naturalHealing": {
-              "title": "Natural Healing",
-              "description": "Pure organic products for your wellness"
-            },
-            "homeComfort": {
-              "title": "Home Comfort",
-              "description": "Luxury spa experience in your space"
-            }
-          }
-        },
-        "massages": {
-          "swedish": {
-            "name": "Swedish Relaxation",
-            "description": "Gentle, flowing strokes to melt away tension and restore inner peace",
-            "longDescription": "Our signature Swedish massage combines traditional techniques with aromatherapy to create a deeply relaxing experience that soothes both body and mind.",
-            "benefits": [
-              "Stress Relief",
-              "Improved Circulation",
-              "Better Sleep",
-              "Muscle Relaxation"
-            ],
-            "perfectFor": [
-              "First-time clients",
-              "Stress relief",
-              "General wellness"
-            ],
-            "techniques": ["Long gliding strokes", "Kneading", "Aromatherapy"]
-          },
-          "deepTissue": {
-            "name": "Deep Tissue Therapy",
-            "description": "Intensive therapeutic massage targeting chronic tension and pain",
-            "longDescription": "Designed for those who need serious muscle work, this therapy focuses on the deeper layers of muscle tissue to release chronic patterns of tension.",
-            "benefits": [
-              "Pain Relief",
-              "Tension Release",
-              "Improved Mobility",
-              "Injury Recovery"
-            ],
-            "perfectFor": ["Athletes", "Chronic pain", "Injury recovery"],
-            "techniques": [
-              "Deep pressure",
-              "Trigger point therapy",
-              "Myofascial release"
-            ]
-          },
-          "hotStone": {
-            "name": "Sacred Stone Ritual",
-            "description": "Heated volcanic stones create deep warmth and profound relaxation",
-            "longDescription": "Ancient healing meets modern luxury. Smooth, heated stones are placed on key points while warm stone massage melts away every trace of stress.",
-            "benefits": [
-              "Deep Relaxation",
-              "Improved Blood Flow",
-              "Muscle Tension Relief",
-              "Spiritual Balance"
-            ],
-            "perfectFor": [
-              "Ultimate relaxation",
-              "Cold weather",
-              "Spiritual wellness"
-            ],
-            "techniques": [
-              "Hot stone placement",
-              "Stone massage",
-              "Energy balancing"
-            ]
-          },
-          "aromatherapy": {
-            "name": "Botanical Bliss",
-            "description": "A sensory journey with pure essential oils and healing touch",
-            "longDescription": "Customized essential oil blends enhance this therapeutic massage, creating a multi-sensory experience that harmonizes mind, body, and spirit.",
-            "benefits": [
-              "Mental Clarity",
-              "Emotional Balance",
-              "Stress Reduction",
-              "Mood Enhancement"
-            ],
-            "perfectFor": [
-              "Emotional wellness",
-              "Aromatherapy lovers",
-              "Holistic healing"
-            ],
-            "techniques": [
-              "Custom oil blending",
-              "Lymphatic drainage",
-              "Chakra balancing"
-            ]
-          },
-          "prenatal": {
-            "name": "Nurturing Mother",
-            "description": "Specialized care designed for the expecting mother's unique needs",
-            "longDescription": "Our certified prenatal therapists provide safe, effective massage therapy to support you through your pregnancy journey with comfort and care.",
-            "benefits": [
-              "Pregnancy Comfort",
-              "Swelling Reduction",
-              "Back Pain Relief",
-              "Improved Sleep"
-            ],
-            "perfectFor": [
-              "Pregnant women",
-              "Back pain relief",
-              "Emotional support"
-            ],
-            "techniques": [
-              "Side-lying positioning",
-              "Gentle pressure",
-              "Prenatal-safe techniques"
-            ]
-          },
-          "sports": {
-            "name": "Athletic Recovery",
-            "description": "Performance-focused therapy to enhance athletic potential",
-            "longDescription": "Designed specifically for athletes and active individuals, combining therapeutic techniques to improve performance and prevent injuries.",
-            "benefits": [
-              "Performance Enhancement",
-              "Injury Prevention",
-              "Faster Recovery",
-              "Flexibility"
-            ],
-            "perfectFor": ["Athletes", "Active lifestyle", "Performance goals"],
-            "techniques": [
-              "Sports massage",
-              "Stretching",
-              "Compression therapy"
-            ]
-          },
-          "couples": {
-            "name": "Romantic Escape",
-            "description": "Share the bliss of relaxation with your loved one",
-            "longDescription": "Side-by-side massage tables, candlelight, and synchronized treatments create an intimate wellness experience you'll treasure forever.",
-            "benefits": [
-              "Romantic Experience",
-              "Shared Relaxation",
-              "Bonding Time",
-              "Stress Relief"
-            ],
-            "perfectFor": ["Couples", "Anniversaries", "Date nights"],
-            "techniques": [
-              "Synchronized massage",
-              "Couples aromatherapy",
-              "Romantic ambiance"
-            ]
-          },
-          "thai": {
-            "name": "Ancient Thai Healing",
-            "description": "Traditional stretching and pressure point massage from Thailand",
-            "longDescription": "This ancient healing art combines acupressure, assisted yoga stretches, and energy work to restore balance and flexibility to your entire being.",
-            "benefits": [
-              "Flexibility",
-              "Energy Balance",
-              "Stress Relief",
-              "Spiritual Wellness"
-            ],
-            "perfectFor": [
-              "Flexibility needs",
-              "Energy work",
-              "Traditional healing"
-            ],
-            "techniques": ["Thai stretching", "Pressure points", "Energy lines"]
-          }
-        },
-
-        "filters": {
-          "search": "Search treatments...",
-          "category": "Category",
-          "intensity": "Intensity",
-          "priceRange": "Price Range",
-          "premiumOnly": "Premium Only",
-          "clearFilters": "Clear Filters"
-        },
-        "errors": {
-          "bookingError": "Error processing booking. Please try again."
-        }
-      },
-      "massageCard": {
-        "selected": "Selected",
-        "upTo": "Up to",
-        "moreBenefits": "+{{count}} more",
-        "bookButton": "Book Experience"
       }
     },
     "premium": {

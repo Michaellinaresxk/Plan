@@ -1,45 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  User,
-  MapPin,
   Leaf,
-  Shield,
-  Clock,
-  CalendarDays,
   Heart,
-  Award,
   Sparkles,
-  Star,
   ArrowRight,
-  Instagram,
   Sunrise,
-  Wind,
   Waves,
-  Mountain,
   CheckCircle,
-  Play,
-  Quote,
-  Zap,
-  Moon,
-  Sun,
   Crown,
   Eye,
   Compass,
   Gem,
   Feather,
   Palette,
-  Music,
-  Coffee,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  Users,
   MessageSquare,
-  CreditCard,
-  AlertCircle,
   Phone,
-  Mail,
 } from 'lucide-react';
 import BookingModal from '../../modal/BookingModal';
 import { BookingDate, Service } from '@/constants/formFields';
@@ -201,73 +177,6 @@ const PREMIUM_YOGA_STYLES = [
   },
 ];
 
-const PREMIUM_LOCATIONS = [
-  {
-    id: 'private-beach',
-    name: 'Private Beach Sanctuary',
-    description:
-      'Exclusive beach section with premium setup and complete privacy',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800',
-    icon: <Waves className='w-5 h-5' />,
-    ambiance: 'Exclusive • Pristine • Transformative',
-    premiumFeatures: [
-      'Private beach section reserved exclusively for you',
-      'Luxury cabana setup with premium amenities',
-      'Dedicated staff for refreshments and towel service',
-      'Professional photographer available upon request',
-    ],
-  },
-  {
-    id: 'infinity-pool',
-    name: 'Infinity Pool Oasis',
-    description:
-      'Luxury poolside practice with panoramic ocean views and premium service',
-    image:
-      'https://images.unsplash.com/photo-1588286840104-8957b019727f?auto=format&fit=crop&q=80&w=800',
-    icon: <Sparkles className='w-5 h-5' />,
-    ambiance: 'Luxurious • Serene • Inspiring',
-    premiumFeatures: [
-      'Poolside setup with floating meditation platforms',
-      'Chilled eucalyptus towels and premium water service',
-      'Ambient sound system with nature soundscapes',
-      'Post-session pool access with fresh fruit platter',
-    ],
-  },
-  {
-    id: 'rooftop-garden',
-    name: 'Rooftop Garden Paradise',
-    description:
-      'Elevated practice space surrounded by tropical gardens and city views',
-    image:
-      'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&q=80&w=800',
-    icon: <Leaf className='w-5 h-5' />,
-    ambiance: 'Elevated • Lush • Harmonious',
-    premiumFeatures: [
-      'Curated garden space with aromatic herbs and flowers',
-      'Climate-controlled environment with natural ventilation',
-      'Organic herbal tea ceremony post-practice',
-      'Access to rooftop meditation garden throughout the day',
-    ],
-  },
-  {
-    id: 'yacht-deck',
-    name: 'Luxury Yacht Deck',
-    description:
-      'Ultimate privacy aboard your floating sanctuary on crystal waters',
-    image:
-      'https://images.unsplash.com/photo-1540946485063-a40da27545f8?auto=format&fit=crop&q=80&w=800',
-    icon: <Crown className='w-5 h-5' />,
-    ambiance: 'Exclusive • Maritime • Extraordinary',
-    premiumFeatures: [
-      'Complete yacht privacy with 360-degree ocean views',
-      'Marine-grade yoga equipment and safety measures',
-      'Captain and crew coordination for optimal experience',
-      'Champagne celebration and gourmet breakfast included',
-    ],
-  },
-];
-
 const PERSONALIZATION_BENEFITS = [
   {
     icon: <Eye className='w-6 h-6' />,
@@ -341,7 +250,6 @@ const stagger = {
 // Main Component
 const LuxeYogaExperience = ({ service }: PremiunYogaServiceProps) => {
   const [selectedStyle, setSelectedStyle] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ref, isInView] = useInView();
 
