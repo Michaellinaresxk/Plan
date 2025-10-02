@@ -200,6 +200,176 @@
         "disclaimer": "Por tu seguridad y tranquilidad, recomendamos consultar con tu médico antes de comenzar cualquier nueva actividad física, especialmente si estás embarazada, en proceso de recuperación o tienes alguna condición médica. La participación es bajo tu propia responsabilidad.",
         "finalMessage": "Escucha a tu cuerpo. Este es tu momento. Tu espacio. Tu ritmo."
       },
+      "catamaranServiceView": {
+        "hero": {
+          "startAdventure": "Comienza Tu Aventura",
+          "scrollIndicator": "Desplázate hacia abajo"
+        },
+        "experienceShowcase": {
+          "titlePrefix": "Tu Experiencia",
+          "titleSuffix": "",
+          "subtitle": "Cada momento a bordo de {catamaranName} está diseñado para crear recuerdos inolvidables en el paraíso caribeño.",
+          "experiences": {
+            "crystalWaters": {
+              "title": "Aguas Cristalinas",
+              "description": "Navega por las aguas más prístinas del Caribe"
+            },
+            "adventureAwaits": {
+              "title": "La Aventura Te Espera",
+              "description": "Snorkel, nada y explora calas escondidas"
+            },
+            "pureParadise": {
+              "title": "Paraíso Puro",
+              "description": "Crea recuerdos que durarán toda la vida"
+            }
+          }
+        },
+        "touchGallery": {
+          "touchIndicator": "Toca o desliza",
+          "galleryAlt": "Galería {index}"
+        },
+        "pricingCalculator": {
+          "title": "Calcula Tu Precio",
+          "groupSize": "Tamaño del Grupo:",
+          "totalPrice": "Precio Total",
+          "currency": "USD",
+          "forPeople": "para {count} personas"
+        },
+        "detailsModal": {
+          "galleryTitle": "Galería de Experiencias",
+          "whatsIncluded": "Qué Está Incluido",
+          "availableTimes": "Horarios Disponibles",
+          "bookButton": "Reservar {catamaranName} - ${price} USD"
+        },
+        "catamaranSelection": {
+          "title": "Elige Tu",
+          "titleHighlight": "Aventura",
+          "subtitle": "Cuatro experiencias únicas, cada una diseñada para crear recuerdos caribeños inolvidables.",
+          "premium": "Premium",
+          "perPerson": "/persona"
+        },
+        "featuresComparison": {
+          "title": "Compara",
+          "titleHighlight": "Experiencias",
+          "tableHeaders": {
+            "features": "Características",
+            "liberty": "Liberty",
+            "destiny": "Destiny",
+            "fortyfive": "45",
+            "trinity": "Trinity"
+          }
+        },
+        "gallery": {
+          "title": "Experimenta el",
+          "titleHighlight": "Paraíso",
+          "images": {
+            "crystalWaters": "Aguas Cristalinas",
+            "snorkelAdventure": "Aventura de Snorkel",
+            "waterSlideFun": "Diversión en el Tobogán",
+            "sunsetViews": "Vistas del Atardecer"
+          }
+        },
+        "reviews": {
+          "title": "Historias de",
+          "titleHighlight": "Huéspedes",
+          "rating": "4.9 de 2,500+ aventuras"
+        },
+        "cta": {
+          "title": "¿Listo para Tu",
+          "titleHighlight": "Aventura?",
+          "subtitle": "Reserva tu experiencia perfecta en catamarán hoy y crea recuerdos que durarán toda la vida.",
+          "button": "Reserva Tu Aventura"
+        }
+      },
+      "catamaranForm": {
+        "header": {
+          "title": "Reservar {catamaranName}",
+          "subtitle": "Completa tu reserva de aventura en catamarán caribeño"
+        },
+        "sections": {
+          "selectedExperience": "Tu Experiencia Seleccionada",
+          "tourDateTime": "Fecha y Hora del Tour",
+          "pickupLocation": "Ubicación de Recogida",
+          "participants": "Participantes",
+          "whatsIncluded": "Qué Está Incluido",
+          "additionalInfo": "Información Adicional",
+          "tourRestrictions": "Restricciones del Tour e Información Importante"
+        },
+        "catamaranSummary": {
+          "duration": "Duración",
+          "baseRate": "Tarifa Base",
+          "basePeople": "(1-{count} personas)"
+        },
+        "dateTime": {
+          "tourDateLabel": "Selecciona Fecha del Tour",
+          "departureTimeLabel": "Hora de Salida",
+          "sameDayWarning": "Reserva para hoy: Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad.",
+          "advanceWarning": "Reserva anticipada requerida: Por favor reserva con al menos 24 horas de anticipación."
+        },
+        "location": {
+          "pickupLabel": "Selecciona Ubicación de Recogida"
+        },
+        "participants": {
+          "adultsLabel": "Adultos (13+)",
+          "childrenLabel": "Niños (0-17)",
+          "childrenDetails": "Detalles de Niños",
+          "childLabel": "Niño {number} Edad",
+          "baby": "Bebé (menor de 1)",
+          "yearsOld": "{age} años",
+          "maxCapacityReached": "Capacidad máxima alcanzada: {max}"
+        },
+        "pricing": {
+          "free": "Gratis",
+          "childPrice": "Precio Niño",
+          "adultPrice": "Precio Adulto"
+        },
+        "specialRequests": {
+          "label": "Solicitudes Especiales o Requerimientos",
+          "placeholder": "Detalles de celebración, requisitos dietéticos, asistencia de movilidad, o cualquier solicitud especial..."
+        },
+        "restrictions": {
+          "notRecommendedPregnant": "No recomendado para mujeres embarazadas",
+          "waterSlideAge": "Niños menores de 8 años no pueden usar el tobogán de agua (opciones Premium)",
+          "minimumAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
+          "supervisionRequired": "Los niños deben estar supervisados en todo momento",
+          "weatherDependent": "Dependiente del clima - puede ser reprogramado"
+        },
+        "footer": {
+          "totalPrice": "Precio Total",
+          "people": "{count} personas",
+          "person": "{count} persona",
+          "baseRateInfo": "Tarifa base (1-{count} adultos): ${price}",
+          "additionalAdults": "Adultos adicionales ({count}): ${price}",
+          "totalAdults": "Total para {count} adultos: ${price}",
+          "childPrice": "Niño {number} ({age} años): ${price}",
+          "includes": "Incluye: {items}",
+          "andMore": "y más"
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "book": "Reservar {catamaranName}",
+          "booking": "Reservando..."
+        },
+        "validation": {
+          "catamaranRequired": "La selección de catamarán es requerida",
+          "dateRequired": "La fecha del tour es requerida",
+          "locationRequired": "La ubicación de recogida es requerida",
+          "timeSlotRequired": "El horario es requerido",
+          "advanceBooking": "Las reservas deben realizarse con al menos 24 horas de anticipación",
+          "minimumParticipants": "Se requiere al menos un participante",
+          "maxCapacity": "La capacidad máxima es de {max} personas. Por favor reduce los participantes.",
+          "childAgeRange": "La edad del niño debe estar entre 0 y 17",
+          "submitError": "Error al enviar la reserva. Por favor intenta de nuevo."
+        },
+        "confirmations": {
+          "sameDayBooking": "Estás reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?"
+        },
+        "fallbacks": {
+          "catamaranExperience": "Experiencia en Catamarán",
+          "caribbeanAdventure": "Aventura caribeña",
+          "defaultDescription": "Aventura caribeña con todas las comodidades"
+        }
+      },
       "bikeRentals": {
         "name": "Alquiler de Bicicletas",
         "short": "Explore el resort en nuestras cómodas bicicletas",
@@ -224,41 +394,6 @@
         "name": "Entrenamiento Personal",
         "short": "Sesiones de fitness individuales con entrenadores certificados",
         "full": "Mantente en forma durante tus vacaciones con nuestras sesiones de entrenamiento personal. Entrena con profesionales certificados que se adaptan a tu nivel, tus objetivos y tu horario. Reserva hoy y alcanza tu mejor versión en Punta Cana."
-      },
-      "babysitter": {
-        "chip": "Atención infantil profesional",
-        "headerOption1": "Comprobación de antecedentes y certificados",
-        "headerOption2": "Actividades adecuadas a la edad",
-        "headerOption3": "Horario flexible",
-        "name": "Niñera",
-        "short": "Confíe en nuestras niñeras experimentadas y con antecedentes comprobados para cuidar de sus pequeños en la comodidad de su villa o resort.",
-        "full": "Confía en nuestras niñeras experimentadas y con verificación de antecedentes para cuidar a tus pequeños en la comodidad de tu villa o resort. Ya sea para unas horas por la noche o cuidado diario, nuestros profesionales entretienen a los niños con actividades seguras y supervisión atenta.",
-        "slogan": "DISFRUTA DE TU TIEMPO SIN PREOCUPACIONES",
-        "ageRange": "Rango de edad:",
-        "ageRangeAnswer": "De 6 meses a 12 años",
-        "availability": "Disponibilidad:",
-        "availabilityAnswer": "Día, tarde y noche; servicio nocturno bajo petición",
-        "safety": "Estándares de Seguridad:",
-        "safetyAnswer": "Formación en RCP & primeros auxilios",
-        "subTitle1": "DISFRUTA TUS VACACIONES SIN PREOCUPACIONES",
-        "option1": "Cuidado Nocturno",
-        "option2": "Supervisión Diurna",
-        "option3": "Cuidado Grupal (hermanos)",
-        "option4": "Servicio Nocturno Completo",
-        "CTAHeaderSubTitle": "Tu Tranquilidad. Su Felicidad.",
-        "CTATitle": "¿Listo para disfrutar de su tiempo mientras sus hijos están en buenas manos?",
-        "CTASubTitle": "Programe un servicio de guardería profesional y fiable y disfrute de un tiempo libre sin preocupaciones.",
-        "faqsTitle": "Preguntas Frecuentes",
-        "faqQuestion1": " ¿Qué pasa si necesito extender el tiempo de la babysitter?",
-        "faqAnswer1": "Las extensiones son posibles sujeto a la niñera es la disponibilidad. Por favor, notifíquenos tan pronto como sea posible, y vamos a confirmar con su niñera asignado.",
-        "faqQuestion2": "Can I meet the babysitter before booking?",
-        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
-        "faqQuestion3": "¿Puedo conocer a la canguro antes de reservar?",
-        "faqAnswer3": "Por supuesto. Le animamos a que se reúna con nosotros antes del servicio programado. Esto se puede arreglar en persona o por videollamada.",
-        "testimonialTitle": "Qué dicen los padres",
-        "testimonial1": "'Nuestros hijos adoraban a su niñera. Era puntual, profesional y tenía una relación increíble con los niños. Pudimos disfrutar de nuestra velada sabiendo que estaban en buenas manos.'",
-        "testimonial2": "El nivel de profesionalidad fue excepcional. Nuestra niñera vino preparada con actividades apropiadas para cada edad que mantuvieron a nuestros hijos ocupados durante toda la velada.",
-        "testimonial3": "Este es el único servicio de canguro en el que confío a mis pequeños. El proceso de selección de los cuidadores es exhaustivo y la canguro que nos asignaron era excepcional."
       },
       "horsebackRiding": {
         "name": "Paseos a Caballo",
@@ -1193,155 +1328,6 @@
               "safety": "Chalecos salvavidas y equipo de seguridad proporcionados para todos los huéspedes",
               "ageLimit": "Edad mínima para el tobogán acuático: 8 años"
             }
-          }
-        }
-      },
-
-      "luxCatamaranForm": {
-        "header": {
-          "title": "Reserva de Aventura en Catamarán",
-          "subtitle": "Elige tu experiencia perfecta en catamarán en el Caribe"
-        },
-        "sections": {
-          "chooseCatamaran": "Elige Tu Catamarán",
-          "tourDateTime": "Fecha y Hora del Tour",
-          "pickupLocation": "Ubicación de Recogida",
-          "participants": "Participantes",
-          "whatsIncluded": "Qué Incluye",
-          "additionalInfo": "Información Adicional"
-        },
-        "locations": {
-          "puntaCanaResorts": "Resorts de Punta Cana",
-          "capCana": "Cap Cana",
-          "bavaro": "Bávaro",
-          "puntaVillage": "Puntacana Village",
-          "uveroAlto": "Uvero Alto",
-          "macao": "Zona de Playa Macao"
-        },
-        "catamarans": {
-          "classic": {
-            "name": "Aventura Clásica",
-            "description": "Perfecto para grupos que buscan una experiencia completa en catamarán caribeño con todo lo esencial.",
-            "features": {
-              "openBar": "Barra Libre con Bebidas Estándar",
-              "gourmetBuffet": "Almuerzo Buffet Gourmet",
-              "snorkeling": "Equipo Profesional de Snorkel",
-              "crew": "Tripulación Experimentada",
-              "beach": "Acceso a la Playa",
-              "safety": "Chalecos Salvavidas y Equipo de Seguridad"
-            }
-          },
-          "premium": {
-            "name": "Premium con Tobogán Acuático",
-            "badge": "Premium",
-            "description": "Experiencia de lujo definitiva con tobogán acuático, comodidades premium y tratamiento VIP para celebraciones especiales.",
-            "features": {
-              "allClassic": "Todas las Características Clásicas Incluidas",
-              "waterSlide": "Tobogán Acuático Emocionante",
-              "premiumBar": "Barra Premium con Cócteles Artesanales",
-              "vipService": "Servicio VIP y Embarque Prioritario",
-              "photoPackage": "Paquete Fotográfico Profesional",
-              "exclusiveBeach": "Áreas de Playa Exclusivas",
-              "soundSystem": "Sistema de Sonido Mejorado"
-            }
-          },
-          "perAdult": "por adulto",
-          "guests": "personas"
-        },
-        "timeSlots": {
-          "morning": {
-            "label": "Aventura Matutina"
-          },
-          "afternoon": {
-            "label": "Experiencia al Atardecer"
-          },
-          "mostPopular": "Más Popular"
-        },
-        "form": {
-          "tourDate": {
-            "label": "Selecciona Fecha del Tour",
-            "required": "*"
-          },
-          "timeSlot": {
-            "label": "Hora de Salida",
-            "required": "*"
-          },
-          "location": {
-            "label": "Selecciona Ubicación de Recogida",
-            "required": "*"
-          },
-          "adults": {
-            "label": "Adultos (13+)"
-          },
-          "children": {
-            "label": "Niños (0-17)",
-            "detailsTitle": "Detalles de Niños",
-            "ageLabel": "Edad",
-            "baby": "Bebé (menor de 1)",
-            "yearsOld": "años"
-          },
-          "specialRequests": {
-            "label": "Solicitudes Especiales o Requisitos",
-            "placeholder": "Detalles de celebración, requisitos dietéticos, asistencia de movilidad o cualquier solicitud especial..."
-          }
-        },
-        "pricing": {
-          "free": "Gratis",
-          "childPrice": "Precio Niño",
-          "adultPrice": "Precio Adulto"
-        },
-        "restrictions": {
-          "title": "Restricciones del Tour e Información Importante",
-          "items": {
-            "pregnant": "No recomendado para mujeres embarazadas",
-            "waterSlide": "Niños menores de 8 años no pueden usar el tobogán acuático (opción Premium)",
-            "minAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
-            "supervision": "Los niños deben estar supervisados en todo momento",
-            "weather": "Dependiente del clima - puede reprogramarse"
-          }
-        },
-        "warnings": {
-          "sameDayBooking": {
-            "title": "Reserva del mismo día:",
-            "message": "Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad."
-          },
-          "advanceBooking": {
-            "title": "Reserva anticipada requerida:",
-            "message": "Por favor reserve con al menos 24 horas de anticipación."
-          },
-          "capacity": {
-            "message": "Capacidad máxima para el catamarán seleccionado:",
-            "exceeds": "La capacidad del catamarán seleccionado es de {{capacity}} personas. Por favor reduzca los participantes o elija una opción diferente."
-          },
-          "waterSlideAge": "Nota: Niños menores de 8 años no pueden usar el tobogán acuático",
-          "sameDayConfirm": "Está reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?"
-        },
-        "validation": {
-          "tourDateRequired": "La fecha del tour es requerida",
-          "locationRequired": "La ubicación de recogida es requerida",
-          "timeSlotRequired": "El horario es requerido",
-          "catamaranRequired": "Por favor seleccione una opción de catamarán",
-          "advanceBooking": "Las reservas deben hacerse con al menos 24 horas de anticipación",
-          "minParticipants": "Se requiere al menos un participante",
-          "childAge": "La edad del niño debe estar entre 0 y 17",
-          "submitError": "Error al enviar la reserva. Por favor intente de nuevo."
-        },
-        "footer": {
-          "totalPrice": "Precio Total",
-          "person": "persona",
-          "people": "personas",
-          "priceBreakdown": {
-            "adults": "Adultos:",
-            "child": "Niño",
-            "years": "años",
-            "includes": "Incluye:",
-            "premiumIncludes": "Tobogán acuático, barra premium, buffet, snorkel y todo el equipo",
-            "classicIncludes": "Barra libre, buffet, snorkel y todo el equipo"
-          },
-          "buttons": {
-            "cancel": "Cancelar",
-            "book": "Reservar Catamarán",
-            "booking": "Reservando..."
           }
         }
       },

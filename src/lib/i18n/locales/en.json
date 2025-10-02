@@ -203,6 +203,176 @@
         "disclaimer": "For your safety and peace of mind, we recommend consulting with your physician before beginning any new physical activity—especially if pregnant, recovering from an injury, or managing a health condition. Participation is at your own discretion.",
         "finalMessage": "Listen to your body. This is your time. Your space. Your pace."
       },
+      "catamaranServiceView": {
+        "hero": {
+          "startAdventure": "Start Your Adventure",
+          "scrollIndicator": "Scroll down"
+        },
+        "experienceShowcase": {
+          "titlePrefix": "Your",
+          "titleSuffix": "Experience",
+          "subtitle": "Every moment aboard {catamaranName} is designed to create unforgettable memories in Caribbean paradise.",
+          "experiences": {
+            "crystalWaters": {
+              "title": "Crystal Waters",
+              "description": "Sail through the most pristine Caribbean waters"
+            },
+            "adventureAwaits": {
+              "title": "Adventure Awaits",
+              "description": "Snorkel, swim, and explore hidden coves"
+            },
+            "pureParadise": {
+              "title": "Pure Paradise",
+              "description": "Create memories that last a lifetime"
+            }
+          }
+        },
+        "touchGallery": {
+          "touchIndicator": "Tap or swipe",
+          "galleryAlt": "Gallery {index}"
+        },
+        "pricingCalculator": {
+          "title": "Calculate Your Price",
+          "groupSize": "Group Size:",
+          "totalPrice": "Total Price",
+          "currency": "USD",
+          "forPeople": "for {count} people"
+        },
+        "detailsModal": {
+          "galleryTitle": "Experience Gallery",
+          "whatsIncluded": "What's Included",
+          "availableTimes": "Available Times",
+          "bookButton": "Book {catamaranName} - ${price} USD"
+        },
+        "catamaranSelection": {
+          "title": "Choose Your",
+          "titleHighlight": "Adventure",
+          "subtitle": "Four unique experiences, each designed to create unforgettable Caribbean memories.",
+          "premium": "Premium",
+          "perPerson": "/person"
+        },
+        "featuresComparison": {
+          "title": "Compare",
+          "titleHighlight": "Experiences",
+          "tableHeaders": {
+            "features": "Features",
+            "liberty": "Liberty",
+            "destiny": "Destiny",
+            "fortyfive": "45",
+            "trinity": "Trinity"
+          }
+        },
+        "gallery": {
+          "title": "Experience",
+          "titleHighlight": "Paradise",
+          "images": {
+            "crystalWaters": "Crystal Waters",
+            "snorkelAdventure": "Snorkel Adventure",
+            "waterSlideFun": "Water Slide Fun",
+            "sunsetViews": "Sunset Views"
+          }
+        },
+        "reviews": {
+          "title": "Guest",
+          "titleHighlight": "Stories",
+          "rating": "4.9 from 2,500+ adventures"
+        },
+        "cta": {
+          "title": "Ready for Your",
+          "titleHighlight": "Adventure?",
+          "subtitle": "Book your perfect catamaran experience today and create memories that will last a lifetime.",
+          "button": "Book Your Adventure"
+        }
+      },
+      "catamaranForm": {
+        "header": {
+          "title": "Book {catamaranName}",
+          "subtitle": "Complete your Caribbean catamaran adventure booking"
+        },
+        "sections": {
+          "selectedExperience": "Your Selected Experience",
+          "tourDateTime": "Tour Date & Time",
+          "pickupLocation": "Pickup Location",
+          "participants": "Participants",
+          "whatsIncluded": "What's Included",
+          "additionalInfo": "Additional Information",
+          "tourRestrictions": "Tour Restrictions & Important Information"
+        },
+        "catamaranSummary": {
+          "duration": "Duration",
+          "baseRate": "Base Rate",
+          "basePeople": "(1-{count} people)"
+        },
+        "dateTime": {
+          "tourDateLabel": "Select Tour Date",
+          "departureTimeLabel": "Departure Time",
+          "sameDayWarning": "Same-day booking: Requires immediate confirmation from our team. Subject to availability.",
+          "advanceWarning": "Advance booking required: Please book at least 24 hours in advance."
+        },
+        "location": {
+          "pickupLabel": "Select Pickup Location"
+        },
+        "participants": {
+          "adultsLabel": "Adults (13+)",
+          "childrenLabel": "Children (0-17)",
+          "childrenDetails": "Children Details",
+          "childLabel": "Child {number} Age",
+          "baby": "Baby (under 1)",
+          "yearsOld": "{age} years old",
+          "maxCapacityReached": "Maximum capacity reached: {max}"
+        },
+        "pricing": {
+          "free": "Free",
+          "childPrice": "Child Price",
+          "adultPrice": "Adult Price"
+        },
+        "specialRequests": {
+          "label": "Special Requests or Requirements",
+          "placeholder": "Celebration details, dietary requirements, mobility assistance, or any special requests..."
+        },
+        "restrictions": {
+          "notRecommendedPregnant": "Not recommended for pregnant women",
+          "waterSlideAge": "Children under 8 cannot use the water slide (Premium options)",
+          "minimumAge": "Minimum age: No restrictions (babies welcome)",
+          "supervisionRequired": "Children must be supervised at all times",
+          "weatherDependent": "Weather dependent - may be rescheduled"
+        },
+        "footer": {
+          "totalPrice": "Total Price",
+          "people": "{count} people",
+          "person": "{count} person",
+          "baseRateInfo": "Base rate (1-{count} adults): ${price}",
+          "additionalAdults": "Additional adults ({count}): ${price}",
+          "totalAdults": "Total for {count} adults: ${price}",
+          "childPrice": "Child {number} ({age} years): ${price}",
+          "includes": "Includes: {items}",
+          "andMore": "& more"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "book": "Book {catamaranName}",
+          "booking": "Booking..."
+        },
+        "validation": {
+          "catamaranRequired": "Catamaran selection is required",
+          "dateRequired": "Tour date is required",
+          "locationRequired": "Pickup location is required",
+          "timeSlotRequired": "Time slot is required",
+          "advanceBooking": "Bookings must be made at least 24 hours in advance",
+          "minimumParticipants": "At least one participant is required",
+          "maxCapacity": "Maximum capacity is {max} people. Please reduce participants.",
+          "childAgeRange": "Child age must be between 0 and 17",
+          "submitError": "Failed to submit reservation. Please try again."
+        },
+        "confirmations": {
+          "sameDayBooking": "You are booking for today. This requires immediate confirmation from our team. Continue?"
+        },
+        "fallbacks": {
+          "catamaranExperience": "Catamaran Experience",
+          "caribbeanAdventure": "Caribbean adventure",
+          "defaultDescription": "Caribbean adventure with all amenities"
+        }
+      },
       "bikeRentals": {
         "name": "Bike Rentals",
         "short": "Explore the resort on our comfortable bicycles",
