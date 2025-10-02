@@ -1423,7 +1423,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   [SERVICE_IDS.LUXE_YACHT]: {
     id: SERVICE_IDS.LUXE_YACHT,
     titleKey: 'services.premium.luxeYacht.name',
-    descriptionKey: 'services.premium.luxeYacht.description',
+    descriptionKey: 'services.premium.luxeYacht.short',
     fullDescriptionKey: 'services.premium.luxeYacht.full',
     basePrice: 1500,
     priceUnit: 'services.priceUnits.perDay',
