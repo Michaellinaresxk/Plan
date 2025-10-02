@@ -43,14 +43,13 @@ import {
   Globe,
 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n/client';
 
 // Types
 interface Yacht {
   id: string;
   name: string;
   category: 'catamaran' | 'luxury';
-  price: number;
-  priceUnit: 'day';
   shortDescription: string;
   mainImage: string;
   gallery: string[];
@@ -77,322 +76,11 @@ interface Yacht {
   itinerary: string[];
 }
 
-// Enhanced Yacht Data
-const YACHT_DATA: Yacht[] = [
-  {
-    id: 'aiconFly-60',
-    name: 'AiconFly 60',
-    category: 'luxury',
-    price: 3500,
-    priceUnit: 'day',
-    shortDescription: 'Italian elegance meets high-performance',
-    mainImage:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
-    gallery: [
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/5_ryceky.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/3_eapwql.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600016/7_mkxuiy.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
-    ],
-    specifications: {
-      length: '60 ft',
-      maxGuests: 16,
-      cabins: 3,
-      bathrooms: 2,
-      crew: 3,
-      maxSpeed: '30 knots',
-      manufacturer: 'AiconFly',
-      year: 2008,
-    },
-    amenities: [
-      {
-        icon: <Wifi className='w-5 h-5' />,
-        name: 'Starlink WiFi',
-        description: 'High-speed internet',
-      },
-      {
-        icon: <Utensils className='w-5 h-5' />,
-        name: 'Professional Chef',
-        description: 'Gourmet cuisine',
-      },
-      {
-        icon: <Waves className='w-5 h-5' />,
-        name: 'Water Sports',
-        description: 'Complete equipment',
-      },
-    ],
-    highlights: [
-      'Carbon fiber hull',
-      'Panoramic windows',
-      'Water sports equipment',
-    ],
-    isPremium: false,
-    rating: 5,
-    reviews: 128,
-    location: 'Casa de Campo',
-    itinerary: [
-      'Departure from Casa de Campo',
-      'Swimming & snorkeling time',
-      'Gourmet lunch onboard',
-      'Water sports activities',
-      'Return to marina',
-    ],
-  },
-  {
-    id: 'fairline-43',
-    name: 'Fairline 43',
-    category: 'luxury',
-    price: 6500,
-    priceUnit: 'day',
-    shortDescription: 'British luxury with spa facilities',
-    mainImage:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600208/2_k72tfn.jpg',
-    gallery: [
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600211/1_k81g6k.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600212/4_yj68bm.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600213/5_uvzjqd.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
-    ],
-    specifications: {
-      length: '85 ft',
-      maxGuests: 18,
-      cabins: 4,
-      bathrooms: 4,
-      crew: 5,
-      maxSpeed: '28 knots',
-      manufacturer: 'Princess',
-      year: 2024,
-    },
-    amenities: [
-      {
-        icon: <Wifi className='w-5 h-5' />,
-        name: 'Satellite WiFi',
-        description: 'Global connectivity',
-      },
-      {
-        icon: <Utensils className='w-5 h-5' />,
-        name: 'Michelin Chef',
-        description: 'World-class dining',
-      },
-      {
-        icon: <Waves className='w-5 h-5' />,
-        name: 'Spa Services',
-        description: 'Onboard wellness',
-      },
-    ],
-    highlights: ['Hand-crafted interiors', 'Private spa deck', 'Wine cellar'],
-    isPremium: true,
-    rating: 4.95,
-    reviews: 89,
-    location: 'Cap Cana Marina',
-    itinerary: [
-      'VIP departure from Cap Cana',
-      'Champagne welcome',
-      'Cruise to Saona Island',
-      'Private beach club access',
-      'Spa treatments available',
-      'Sunset cocktails',
-      'Starlight return cruise',
-    ],
-  },
-  {
-    id: 'catamaran',
-    name: 'Lagoon 44',
-    category: 'catamaran',
-    price: 15000,
-    priceUnit: 'day',
-    shortDescription: '',
-    mainImage:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956164/7030fcbb-7da3-4676-9abb-d22177efab14_qdk2ac.jpg',
-    gallery: [
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956159/4f5f3743-f52d-4d85-b023-fb4be38f833f_n70bbg.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956399/3380551b-f82f-4fdc-86e2-47cf2ad3a6dc_foh9sp.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956172/c3b072ee-3a35-497c-8aa0-1942c9044a3b_q5xht7.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956193/d21ad3c2-f7eb-41e2-921d-3ae1be25c7a5_edwn0e.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956396/5ad4be2d-9122-45fe-bd48-0dec7b77a8b5_ymmrx8.jpg',
-    ],
-    specifications: {
-      length: '13,71 m',
-      maxGuests: 20,
-      cabins: 4,
-      bathrooms: 3,
-      crew: 3,
-      maxSpeed: '26 knots',
-      manufacturer: 'Lagoon',
-      year: 2013,
-    },
-    amenities: [
-      {
-        icon: <Wifi className='w-5 h-5' />,
-        name: 'Starlink Pro',
-        description: 'Ultra-high-speed internet',
-      },
-      {
-        icon: <Utensils className='w-5 h-5' />,
-        name: 'Celebrity Chef',
-        description: 'Personal culinary team',
-      },
-      {
-        icon: <Waves className='w-5 h-5' />,
-        name: 'Infinity Pool',
-        description: 'Glass-bottom pool',
-      },
-    ],
-    highlights: ['Helicopter landing pad', 'Infinity pool', 'Private cinema'],
-    isPremium: true,
-    rating: 5.0,
-    reviews: 156,
-    location: 'Bavaro Marina',
-    itinerary: [
-      'Grand departure ceremony',
-      'Multi-destination cruise',
-      'Private island experience',
-      'Luxury return transfer',
-    ],
-  },
-  {
-    id: 'tiara-38',
-    name: 'Tiara 38',
-    category: 'luxury',
-    price: 3500,
-    priceUnit: 'day',
-    shortDescription: 'Italian elegance meets high-performance',
-    mainImage:
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956761/ac955cf2-03ad-4c8c-87c6-36c0ec0cb3a9_ymvcuc.jpg',
-    gallery: [
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956770/3e8353e4-c87b-4ce6-9781-151e4bcc0245_usext6.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956766/28d661b1-e505-4bbe-98b9-66354d9e3112_gzt0ku.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956782/5ac1f830-2a76-4d82-8666-37bef3104a87_i810fb.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755957154/f87b013c-affa-4058-8723-e62f49f7643d_fjzbpv.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956815/f46a7e9a-3093-404d-825d-138155d275e7_lwjmri.jpg',
-      'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956761/ac955cf2-03ad-4c8c-87c6-36c0ec0cb3a9_ymvcuc.jpg',
-    ],
-    specifications: {
-      length: '60 ft',
-      maxGuests: 16,
-      cabins: 3,
-      bathrooms: 2,
-      crew: 3,
-      maxSpeed: '30 knots',
-      manufacturer: 'AiconFly',
-      year: 2008,
-    },
-    amenities: [
-      {
-        icon: <Wifi className='w-5 h-5' />,
-        name: 'Starlink WiFi',
-        description: 'High-speed internet',
-      },
-      {
-        icon: <Utensils className='w-5 h-5' />,
-        name: 'Professional Chef',
-        description: 'Gourmet cuisine',
-      },
-      {
-        icon: <Waves className='w-5 h-5' />,
-        name: 'Water Sports',
-        description: 'Complete equipment',
-      },
-    ],
-    highlights: [
-      'Carbon fiber hull',
-      'Panoramic windows',
-      'Water sports equipment',
-    ],
-    isPremium: false,
-    rating: 5,
-    reviews: 128,
-    location: 'Casa de Campo',
-    itinerary: [
-      'Departure from Casa de Campo',
-      'Swimming & snorkeling time',
-      'Gourmet lunch onboard',
-      'Water sports activities',
-      'Return to marina',
-    ],
-  },
-];
-
-// What to Bring Data
-const WHAT_TO_BRING = [
-  {
-    icon: Sun,
-    title: 'Sun Protection',
-    description: 'SPF 50+ sunscreen, hat, sunglasses',
-  },
-  {
-    icon: Shirt,
-    title: 'Comfortable Clothing',
-    description: 'Light, quick-dry clothing and swimwear',
-  },
-  {
-    icon: Camera,
-    title: 'Camera/GoPro',
-    description: 'Waterproof case recommended',
-  },
-  {
-    icon: Wind,
-    title: 'Light Jacket',
-    description: 'For evening ocean breeze',
-  },
-];
-
-// Updated Itinerary for Private Service
-const PRIVATE_SERVICE_INFO = [
-  {
-    id: 1,
-    icon: Clock,
-    title: 'Flexible Schedule',
-    time: '9:00 AM - 5:30 PM',
-    description:
-      'Your yacht is exclusively yours for 8.5 hours. Start anytime from 9 AM',
-  },
-  {
-    id: 2,
-    icon: Users,
-    title: 'Private Service',
-    time: 'Your Choice',
-    description:
-      'Completely private experience - you decide the itinerary and timing',
-  },
-  {
-    id: 3,
-    icon: Navigation,
-    title: 'Custom Routes',
-    time: 'As Desired',
-    description:
-      'Choose your destinations: natural pools, beaches, or island hopping',
-  },
-  {
-    id: 4,
-    icon: Utensils,
-    title: 'Gourmet Service',
-    time: 'Anytime',
-    description: 'Professional chef and crew at your complete disposal',
-  },
-  {
-    id: 5,
-    icon: Waves,
-    title: 'Water Activities',
-    time: 'On Demand',
-    description: 'Snorkeling, fishing, water sports - whenever you want',
-  },
-  {
-    id: 6,
-    icon: Calendar,
-    title: 'Easy Booking',
-    time: '12-24h Notice',
-    description:
-      'Book with minimum 12-24 hours advance notice (subject to availability)',
-  },
-];
-
 // Caribbean Hero with Yacht Background
 const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
   onBookingClick,
 }) => {
+  const { t } = useTranslation();
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 800], [0, 200]);
   const opacity = useTransform(scrollY, [0, 400], [1, 0]);
@@ -410,10 +98,6 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
           className='absolute inset-0 w-full h-full object-cover'
           poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
         >
-          {/* <source
-            src='https://videos.pexels.com/video-files/1093662/1093662-hd_1920_1080_30fps.mp4'
-            type='video/mp4'
-          /> */}
           <source src='/video/yates-promo.mp4' type='video/mp4' />
         </video>
         <div className='absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70' />
@@ -466,7 +150,7 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
               >
                 <Diamond className='w-5 h-5 text-cyan-400' />
                 <span className='text-sm font-semibold'>
-                  ULTRA LUXURY COLLECTION
+                  {t('services.premium.luxYachtView.hero.badgeLabel')}
                 </span>
                 <Diamond className='w-5 h-5 text-cyan-400' />
               </motion.div>
@@ -477,9 +161,9 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
                 transition={{ delay: 0.7, duration: 0.8 }}
                 className='text-5xl lg:text-7xl font-thin mb-6 leading-tight'
               >
-                Beyond
+                {t('services.premium.luxYachtView.hero.titleLine1')}
                 <span className='block font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent'>
-                  Expectations
+                  {t('services.premium.luxYachtView.hero.titleLine2')}
                 </span>
               </motion.h1>
 
@@ -489,12 +173,10 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
                 transition={{ delay: 1, duration: 0.8 }}
                 className='text-xl lg:text-2xl text-gray-300 mb-8 leading-relaxed max-w-lg'
               >
-                Discover the world's most exclusive yacht collection. Where
-                every journey becomes an unforgettable masterpiece.
+                {t('services.premium.luxYachtView.hero.description')}
               </motion.p>
             </motion.div>
 
-            {/* Right Content - Modern Card */}
             <motion.div
               initial={{ opacity: 0, x: 100 }}
               animate={{ opacity: 1, x: 0 }}
@@ -502,64 +184,6 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
               className='hidden lg:block'
             >
               <div className='relative'>
-                {/* Main Card */}
-                {/* <motion.div
-                  whileHover={{ y: -10, rotateY: 5 }}
-                  className='bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 transform perspective-1000'
-                  style={{ transformStyle: 'preserve-3d' }}
-                >
-                  <div className='flex items-center space-x-4 mb-6'>
-                    <div className='w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center'>
-                      <Crown className='w-8 h-8 text-white' />
-                    </div>
-                    <div>
-                      <h3 className='text-2xl font-bold text-white'>
-                        Premium Concierge
-                      </h3>
-                      <p className='text-gray-300'>24/7 Luxury Service</p>
-                    </div>
-                  </div>
-
-                  <p className='text-gray-300 mb-6'>
-                    Experience personalized service that anticipates your every
-                    need. From arrival to departure, every detail is crafted to
-                    perfection.
-                  </p>
-
-                  <div className='grid grid-cols-2 gap-4'>
-                    {[
-                      {
-                        icon: <Shield className='w-5 h-5' />,
-                        text: 'Fully Insured',
-                      },
-                      {
-                        icon: <Award className='w-5 h-5' />,
-                        text: '5-Star Service',
-                      },
-                      {
-                        icon: <Globe className='w-5 h-5' />,
-                        text: 'Destination Experts',
-                      },
-                      {
-                        icon: <Heart className='w-5 h-5' />,
-                        text: 'Trusted by 1000+',
-                      },
-                    ].map((item, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 1.2 + index * 0.1 }}
-                        className='flex items-center space-x-2 text-gray-300'
-                      >
-                        {item.icon}
-                        <span className='text-sm font-medium'>{item.text}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div> */}
-
-                {/* Floating Elements */}
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{
@@ -588,6 +212,8 @@ const PhotoOnlyYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
   yacht,
   onSelect,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div
       className='group relative h-50 lg:h-80 rounded-3xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-[1.02] hover:shadow-xl'
@@ -607,14 +233,14 @@ const PhotoOnlyYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
       {yacht.isPremium && (
         <div className='absolute top-4 right-4 bg-gradient-to-r from-coral-400 to-orange-400 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1'>
           <Crown className='w-3 h-3' />
-          Premium
+          {t('services.premium.luxYachtView.yachtGrid.cardPremiumBadge')}
         </div>
       )}
 
       {/* Text Content Inside */}
       <div className='absolute bottom-0 left-0 right-0 p-5 text-white'>
         <div className='flex items-center justify-between'>
-          <h3 className='text-1xl md:text-2xl  font-semibold mb-2 group-hover:text-teal-300 transition-colors'>
+          <h3 className='text-1xl md:text-2xl font-semibold mb-2 group-hover:text-teal-300 transition-colors'>
             {yacht.name}
           </h3>
           <div className='text-right'>
@@ -632,14 +258,16 @@ const PhotoOnlyYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
 // Yacht Grid Section
 const CaribbeanYachtGrid: React.FC<{
   onYachtSelect: (yacht: Yacht) => void;
-}> = ({ onYachtSelect }) => {
+  yachtData: Yacht[];
+}> = ({ onYachtSelect, yachtData }) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('all');
 
   const filteredYachts = useMemo(() => {
     return filter === 'all'
-      ? YACHT_DATA
-      : YACHT_DATA.filter((yacht) => yacht.category === filter);
-  }, [filter]);
+      ? yachtData
+      : yachtData.filter((yacht) => yacht.category === filter);
+  }, [filter, yachtData]);
 
   return (
     <section
@@ -652,15 +280,18 @@ const CaribbeanYachtGrid: React.FC<{
           <div className='inline-flex items-center gap-2 bg-teal-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-teal-200/50'>
             <Anchor className='w-5 h-5 text-teal-700' />
             <span className='text-teal-800 text-sm font-medium tracking-wide'>
-              Premium Fleet
+              {t('services.premium.luxYachtView.yachtGrid.badgeLabel')}
             </span>
           </div>
 
           <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            Caribbean <span className='font-normal text-teal-600'>Luxury</span>
+            {t('services.premium.luxYachtView.yachtGrid.titlePrefix')}{' '}
+            <span className='font-normal text-teal-600'>
+              {t('services.premium.luxYachtView.yachtGrid.titleSuffix')}
+            </span>
           </h2>
           <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
-            Handpicked yachts for the ultimate Caribbean experience
+            {t('services.premium.luxYachtView.yachtGrid.description')}
           </p>
         </div>
 
@@ -668,9 +299,20 @@ const CaribbeanYachtGrid: React.FC<{
         <div className='flex justify-center mb-12'>
           <div className='inline-flex bg-white/70 backdrop-blur-sm rounded-full p-1 shadow-sm border border-white/50'>
             {[
-              { id: 'all', name: 'All Yachts' },
-              { id: 'catamaran', name: 'Catamaran' },
-              { id: 'luxury', name: 'Luxury' },
+              {
+                id: 'all',
+                name: t('services.premium.luxYachtView.yachtGrid.filterAll'),
+              },
+              {
+                id: 'catamaran',
+                name: t(
+                  'services.premium.luxYachtView.yachtGrid.filterCatamaran'
+                ),
+              },
+              {
+                id: 'luxury',
+                name: t('services.premium.luxYachtView.yachtGrid.filterLuxury'),
+              },
             ].map((category) => (
               <button
                 key={category.id}
@@ -704,6 +346,7 @@ const CaribbeanYachtGrid: React.FC<{
 
 // Real Gallery Section with Lightbox
 const CaribbeanGallery: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedImage, setSelectedImage] = useState<{
     src: string;
     caption: string;
@@ -739,21 +382,25 @@ const CaribbeanGallery: React.FC = () => {
   ];
 
   const categories = [
-    { id: 'all', label: 'All Photos', count: galleryImages.length },
+    {
+      id: 'all',
+      label: t('services.premium.luxYachtView.gallery.categoryAll'),
+      count: galleryImages.length,
+    },
     {
       id: 'yachts',
-      label: 'Yachts',
+      label: t('services.premium.luxYachtView.gallery.categoryYachts'),
       count: galleryImages.filter((img) => img.category === 'yachts').length,
     },
     {
       id: 'experiences',
-      label: 'Experiences',
+      label: t('services.premium.luxYachtView.gallery.categoryExperiences'),
       count: galleryImages.filter((img) => img.category === 'experiences')
         .length,
     },
     {
       id: 'destinations',
-      label: 'Destinations',
+      label: t('services.premium.luxYachtView.gallery.categoryDestinations'),
       count: galleryImages.filter((img) => img.category === 'destinations')
         .length,
     },
@@ -773,15 +420,18 @@ const CaribbeanGallery: React.FC = () => {
           <div className='inline-flex items-center gap-2 bg-blue-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-blue-200/50'>
             <Camera className='w-5 h-5 text-blue-700' />
             <span className='text-blue-800 text-sm font-medium tracking-wide'>
-              Experience Gallery
+              {t('services.premium.luxYachtView.gallery.badgeLabel')}
             </span>
           </div>
 
           <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            Caribbean <span className='font-normal text-blue-600'>Moments</span>
+            {t('services.premium.luxYachtView.gallery.titlePrefix')}{' '}
+            <span className='font-normal text-blue-600'>
+              {t('services.premium.luxYachtView.gallery.titleSuffix')}
+            </span>
           </h2>
           <p className='text-lg text-gray-600 mb-8'>
-            See what awaits you in tropical paradise
+            {t('services.premium.luxYachtView.gallery.description')}
           </p>
 
           {/* Category Filters */}
@@ -882,6 +532,33 @@ const CaribbeanGallery: React.FC = () => {
 
 // What to Bring - Caribbean Style
 const CaribbeanWhatToBring: React.FC = () => {
+  const { t } = useTranslation();
+
+  const whatToBringItems = [
+    {
+      icon: Sun,
+      title: t('services.premium.luxYachtView.whatToBring.sunProtectionTitle'),
+      description: t(
+        'services.premium.luxYachtView.whatToBring.sunProtectionDesc'
+      ),
+    },
+    {
+      icon: Shirt,
+      title: t('services.premium.luxYachtView.whatToBring.clothingTitle'),
+      description: t('services.premium.luxYachtView.whatToBring.clothingDesc'),
+    },
+    {
+      icon: Camera,
+      title: t('services.premium.luxYachtView.whatToBring.cameraTitle'),
+      description: t('services.premium.luxYachtView.whatToBring.cameraDesc'),
+    },
+    {
+      icon: Wind,
+      title: t('services.premium.luxYachtView.whatToBring.jacketTitle'),
+      description: t('services.premium.luxYachtView.whatToBring.jacketDesc'),
+    },
+  ];
+
   return (
     <section className='py-24 bg-gradient-to-br from-teal-50/50 to-blue-50/50'>
       <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -889,20 +566,23 @@ const CaribbeanWhatToBring: React.FC = () => {
           <div className='inline-flex items-center gap-2 bg-teal-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-teal-200/50'>
             <Shirt className='w-5 h-5 text-teal-700' />
             <span className='text-teal-800 text-sm font-medium tracking-wide'>
-              Packing Guide
+              {t('services.premium.luxYachtView.whatToBring.badgeLabel')}
             </span>
           </div>
 
           <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            What to <span className='font-normal text-teal-600'>Pack</span>
+            {t('services.premium.luxYachtView.whatToBring.titlePrefix')}{' '}
+            <span className='font-normal text-teal-600'>
+              {t('services.premium.luxYachtView.whatToBring.titleSuffix')}
+            </span>
           </h2>
           <p className='text-lg text-gray-600'>
-            Essential items for your Caribbean yacht experience
+            {t('services.premium.luxYachtView.whatToBring.description')}
           </p>
         </div>
 
         <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
-          {WHAT_TO_BRING.map((item, index) => {
+          {whatToBringItems.map((item, index) => {
             const IconComponent = item.icon;
             return (
               <div
@@ -931,13 +611,10 @@ const CaribbeanWhatToBring: React.FC = () => {
             </div>
             <div>
               <h4 className='font-semibold text-gray-900 mb-3'>
-                We Provide Everything Else
+                {t('services.premium.luxYachtView.whatToBring.weProvideTitle')}
               </h4>
               <p className='text-gray-700 leading-relaxed'>
-                Premium towels, snorkeling equipment, life jackets, fresh water
-                showers, restrooms, refreshments, and climate-controlled
-                comfort. Just bring yourself and get ready for an unforgettable
-                Caribbean adventure.
+                {t('services.premium.luxYachtView.whatToBring.weProvideDesc')}
               </p>
             </div>
           </div>
@@ -947,8 +624,65 @@ const CaribbeanWhatToBring: React.FC = () => {
   );
 };
 
-// Updated Private Service Info Section (instead of rigid itinerary)
+// Updated Private Service Info Section
 const PrivateServiceInfo: React.FC = () => {
+  const { t } = useTranslation();
+
+  const serviceInfo = [
+    {
+      id: 1,
+      icon: Clock,
+      title: t('services.premium.luxYachtView.privateService.flexibleTitle'),
+      time: t('services.premium.luxYachtView.privateService.flexibleTime'),
+      description: t(
+        'services.premium.luxYachtView.privateService.flexibleDesc'
+      ),
+    },
+    {
+      id: 2,
+      icon: Users,
+      title: t('services.premium.luxYachtView.privateService.privateTitle'),
+      time: t('services.premium.luxYachtView.privateService.privateTime'),
+      description: t(
+        'services.premium.luxYachtView.privateService.privateDesc'
+      ),
+    },
+    {
+      id: 3,
+      icon: Navigation,
+      title: t('services.premium.luxYachtView.privateService.customTitle'),
+      time: t('services.premium.luxYachtView.privateService.customTime'),
+      description: t('services.premium.luxYachtView.privateService.customDesc'),
+    },
+    {
+      id: 4,
+      icon: Utensils,
+      title: t('services.premium.luxYachtView.privateService.gourmetTitle'),
+      time: t('services.premium.luxYachtView.privateService.gourmetTime'),
+      description: t(
+        'services.premium.luxYachtView.privateService.gourmetDesc'
+      ),
+    },
+    {
+      id: 5,
+      icon: Waves,
+      title: t('services.premium.luxYachtView.privateService.activitiesTitle'),
+      time: t('services.premium.luxYachtView.privateService.activitiesTime'),
+      description: t(
+        'services.premium.luxYachtView.privateService.activitiesDesc'
+      ),
+    },
+    {
+      id: 6,
+      icon: Calendar,
+      title: t('services.premium.luxYachtView.privateService.bookingTitle'),
+      time: t('services.premium.luxYachtView.privateService.bookingTime'),
+      description: t(
+        'services.premium.luxYachtView.privateService.bookingDesc'
+      ),
+    },
+  ];
+
   return (
     <section className='py-24 bg-white'>
       <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -956,25 +690,27 @@ const PrivateServiceInfo: React.FC = () => {
           <div className='inline-flex items-center gap-2 bg-blue-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-blue-200/50'>
             <Users className='w-5 h-5 text-blue-700' />
             <span className='text-blue-800 text-sm font-medium tracking-wide'>
-              Private Service
+              {t('services.premium.luxYachtView.privateService.badgeLabel')}
             </span>
           </div>
 
           <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            Your Perfect <span className='font-normal text-blue-600'>Day</span>
+            {t('services.premium.luxYachtView.privateService.titlePrefix')}{' '}
+            <span className='font-normal text-blue-600'>
+              {t('services.premium.luxYachtView.privateService.titleSuffix')}
+            </span>
           </h2>
           <p className='text-lg text-gray-600 mb-4'>
-            El cliente tiene el yate a su entera disposición de 9 AM a 5:30 PM
+            {t('services.premium.luxYachtView.privateService.description')}
           </p>
           <p className='text-sm text-teal-600 font-medium'>
-            🚤 Servicio completamente privado - Puedes empezar cuando quieras
-            desde las 9 AM
+            {t('services.premium.luxYachtView.privateService.subtitle')}
           </p>
         </div>
 
-        {/* Two Column Grid - Always */}
+        {/* Two Column Grid */}
         <div className='grid grid-cols-2 gap-4 md:gap-6'>
-          {PRIVATE_SERVICE_INFO.map((info, index) => {
+          {serviceInfo.map((info) => {
             const IconComponent = info.icon;
             return (
               <div
@@ -1010,7 +746,7 @@ const PrivateServiceInfo: React.FC = () => {
           <div className='inline-flex items-center gap-3 bg-gradient-to-r from-teal-50 to-blue-50 rounded-2xl px-8 py-4 border border-teal-100'>
             <Sparkles className='w-5 h-5 text-teal-600' />
             <span className='text-gray-700 font-medium'>
-              Tiempo mínimo de antelación: 12-24 horas. Sujeto a disponibilidad
+              {t('services.premium.luxYachtView.privateService.noteText')}
             </span>
           </div>
         </div>
@@ -1019,24 +755,132 @@ const PrivateServiceInfo: React.FC = () => {
   );
 };
 
-// Enhanced Modal for Yacht Details - FIXED SCROLL ISSUE
+// Important Info Section
+const YachtImportantInfo: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <section className='py-24 bg-gradient-to-br from-blue-50/50 to-teal-50/50'>
+      <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/50 shadow-lg'>
+          <div className='flex items-start gap-4 mb-8'>
+            <div className='w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
+              <Info className='w-6 h-6 text-blue-600' />
+            </div>
+            <div>
+              <h3 className='text-2xl font-semibold text-gray-900 mb-2'>
+                {t('services.premium.luxYachtView.importantInfo.title')}
+              </h3>
+              <p className='text-gray-600'>
+                {t('services.premium.luxYachtView.importantInfo.subtitle')}
+              </p>
+            </div>
+          </div>
+
+          <div className='space-y-6'>
+            {/* Availability */}
+            <div className='flex items-start gap-3'>
+              <Calendar className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
+              <div>
+                <h4 className='font-semibold text-gray-900 mb-1'>
+                  {t(
+                    'services.premium.luxYachtView.importantInfo.availabilityTitle'
+                  )}
+                </h4>
+                <p className='text-gray-700 leading-relaxed'>
+                  {t(
+                    'services.premium.luxYachtView.importantInfo.availabilityDesc'
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Confirmation */}
+            <div className='flex items-start gap-3'>
+              <CheckCircle className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
+              <div>
+                <h4 className='font-semibold text-gray-900 mb-1'>
+                  {t(
+                    'services.premium.luxYachtView.importantInfo.confirmationTitle'
+                  )}
+                </h4>
+                <p className='text-gray-700 leading-relaxed'>
+                  {t(
+                    'services.premium.luxYachtView.importantInfo.confirmationDesc'
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Additional Services */}
+            <div className='flex items-start gap-3'>
+              <Sparkles className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
+              <div>
+                <h4 className='font-semibold text-gray-900 mb-1'>
+                  {t(
+                    'services.premium.luxYachtView.importantInfo.servicesTitle'
+                  )}
+                </h4>
+                <p className='text-gray-700 leading-relaxed mb-3'>
+                  {t(
+                    'services.premium.luxYachtView.importantInfo.servicesDesc'
+                  )}
+                </p>
+                <div className='flex flex-wrap gap-2'>
+                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
+                    {t(
+                      'services.premium.luxYachtView.importantInfo.serviceFood'
+                    )}
+                  </span>
+                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
+                    {t(
+                      'services.premium.luxYachtView.importantInfo.serviceDecoration'
+                    )}
+                  </span>
+                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
+                    {t(
+                      'services.premium.luxYachtView.importantInfo.serviceEntertainment'
+                    )}
+                  </span>
+                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
+                    {t(
+                      'services.premium.luxYachtView.importantInfo.serviceRefreshments'
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment */}
+            <div className='flex items-start gap-3'>
+              <Shield className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
+              <div>
+                <h4 className='font-semibold text-gray-900 mb-1'>
+                  {t(
+                    'services.premium.luxYachtView.importantInfo.paymentTitle'
+                  )}
+                </h4>
+                <p className='text-gray-700 leading-relaxed'>
+                  {t('services.premium.luxYachtView.importantInfo.paymentDesc')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Enhanced Modal for Yacht Details
 const YachtDetailsModal: React.FC<{
   yacht: Yacht;
   onClose: () => void;
   onBook: () => void;
 }> = ({ yacht, onClose, onBook }) => {
+  const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('overview');
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % yacht.gallery.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex(
-      (prev) => (prev - 1 + yacht.gallery.length) % yacht.gallery.length
-    );
-  };
 
   return (
     <div className='fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
@@ -1078,20 +922,6 @@ const YachtDetailsModal: React.FC<{
               className='w-full h-full object-cover'
             />
 
-            {/* Navigation */}
-            {/* <button
-              onClick={prevImage}
-              className='absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all'
-            >
-              <ChevronLeft className='w-5 h-5' />
-            </button> */}
-            {/* <button
-              onClick={nextImage}
-              className='absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all'
-            >
-              <ChevronRight className='w-5 h-5' />
-            </button> */}
-
             {/* Image Counter */}
             <div className='absolute top-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm'>
               {currentImageIndex + 1} / {yacht.gallery.length}
@@ -1120,31 +950,37 @@ const YachtDetailsModal: React.FC<{
           </div>
         </div>
 
-        {/* Right Side - Details - FIXED: Added proper height constraints */}
+        {/* Right Side - Details */}
         <div className='lg:w-2/5 flex flex-col min-h-0'>
-          {/* Price and Book */}
+          {/* Availability Info */}
           <div className='p-6 border-b border-gray-200 bg-gradient-to-br from-teal-50/50 to-blue-50/50 flex-shrink-0'>
-            <div className='flex items-center justify-between mb-4'>
-              <div>
-                <div className='text-3xl font-bold text-gray-900'>
-                  ${yacht.price.toLocaleString()}
-                </div>
-                <div className='text-gray-500'>per {yacht.priceUnit}</div>
+            <div className='text-center mb-4'>
+              <div className='inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-full text-sm font-semibold mb-3'>
+                <Calendar className='w-4 h-4' />
+                {t('services.premium.luxYachtView.modal.availableOnRequest')}
               </div>
-              {yacht.isPremium && (
+              <p className='text-gray-600 text-sm'>
+                {t('services.premium.luxYachtView.modal.availabilityNote')}
+              </p>
+            </div>
+
+            {yacht.isPremium && (
+              <div className='flex justify-center mb-4'>
                 <div className='bg-gradient-to-r from-coral-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1'>
                   <Crown className='w-3 h-3' />
-                  Premium
+                  {t(
+                    'services.premium.luxYachtView.yachtGrid.cardPremiumBadge'
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             <button
               onClick={onBook}
               className='w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2'
             >
               <Calendar className='w-5 h-5' />
-              Book Caribbean Experience
+              {t('services.premium.luxYachtView.modal.ctaBook')}
             </button>
           </div>
 
@@ -1152,9 +988,18 @@ const YachtDetailsModal: React.FC<{
           <div className='border-b border-gray-200 bg-gray-50 flex-shrink-0'>
             <div className='flex'>
               {[
-                { id: 'overview', name: 'Overview' },
-                { id: 'itinerary', name: 'Service' },
-                { id: 'amenities', name: 'Amenities' },
+                {
+                  id: 'overview',
+                  name: t('services.premium.luxYachtView.modal.tabOverview'),
+                },
+                {
+                  id: 'itinerary',
+                  name: t('services.premium.luxYachtView.modal.tabItinerary'),
+                },
+                {
+                  id: 'amenities',
+                  name: t('services.premium.luxYachtView.modal.tabAmenities'),
+                },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -1171,13 +1016,13 @@ const YachtDetailsModal: React.FC<{
             </div>
           </div>
 
-          {/* Tab Content - FIXED: Added proper overflow handling */}
+          {/* Tab Content */}
           <div className='flex-1 min-h-0 overflow-y-auto p-6 pb-30'>
             {activeTab === 'overview' && (
               <div className='space-y-6'>
                 <div>
                   <h3 className='font-semibold text-gray-900 mb-3'>
-                    Caribbean Experience
+                    {t('services.premium.luxYachtView.modal.overviewTitle')}
                   </h3>
                   <p className='text-gray-600 leading-relaxed'>
                     {yacht.shortDescription}
@@ -1187,22 +1032,28 @@ const YachtDetailsModal: React.FC<{
                 <div className='grid grid-cols-2 gap-4'>
                   {[
                     {
-                      label: 'Length',
+                      label: t(
+                        'services.premium.luxYachtView.modal.specLength'
+                      ),
                       value: yacht.specifications.length,
                       icon: <Anchor className='w-4 h-4' />,
                     },
                     {
-                      label: 'Guests',
+                      label: t(
+                        'services.premium.luxYachtView.modal.specGuests'
+                      ),
                       value: yacht.specifications.maxGuests,
                       icon: <Users className='w-4 h-4' />,
                     },
                     {
-                      label: 'Cabins',
+                      label: t(
+                        'services.premium.luxYachtView.modal.specCabins'
+                      ),
                       value: yacht.specifications.cabins,
                       icon: <BedDouble className='w-4 h-4' />,
                     },
                     {
-                      label: 'Speed',
+                      label: t('services.premium.luxYachtView.modal.specSpeed'),
                       value: yacht.specifications.maxSpeed,
                       icon: <Zap className='w-4 h-4' />,
                     },
@@ -1227,39 +1078,51 @@ const YachtDetailsModal: React.FC<{
             {activeTab === 'itinerary' && (
               <div>
                 <h3 className='font-semibold text-gray-900 mb-4'>
-                  Private Service Details
+                  {t('services.premium.luxYachtView.modal.itineraryTitle')}
                 </h3>
                 <div className='space-y-4 mb-6'>
                   <div className='p-4 bg-teal-50 rounded-lg'>
                     <h4 className='font-semibold text-teal-900 mb-2'>
-                      🕘 Horario Completo
+                      {t(
+                        'services.premium.luxYachtView.modal.itineraryScheduleTitle'
+                      )}
                     </h4>
                     <p className='text-teal-700 text-sm'>
-                      El yate está a tu disposición de 9:00 AM a 5:30 PM (8.5
-                      horas)
+                      {t(
+                        'services.premium.luxYachtView.modal.itineraryScheduleDesc'
+                      )}
                     </p>
                   </div>
                   <div className='p-4 bg-blue-50 rounded-lg'>
                     <h4 className='font-semibold text-blue-900 mb-2'>
-                      🚤 Servicio Privado
+                      {t(
+                        'services.premium.luxYachtView.modal.itineraryPrivateTitle'
+                      )}
                     </h4>
                     <p className='text-blue-700 text-sm'>
-                      Puedes empezar cuando quieras a partir de las 9 AM.
-                      Completamente privado.
+                      {t(
+                        'services.premium.luxYachtView.modal.itineraryPrivateDesc'
+                      )}
                     </p>
                   </div>
                   <div className='p-4 bg-green-50 rounded-lg'>
                     <h4 className='font-semibold text-green-900 mb-2'>
-                      📅 Reserva Rápida
+                      {t(
+                        'services.premium.luxYachtView.modal.itineraryBookingTitle'
+                      )}
                     </h4>
                     <p className='text-green-700 text-sm'>
-                      Mínimo 12-24 horas de antelación. Sujeto a disponibilidad.
+                      {t(
+                        'services.premium.luxYachtView.modal.itineraryBookingDesc'
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className='space-y-3'>
                   <h4 className='font-semibold text-gray-900'>
-                    Itinerary Options:
+                    {t(
+                      'services.premium.luxYachtView.modal.itineraryOptionsLabel'
+                    )}
                   </h4>
                   {yacht.itinerary.map((item, index) => (
                     <div
@@ -1281,7 +1144,7 @@ const YachtDetailsModal: React.FC<{
             {activeTab === 'amenities' && (
               <div className='space-y-4'>
                 <h3 className='font-semibold text-gray-900 mb-4'>
-                  Luxury Amenities
+                  {t('services.premium.luxYachtView.modal.amenitiesTitle')}
                 </h3>
                 {yacht.amenities.map((amenity, index) => (
                   <div
@@ -1306,8 +1169,6 @@ const YachtDetailsModal: React.FC<{
               </div>
             )}
           </div>
-
-          {/* REMOVED: "Need Help" Section as requested */}
         </div>
       </div>
     </div>
@@ -1319,6 +1180,7 @@ const CaribbeanBookingModal: React.FC<{
   yacht: Yacht;
   onClose: () => void;
 }> = ({ yacht, onClose }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     date: '',
     guests: 2,
@@ -1334,9 +1196,7 @@ const CaribbeanBookingModal: React.FC<{
     setIsSubmitting(true);
 
     setTimeout(() => {
-      alert(
-        '¡Gracias! Nuestro equipo de concierge te contactará en menos de 15 minutos para confirmar tu experiencia caribeña.'
-      );
+      alert(t('services.premium.luxYachtView.booking.successMessage'));
       setIsSubmitting(false);
       onClose();
     }, 2000);
@@ -1361,7 +1221,9 @@ const CaribbeanBookingModal: React.FC<{
           </button>
           <div className='absolute bottom-4 left-4 text-white'>
             <h2 className='text-lg font-semibold'>{yacht.name}</h2>
-            <p className='text-white/80 text-sm'>Caribbean Experience</p>
+            <p className='text-white/80 text-sm'>
+              {t('services.premium.luxYachtView.booking.modalTitle')}
+            </p>
           </div>
         </div>
 
@@ -1370,7 +1232,7 @@ const CaribbeanBookingModal: React.FC<{
           <div className='grid grid-cols-2 gap-4'>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-1'>
-                Date
+                {t('services.premium.luxYachtView.booking.labelDate')}
               </label>
               <input
                 type='date'
@@ -1385,7 +1247,7 @@ const CaribbeanBookingModal: React.FC<{
             </div>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-1'>
-                Guests
+                {t('services.premium.luxYachtView.booking.labelGuests')}
               </label>
               <select
                 value={formData.guests}
@@ -1402,7 +1264,12 @@ const CaribbeanBookingModal: React.FC<{
                   (_, i) => i + 1
                 ).map((num) => (
                   <option key={num} value={num}>
-                    {num} Guest{num > 1 ? 's' : ''}
+                    {num}{' '}
+                    {num > 1
+                      ? t('services.premium.luxYachtView.booking.guestPlural')
+                      : t(
+                          'services.premium.luxYachtView.booking.guestSingular'
+                        )}
                   </option>
                 ))}
               </select>
@@ -1411,7 +1278,7 @@ const CaribbeanBookingModal: React.FC<{
 
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
-              Full Name
+              {t('services.premium.luxYachtView.booking.labelName')}
             </label>
             <input
               type='text'
@@ -1421,14 +1288,16 @@ const CaribbeanBookingModal: React.FC<{
                 setFormData((prev) => ({ ...prev, name: e.target.value }))
               }
               className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors'
-              placeholder='Enter your full name'
+              placeholder={t(
+                'services.premium.luxYachtView.booking.placeholderName'
+              )}
             />
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-1'>
-                Email
+                {t('services.premium.luxYachtView.booking.labelEmail')}
               </label>
               <input
                 type='email'
@@ -1438,12 +1307,14 @@ const CaribbeanBookingModal: React.FC<{
                   setFormData((prev) => ({ ...prev, email: e.target.value }))
                 }
                 className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors'
-                placeholder='your@email.com'
+                placeholder={t(
+                  'services.premium.luxYachtView.booking.placeholderEmail'
+                )}
               />
             </div>
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-1'>
-                Phone
+                {t('services.premium.luxYachtView.booking.labelPhone')}
               </label>
               <input
                 type='tel'
@@ -1453,14 +1324,16 @@ const CaribbeanBookingModal: React.FC<{
                   setFormData((prev) => ({ ...prev, phone: e.target.value }))
                 }
                 className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors'
-                placeholder='+1 (555) 000-0000'
+                placeholder={t(
+                  'services.premium.luxYachtView.booking.placeholderPhone'
+                )}
               />
             </div>
           </div>
 
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
-              Special Requests
+              {t('services.premium.luxYachtView.booking.labelMessage')}
             </label>
             <textarea
               value={formData.message}
@@ -1469,20 +1342,22 @@ const CaribbeanBookingModal: React.FC<{
               }
               rows={3}
               className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors resize-none'
-              placeholder='Celebrations, dietary needs, preferences...'
+              placeholder={t(
+                'services.premium.luxYachtView.booking.placeholderMessage'
+              )}
             />
           </div>
 
-          {/* Price Display */}
+          {/* Info Display */}
           <div className='bg-teal-50 rounded-lg p-4 border border-teal-200'>
-            <div className='flex justify-between items-center mb-2'>
-              <span className='text-gray-600'>Caribbean Experience</span>
-              <span className='text-2xl font-bold text-teal-700'>
-                ${yacht.price.toLocaleString()}
-              </span>
+            <div className='flex items-start gap-2 mb-2'>
+              <Info className='w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5' />
+              <p className='text-sm text-teal-800 font-medium'>
+                {t('services.premium.luxYachtView.booking.infoTitle')}
+              </p>
             </div>
-            <p className='text-sm text-teal-600'>
-              Includes: Captain, crew, fuel, insurance & refreshments
+            <p className='text-sm text-teal-700 leading-relaxed'>
+              {t('services.premium.luxYachtView.booking.infoDesc')}
             </p>
           </div>
 
@@ -1498,19 +1373,18 @@ const CaribbeanBookingModal: React.FC<{
             {isSubmitting ? (
               <>
                 <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white' />
-                Sending Request...
+                {t('services.premium.luxYachtView.booking.ctaSubmitting')}
               </>
             ) : (
               <>
                 <Waves className='w-5 h-5' />
-                Request Caribbean Adventure
+                {t('services.premium.luxYachtView.booking.ctaSubmit')}
               </>
             )}
           </button>
 
           <p className='text-xs text-gray-500 text-center'>
-            Our concierge team will contact you within 15 minutes to confirm
-            details
+            {t('services.premium.luxYachtView.booking.note')}
           </p>
         </div>
       </div>
@@ -1520,9 +1394,307 @@ const CaribbeanBookingModal: React.FC<{
 
 // Main Component
 const LuxeYachtServiceView: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedYacht, setSelectedYacht] = useState<Yacht | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const fleetRef = useRef<HTMLDivElement>(null);
+
+  // Enhanced Yacht Data with translations
+  const YACHT_DATA: Yacht[] = useMemo(
+    () => [
+      {
+        id: 'aiconFly-60',
+        name: t('services.premium.luxYachtView.yachts.aiconfly.name'),
+        category: 'luxury',
+        shortDescription: t(
+          'services.premium.luxYachtView.yachts.aiconfly.shortDesc'
+        ),
+        mainImage:
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
+        gallery: [
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/5_ryceky.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/3_eapwql.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600016/7_mkxuiy.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
+        ],
+        specifications: {
+          length: '60 ft',
+          maxGuests: 16,
+          cabins: 3,
+          bathrooms: 2,
+          crew: 3,
+          maxSpeed: '30 knots',
+          manufacturer: 'AiconFly',
+          year: 2008,
+        },
+        amenities: [
+          {
+            icon: <Wifi className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.aiconfly.amenityWifiName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.aiconfly.amenityWifiDesc'
+            ),
+          },
+          {
+            icon: <Utensils className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.aiconfly.amenityChefName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.aiconfly.amenityChefDesc'
+            ),
+          },
+          {
+            icon: <Waves className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.aiconfly.amenitySportsName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.aiconfly.amenitySportsDesc'
+            ),
+          },
+        ],
+        highlights: [
+          t('services.premium.luxYachtView.yachts.aiconfly.highlight1'),
+          t('services.premium.luxYachtView.yachts.aiconfly.highlight2'),
+          t('services.premium.luxYachtView.yachts.aiconfly.highlight3'),
+        ],
+        isPremium: false,
+        rating: 5,
+        reviews: 128,
+        location: t('services.premium.luxYachtView.yachts.aiconfly.location'),
+        itinerary: [
+          t('services.premium.luxYachtView.yachts.aiconfly.itinerary1'),
+          t('services.premium.luxYachtView.yachts.aiconfly.itinerary2'),
+          t('services.premium.luxYachtView.yachts.aiconfly.itinerary3'),
+          t('services.premium.luxYachtView.yachts.aiconfly.itinerary4'),
+          t('services.premium.luxYachtView.yachts.aiconfly.itinerary5'),
+        ],
+      },
+      {
+        id: 'fairline-43',
+        name: t('services.premium.luxYachtView.yachts.fairline.name'),
+        category: 'luxury',
+        shortDescription: t(
+          'services.premium.luxYachtView.yachts.fairline.shortDesc'
+        ),
+        mainImage:
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600208/2_k72tfn.jpg',
+        gallery: [
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600211/1_k81g6k.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600212/4_yj68bm.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600213/5_uvzjqd.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
+        ],
+        specifications: {
+          length: '85 ft',
+          maxGuests: 18,
+          cabins: 4,
+          bathrooms: 4,
+          crew: 5,
+          maxSpeed: '28 knots',
+          manufacturer: 'Princess',
+          year: 2024,
+        },
+        amenities: [
+          {
+            icon: <Wifi className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.fairline.amenityWifiName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.fairline.amenityWifiDesc'
+            ),
+          },
+          {
+            icon: <Utensils className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.fairline.amenityChefName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.fairline.amenityChefDesc'
+            ),
+          },
+          {
+            icon: <Waves className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.fairline.amenitySpaName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.fairline.amenitySpaDesc'
+            ),
+          },
+        ],
+        highlights: [
+          t('services.premium.luxYachtView.yachts.fairline.highlight1'),
+          t('services.premium.luxYachtView.yachts.fairline.highlight2'),
+          t('services.premium.luxYachtView.yachts.fairline.highlight3'),
+        ],
+        isPremium: true,
+        rating: 4.95,
+        reviews: 89,
+        location: t('services.premium.luxYachtView.yachts.fairline.location'),
+        itinerary: [
+          t('services.premium.luxYachtView.yachts.fairline.itinerary1'),
+          t('services.premium.luxYachtView.yachts.fairline.itinerary2'),
+          t('services.premium.luxYachtView.yachts.fairline.itinerary3'),
+          t('services.premium.luxYachtView.yachts.fairline.itinerary4'),
+          t('services.premium.luxYachtView.yachts.fairline.itinerary5'),
+          t('services.premium.luxYachtView.yachts.fairline.itinerary6'),
+          t('services.premium.luxYachtView.yachts.fairline.itinerary7'),
+        ],
+      },
+      {
+        id: 'catamaran',
+        name: t('services.premium.luxYachtView.yachts.lagoon.name'),
+        category: 'catamaran',
+        shortDescription: t(
+          'services.premium.luxYachtView.yachts.lagoon.shortDesc'
+        ),
+        mainImage:
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956164/7030fcbb-7da3-4676-9abb-d22177efab14_qdk2ac.jpg',
+        gallery: [
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956159/4f5f3743-f52d-4d85-b023-fb4be38f833f_n70bbg.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956399/3380551b-f82f-4fdc-86e2-47cf2ad3a6dc_foh9sp.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956172/c3b072ee-3a35-497c-8aa0-1942c9044a3b_q5xht7.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956193/d21ad3c2-f7eb-41e2-921d-3ae1be25c7a5_edwn0e.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956396/5ad4be2d-9122-45fe-bd48-0dec7b77a8b5_ymmrx8.jpg',
+        ],
+        specifications: {
+          length: '13,71 m',
+          maxGuests: 20,
+          cabins: 4,
+          bathrooms: 3,
+          crew: 3,
+          maxSpeed: '26 knots',
+          manufacturer: 'Lagoon',
+          year: 2013,
+        },
+        amenities: [
+          {
+            icon: <Wifi className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.lagoon.amenityWifiName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.lagoon.amenityWifiDesc'
+            ),
+          },
+          {
+            icon: <Utensils className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.lagoon.amenityChefName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.lagoon.amenityChefDesc'
+            ),
+          },
+          {
+            icon: <Waves className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.lagoon.amenityPoolName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.lagoon.amenityPoolDesc'
+            ),
+          },
+        ],
+        highlights: [
+          t('services.premium.luxYachtView.yachts.lagoon.highlight1'),
+          t('services.premium.luxYachtView.yachts.lagoon.highlight2'),
+          t('services.premium.luxYachtView.yachts.lagoon.highlight3'),
+        ],
+        isPremium: true,
+        rating: 5.0,
+        reviews: 156,
+        location: t('services.premium.luxYachtView.yachts.lagoon.location'),
+        itinerary: [
+          t('services.premium.luxYachtView.yachts.lagoon.itinerary1'),
+          t('services.premium.luxYachtView.yachts.lagoon.itinerary2'),
+          t('services.premium.luxYachtView.yachts.lagoon.itinerary3'),
+          t('services.premium.luxYachtView.yachts.lagoon.itinerary4'),
+        ],
+      },
+      {
+        id: 'tiara-38',
+        name: t('services.premium.luxYachtView.yachts.tiara.name'),
+        category: 'luxury',
+        shortDescription: t(
+          'services.premium.luxYachtView.yachts.tiara.shortDesc'
+        ),
+        mainImage:
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956761/ac955cf2-03ad-4c8c-87c6-36c0ec0cb3a9_ymvcuc.jpg',
+        gallery: [
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956770/3e8353e4-c87b-4ce6-9781-151e4bcc0245_usext6.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956766/28d661b1-e505-4bbe-98b9-66354d9e3112_gzt0ku.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956782/5ac1f830-2a76-4d82-8666-37bef3104a87_i810fb.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755957154/f87b013c-affa-4058-8723-e62f49f7643d_fjzbpv.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956815/f46a7e9a-3093-404d-825d-138155d275e7_lwjmri.jpg',
+          'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956761/ac955cf2-03ad-4c8c-87c6-36c0ec0cb3a9_ymvcuc.jpg',
+        ],
+        specifications: {
+          length: '60 ft',
+          maxGuests: 16,
+          cabins: 3,
+          bathrooms: 2,
+          crew: 3,
+          maxSpeed: '30 knots',
+          manufacturer: 'AiconFly',
+          year: 2008,
+        },
+        amenities: [
+          {
+            icon: <Wifi className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.tiara.amenityWifiName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.tiara.amenityWifiDesc'
+            ),
+          },
+          {
+            icon: <Utensils className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.tiara.amenityChefName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.tiara.amenityChefDesc'
+            ),
+          },
+          {
+            icon: <Waves className='w-5 h-5' />,
+            name: t(
+              'services.premium.luxYachtView.yachts.tiara.amenitySportsName'
+            ),
+            description: t(
+              'services.premium.luxYachtView.yachts.tiara.amenitySportsDesc'
+            ),
+          },
+        ],
+        highlights: [
+          t('services.premium.luxYachtView.yachts.tiara.highlight1'),
+          t('services.premium.luxYachtView.yachts.tiara.highlight2'),
+          t('services.premium.luxYachtView.yachts.tiara.highlight3'),
+        ],
+        isPremium: false,
+        rating: 5,
+        reviews: 128,
+        location: t('services.premium.luxYachtView.yachts.tiara.location'),
+        itinerary: [
+          t('services.premium.luxYachtView.yachts.tiara.itinerary1'),
+          t('services.premium.luxYachtView.yachts.tiara.itinerary2'),
+          t('services.premium.luxYachtView.yachts.tiara.itinerary3'),
+          t('services.premium.luxYachtView.yachts.tiara.itinerary4'),
+          t('services.premium.luxYachtView.yachts.tiara.itinerary5'),
+        ],
+      },
+    ],
+    [t]
+  );
 
   const handleExploreFleet = () => {
     fleetRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -1543,13 +1715,17 @@ const LuxeYachtServiceView: React.FC = () => {
 
   return (
     <div className='min-h-screen bg-white'>
-      <CinematicHero onExploreFleet={handleExploreFleet} />
+      <CinematicHero onBookingClick={handleExploreFleet} />
       <div ref={fleetRef}>
-        <CaribbeanYachtGrid onYachtSelect={handleYachtSelect} />
+        <CaribbeanYachtGrid
+          onYachtSelect={handleYachtSelect}
+          yachtData={YACHT_DATA}
+        />
       </div>
       <CaribbeanGallery />
       <CaribbeanWhatToBring />
       <PrivateServiceInfo />
+      <YachtImportantInfo />
 
       {/* Modals */}
       {selectedYacht && !showBookingModal && (
