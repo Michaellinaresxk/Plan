@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-
 import Link from 'next/link';
 import {
   Anchor,
@@ -22,6 +21,15 @@ const ServicesGallery = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [isVisible, setIsVisible] = useState(false);
   const { t } = useTranslation();
+
+  // ✅ Función helper - mantener arriba
+  const getTranslationPath = (serviceId: string) => {
+    const camelCaseKey = serviceId.replace(/-([a-z])/g, (_, letter) =>
+      letter.toUpperCase()
+    );
+    const type = camelCaseKey.startsWith('luxe') ? 'premium' : 'standard';
+    return `services.${type}.${camelCaseKey}`;
+  };
 
   // Categorías reales basadas en ServiceManager
   const FILTER_CATEGORIES = {
@@ -55,15 +63,12 @@ const ServicesGallery = () => {
     },
   };
 
-  // Cargar servicios al montar el componente
   useEffect(() => {
     const loadServices = () => {
       try {
-        // Obtener servicios de ambos package types
         const standardServices = ServiceManager.getByPackageType('standard');
         const premiumServices = ServiceManager.getByPackageType('premium');
 
-        // Combinar ambos arrays y eliminar duplicados por ID
         const allServices = [
           ...standardServices,
           ...premiumServices.filter(
@@ -86,7 +91,6 @@ const ServicesGallery = () => {
     loadServices();
   }, []);
 
-  // Filtrar servicios basado en la categoría activa
   const filteredServices = useMemo(() => {
     if (activeFilter === 'all') {
       return services;
@@ -96,15 +100,12 @@ const ServicesGallery = () => {
     );
   }, [services, activeFilter]);
 
-  // Función para determinar la altura aleatoria de cada card
   const getRandomHeight = (index) => {
     const heights = ['h-64', 'h-72', 'h-80', 'h-88', 'h-96'];
     return heights[index % heights.length];
   };
 
-  // Función para obtener la ruta del servicio
   const getServiceRoute = (service) => {
-    // Determinar el package type principal del servicio
     const primaryPackage = service.packageType.includes('standard')
       ? 'standard'
       : 'premium';
@@ -125,7 +126,6 @@ const ServicesGallery = () => {
             transform: translateY(-10px);
           }
         }
-
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -136,7 +136,6 @@ const ServicesGallery = () => {
             transform: translateY(0);
           }
         }
-
         @keyframes slideDown {
           from {
             opacity: 0;
@@ -147,58 +146,46 @@ const ServicesGallery = () => {
             transform: translateY(0);
           }
         }
-
         .animate-gentle-float {
           animation: gentleFloat 6s ease-in-out infinite;
         }
-
         .animate-fade-in-up {
           animation: fadeInUp 1s ease-out forwards;
         }
-
         .animate-slide-down {
           animation: slideDown 0.8s ease-out forwards;
         }
-
         .service-card {
           transition: all 0.3s ease;
         }
-
         .service-card:hover {
           transform: translateY(-4px);
           box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
         }
-
         .service-card:hover .service-image {
           transform: scale(1.05);
         }
-
         .filter-btn {
           transition: all 0.3s ease;
         }
-
         .filter-btn:hover {
           transform: translateY(-1px);
         }
-
         .masonry-grid {
           columns: 2;
           column-gap: 0.75rem;
         }
-
         @media (min-width: 768px) {
           .masonry-grid {
             columns: 2;
             column-gap: 1.5rem;
           }
         }
-
         @media (min-width: 1024px) {
           .masonry-grid {
             columns: 3;
           }
         }
-
         .masonry-item {
           break-inside: avoid;
           margin-bottom: 1.5rem;
@@ -206,7 +193,6 @@ const ServicesGallery = () => {
           transform: translateY(20px);
           animation: fadeInUp 0.6s ease-out forwards;
         }
-
         .masonry-item:nth-child(1) {
           animation-delay: 0.1s;
         }
@@ -225,7 +211,6 @@ const ServicesGallery = () => {
         .masonry-item:nth-child(6) {
           animation-delay: 0.35s;
         }
-
         .pattern-dots {
           background-image: radial-gradient(
             circle,
@@ -235,7 +220,6 @@ const ServicesGallery = () => {
           background-size: 20px 20px;
           opacity: 0.5;
         }
-
         .pattern-grid {
           background-image: linear-gradient(
               rgba(71, 85, 105, 0.05) 1px,
@@ -244,11 +228,6 @@ const ServicesGallery = () => {
             linear-gradient(90deg, rgba(71, 85, 105, 0.05) 1px, transparent 1px);
           background-size: 40px 40px;
         }
-
-        .price-badge {
-          backdrop-filter: blur(10px);
-        }
-
         .cta-card {
           background: linear-gradient(
             135deg,
@@ -259,7 +238,6 @@ const ServicesGallery = () => {
           position: relative;
           overflow: hidden;
         }
-
         .cta-card::before {
           content: '';
           position: absolute;
@@ -275,17 +253,14 @@ const ServicesGallery = () => {
           );
           transition: left 0.8s;
         }
-
         .cta-card:hover::before {
           left: 100%;
         }
-
         .cta-button {
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
         }
-
         .cta-button::before {
           content: '';
           position: absolute;
@@ -301,11 +276,9 @@ const ServicesGallery = () => {
           );
           transition: left 0.5s;
         }
-
         .cta-button:hover::before {
           left: 100%;
         }
-
         .cta-button:hover {
           transform: translateY(-2px);
           box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
@@ -313,11 +286,9 @@ const ServicesGallery = () => {
       `}</style>
 
       <section className='py-20 md:py-32 bg-white overflow-hidden relative min-h-screen'>
-        {/* Subtle background pattern */}
         <div className='absolute inset-0 pattern-dots'></div>
         <div className='absolute inset-0 pattern-grid opacity-30'></div>
 
-        {/* Floating geometric elements */}
         <div className='absolute inset-0 overflow-hidden pointer-events-none'>
           <div
             className='absolute top-20 left-20 w-20 h-20 border border-slate-200 rounded-full animate-gentle-float'
@@ -350,7 +321,6 @@ const ServicesGallery = () => {
                 <span>
                   {t('services.standard.serviceGallery.header.subtitle')}
                 </span>
-
                 <div className='w-8 h-0.5 bg-slate-300'></div>
               </div>
             </div>
@@ -388,72 +358,84 @@ const ServicesGallery = () => {
           {/* Services Grid */}
           {filteredServices.length > 0 ? (
             <div className='masonry-grid max-w-7xl mx-auto'>
-              {filteredServices.map((service, index) => (
-                <div
-                  key={service.id}
-                  className={`masonry-item service-card group cursor-pointer ${getRandomHeight(
-                    index
-                  )}`}
-                >
-                  <Link href={getServiceRoute(service)}>
-                    <div className='relative h-full rounded-xl overflow-hidden bg-white border border-slate-100'>
-                      {/* Service Image */}
-                      <div className='absolute inset-0'>
-                        <img
-                          src={
-                            service.img || `/images/services/${service.id}.jpg`
-                          }
-                          alt={service.name}
-                          className='service-image w-full h-full object-cover transition-transform duration-500'
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              '/images/placeholder-service.jpg';
-                          }}
-                          loading='lazy'
-                        />
-                        <div className='absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent'></div>
-                        <div className='absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
-                      </div>
+              {filteredServices.map((service, index) => {
+                // ✅ AQUÍ es donde debe ir translationPath - dentro del map
+                const translationPath = getTranslationPath(service.id);
 
-                      {/* Package Type Badge */}
-                      <div className='absolute top-4 left-4'>
-                        <div
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            service.packageType.includes('premium')
-                              ? 'bg-amber-500/90 text-white'
-                              : 'bg-blue-500/90 text-white'
-                          }`}
-                        >
-                          {service.packageType.includes('premium')
-                            ? 'Xclusive'
-                            : 'Standard'}
+                return (
+                  <div
+                    key={service.id}
+                    className={`masonry-item service-card group cursor-pointer ${getRandomHeight(
+                      index
+                    )}`}
+                  >
+                    <Link href={getServiceRoute(service)}>
+                      <div className='relative h-full rounded-xl overflow-hidden bg-white border border-slate-100'>
+                        {/* Service Image */}
+                        <div className='absolute inset-0'>
+                          <img
+                            src={
+                              service.img ||
+                              `/images/services/${service.id}.jpg`
+                            }
+                            alt={t(`${translationPath}.name`, {
+                              fallback: service.name,
+                            })}
+                            className='service-image w-full h-full object-cover transition-transform duration-500'
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                '/images/placeholder-service.jpg';
+                            }}
+                            loading='lazy'
+                          />
+                          <div className='absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent'></div>
+                          <div className='absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
                         </div>
-                      </div>
 
-                      {/* Content Overlay */}
-                      <div className='absolute bottom-0 left-0 right-0 p-4'>
-                        {/* Hover Content for Desktop */}
-                        <div className='hidden md:block transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
-                          <div className='bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-slate-200/50 grid justify-center'>
-                            <h3 className='font-bold text-slate-900 text-lg mb-2'>
-                              {service.name}
-                            </h3>
+                        {/* Package Type Badge */}
+                        <div className='absolute top-4 left-4'>
+                          <div
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              service.packageType.includes('premium')
+                                ? 'bg-amber-500/90 text-white'
+                                : 'bg-blue-500/90 text-white'
+                            }`}
+                          >
+                            {service.packageType.includes('premium')
+                              ? t('common.mainText.xclusive')
+                              : 'Standard'}
                           </div>
                         </div>
 
-                        {/* Always visible title for mobile */}
-                        <div className='md:hidden'>
-                          <div className='bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-slate-200/50'>
-                            <h3 className='font-bold text-slate-900 text-center'>
-                              {service.name}
-                            </h3>
+                        {/* Content Overlay */}
+                        <div className='absolute bottom-0 left-0 right-0 p-4'>
+                          {/* Hover Content for Desktop */}
+                          <div className='hidden md:block transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
+                            <div className='bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-slate-200/50 grid justify-center'>
+                              <h3 className='font-bold text-slate-900 text-lg mb-2'>
+                                {t(`${translationPath}.name`, {
+                                  fallback: service.name,
+                                })}
+                              </h3>
+                            </div>
+                          </div>
+
+                          {/* Always visible title for mobile */}
+                          <div className='md:hidden'>
+                            <div className='bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-slate-200/50'>
+                              <h3 className='font-bold text-slate-900 text-center'>
+                                {t(`${translationPath}.name`, {
+                                  fallback: service.name,
+                                })}
+                              </h3>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className='text-center py-20'>
@@ -482,7 +464,6 @@ const ServicesGallery = () => {
         <div className='px-2 mt-32'>
           <div className='mx-auto'>
             <div className='cta-card rounded-3xl p-12 md:p-20 text-center relative border border-slate-200'>
-              {/* Decorative elements */}
               <div className='absolute top-8 left-8 w-12 h-12 border border-slate-300 rounded-full opacity-30'></div>
               <div className='absolute top-12 right-12 w-8 h-8 bg-slate-200 rounded-full opacity-40'></div>
               <div className='absolute bottom-8 left-12 w-6 h-6 border-2 border-slate-300 rotate-45 opacity-30'></div>
