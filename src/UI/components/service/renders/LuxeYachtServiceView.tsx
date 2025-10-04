@@ -12,27 +12,20 @@ import {
   Calendar,
   Phone,
   Mail,
-  ArrowRight,
   CheckCircle,
-  Crown,
-  Diamond,
   Camera,
   X,
   Check,
   Shirt,
   Sun,
-  Heart,
   Shield,
   Award,
-  Waves,
   Coffee,
   Fish,
   Sunset,
   Navigation,
-  Play,
   Eye,
   Share2,
-  Sparkles,
   Info,
   Palmtree,
   Wind,
@@ -42,8 +35,19 @@ import {
   Droplets,
   Globe,
 } from 'lucide-react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useScroll, useTransform } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/client';
+import { motion } from 'framer-motion';
+import {
+  Play,
+  Pause,
+  Diamond,
+  Waves,
+  Crown,
+  Heart,
+  Sparkles,
+  ArrowRight,
+} from 'lucide-react';
 
 // Types
 interface Yacht {
@@ -207,6 +211,276 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
   );
 };
 
+// Componente separado para las formas animadas del fondo
+const AnimatedBackground = () => {
+  return (
+    <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+      {/* Círculos flotantes */}
+      <motion.div
+        className='absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full opacity-40'
+        animate={{
+          y: [0, -30, 0],
+          x: [0, 20, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      <motion.div
+        className='absolute bottom-32 right-20 w-96 h-96 bg-gradient-to-tl from-purple-100 to-pink-100 rounded-full opacity-30'
+        animate={{
+          y: [0, 40, 0],
+          x: [0, -25, 0],
+          scale: [1, 1.15, 1],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      <motion.div
+        className='absolute top-1/2 left-1/3 w-64 h-64 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-full opacity-25'
+        animate={{
+          rotate: [0, 360],
+          scale: [1, 1.2, 1],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+      />
+
+      {/* Formas geométricas decorativas */}
+      {[...Array(12)].map((_, i) => (
+        <motion.div
+          key={i}
+          className='absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full'
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.2, 0.6, 0.2],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 3,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+          }}
+        />
+      ))}
+
+      {/* Líneas decorativas */}
+      <motion.div
+        className='absolute top-40 right-1/4 w-32 h-0.5 bg-gradient-to-r from-transparent via-cyan-300 to-transparent'
+        animate={{
+          x: [-100, 100],
+          opacity: [0, 1, 0],
+        }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      />
+    </div>
+  );
+};
+
+// Componente para el player de video
+const VideoPlayer = ({ isPlaying, onToggle }) => {
+  const videoRef = useRef(null);
+
+  const handleClick = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      onToggle();
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 50 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className='relative group'
+    >
+      {/* Decorative border */}
+      <div className='absolute -inset-4 bg-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity duration-300' />
+
+      <div className='relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100'>
+        <div className='relative aspect-video'>
+          <video
+            ref={videoRef}
+            className='w-full h-full object-cover'
+            poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
+            onClick={handleClick}
+          >
+            <source src='/video/yates-promo.mp4' type='video/mp4' />
+          </video>
+
+          {/* Play/Pause Button Overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isPlaying ? 0 : 1 }}
+            className='absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/30 to-black/50 backdrop-blur-sm cursor-pointer transition-opacity duration-300'
+            onClick={handleClick}
+          >
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className='w-20 h-20 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl'
+            >
+              <Play className='w-10 h-10 text-cyan-600 ml-1' />
+            </motion.div>
+          </motion.div>
+
+          {/* Click overlay when playing */}
+          {isPlaying && (
+            <div
+              className='absolute inset-0 cursor-pointer group'
+              onClick={handleClick}
+            >
+              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center'>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  className='w-16 h-16 bg-white/90 rounded-full flex items-center justify-center'
+                >
+                  <Pause className='w-8 h-8 text-cyan-600' />
+                </motion.div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Componente para las características
+const FeatureCard = ({ icon: Icon, label, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1 }}
+    whileHover={{ y: -5, scale: 1.02 }}
+    className='bg-white rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300'
+  >
+    <div className='w-12 h-12 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-cyan-100'>
+      <Icon className='w-6 h-6 text-cyan-600' />
+    </div>
+    <p className='text-gray-800 font-medium text-sm text-center'>{label}</p>
+  </motion.div>
+);
+
+// Componente principal
+const PromoVideoSection = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const features = [
+    { icon: Diamond, label: 'Luxury Yachts' },
+    { icon: Waves, label: 'Premium Experience' },
+    { icon: Crown, label: 'Exclusive Service' },
+    { icon: Heart, label: 'Unforgettable Moments' },
+  ];
+
+  return (
+    <section className='relative py-20 bg-white overflow-hidden'>
+      <AnimatedBackground />
+
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
+        {/* Layout Grid: Content + Video */}
+        <div className='grid lg:grid-cols-2 gap-12 lg:gap-16 items-center'>
+          {/* Content Side */}
+          <div className='space-y-8'>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className='inline-flex items-center gap-2 bg-gradient-to-r from-cyan-50 to-blue-50 px-5 py-2.5 rounded-full mb-6 border border-cyan-100'>
+                <Play className='w-4 h-4 text-cyan-600' />
+                <span className='text-cyan-800 text-sm font-semibold tracking-wide'>
+                  WATCH NOW
+                </span>
+              </div>
+
+              <h2 className='text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight'>
+                Experience{' '}
+                <span className='font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent'>
+                  Luxury
+                </span>
+              </h2>
+
+              <p className='text-lg text-gray-600 leading-relaxed'>
+                Discover our exclusive fleet of premium yachts. Immerse yourself
+                in an unparalleled experience of luxury and comfort on the open
+                seas.
+              </p>
+            </motion.div>
+
+            {/* Features Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className='grid grid-cols-2 gap-4'
+            >
+              {features.map((feature, index) => (
+                <FeatureCard
+                  key={index}
+                  icon={feature.icon}
+                  label={feature.label}
+                  index={index}
+                />
+              ))}
+            </motion.div>
+
+            {/* CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className='flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gradient-to-r from-gray-50 to-cyan-50 rounded-2xl p-6 border border-gray-100'
+            >
+              <div className='flex items-center gap-3 flex-1'>
+                <div className='w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0'>
+                  <Sparkles className='w-6 h-6 text-white' />
+                </div>
+                <div>
+                  <p className='text-gray-900 font-semibold'>Ready to sail?</p>
+                  <p className='text-gray-600 text-sm'>
+                    Explore our premium fleet
+                  </p>
+                </div>
+              </div>
+              <motion.a
+                href='#fleet'
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className='px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 w-full sm:w-auto justify-center'
+              >
+                View Fleet
+                <ArrowRight className='w-5 h-5' />
+              </motion.a>
+            </motion.div>
+          </div>
+
+          {/* Video Side */}
+          <div>
+            <VideoPlayer
+              isPlaying={isPlaying}
+              onToggle={() => setIsPlaying(!isPlaying)}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // Minimalist Photo-Only Cards
 const PhotoOnlyYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
   yacht,
@@ -252,6 +526,726 @@ const PhotoOnlyYachtCard: React.FC<{ yacht: Yacht; onSelect: () => void }> = ({
         </div>
       </div>
     </div>
+  );
+};
+
+const SunsetCTABanner: React.FC<{ onInquiry: () => void }> = ({
+  onInquiry,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <section className='relative py-24 overflow-hidden'>
+      {/* Background Image with Overlay */}
+      <div className='absolute inset-0'>
+        <img
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
+          alt='Sunset yacht'
+          className='w-full h-full object-cover'
+        />
+        <div className='absolute inset-0 bg-gradient-to-r from-orange-900/90 via-pink-900/80 to-purple-900/90' />
+      </div>
+
+      {/* Animated Elements */}
+      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className='absolute w-2 h-2 bg-white/30 rounded-full'
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -40, 0],
+              opacity: [0.3, 0.8, 0.3],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: 4 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className='relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          {/* Badge */}
+          <div className='inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-full px-6 py-3 mb-8'>
+            <Sunset className='w-5 h-5 text-orange-300' />
+            <span className='text-white text-sm font-semibold tracking-wide'>
+              {t('services.premium.luxYachtView.yachtCta.cta1Badge')}
+            </span>
+          </div>
+
+          {/* Title */}
+          <h2 className='text-4xl sm:text-5xl lg:text-6xl font-light text-white mb-6 leading-tight'>
+            {t('services.premium.luxYachtView.yachtCta.cta1Title')}{' '}
+            <span className='block font-bold bg-gradient-to-r from-orange-300 via-pink-300 to-purple-300 bg-clip-text text-transparent'>
+              {t('services.premium.luxYachtView.yachtCta.cta1TitleHighlight')}
+            </span>
+          </h2>
+
+          {/* Description */}
+          <p className='text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed'>
+            {t('services.premium.luxYachtView.yachtCta.cta1Description')}
+          </p>
+
+          {/* CTA Buttons */}
+          <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
+            <motion.button
+              onClick={onInquiry}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className='px-8 py-4 bg-white text-orange-600 rounded-xl font-bold text-lg transition-all duration-300 shadow-2xl hover:shadow-orange-500/50 flex items-center gap-3 group'
+            >
+              <Calendar className='w-6 h-6 group-hover:rotate-12 transition-transform' />
+              {t('services.premium.luxYachtView.yachtCta.cta1Button')}
+              <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
+            </motion.button>
+
+            <motion.a
+              href='#fleet'
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              className='px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/50 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:bg-white/20 flex items-center gap-2'
+            >
+              <Anchor className='w-5 h-5' />
+              {t('services.premium.luxYachtView.yachtCta.cta1SecondaryButton')}
+            </motion.a>
+          </div>
+
+          {/* Stats */}
+          <div className='mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto'>
+            {[
+              {
+                icon: Users,
+                value: '500+',
+                label: t('services.premium.luxYachtView.yachtCta.stat1'),
+              },
+              {
+                icon: Star,
+                value: '5.0',
+                label: t('services.premium.luxYachtView.yachtCta.stat2'),
+              },
+              {
+                icon: Award,
+                value: '4',
+                label: t('services.premium.luxYachtView.yachtCta.stat3'),
+              },
+            ].map((stat, index) => {
+              const IconComponent = stat.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
+                  className='text-white'
+                >
+                  <IconComponent className='w-8 h-8 mx-auto mb-2 text-orange-300' />
+                  <div className='text-3xl font-bold mb-1'>{stat.value}</div>
+                  <div className='text-sm text-white/80'>{stat.label}</div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// CTA Banner 2 - Interactive Form Banner
+const TropicalCTABanner: React.FC<{ onInquiry: () => void }> = ({
+  onInquiry,
+}) => {
+  const { t } = useTranslation();
+  const [showForm, setShowForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    date: '',
+    guests: 2,
+    duration: 'full-day',
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+    addons: [] as string[],
+  });
+
+  const handleAddonToggle = (addon: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      addons: prev.addons.includes(addon)
+        ? prev.addons.filter((a) => a !== addon)
+        : [...prev.addons, addon],
+    }));
+  };
+
+  const handleSubmit = () => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      alert(t('services.premium.luxYachtView.yachtCta.form.successMessage'));
+      setIsSubmitting(false);
+      setShowForm(false);
+      setFormData({
+        date: '',
+        guests: 2,
+        duration: 'full-day',
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        addons: [],
+      });
+    }, 2000);
+  };
+
+  if (showForm) {
+    return (
+      <section className='relative py-20 bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 overflow-hidden'>
+        {/* Background Effects */}
+        <div className='absolute inset-0 opacity-20'>
+          <motion.div
+            className='absolute bottom-0 left-0 right-0 h-64'
+            animate={{ backgroundPosition: ['0% 0%', '100% 0%'] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E\")",
+              backgroundSize: 'cover',
+            }}
+          />
+        </div>
+
+        <div className='relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className='bg-white rounded-3xl shadow-2xl overflow-hidden'
+          >
+            {/* Header */}
+            <div className='bg-gradient-to-r from-teal-600 to-cyan-600 px-8 py-6 flex justify-between items-center'>
+              <div>
+                <h3 className='text-2xl font-bold text-white'>
+                  {t('services.premium.luxYachtView.yachtCta.form.title')}
+                </h3>
+                <p className='text-teal-100 text-sm mt-1'>
+                  {t('services.premium.luxYachtView.yachtCta.form.subtitle')}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowForm(false)}
+                className='text-white hover:bg-white/20 rounded-full p-2 transition-colors'
+              >
+                <X className='w-6 h-6' />
+              </button>
+            </div>
+
+            {/* Form */}
+            <div className='p-8 max-h-[70vh] overflow-y-auto'>
+              <div className='space-y-6'>
+                {/* Basic Info */}
+                <div className='grid md:grid-cols-2 gap-4'>
+                  <div>
+                    <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                      {t(
+                        'services.premium.luxYachtView.yachtCta.form.dateLabel'
+                      )}
+                      <span className='text-red-500'>*</span>
+                    </label>
+                    <input
+                      type='date'
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                      value={formData.date}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          date: e.target.value,
+                        }))
+                      }
+                      className='w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
+                    />
+                  </div>
+
+                  <div>
+                    <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                      {t(
+                        'services.premium.luxYachtView.yachtCta.form.guestsLabel'
+                      )}
+                      <span className='text-red-500'>*</span>
+                    </label>
+                    <select
+                      value={formData.guests}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          guests: parseInt(e.target.value),
+                        }))
+                      }
+                      className='w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
+                    >
+                      {Array.from({ length: 20 }, (_, i) => i + 1).map(
+                        (num) => (
+                          <option key={num} value={num}>
+                            {num}{' '}
+                            {num > 1
+                              ? t(
+                                  'services.premium.luxYachtView.yachtCta.form.guestsPlural'
+                                )
+                              : t(
+                                  'services.premium.luxYachtView.yachtCta.form.guestsSingular'
+                                )}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Duration */}
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 mb-3'>
+                    {t(
+                      'services.premium.luxYachtView.yachtCta.form.durationLabel'
+                    )}
+                    <span className='text-red-500'>*</span>
+                  </label>
+                  <div className='grid grid-cols-2 gap-4'>
+                    {[
+                      {
+                        value: 'half-day',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.halfDay'
+                        ),
+                        icon: Sun,
+                      },
+                      {
+                        value: 'full-day',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.fullDay'
+                        ),
+                        icon: Sunset,
+                      },
+                    ].map((option) => {
+                      const IconComponent = option.icon;
+                      return (
+                        <button
+                          key={option.value}
+                          type='button'
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              duration: option.value,
+                            }))
+                          }
+                          className={`p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${
+                            formData.duration === option.value
+                              ? 'border-teal-500 bg-teal-50 text-teal-700'
+                              : 'border-gray-200 hover:border-teal-300'
+                          }`}
+                        >
+                          <IconComponent className='w-5 h-5' />
+                          <span className='font-medium'>{option.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Contact Info */}
+                <div className='grid md:grid-cols-3 gap-4'>
+                  <div>
+                    <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                      {t(
+                        'services.premium.luxYachtView.yachtCta.form.nameLabel'
+                      )}
+                      <span className='text-red-500'>*</span>
+                    </label>
+                    <input
+                      type='text'
+                      required
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                      className='w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
+                      placeholder={t(
+                        'services.premium.luxYachtView.yachtCta.form.namePlaceholder'
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                      {t(
+                        'services.premium.luxYachtView.yachtCta.form.emailLabel'
+                      )}
+                      <span className='text-red-500'>*</span>
+                    </label>
+                    <input
+                      type='email'
+                      required
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
+                      className='w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
+                      placeholder={t(
+                        'services.premium.luxYachtView.yachtCta.form.emailPlaceholder'
+                      )}
+                    />
+                  </div>
+
+                  <div>
+                    <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                      {t(
+                        'services.premium.luxYachtView.yachtCta.form.phoneLabel'
+                      )}
+                      <span className='text-red-500'>*</span>
+                    </label>
+                    <input
+                      type='tel'
+                      required
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
+                      className='w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
+                      placeholder={t(
+                        'services.premium.luxYachtView.yachtCta.form.phonePlaceholder'
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Add-ons Section */}
+                <div>
+                  <h4 className='text-lg font-bold text-gray-900 mb-2'>
+                    {t(
+                      'services.premium.luxYachtView.yachtCta.form.addonsTitle'
+                    )}
+                  </h4>
+                  <p className='text-sm text-gray-600 mb-4'>
+                    {t(
+                      'services.premium.luxYachtView.yachtCta.form.addonsSubtitle'
+                    )}
+                  </p>
+
+                  <div className='space-y-3'>
+                    {[
+                      {
+                        id: 'provisioning',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonProvisioning'
+                        ),
+                        icon: Coffee,
+                      },
+                      {
+                        id: 'massage',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonMassage'
+                        ),
+                        icon: Sparkles,
+                      },
+                      {
+                        id: 'yoga',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonYoga'
+                        ),
+                        icon: Heart,
+                      },
+                      {
+                        id: 'photography',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonPhotography'
+                        ),
+                        icon: Camera,
+                      },
+                      {
+                        id: 'drone',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonDrone'
+                        ),
+                        icon: Camera,
+                      },
+                      {
+                        id: 'celebration',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonCelebration'
+                        ),
+                        icon: Sparkles,
+                      },
+                      {
+                        id: 'dj',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonDj'
+                        ),
+                        icon: Music,
+                      },
+                      {
+                        id: 'saxophonist',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonSaxophonist'
+                        ),
+                        icon: Music,
+                      },
+                      {
+                        id: 'violinist',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonViolinist'
+                        ),
+                        icon: Music,
+                      },
+                      {
+                        id: 'percussionist',
+                        label: t(
+                          'services.premium.luxYachtView.yachtCta.form.addonPercussionist'
+                        ),
+                        icon: Music,
+                      },
+                    ].map((addon) => {
+                      const IconComponent = addon.icon;
+                      return (
+                        <label
+                          key={addon.id}
+                          className='flex items-center gap-3 p-3 rounded-xl border-2 border-gray-200 hover:border-teal-300 cursor-pointer transition-all'
+                        >
+                          <input
+                            type='checkbox'
+                            checked={formData.addons.includes(addon.id)}
+                            onChange={() => handleAddonToggle(addon.id)}
+                            className='w-5 h-5 text-teal-600 rounded focus:ring-teal-500'
+                          />
+                          <IconComponent className='w-5 h-5 text-teal-600' />
+                          <span className='text-gray-700 font-medium'>
+                            {addon.label}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                    {t(
+                      'services.premium.luxYachtView.yachtCta.form.messageLabel'
+                    )}
+                  </label>
+                  <textarea
+                    value={formData.message}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        message: e.target.value,
+                      }))
+                    }
+                    rows={3}
+                    className='w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none'
+                    placeholder={t(
+                      'services.premium.luxYachtView.yachtCta.form.messagePlaceholder'
+                    )}
+                  />
+                </div>
+
+                {/* Info Notice */}
+                <div className='bg-teal-50 rounded-xl p-4 border border-teal-200'>
+                  <div className='flex gap-3'>
+                    <Info className='w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5' />
+                    <div>
+                      <p className='text-sm font-medium text-teal-900'>
+                        {t(
+                          'services.premium.luxYachtView.yachtCta.form.noticeTitle'
+                        )}
+                      </p>
+                      <p className='text-sm text-teal-700 mt-1'>
+                        {t(
+                          'services.premium.luxYachtView.yachtCta.form.noticeText'
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className={`w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                    isSubmitting
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 shadow-lg hover:shadow-xl'
+                  } text-white`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white' />
+                      {t(
+                        'services.premium.luxYachtView.yachtCta.form.submitting'
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className='w-5 h-5' />
+                      {t(
+                        'services.premium.luxYachtView.yachtCta.form.submitButton'
+                      )}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className='relative py-20 bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 overflow-hidden'>
+      {/* Background Effects */}
+      <div className='absolute inset-0 opacity-20'>
+        <motion.div
+          className='absolute bottom-0 left-0 right-0 h-64'
+          animate={{ backgroundPosition: ['0% 0%', '100% 0%'] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E\")",
+            backgroundSize: 'cover',
+          }}
+        />
+      </div>
+
+      {/* Floating Elements */}
+      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className='absolute'
+            style={{
+              left: `${15 + i * 15}%`,
+              top: `${20 + (i % 3) * 20}%`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 10, 0],
+            }}
+            transition={{
+              duration: 3 + i * 0.5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          >
+            {i % 3 === 0 ? (
+              <Palmtree className='w-8 h-8 text-white/20' />
+            ) : i % 3 === 1 ? (
+              <Fish className='w-8 h-8 text-white/20' />
+            ) : (
+              <Droplets className='w-6 h-6 text-white/20' />
+            )}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className='relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          {/* Badge */}
+          <div className='inline-flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-5 py-2.5 mb-6'>
+            <Waves className='w-4 h-4 text-white' />
+            <span className='text-sm font-semibold tracking-wide text-white'>
+              {t('services.premium.luxYachtView.yachtCta.cta2Badge')}
+            </span>
+          </div>
+
+          {/* Title */}
+          <h2 className='text-4xl sm:text-5xl font-light mb-6 leading-tight text-white'>
+            {t('services.premium.luxYachtView.yachtCta.cta2Title')}{' '}
+            <span className='block font-bold text-yellow-300'>
+              {t('services.premium.luxYachtView.yachtCta.cta2TitleHighlight')}
+            </span>
+          </h2>
+
+          {/* Description */}
+          <p className='text-lg text-white/90 mb-8 leading-relaxed max-w-2xl mx-auto'>
+            {t('services.premium.luxYachtView.yachtCta.cta2Description')}
+          </p>
+
+          {/* Features Grid */}
+          <div className='grid md:grid-cols-3 gap-4 mb-10 max-w-3xl mx-auto'>
+            {[
+              {
+                icon: CheckCircle,
+                text: t('services.premium.luxYachtView.yachtCta.feature1'),
+              },
+              {
+                icon: CheckCircle,
+                text: t('services.premium.luxYachtView.yachtCta.feature2'),
+              },
+              {
+                icon: CheckCircle,
+                text: t('services.premium.luxYachtView.yachtCta.feature3'),
+              },
+            ].map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
+                  className='flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20'
+                >
+                  <IconComponent className='w-5 h-5 text-yellow-300 flex-shrink-0' />
+                  <span className='text-white text-sm'>{feature.text}</span>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* CTA Button */}
+          <motion.button
+            onClick={() => setShowForm(true)}
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className='px-12 py-5 bg-white text-teal-600 rounded-2xl font-bold text-xl transition-all duration-300 shadow-2xl hover:shadow-white/30 inline-flex items-center gap-3 group'
+          >
+            <Sparkles className='w-6 h-6 group-hover:rotate-12 transition-transform' />
+            {t('services.premium.luxYachtView.yachtCta.cta2Button')}
+            <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
+          </motion.button>
+        </motion.div>
+      </div>
+    </section>
   );
 };
 
@@ -1716,16 +2710,19 @@ const LuxeYachtServiceView: React.FC = () => {
   return (
     <div className='min-h-screen bg-white'>
       <CinematicHero onBookingClick={handleExploreFleet} />
+      <PromoVideoSection />
       <div ref={fleetRef}>
         <CaribbeanYachtGrid
           onYachtSelect={handleYachtSelect}
           yachtData={YACHT_DATA}
         />
       </div>
+      <TropicalCTABanner />
       <CaribbeanGallery />
       <CaribbeanWhatToBring />
       <PrivateServiceInfo />
       <YachtImportantInfo />
+      <SunsetCTABanner />
 
       {/* Modals */}
       {selectedYacht && !showBookingModal && (
