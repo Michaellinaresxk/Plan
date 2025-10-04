@@ -17,6 +17,10 @@ import {
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
 
+// ✅ NUEVAS IMPORTACIONES
+import { useScrollToError } from '@/hooks/useScrollToError';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
+
 interface GolfCartOption {
   id: string;
   seats: number;
@@ -88,6 +92,12 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const router = useRouter();
   const { setReservationData } = useReservation();
   const { handleClose } = useFormModal({ onCancel });
+
+  // ✅ HOOK PARA SCROLL A ERRORES
+  const { fieldRefs, scrollToFirstError } = useScrollToError({});
+
+  // ✅ CONSTANTE DE TAX
+  const TAX_RATE = 5; // 5%
 
   const initializeCartSelections = (): CartSelection => {
     const initialSelection: CartSelection = {};
@@ -163,13 +173,18 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
     return Math.max(1, diffDays);
   }, [formData.startDate, formData.endDate]);
 
-  const calculateTotalPrice = useMemo(() => {
+  // ✅ CÁLCULO DE PRECIO CON TAX
+  const priceWithTax = useMemo(() => {
     const baseTotal = selectedCartsDetails.reduce(
       (sum, item) => sum + item.subtotal,
       0
     );
-    return baseTotal * rentalDays;
+    const subtotal = baseTotal * rentalDays;
+    return calculatePriceWithTax(subtotal, TAX_RATE);
   }, [selectedCartsDetails, rentalDays]);
+
+  // ✅ Mantener calculateTotalPrice para compatibilidad
+  const calculateTotalPrice = priceWithTax.total;
 
   const handleCartQuantityChange = (cartId: string, newQuantity: number) => {
     const clampedQuantity = Math.max(0, Math.min(10, newQuantity));
@@ -295,6 +310,8 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('❌ GolfCartForm - Validation errors:', validationErrors);
+      // ✅ SCROLL AL PRIMER ERROR
+      scrollToFirstError();
       return;
     }
 
@@ -346,6 +363,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           ...formData,
           serviceType: 'golf-cart-rental',
           totalPrice: calculateTotalPrice,
+          // ✅ AGREGAR info de tax
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: TAX_RATE,
           selectedCartsDetails,
           rentalDays: rentalDays,
           totalCarts,
@@ -375,6 +396,13 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           driverLicense: formData.driverLicense,
           ageConfirmation: formData.ageConfirmation,
           termsAccepted: formData.termsAccepted,
+          pricing: {
+            baseTotal: priceWithTax.subtotal,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
+            totalPrice: calculateTotalPrice,
+          },
         },
       };
 
@@ -487,7 +515,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   );
 
   const GolfCartSelection = () => (
-    <div className='space-y-6'>
+    <div
+      className='space-y-6'
+      ref={(el) => el && fieldRefs.current.set('selectedCarts', el)}
+    >
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {GOLF_CART_OPTIONS.map((cart) => {
           const quantity = formData.selectedCarts[cart.id] || 0;
@@ -645,7 +676,11 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
       </div>
 
       <div className='px-2 space-y-3 mt-10 mb-10'>
-        <div className='flex items-start'>
+        {/* ✅ Checkboxes con REF */}
+        <div
+          className='flex items-start'
+          ref={(el) => el && fieldRefs.current.set('driverLicense', el)}
+        >
           <input
             type='checkbox'
             id='driverLicense'
@@ -662,7 +697,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           <p className='text-red-500 text-xs ml-6'>{errors.driverLicense}</p>
         )}
 
-        <div className='flex items-start'>
+        <div
+          className='flex items-start'
+          ref={(el) => el && fieldRefs.current.set('ageConfirmation', el)}
+        >
           <input
             type='checkbox'
             id='ageConfirmation'
@@ -682,7 +720,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           <p className='text-red-500 text-xs ml-6'>{errors.ageConfirmation}</p>
         )}
 
-        <div className='flex items-start'>
+        <div
+          className='flex items-start'
+          ref={(el) => el && fieldRefs.current.set('termsAccepted', el)}
+        >
           <input
             type='checkbox'
             id='termsAccepted'
@@ -730,7 +771,11 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
             </h3>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-4'>
+              {/* ✅ Start Date con REF */}
+              <div
+                className='space-y-4'
+                ref={(el) => el && fieldRefs.current.set('startDate', el)}
+              >
                 <div>
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                     <Calendar className='w-4 h-4 mr-2 text-blue-700' />
@@ -757,7 +802,11 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                 </div>
               </div>
 
-              <div className='space-y-4'>
+              {/* ✅ End Date con REF */}
+              <div
+                className='space-y-4'
+                ref={(el) => el && fieldRefs.current.set('endDate', el)}
+              >
                 <div>
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                     <Calendar className='w-4 h-4 mr-2 text-blue-700' />
@@ -822,7 +871,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
               {t('services.standard.golfCartForm.sections.deliveryLocation')}
             </h3>
 
-            <div>
+            {/* ✅ Delivery Location con REF */}
+            <div
+              ref={(el) => el && fieldRefs.current.set('deliveryLocation', el)}
+            >
               <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3'>
                 {DELIVERY_LOCATION_KEYS.map((key) => {
                   const locationId =
@@ -879,8 +931,14 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                 </p>
               )}
 
+              {/* ✅ Specific Address con REF */}
               {formData.deliveryLocation === 'other' && (
-                <div className='mt-4'>
+                <div
+                  className='mt-4'
+                  ref={(el) =>
+                    el && fieldRefs.current.set('specificAddress', el)
+                  }
+                >
                   <label className='block text-sm font-medium text-gray-700 mb-2'>
                     {t(
                       'services.standard.golfCartForm.fields.specificAddress.label'
@@ -974,6 +1032,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
           )}
         </div>
 
+        {/* ✅ Footer ACTUALIZADO con desglose de tax */}
         <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
           <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
             <span className='text-gray-400 text-sm uppercase tracking-wide'>
@@ -1019,6 +1078,15 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                       </div>
                     );
                   })}
+
+                  {/* ✅ DESGLOSE DE TAX */}
+                  <div className='border-t border-gray-700 pt-1 mt-1'>
+                    <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                    <div className='text-yellow-400'>
+                      Tax ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                    </div>
+                  </div>
+
                   <div className='text-cyan-400'>
                     {t('services.standard.golfCartForm.pricing.includes')}
                   </div>
