@@ -23,6 +23,10 @@ import { LocationSelector } from '../service/LocationSelector';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
 
+// ✅ NUEVAS IMPORTACIONES
+import { useScrollToError } from '@/hooks/useScrollToError';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
+
 interface HorseBackRidingFormProps {
   service: Service;
   onSubmit?: (formData: any) => void;
@@ -79,6 +83,12 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ✅ HOOK PARA SCROLL A ERRORES
+  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
+
+  // ✅ CONSTANTE DE TAX
+  const TAX_RATE = 5; // 5%
+
   const updateFormField = useCallback((field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
@@ -111,9 +121,14 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     return service.price * formData.participantCount;
   }, [formData.participantCount, service.price]);
 
-  const totalPrice = useMemo(() => {
-    return basePrice + totalLocationCost;
+  // ✅ CÁLCULO DE PRECIO CON TAX
+  const priceWithTax = useMemo(() => {
+    const subtotal = basePrice + totalLocationCost;
+    return calculatePriceWithTax(subtotal, TAX_RATE);
   }, [basePrice, totalLocationCost]);
+
+  // ✅ Mantener totalPrice para compatibilidad
+  const totalPrice = priceWithTax.total;
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -204,6 +219,8 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('❌ HorseBackForm - Validation errors:', validationErrors);
+      // ✅ SCROLL AL PRIMER ERROR
+      scrollToFirstError();
       return;
     }
 
@@ -234,6 +251,10 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           basePrice,
           transportCost,
           locationSurcharge,
+          // ✅ AGREGAR info de tax
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: TAX_RATE,
           locationName: selectedLocation?.name || formData.location,
         },
         totalPrice,
@@ -266,6 +287,9 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             basePrice,
             transportCost,
             locationSurcharge,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
             totalPrice,
           },
         },
@@ -370,8 +394,8 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 {t('services.standard.horsebackRidingForm.sections.schedule')}
               </h3>
 
-              {/* Date Selection */}
-              <div>
+              {/* ✅ Date Selection con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('date', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar className='w-4 h-4 mr-2 text-amber-600' />
                   {t(
@@ -394,8 +418,8 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 )}
               </div>
 
-              {/* Time Slot Selection */}
-              <div>
+              {/* ✅ Time Slot Selection con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('timeSlot', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Clock className='w-4 h-4 mr-2 text-amber-600' />
                   {t(
@@ -471,13 +495,16 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 {t('services.standard.horsebackRidingForm.sections.location')}
               </h3>
 
-              <LocationSelector
-                selectedLocationId={formData.location}
-                onLocationSelect={handleLocationSelect}
-                locationOptions={locationOptions}
-                error={errors.location}
-                isPremium={false}
-              />
+              {/* ✅ LocationSelector con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('location', el)}>
+                <LocationSelector
+                  selectedLocationId={formData.location}
+                  onLocationSelect={handleLocationSelect}
+                  locationOptions={locationOptions}
+                  error={errors.location}
+                  isPremium={false}
+                />
+              </div>
             </div>
 
             {/* Participants Section */}
@@ -489,19 +516,29 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               </h3>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <Counter
-                  label={t(
-                    'services.standard.horsebackRidingForm.fields.totalParticipants.label'
-                  )}
-                  value={formData.participantCount}
-                  onIncrement={participantCounter.increment}
-                  onDecrement={participantCounter.decrement}
-                  icon={Users}
-                  min={1}
-                  max={8}
-                />
+                {/* ✅ Participant Counter con REF */}
+                <div
+                  ref={(el) =>
+                    el && fieldRefs.current.set('participantCount', el)
+                  }
+                >
+                  <Counter
+                    label={t(
+                      'services.standard.horsebackRidingForm.fields.totalParticipants.label'
+                    )}
+                    value={formData.participantCount}
+                    onIncrement={participantCounter.increment}
+                    onDecrement={participantCounter.decrement}
+                    icon={Users}
+                    min={1}
+                    max={8}
+                  />
+                </div>
 
-                <div>
+                {/* ✅ Minors Count con REF */}
+                <div
+                  ref={(el) => el && fieldRefs.current.set('minorsCount', el)}
+                >
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                     <Baby className='w-4 h-4 mr-2 text-amber-600' />
                     {t(
@@ -604,7 +641,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             )}
           </div>
 
-          {/* Form Footer */}
+          {/* ✅ Form Footer - ACTUALIZADO con desglose de tax */}
           <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
@@ -624,7 +661,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 </span>
               </div>
 
-              {/* Price breakdown */}
+              {/* ✅ Price breakdown con TAX */}
               <div className='text-xs text-gray-400 mt-2 space-y-1'>
                 <div className='text-amber-400 font-medium'>
                   {t(
@@ -644,10 +681,18 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                     {t(
                       'services.standard.horsebackRidingForm.pricing.location'
                     )}{' '}
-                    +$
-                    {locationSurcharge.toFixed(2)}
+                    +${locationSurcharge.toFixed(2)}
                   </div>
                 )}
+
+                {/* ✅ DESGLOSE DE TAX */}
+                <div className='border-t border-gray-700 pt-1 mt-1'>
+                  <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                  <div className='text-yellow-400'>
+                    Tax ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                  </div>
+                </div>
+
                 {selectedLocation && (
                   <div className='text-amber-400'>
                     {t('services.standard.horsebackRidingForm.pricing.pickup')}{' '}

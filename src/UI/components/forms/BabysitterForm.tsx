@@ -1,3 +1,4 @@
+// components/forms/BabysitterForm.tsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service } from '@/types/type';
@@ -22,6 +23,14 @@ import { useRouter } from 'next/navigation';
 import { LOCATION_OPTIONS } from '@/constants/location/location';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
+
+// ✅ NUEVAS IMPORTACIONES
+import { useScrollToError } from '@/hooks/useScrollToError';
+import {
+  calculateBabysitterPrice,
+  calculateDuration,
+  PriceBreakdown,
+} from '@/utils/priceCalculator';
 
 interface BabysitterFormProps {
   service: Service;
@@ -53,6 +62,14 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ✅ HOOK PARA SCROLL A ERRORES
+  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
+
+  // ✅ CONSTANTES DE PRECIO
+  const PRICE_PER_CHILD_PER_HOUR = 20; // $20 por niño por hora
+  const SPECIAL_NEEDS_FEE = 15;
+  const TAX_RATE = 5; // 5%
 
   const serviceData = ServiceManager.getData(service.id);
   const minimumBooking = serviceData?.metaData?.minimumBooking
@@ -90,39 +107,48 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     };
   }, [formData]);
 
-  const currentPrice = useMemo(() => {
-    let price = service.price;
+  // ✅ CÁLCULO DE PRECIO CORRECTO
+  const priceBreakdown: PriceBreakdown = useMemo(() => {
+    const hours = calculateDuration(
+      formData.startTime,
+      formData.endTime,
+      minimumBooking
+    );
 
-    if (formData.startTime && formData.endTime) {
-      const start = new Date(`2000-01-01T${formData.startTime}`);
-      const end = new Date(`2000-01-01T${formData.endTime}`);
+    const breakdown = calculateBabysitterPrice(
+      formData.childrenCount,
+      hours,
+      PRICE_PER_CHILD_PER_HOUR,
+      0
+    );
 
-      let duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-      if (duration < 0) {
-        duration += 24;
-      }
-
-      duration = Math.max(duration, minimumBooking);
-      price = price * duration;
-    }
-
-    const additionalChildFee = 10;
-    if (formData.childrenCount > 1) {
-      price += (formData.childrenCount - 1) * additionalChildFee;
-    }
+    let subtotal = breakdown.subtotal;
+    const details = [...breakdown.details];
 
     if (formData.hasSpecialNeeds) {
-      price += 15;
+      subtotal += SPECIAL_NEEDS_FEE;
+      details.push({
+        label: t('services.standard.babysitterForm.pricing.specialCare'),
+        amount: SPECIAL_NEEDS_FEE,
+        type: 'addon',
+      });
     }
 
-    return price;
+    const tax = (subtotal * TAX_RATE) / 100;
+    const total = subtotal + tax;
+
+    return {
+      subtotal: Math.round(subtotal * 100) / 100,
+      tax: Math.round(tax * 100) / 100,
+      total: Math.round(total * 100) / 100,
+      details,
+    };
   }, [
     formData.startTime,
     formData.endTime,
     formData.childrenCount,
     formData.hasSpecialNeeds,
-    service.price,
-    minimumBooking,
+    t,
   ]);
 
   const updateFormField = useCallback((field: string, value: any) => {
@@ -152,35 +178,37 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.date) {
-      newErrors.date = t('services.standard.babysitterForm.errors.date');
+      newErrors.date = t('services.standard.babysitterForm.fields.date.error');
     }
 
     if (!formData.startTime) {
       newErrors.startTime = t(
-        'services.standard.babysitterForm.errors.startTime'
+        'services.standard.babysitterForm.fields.startTime.error'
       );
     }
 
     if (!formData.endTime) {
-      newErrors.endTime = t('services.standard.babysitterForm.errors.endTime');
+      newErrors.endTime = t(
+        'services.standard.babysitterForm.fields.endTime.error'
+      );
     }
 
     if (!formData.location) {
       newErrors.location = t(
-        'services.standard.babysitterForm.errors.location'
+        'services.standard.babysitterForm.fields.location.error'
       );
     }
 
     const filledAges = formData.childrenAges.filter((age) => age.trim() !== '');
     if (filledAges.length < formData.childrenCount) {
       newErrors.childrenAges = t(
-        'services.standard.babysitterForm.errors.childrenAges'
+        'services.standard.babysitterForm.fields.childrenAges.error'
       );
     }
 
     if (formData.hasSpecialNeeds && !formData.specialNeedsDetails.trim()) {
       newErrors.specialNeedsDetails = t(
-        'services.standard.babysitterForm.errors.specialNeedsDetails'
+        'services.standard.babysitterForm.fields.specialNeeds.error'
       );
     }
 
@@ -194,13 +222,14 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
       console.log('🚀 Form submitted!');
       console.log('📋 Current form data:', formData);
-      console.log('💰 Current price:', currentPrice);
+      console.log('💰 Current price:', priceBreakdown);
 
       const isValid = validateForm();
       console.log('✅ Form is valid:', isValid);
 
       if (!isValid) {
         console.log('❌ Validation failed, not proceeding');
+        scrollToFirstError();
         return;
       }
 
@@ -213,7 +242,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
         const reservationData = {
           service,
-          totalPrice: currentPrice,
+          totalPrice: priceBreakdown.total,
           formData: {
             serviceId: service.id,
             serviceName: service.name,
@@ -228,7 +257,8 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             hasSpecialNeeds: formData.hasSpecialNeeds,
             specialNeedsDetails: formData.specialNeedsDetails,
             specialRequests: formData.specialRequests,
-            calculatedPrice: currentPrice,
+            calculatedPrice: priceBreakdown.total,
+            priceBreakdown: priceBreakdown,
           },
           bookingDate: new Date(),
           clientInfo: undefined,
@@ -240,21 +270,17 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             hasSpecialNeeds: formData.hasSpecialNeeds,
             specialNeedsDetails: formData.specialNeedsDetails,
             specialRequests: formData.specialRequests,
-            duration:
-              formData.startTime && formData.endTime
-                ? Math.max(
-                    (new Date(`2000-01-01T${formData.endTime}`).getTime() -
-                      new Date(`2000-01-01T${formData.startTime}`).getTime()) /
-                      (1000 * 60 * 60),
-                    minimumBooking
-                  )
-                : minimumBooking,
+            duration: calculateDuration(
+              formData.startTime,
+              formData.endTime,
+              minimumBooking
+            ),
           },
         };
 
         console.log('🍼 BabysitterForm - Reservation data:', reservationData);
         console.log('📍 Selected location:', selectedLocation);
-        console.log('💰 Total Price at root level:', currentPrice);
+        console.log('💰 Total Price at root level:', priceBreakdown.total);
 
         setReservationData(reservationData);
 
@@ -271,11 +297,12 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
       validateForm,
       service,
       formData,
-      currentPrice,
+      priceBreakdown,
       setReservationData,
       router,
       minimumBooking,
       t,
+      scrollToFirstError,
     ]
   );
 
@@ -367,18 +394,18 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
           <div className='space-y-6'>
             <h3 className='text-xl font-bold text-purple-900 flex items-center'>
               <Calendar className='w-6 h-6 mr-2 text-purple-600' />
-              {t('services.standard.babysitterForm.scheduling.title')}
+              {t('services.standard.babysitterForm.sections.scheduling')}
               <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
             </h3>
 
             {/* Date Field */}
-            <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
+            <div
+              className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'
+              ref={(el) => el && fieldRefs.current.set('date', el)}
+            >
               <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                 <Calendar className='w-5 h-5 mr-2 text-purple-600' />
-                {t(
-                  'services.standard.babysitterForm.scheduling.date.label'
-                )}{' '}
-                {t('services.standard.babysitterForm.scheduling.date.required')}
+                {t('services.standard.babysitterForm.fields.date.label')} *
               </label>
               <input
                 type='date'
@@ -410,15 +437,16 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             {/* Time Range Fields */}
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               {/* Start Time */}
-              <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
+              <div
+                className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'
+                ref={(el) => el && fieldRefs.current.set('startTime', el)}
+              >
                 <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                   <Clock className='w-5 h-5 mr-2 text-purple-600' />
                   {t(
-                    'services.standard.babysitterForm.scheduling.startTime.label'
+                    'services.standard.babysitterForm.fields.startTime.label'
                   )}{' '}
-                  {t(
-                    'services.standard.babysitterForm.scheduling.startTime.required'
-                  )}
+                  *
                 </label>
                 <input
                   type='time'
@@ -442,15 +470,13 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
               </div>
 
               {/* End Time */}
-              <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
+              <div
+                className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'
+                ref={(el) => el && fieldRefs.current.set('endTime', el)}
+              >
                 <label className='flex items-center text-sm font-medium text-purple-800 mb-3'>
                   <Clock className='w-5 h-5 mr-2 text-purple-600' />
-                  {t(
-                    'services.standard.babysitterForm.scheduling.endTime.label'
-                  )}{' '}
-                  {t(
-                    'services.standard.babysitterForm.scheduling.endTime.required'
-                  )}
+                  {t('services.standard.babysitterForm.fields.endTime.label')} *
                 </label>
                 <input
                   type='time'
@@ -478,10 +504,9 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             <div className='flex items-center p-4 bg-indigo-50 rounded-xl border border-indigo-100 shadow-inner'>
               <Info className='h-6 w-6 text-indigo-500 mr-3 flex-shrink-0' />
               <p className='text-sm text-indigo-700'>
-                {t(
-                  'services.standard.babysitterForm.scheduling.minimumBooking',
-                  { hours: minimumBooking }
-                )}
+                {t('services.standard.babysitterForm.info.minimumBooking', {
+                  hours: minimumBooking,
+                })}
               </p>
             </div>
           </div>
@@ -490,15 +515,17 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
           <div className='space-y-6'>
             <h3 className='text-xl font-bold text-purple-900 flex items-center'>
               <MapPin className='w-6 h-6 mr-2 text-purple-600' />
-              {t('services.standard.babysitterForm.location.title')}
+              {t('services.standard.babysitterForm.sections.location')}
               <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
             </h3>
 
-            <div className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'>
+            <div
+              className='bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-sm'
+              ref={(el) => el && fieldRefs.current.set('location', el)}
+            >
               <label className='flex items-center text-sm font-medium text-purple-800 mb-4'>
                 <MapPin className='w-5 h-5 mr-2 text-purple-600' />
-                {t('services.standard.babysitterForm.location.label')}{' '}
-                {t('services.standard.babysitterForm.location.required')}
+                {t('services.standard.babysitterForm.fields.location.label')} *
               </label>
 
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -548,13 +575,12 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 </p>
               )}
 
-              {/* Display selected location */}
               {formData.location && (
                 <div className='mt-4 p-3 bg-purple-100 rounded-lg border border-purple-200'>
                   <p className='text-sm text-purple-800 flex items-center'>
                     <CheckCircle className='w-4 h-4 mr-2 text-purple-600' />
                     {t(
-                      'services.standard.babysitterForm.location.selected'
+                      'services.standard.babysitterForm.fields.location.selected'
                     )}{' '}
                     <span className='font-medium ml-1'>
                       {
@@ -573,7 +599,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
           <div className='space-y-6 mt-10'>
             <h3 className='text-xl font-bold text-purple-900 flex items-center'>
               <Baby className='w-6 h-6 mr-2 text-purple-600' />
-              {t('services.standard.babysitterForm.children.title')}
+              {t('services.standard.babysitterForm.sections.childrenInfo')}
               <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
             </h3>
 
@@ -581,7 +607,9 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             <div className='bg-pink-50 p-6 rounded-xl border border-pink-100 shadow-sm'>
               <label className='flex items-center text-sm font-medium text-pink-800 mb-3'>
                 <Users className='w-5 h-5 mr-2 text-pink-600' />
-                {t('services.standard.babysitterForm.children.count.label')}
+                {t(
+                  'services.standard.babysitterForm.fields.childrenCount.label'
+                )}
               </label>
 
               <div className='flex w-48 mx-auto bg-white rounded-xl overflow-hidden shadow-sm border-2 border-pink-200'>
@@ -605,22 +633,23 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 </button>
               </div>
 
-              {formData.childrenCount > 1 && (
-                <p className='text-sm text-pink-700 mt-3 text-center flex items-center justify-center'>
-                  <DollarSign className='w-4 h-4 mr-1' />
-                  {t(
-                    'services.standard.babysitterForm.children.count.additionalFee'
-                  )}
-                </p>
-              )}
+              <p className='text-sm text-pink-700 mt-3 text-center flex items-center justify-center'>
+                <DollarSign className='w-4 h-4 mr-1' />
+                {t('services.standard.babysitterForm.info.pricePerChild')}
+              </p>
             </div>
 
             {/* Children Ages */}
-            <div className='bg-pink-50 p-6 rounded-xl border border-pink-100 shadow-sm'>
+            <div
+              className='bg-pink-50 p-6 rounded-xl border border-pink-100 shadow-sm'
+              ref={(el) => el && fieldRefs.current.set('childrenAges', el)}
+            >
               <label className='flex items-center text-sm font-medium text-pink-800 mb-3'>
                 <Baby className='w-5 h-5 mr-2 text-pink-600' />
-                {t('services.standard.babysitterForm.children.ages.label')}{' '}
-                {t('services.standard.babysitterForm.children.ages.required')}
+                {t(
+                  'services.standard.babysitterForm.fields.childrenAges.label'
+                )}{' '}
+                *
               </label>
 
               <div className='space-y-3'>
@@ -637,7 +666,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                       value={age}
                       onChange={(e) => handleAgeChange(index, e.target.value)}
                       placeholder={t(
-                        'services.standard.babysitterForm.children.ages.placeholder'
+                        'services.standard.babysitterForm.fields.childrenAges.placeholder'
                       )}
                       className={`flex-1 p-3 border rounded-lg transition-all focus:ring-2 focus:outline-none
                         ${
@@ -660,7 +689,12 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             </div>
 
             {/* Special Needs Toggle */}
-            <div className='mt-6'>
+            <div
+              className='mt-6'
+              ref={(el) =>
+                el && fieldRefs.current.set('specialNeedsDetails', el)
+              }
+            >
               <div
                 className='flex items-center justify-between p-5 border-2 border-purple-200 rounded-xl bg-white hover:border-purple-300 transition cursor-pointer shadow-sm'
                 onClick={toggleSpecialNeeds}
@@ -679,7 +713,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                   </div>
                   <span className='ml-3 font-medium text-purple-900'>
                     {t(
-                      'services.standard.babysitterForm.children.specialNeeds.toggle'
+                      'services.standard.babysitterForm.fields.specialNeeds.toggle'
                     )}
                   </span>
                 </div>
@@ -691,18 +725,16 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 <div className='mt-4 pl-6 border-l-4 border-purple-300 bg-purple-50 p-6 rounded-xl'>
                   <label className='block text-sm font-medium text-purple-800 mb-3'>
                     {t(
-                      'services.standard.babysitterForm.children.specialNeeds.label'
+                      'services.standard.babysitterForm.fields.specialNeeds.label'
                     )}{' '}
-                    {t(
-                      'services.standard.babysitterForm.children.specialNeeds.required'
-                    )}
+                    *
                   </label>
                   <textarea
                     name='specialNeedsDetails'
                     value={formData.specialNeedsDetails}
                     onChange={handleChange}
                     placeholder={t(
-                      'services.standard.babysitterForm.children.specialNeeds.placeholder'
+                      'services.standard.babysitterForm.fields.specialNeeds.placeholder'
                     )}
                     className={`w-full p-4 border-2 rounded-xl shadow-sm h-32 transition-all focus:ring-2 focus:outline-none
                       ${
@@ -722,7 +754,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                     <DollarSign className='w-4 h-4 mr-1' />
                     <span>
                       {t(
-                        'services.standard.babysitterForm.children.specialNeeds.additionalFee'
+                        'services.standard.babysitterForm.info.specialCareFee'
                       )}
                     </span>
                   </p>
@@ -735,21 +767,23 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
           <div className='space-y-6 mt-10'>
             <h3 className='text-xl font-bold text-purple-900 flex items-center'>
               <MessageSquare className='w-6 h-6 mr-2 text-purple-600' />
-              {t('services.standard.babysitterForm.additionalInfo.title')}
+              {t('services.standard.babysitterForm.sections.additionalInfo')}
               <div className='ml-2 h-1 flex-grow bg-gradient-to-r from-purple-200 to-transparent rounded-full'></div>
             </h3>
 
             <div className='bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm'>
               <label className='flex items-center text-sm font-medium text-indigo-800 mb-3'>
                 <MessageSquare className='w-5 h-5 mr-2 text-indigo-600' />
-                {t('services.standard.babysitterForm.additionalInfo.label')}
+                {t(
+                  'services.standard.babysitterForm.fields.specialRequests.label'
+                )}
               </label>
               <textarea
                 name='specialRequests'
                 value={formData.specialRequests}
                 onChange={handleChange}
                 placeholder={t(
-                  'services.standard.babysitterForm.additionalInfo.placeholder'
+                  'services.standard.babysitterForm.fields.specialRequests.placeholder'
                 )}
                 className='w-full p-4 border-2 border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 bg-white shadow-sm h-32 focus:outline-none'
               ></textarea>
@@ -770,41 +804,29 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
             <div className='mb-4 md:mb-0'>
               <div className='text-center md:text-left'>
                 <p className='text-purple-200 text-sm'>
-                  {t('services.standard.babysitterForm.footer.totalPrice')}
+                  {t('services.standard.babysitterForm.pricing.totalPrice')}
                 </p>
-                <p className='text-3xl font-bold'>${currentPrice.toFixed(2)}</p>
+                <p className='text-3xl font-bold'>
+                  ${priceBreakdown.total.toFixed(2)}
+                </p>
 
                 {/* Price breakdown */}
                 <div className='text-xs text-purple-200 mt-2 space-y-1'>
-                  {formData.location && (
+                  {priceBreakdown.details.map((detail, index) => (
+                    <div key={index}>
+                      {detail.label}: ${detail.amount.toFixed(2)}
+                    </div>
+                  ))}
+                  <div className='border-t border-purple-300 my-1 pt-1'>
                     <div>
-                      {t(
-                        'services.standard.babysitterForm.footer.priceBreakdown.location',
-                        {
-                          locationName: LOCATION_OPTIONS.find(
-                            (loc) => loc.id === formData.location
-                          )?.name,
-                        }
-                      )}
+                      {t('services.standard.babysitterForm.pricing.subtotal')}:
+                      ${priceBreakdown.subtotal.toFixed(2)}
                     </div>
-                  )}
-                  {formData.childrenCount > 1 && (
-                    <div className='text-pink-200'>
-                      {t(
-                        'services.standard.babysitterForm.footer.priceBreakdown.children',
-                        {
-                          count: formData.childrenCount,
-                        }
-                      )}
+                    <div className='text-yellow-200'>
+                      {t('services.standard.babysitterForm.pricing.tax')} (
+                      {TAX_RATE}%): ${priceBreakdown.tax.toFixed(2)}
                     </div>
-                  )}
-                  {formData.hasSpecialNeeds && (
-                    <div>
-                      {t(
-                        'services.standard.babysitterForm.footer.priceBreakdown.specialNeeds'
-                      )}
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -816,7 +838,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 disabled={isSubmitting}
                 className='px-6 py-3 border-2 border-white/30 rounded-xl text-white hover:bg-white/10 transition-colors disabled:opacity-50'
               >
-                {t('services.standard.babysitterForm.footer.buttons.cancel')}
+                {t('services.standard.babysitterForm.buttons.cancel')}
               </button>
 
               <button
@@ -831,16 +853,12 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 {isSubmitting ? (
                   <>
                     <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2'></div>
-                    {t(
-                      'services.standard.babysitterForm.footer.buttons.processing'
-                    )}
+                    {t('services.standard.babysitterForm.buttons.processing')}
                   </>
                 ) : (
                   <>
                     <CreditCard className='h-5 w-5 mr-2' />
-                    {t(
-                      'services.standard.babysitterForm.footer.buttons.submit'
-                    )}
+                    {t('services.standard.babysitterForm.buttons.submit')}
                   </>
                 )}
               </button>
