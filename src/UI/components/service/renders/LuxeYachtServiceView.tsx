@@ -2721,8 +2721,8 @@ const LuxeYachtServiceView: React.FC = () => {
       <CaribbeanGallery />
       <CaribbeanWhatToBring />
       <PrivateServiceInfo />
-      <YachtImportantInfo />
       <SunsetCTABanner />
+      <YachtImportantInfo />
 
       {/* Modals */}
       {selectedYacht && !showBookingModal && (
