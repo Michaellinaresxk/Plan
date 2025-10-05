@@ -13,9 +13,12 @@ import {
   Heart,
   Award,
   ChevronDown,
+  Clock,
+  Info,
+  Sparkles,
+  Send,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import BookingModal from '../../modal/BookingModal';
 import {
   CATAMARAN_DATA,
   features,
@@ -32,6 +35,325 @@ const calculatePrice = (catamaran, groupSize) => {
   }
   const additionalPeople = groupSize - baseGroupSize;
   return minimumRate + additionalPeople * additionalPersonRate;
+};
+
+// ==================== INQUIRY MODAL COMPONENT ====================
+interface InquiryFormData {
+  date: string;
+  guests: number;
+  timeSlot: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
+const CatamaranInquiryModal: React.FC<{
+  catamaran: any;
+  onClose: () => void;
+}> = ({ catamaran, onClose }) => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState<InquiryFormData>({
+    date: '',
+    guests: 2,
+    timeSlot: catamaran.timeSlots?.[0]?.id || 'morning',
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = () => {
+    // Validation
+    if (
+      !formData.date ||
+      !formData.name ||
+      !formData.email ||
+      !formData.phone
+    ) {
+      alert(
+        t('services.standard.catamaranServiceView.inquiry.validationError')
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Simulate API call - replace with your actual API endpoint
+    setTimeout(() => {
+      alert(t('services.standard.catamaranServiceView.inquiry.successMessage'));
+      setIsSubmitting(false);
+      onClose();
+    }, 2000);
+  };
+
+  return (
+    <div className='fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className='bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl'
+      >
+        {/* Header with Catamaran Image */}
+        <div className='relative h-32 overflow-hidden'>
+          <img
+            src={catamaran.image || catamaran.gallery?.[0]}
+            alt={catamaran.name}
+            className='w-full h-full object-cover'
+          />
+          <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
+          <button
+            onClick={onClose}
+            className='absolute top-4 right-4 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors'
+          >
+            <X className='w-4 h-4' />
+          </button>
+          <div className='absolute bottom-4 left-4 text-white'>
+            <h2 className='text-lg font-semibold'>{catamaran.name}</h2>
+            <p className='text-white/80 text-sm'>
+              {t('services.standard.catamaranServiceView.inquiry.modalTitle')}
+            </p>
+          </div>
+        </div>
+
+        {/* Form Content */}
+        <div className='p-6 space-y-4'>
+          {/* Date & Guests */}
+          <div className='grid grid-cols-2 gap-4'>
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
+                {t('services.standard.catamaranServiceView.inquiry.dateLabel')}
+                <span className='text-red-500'>*</span>
+              </label>
+              <input
+                type='date'
+                required
+                min={new Date().toISOString().split('T')[0]}
+                value={formData.date}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, date: e.target.value }))
+                }
+                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
+                {t(
+                  'services.standard.catamaranServiceView.inquiry.guestsLabel'
+                )}
+                <span className='text-red-500'>*</span>
+              </label>
+              <select
+                value={formData.guests}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    guests: parseInt(e.target.value),
+                  }))
+                }
+                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
+              >
+                {Array.from(
+                  { length: catamaran.capacity || 30 },
+                  (_, i) => i + 1
+                ).map((num) => (
+                  <option key={num} value={num}>
+                    {num}{' '}
+                    {num > 1
+                      ? t(
+                          'services.standard.catamaranServiceView.inquiry.guestsPlural'
+                        )
+                      : t(
+                          'services.standard.catamaranServiceView.inquiry.guestsSingular'
+                        )}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Time Slot Selection */}
+          {catamaran.timeSlots && catamaran.timeSlots.length > 0 && (
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>
+                {t('services.standard.catamaranServiceView.inquiry.timeLabel')}
+                <span className='text-red-500'>*</span>
+              </label>
+              <div className='grid grid-cols-2 gap-4'>
+                {catamaran.timeSlots.map((slot) => (
+                  <button
+                    key={slot.id}
+                    type='button'
+                    onClick={() =>
+                      setFormData((prev) => ({ ...prev, timeSlot: slot.id }))
+                    }
+                    className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center ${
+                      formData.timeSlot === slot.id
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                  >
+                    <Clock className='w-5 h-5 mb-2' />
+                    <span className='font-semibold text-sm text-center'>
+                      {slot.time}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Contact Information */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              {t('services.standard.catamaranServiceView.inquiry.nameLabel')}
+              <span className='text-red-500'>*</span>
+            </label>
+            <input
+              type='text'
+              required
+              value={formData.name}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
+              className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
+              placeholder={t(
+                'services.standard.catamaranServiceView.inquiry.namePlaceholder'
+              )}
+            />
+          </div>
+
+          <div className='grid grid-cols-2 gap-4'>
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
+                {t('services.standard.catamaranServiceView.inquiry.emailLabel')}
+                <span className='text-red-500'>*</span>
+              </label>
+              <input
+                type='email'
+                required
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, email: e.target.value }))
+                }
+                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
+                placeholder={t(
+                  'services.standard.catamaranServiceView.inquiry.emailPlaceholder'
+                )}
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
+                {t('services.standard.catamaranServiceView.inquiry.phoneLabel')}
+                <span className='text-red-500'>*</span>
+              </label>
+              <input
+                type='tel'
+                required
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, phone: e.target.value }))
+                }
+                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
+                placeholder={t(
+                  'services.standard.catamaranServiceView.inquiry.phonePlaceholder'
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Message */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              {t('services.standard.catamaranServiceView.inquiry.messageLabel')}
+            </label>
+            <textarea
+              value={formData.message}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, message: e.target.value }))
+              }
+              rows={3}
+              className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none'
+              placeholder={t(
+                'services.standard.catamaranServiceView.inquiry.messagePlaceholder'
+              )}
+            />
+          </div>
+
+          {/* Info Notice */}
+          <div className='bg-blue-50 rounded-lg p-4 border border-blue-200'>
+            <div className='flex items-start gap-2 mb-2'>
+              <Info className='w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5' />
+              <p className='text-sm text-blue-800 font-medium'>
+                {t(
+                  'services.standard.catamaranServiceView.inquiry.noticeTitle'
+                )}
+              </p>
+            </div>
+            <p className='text-sm text-blue-700 leading-relaxed'>
+              {t('services.standard.catamaranServiceView.inquiry.noticeText')}
+            </p>
+          </div>
+
+          {/* Estimated Price Display */}
+          <div className='bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100'>
+            <div className='flex items-center justify-between'>
+              <div>
+                <p className='text-sm text-gray-600'>
+                  {t(
+                    'services.standard.catamaranServiceView.inquiry.estimatedTotal'
+                  )}
+                </p>
+                <p className='text-2xl font-bold text-gray-900'>
+                  ${calculatePrice(catamaran, formData.guests)}
+                </p>
+                <p className='text-xs text-gray-500'>
+                  {formData.guests}{' '}
+                  {t('services.standard.catamaranServiceView.inquiry.guests')} ×
+                  ${catamaran.price}{' '}
+                  {t(
+                    'services.standard.catamaranServiceView.inquiry.perPerson'
+                  )}
+                </p>
+              </div>
+              <Sparkles className='w-8 h-8 text-blue-500' />
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className={`w-full py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+              isSubmitting
+                ? 'bg-gray-400 text-white cursor-not-allowed'
+                : 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 shadow-md hover:shadow-lg'
+            }`}
+          >
+            {isSubmitting ? (
+              <>
+                <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white' />
+                {t('services.standard.catamaranServiceView.inquiry.submitting')}
+              </>
+            ) : (
+              <>
+                <Send className='w-5 h-5' />
+                {t(
+                  'services.standard.catamaranServiceView.inquiry.submitButton'
+                )}
+              </>
+            )}
+          </button>
+
+          <p className='text-xs text-gray-500 text-center'>
+            {t('services.standard.catamaranServiceView.inquiry.disclaimer')}
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
 };
 
 // ==================== IMMERSIVE HERO SECTION ====================
@@ -537,7 +859,7 @@ const PricingCalculator = ({ catamaran, groupSize, onGroupSizeChange }) => {
 };
 
 // ==================== CATAMARAN DETAILS MODAL ====================
-const CatamaranDetailsModal = ({ catamaran, isOpen, onClose, onBook }) => {
+const CatamaranDetailsModal = ({ catamaran, isOpen, onClose, onInquiry }) => {
   const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [groupSize, setGroupSize] = useState(2);
@@ -648,16 +970,13 @@ const CatamaranDetailsModal = ({ catamaran, isOpen, onClose, onBook }) => {
           {/* Footer */}
           <div className='sticky bottom-0 bg-white border-t p-8'>
             <button
-              onClick={() => onBook(catamaran, groupSize)}
+              onClick={() => onInquiry(catamaran, groupSize)}
               className={`w-full bg-gradient-to-r ${catamaran.primaryColor} text-white py-6 rounded-2xl text-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-3`}
             >
               <Calendar className='w-6 h-6' />
               {t(
-                'services.standard.catamaranServiceView.detailsModal.bookButton',
-                {
-                  catamaranName: catamaran.name,
-                  price: calculatePrice(catamaran, groupSize),
-                }
+                'services.standard.catamaranServiceView.detailsModal.inquiryButton',
+                { catamaranName: catamaran.name }
               )}
             </button>
           </div>
@@ -1007,40 +1326,8 @@ const CatamaranServiceView = () => {
   const { t } = useTranslation();
   const [selectedCatamaran, setSelectedCatamaran] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
   const [heroSelectedCatamaran, setHeroSelectedCatamaran] = useState(null);
-
-  const createServiceFromCatamaran = (catamaran) => ({
-    id: `catamaran-${catamaran.id}`,
-    name: `Catamaran ${catamaran.name}`,
-    type: 'CATAMARAN_CRUISE',
-    description: catamaran.description,
-    duration: catamaran.duration,
-    price: catamaran.price,
-    included: catamaran.includes,
-    packageType: catamaran.premium ? 'premium' : 'standard',
-    catamaranType: catamaran.id,
-    maxParticipants: catamaran.capacity,
-    catamaranSpecifics: {
-      minimumRate: catamaran.pricing.minimumRate,
-      baseGroupSize: catamaran.pricing.baseGroupSize,
-      additionalPersonRate: catamaran.pricing.additionalPersonRate,
-      timeSlots: catamaran.timeSlots,
-      destinations: catamaran.destinations,
-      gallery: catamaran.gallery,
-      notes: catamaran.notes,
-      realPricing: catamaran.pricing,
-    },
-  });
-
-  const service = selectedCatamaran
-    ? createServiceFromCatamaran(selectedCatamaran)
-    : null;
-
-  const handleBookingConfirm = (service, dates, guests) => {
-    setIsModalOpen(false);
-    console.log('Booking confirmed:', { service, dates, guests });
-  };
 
   const handleCatamaranViewDetails = (catamaran) => {
     setSelectedCatamaran(catamaran);
@@ -1052,7 +1339,7 @@ const CatamaranServiceView = () => {
     setSelectedCatamaran(null);
   };
 
-  const handleBookFromDetails = (catamaran, groupSize) => {
+  const handleInquiryFromDetails = (catamaran, groupSize) => {
     const enrichedCatamaran = {
       ...catamaran,
       pricing: catamaran.pricing || {
@@ -1072,11 +1359,12 @@ const CatamaranServiceView = () => {
       ],
       duration: catamaran.duration || '3 hours',
       notes: catamaran.notes || '',
+      capacity: catamaran.capacity || 30,
     };
 
     setSelectedCatamaran(enrichedCatamaran);
     setIsDetailsModalOpen(false);
-    setIsModalOpen(true);
+    setIsInquiryModalOpen(true);
   };
 
   const handleHeroCatamaranSelect = (catamaran) => {
@@ -1155,18 +1443,18 @@ const CatamaranServiceView = () => {
         catamaran={selectedCatamaran}
         isOpen={isDetailsModalOpen}
         onClose={handleCloseDetails}
-        onBook={handleBookFromDetails}
+        onInquiry={handleInquiryFromDetails}
       />
 
-      {/* Booking Modal */}
+      {/* Inquiry Modal */}
       <AnimatePresence>
-        {isModalOpen && service && selectedCatamaran && (
-          <BookingModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onConfirm={handleBookingConfirm}
-            service={service}
-            selectedCatamaran={selectedCatamaran}
+        {isInquiryModalOpen && selectedCatamaran && (
+          <CatamaranInquiryModal
+            catamaran={selectedCatamaran}
+            onClose={() => {
+              setIsInquiryModalOpen(false);
+              setSelectedCatamaran(null);
+            }}
           />
         )}
       </AnimatePresence>
