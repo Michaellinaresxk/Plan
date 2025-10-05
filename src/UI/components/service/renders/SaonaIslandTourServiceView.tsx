@@ -840,7 +840,6 @@ const BannersSection: React.FC<{
 
 const SaonaIslandTourServiceView: React.FC = ({ service }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const { bookService } = useBooking();
 
