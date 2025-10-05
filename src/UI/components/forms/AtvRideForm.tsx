@@ -24,6 +24,10 @@ import { LocationSelector } from '../service/LocationSelector';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
 
+// ✅ NUEVAS IMPORTACIONES
+import { useScrollToError } from '@/hooks/useScrollToError';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
+
 interface AtvRideFormProps {
   service: Service;
   selectedVehicle?: any;
@@ -103,7 +107,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     date: '',
     timeSlot: '',
     location: '',
-    vehicleType: selectedVehicle?.id || 'buggy', // 👈 Cambiado de 'atv' a 'buggy'
+    vehicleType: selectedVehicle?.id || 'buggy',
     vehicleCount: 1,
     totalParticipants: 1,
     hasExperience: true,
@@ -112,6 +116,12 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ✅ HOOK PARA SCROLL A ERRORES
+  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
+
+  // ✅ CONSTANTE DE TAX
+  const TAX_RATE = 5; // 5%
 
   const updateFormField = useCallback((field: string, value: any) => {
     setFormData((prev) => ({
@@ -141,6 +151,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     },
     [updateFormField]
   );
+
   const handleLocationSelect = useCallback(
     (locationId: string) => {
       updateFormField('location', locationId);
@@ -165,15 +176,21 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     servicePricing: ATV_TRANSPORT_PRICING,
   });
 
+  // ✅ COBRO POR PERSONA (no por vehículo)
   const basePrice = useMemo(() => {
     if (!currentVehicle?.price) return 0;
-    return currentVehicle.price * formData.vehicleCount;
-  }, [currentVehicle, formData.vehicleCount]);
+    return currentVehicle.price * formData.totalParticipants;
+  }, [currentVehicle, formData.totalParticipants]);
 
-  const totalPrice = useMemo(() => {
-    if (!currentVehicle?.price) return 0;
-    return basePrice + totalLocationCost;
+  // ✅ CÁLCULO DE PRECIO CON TAX
+  const priceWithTax = useMemo(() => {
+    if (!currentVehicle?.price) return { subtotal: 0, tax: 0, total: 0 };
+    const subtotal = basePrice + totalLocationCost;
+    return calculatePriceWithTax(subtotal, TAX_RATE);
   }, [basePrice, totalLocationCost, currentVehicle]);
+
+  // ✅ Mantener totalPrice para compatibilidad
+  const totalPrice = priceWithTax.total;
 
   useEffect(() => {
     if (currentVehicle) {
@@ -289,6 +306,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('❌ AtvForm - Validation errors:', validationErrors);
+      // ✅ SCROLL AL PRIMER ERROR
+      scrollToFirstError();
       return;
     }
 
@@ -323,6 +342,10 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
           basePrice,
           transportCost,
           locationSurcharge,
+          // ✅ AGREGAR info de tax
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: TAX_RATE,
           locationName: selectedLocation?.name || formData.location,
           pickupTime: t(
             `services.standard.atvExcurtionsForm.timeSlots.${formData.timeSlot}.pickup`
@@ -369,6 +392,9 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             basePrice,
             transportCost,
             locationSurcharge,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
             totalPrice,
           },
         },
@@ -483,8 +509,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 {t('services.standard.atvExcurtionsForm.sections.schedule')}
               </h3>
 
-              {/* Date Selection */}
-              <div>
+              {/* ✅ Date Selection con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('date', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar
                     className={`w-4 h-4 mr-2 ${
@@ -510,8 +536,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 )}
               </div>
 
-              {/* Time Slot Selection */}
-              <div>
+              {/* ✅ Time Slot Selection con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('timeSlot', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Clock
                     className={`w-4 h-4 mr-2 ${
@@ -597,19 +623,21 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               </div>
             </div>
 
-            {/* Location Selection */}
+            {/* ✅ Location Selection con REF */}
             <div className='space-y-4'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
                 {t('services.standard.atvExcurtionsForm.sections.location')}
               </h3>
 
-              <LocationSelector
-                selectedLocationId={formData.location}
-                onLocationSelect={handleLocationSelect}
-                locationOptions={locationOptions}
-                error={errors.location}
-                isPremium={isPremium}
-              />
+              <div ref={(el) => el && fieldRefs.current.set('location', el)}>
+                <LocationSelector
+                  selectedLocationId={formData.location}
+                  onLocationSelect={handleLocationSelect}
+                  locationOptions={locationOptions}
+                  error={errors.location}
+                  isPremium={isPremium}
+                />
+              </div>
             </div>
 
             {/* Vehicle Selection */}
@@ -620,8 +648,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 )}
               </h3>
 
-              {/* Vehicle Type */}
-              <div>
+              {/* ✅ Vehicle Type con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('vehicleType', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Car
                     className={`w-4 h-4 mr-2 ${
@@ -661,29 +689,51 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <Counter
-                  label={t(
-                    'services.standard.atvExcurtionsForm.fields.participants.label'
+                {/* ✅ Participants con REF */}
+                <div
+                  ref={(el) =>
+                    el && fieldRefs.current.set('totalParticipants', el)
+                  }
+                >
+                  <Counter
+                    label={t(
+                      'services.standard.atvExcurtionsForm.fields.participants.label'
+                    )}
+                    value={formData.totalParticipants}
+                    onIncrement={participantCounter.increment}
+                    onDecrement={participantCounter.decrement}
+                    icon={Users}
+                    min={1}
+                    max={16}
+                  />
+                  {errors.totalParticipants && (
+                    <p className='text-red-500 text-xs mt-1'>
+                      {errors.totalParticipants}
+                    </p>
                   )}
-                  value={formData.totalParticipants}
-                  onIncrement={participantCounter.increment}
-                  onDecrement={participantCounter.decrement}
-                  icon={Users}
-                  min={1}
-                  max={16}
-                />
+                </div>
 
-                <Counter
-                  label={t(
-                    'services.standard.atvExcurtionsForm.fields.vehicles.label'
+                {/* ✅ Vehicles con REF */}
+                <div
+                  ref={(el) => el && fieldRefs.current.set('vehicleCount', el)}
+                >
+                  <Counter
+                    label={t(
+                      'services.standard.atvExcurtionsForm.fields.vehicles.label'
+                    )}
+                    value={formData.vehicleCount}
+                    onIncrement={vehicleCounter.increment}
+                    onDecrement={vehicleCounter.decrement}
+                    icon={Car}
+                    min={1}
+                    max={8}
+                  />
+                  {errors.vehicleCount && (
+                    <p className='text-red-500 text-xs mt-1'>
+                      {errors.vehicleCount}
+                    </p>
                   )}
-                  value={formData.vehicleCount}
-                  onIncrement={vehicleCounter.increment}
-                  onDecrement={vehicleCounter.decrement}
-                  icon={Car}
-                  min={1}
-                  max={8}
-                />
+                </div>
               </div>
 
               {/* Capacity Validation */}
@@ -798,8 +848,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                               'services.standard.atvExcurtionsForm.capacity.perfect.cost'
                             )}
                           </strong>{' '}
-                          {formData.vehicleCount} × $
-                          {currentVehicle?.price || 0} = ${basePrice}
+                          {formData.totalParticipants} × $
+                          {currentVehicle?.price || 0} = ${basePrice.toFixed(2)}
                         </div>
                       </div>
                     </div>
@@ -889,6 +939,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 </div>
               </div>
             </div>
+
             {/* Error Display */}
             {errors.submit && (
               <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
@@ -897,7 +948,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             )}
           </div>
 
-          {/* Form Footer */}
+          {/* ✅ Form Footer - */}
           <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
@@ -929,13 +980,13 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     )}
                   </div>
                   <div>
-                    {formData.vehicleCount}{' '}
-                    {formData.vehicleCount === 1
+                    {formData.totalParticipants}{' '}
+                    {formData.totalParticipants === 1
                       ? t(
-                          'services.standard.atvExcurtionsForm.pricing.vehicles'
+                          'services.standard.atvExcurtionsForm.capacity.perfect.person'
                         )
                       : t(
-                          'services.standard.atvExcurtionsForm.pricing.vehiclesPlural'
+                          'services.standard.atvExcurtionsForm.capacity.perfect.people'
                         )}{' '}
                     × ${currentVehicle.price} = ${basePrice.toFixed(2)}
                   </div>
@@ -948,10 +999,18 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                       {t(
                         'services.standard.atvExcurtionsForm.pricing.locationSurcharge'
                       )}
-                      : +$
-                      {locationSurcharge.toFixed(2)}
+                      : +${locationSurcharge.toFixed(2)}
                     </div>
                   )}
+
+                  {/* ✅ DESGLOSE DE TAX */}
+                  <div className='border-t border-gray-700 pt-1 mt-1'>
+                    <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                    <div className='text-yellow-400'>
+                      Tax ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                    </div>
+                  </div>
+
                   {selectedLocation && (
                     <div className='text-green-400'>
                       {t('services.standard.atvExcurtionsForm.pricing.pickup')}:{' '}

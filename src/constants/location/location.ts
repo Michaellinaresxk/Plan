@@ -5,31 +5,31 @@ export const DEFAULT_LOCATION_OPTIONS: LocationOption[] = [
     id: 'punta-cana-resorts',
     name: 'Punta Cana Resorts',
     surcharge: 0,
-    description: 'Standard pricing',
+    description: 'Base price $60.00',
   },
   {
     id: 'bavaro',
     name: 'Bavaro',
     surcharge: 0,
-    description: 'Same as Punta Cana',
+    description: 'Base price $60.00',
   },
   {
     id: 'cap-cana',
     name: 'Cap Cana',
     surcharge: 15,
-    description: '+$15 USD additional',
+    description: 'Base price',
   },
   {
     id: 'uvero-alto',
     name: 'Uvero Alto',
     surcharge: 15,
-    description: '+$15 USD additional',
+    description: 'Base price',
   },
   {
     id: 'punta-village',
     name: 'Puntacana Village',
     surcharge: 10,
-    description: '+$10 USD additional',
+    description: 'Base price',
   },
 ];
 
