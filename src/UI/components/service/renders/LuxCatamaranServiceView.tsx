@@ -69,8 +69,8 @@ const HeroSection: React.FC<{
   const heroImages = [
     {
       src: 'https://images.pexels.com/photos/4784342/pexels-photo-4784342.jpeg?_gl=1*1c89csu*_ga*MTQzOTE0OTkxMS4xNzUzMjcxMDk0*_ga_8JE65Q40S6*czE3NTM3OTg1NjgkbzgkZzEkdDE3NTM3OTkxOTkkajU5JGwwJGgw',
-      title: t('services.standard.luxCatamaran.serviceView.hero.title'),
-      subtitle: t('services.standard.luxCatamaran.serviceView.hero.subtitle'),
+      title: t('services.premium.luxCatamaran.hero.title'),
+      subtitle: t('services.premium.luxCatamaran.hero.subtitle'),
     },
   ];
 
@@ -119,7 +119,7 @@ const HeroSection: React.FC<{
           >
             <Waves className='w-5 h-5 mr-3 text-cyan-300' />
             <span className='font-semibold text-lg'>
-              {t('services.standard.luxCatamaran.serviceView.hero.badge')}
+              {t('services.premium.luxCatamaran.hero.badge')}
             </span>
           </motion.div>
 
@@ -147,7 +147,7 @@ const HeroSection: React.FC<{
             transition={{ delay: 0.9, duration: 0.8 }}
             className='text-lg text-white/80 mb-10 max-w-3xl mx-auto leading-relaxed'
           >
-            {t('services.standard.luxCatamaran.serviceView.hero.description')}
+            {t('services.premium.luxCatamaran.hero.description')}
           </motion.p>
 
           <motion.button
@@ -159,7 +159,7 @@ const HeroSection: React.FC<{
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {t('services.standard.luxCatamaran.serviceView.hero.ctaButton')}
+            {t('services.premium.luxCatamaran.hero.ctaButton')}
             <ArrowRight className='w-6 h-6' />
           </motion.button>
         </div>
@@ -197,9 +197,7 @@ const CatamaranCard: React.FC<{
 
         {catamaran.premium && (
           <div className='absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg'>
-            {t(
-              'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.badge'
-            )}
+            {t('services.premium.luxCatamaran.catamaranTypes.premium.badge')}
           </div>
         )}
 
@@ -207,7 +205,7 @@ const CatamaranCard: React.FC<{
           <div className='absolute top-4 left-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2'>
             <Waves className='w-4 h-4' />
             {t(
-              'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.waterSlideBadge'
+              'services.premium.luxCatamaran.catamaranTypes.premium.waterSlideBadge'
             )}
           </div>
         )}
@@ -219,18 +217,14 @@ const CatamaranCard: React.FC<{
           <span className='text-3xl font-bold text-cyan-300'>
             ${catamaran.price}
             <span className='text-lg text-white/70'>
-              {t(
-                'services.standard.luxCatamaran.serviceView.catamaranTypes.perPerson'
-              )}
+              {t('services.premium.luxCatamaran.catamaranTypes.perPerson')}
             </span>
           </span>
           <div className='flex items-center gap-2 text-white/80'>
             <Users className='w-4 h-4' />
             <span>
               {catamaran.capacity}{' '}
-              {t(
-                'services.standard.luxCatamaran.serviceView.catamaranTypes.guests'
-              )}
+              {t('services.premium.luxCatamaran.catamaranTypes.guests')}
             </span>
           </div>
         </div>
@@ -248,9 +242,7 @@ const CatamaranCard: React.FC<{
           {catamaran.features.length > 3 && (
             <div className='text-sm text-cyan-300'>
               +{catamaran.features.length - 3}{' '}
-              {t(
-                'services.standard.luxCatamaran.serviceView.catamaranTypes.moreFeatures'
-              )}
+              {t('services.premium.luxCatamaran.catamaranTypes.moreFeatures')}
             </div>
           )}
         </div>
@@ -306,13 +298,11 @@ const ExperienceGallery: React.FC = () => {
     <section className='bg-white rounded-3xl p-2 shadow-xl'>
       <div className='text-center mb-12'>
         <h2 className='text-4xl font-bold text-slate-800 mb-4'>
-          {t(
-            'services.standard.luxCatamaran.serviceView.sections.experienceGallery.title'
-          )}
+          {t('services.premium.luxCatamaran.sections.experienceGallery.title')}
         </h2>
         <p className='text-xl text-slate-600'>
           {t(
-            'services.standard.luxCatamaran.serviceView.sections.experienceGallery.subtitle'
+            'services.premium.luxCatamaran.sections.experienceGallery.subtitle'
           )}
         </p>
       </div>
@@ -330,7 +320,7 @@ const ExperienceGallery: React.FC = () => {
             <img
               src={experience.image}
               alt={t(
-                `services.standard.luxCatamaran.serviceView.sections.experienceGallery.experiences.${experience.titleKey}.title`
+                `sservices.premium.luxCatamaran.sections.experienceGallery.experiences.${experience.titleKey}.title`
               )}
               className='w-full h-full object-cover transition-all duration-500 group-hover:scale-110'
             />
@@ -343,12 +333,12 @@ const ExperienceGallery: React.FC = () => {
             <div className='absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
               <h3 className='text-xl font-bold mb-2'>
                 {t(
-                  `services.standard.luxCatamaran.serviceView.sections.experienceGallery.experiences.${experience.titleKey}.title`
+                  `services.premium.luxCatamaran.sections.experienceGallery.experiences.${experience.titleKey}.title`
                 )}
               </h3>
               <p className='text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                 {t(
-                  `services.standard.luxCatamaran.serviceView.sections.experienceGallery.experiences.${experience.titleKey}.description`
+                  `services.premium.luxCatamaran.sections.experienceGallery.experiences.${experience.titleKey}.description`
                 )}
               </p>
             </div>
@@ -369,14 +359,10 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
     <section className='bg-white rounded-3xl p-4 shadow-xl'>
       <div className='text-center mb-12'>
         <h2 className='text-2xl md:text-4xl mt-5 font-bold text-slate-800 mb-4'>
-          {t(
-            'services.standard.luxCatamaran.serviceView.sections.chooseTime.title'
-          )}
+          {t('services.premium.luxCatamaran.sections.chooseTime.title')}
         </h2>
         <p className='text-xl text-slate-600'>
-          {t(
-            'services.standard.luxCatamaran.serviceView.sections.chooseTime.subtitle'
-          )}
+          {t('services.premium.luxCatamaran.sections.chooseTime.subtitle')}
         </p>
       </div>
 
@@ -397,7 +383,7 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
             {slot.popular && (
               <div className='absolute top-0 right-0 bg-amber-500 text-white px-4 py-2 text-sm font-bold rounded-bl-2xl'>
                 {t(
-                  'services.standard.luxCatamaran.serviceView.sections.chooseTime.mostPopular'
+                  'services.premium.luxCatamaran.sections.chooseTime.mostPopular'
                 )}
               </div>
             )}
@@ -424,7 +410,7 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
                 }`}
               >
                 {t(
-                  `services.standard.luxCatamaran.serviceView.timeSlots.${slot.labelKey}.label`
+                  `services.premium.luxCatamaran.timeSlots.${slot.labelKey}.label`
                 )}
               </p>
 
@@ -436,7 +422,7 @@ const TimeSelection: React.FC<{ onSelect: (time: string) => void }> = ({
                 }`}
               >
                 {t(
-                  'services.standard.luxCatamaran.serviceView.sections.chooseTime.selectButton'
+                  'services.premium.luxCatamaran.sections.chooseTime.selectButton'
                 )}{' '}
                 {slot.time}
               </button>
@@ -462,24 +448,22 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
   const catamaranTypes: CatamaranType[] = [
     {
       id: 'classic',
-      name: t(
-        'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.name'
-      ),
+      name: t('services.premium.luxCatamaran.catamaranTypes.classic.name'),
       price: 89,
       image:
         'https://res.cloudinary.com/michaelxk-com/image/upload/v1625794349/nuestra%20flota/lagoon%2042/1_uspfu7.jpg',
       features: [
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.openBar'
+          'services.premium.luxCatamaran.catamaranTypes.classic.features.openBar'
         ),
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.gourmetBuffet'
+          'services.premium.luxCatamaran.catamaranTypes.classic.features.gourmetBuffet'
         ),
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.snorkelingEquipment'
+          'services.premium.luxCatamaran.catamaranTypes.classic.features.snorkelingEquipment'
         ),
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.classic.features.professionalCrew'
+          'services.premium.luxCatamaran.catamaranTypes.classic.features.professionalCrew'
         ),
       ],
       capacity: 40,
@@ -488,27 +472,25 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
     },
     {
       id: 'premium-slide',
-      name: t(
-        'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.name'
-      ),
+      name: t('services.premium.luxCatamaran.catamaranTypes.premium.name'),
       price: 129,
       image:
         'https://www.whitesandwatersports.com/assets/images/2020-09-02-11-41-55-IMG0606.JPG',
       features: [
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.allClassic'
+          'services.premium.luxCatamaran.catamaranTypes.premium.features.allClassic'
         ),
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.waterSlide'
+          'services.premium.luxCatamaran.catamaranTypes.premium.features.waterSlide'
         ),
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.premiumBar'
+          'services.premium.luxCatamaran.catamaranTypes.premium.features.premiumBar'
         ),
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.vipService'
+          'services.premium.luxCatamaran.catamaranTypes.premium.features.vipService'
         ),
         t(
-          'services.standard.luxCatamaran.serviceView.catamaranTypes.premium.features.photoPackage'
+          'services.premium.luxCatamaran.catamaranTypes.premium.features.photoPackage'
         ),
       ],
       capacity: 30,
@@ -548,12 +530,12 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
           <div className='text-center mb-12'>
             <h2 className='text-2xl md:text-4xl font-bold text-slate-800 mb-4'>
               {t(
-                'services.standard.luxCatamaran.serviceView.sections.chooseAdventure.title'
+                'services.premium.luxCatamaran.sections.chooseAdventure.title'
               )}
             </h2>
             <p className='text-xl-1 text-xl text-slate-600'>
               {t(
-                'services.standard.luxCatamaran.serviceView.sections.chooseAdventure.subtitle'
+                'services.premium.luxCatamaran.sections.chooseAdventure.subtitle'
               )}
             </p>
           </div>
@@ -584,10 +566,10 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                 <p className='text-xl text-blue-100 mb-8 leading-relaxed'>
                   {selectedCatamaranData.hasWaterSlide
                     ? t(
-                        'services.standard.luxCatamaran.serviceView.details.premiumDescription'
+                        'services.premium.luxCatamaran.details.premiumDescription'
                       )
                     : t(
-                        'services.standard.luxCatamaran.serviceView.details.classicDescription'
+                        'services.premium.luxCatamaran.details.classicDescription'
                       )}
                 </p>
 
@@ -608,9 +590,7 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                       ${selectedCatamaranData.price}
                     </div>
                     <div className='text-blue-200'>
-                      {t(
-                        'services.standard.luxCatamaran.serviceView.details.perPerson'
-                      )}
+                      {t('services.premium.luxCatamaran.details.perPerson')}
                     </div>
                   </div>
                   <div className='text-center'>
@@ -618,17 +598,13 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                       {selectedCatamaranData.capacity}
                     </div>
                     <div className='text-blue-200'>
-                      {t(
-                        'services.standard.luxCatamaran.serviceView.details.maxGuests'
-                      )}
+                      {t('services.premium.luxCatamaran.details.maxGuests')}
                     </div>
                   </div>
                   <div className='text-center'>
                     <div className='text-3xl font-bold'>4-6</div>
                     <div className='text-blue-200'>
-                      {t(
-                        'services.standard.luxCatamaran.serviceView.details.hours'
-                      )}
+                      {t('services.premium.luxCatamaran.details.hours')}
                     </div>
                   </div>
                 </div>
@@ -638,9 +614,7 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                   className='bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-2xl font-bold text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-lg'
                 >
                   <Calendar className='w-5 h-5' />
-                  {t(
-                    'services.standard.luxCatamaran.serviceView.details.bookButton'
-                  )}
+                  {t('services.premium.luxCatamaran.details.bookButton')}
                 </button>
               </div>
 
@@ -674,7 +648,7 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 className='text-3xl md:text-4xl font-bold mb-6 p-2'
               >
-                {t('services.standard.luxCatamaran.serviceView.cta.title')}
+                {t('services.premium.luxCatamaran.cta.title')}
               </motion.h2>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
@@ -682,7 +656,7 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                 transition={{ delay: 0.2 }}
                 className='text-xl-1 px-2 md:text-4xl text-white/90 mb-8'
               >
-                {t('services.standard.luxCatamaran.serviceView.cta.subtitle')}
+                {t('services.premium.luxCatamaran.cta.subtitle')}
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -695,14 +669,10 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
                   className='bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white px-10 py-5 rounded-2xl font-bold text-xl flex items-center gap-4 transition-all duration-300 hover:scale-105 shadow-2xl'
                 >
                   <Anchor className='w-6 h-6' />
-                  {t(
-                    'services.standard.luxCatamaran.serviceView.cta.bookButton'
-                  )}
+                  {t('services.premium.luxCatamaran.cta.bookButton')}
                 </button>
                 <div className='text-white/80 text-sm'>
-                  {t(
-                    'services.standard.luxCatamaran.serviceView.cta.guarantee'
-                  )}
+                  {t('services.premium.luxCatamaran.cta.guarantee')}
                 </div>
               </motion.div>
             </div>
@@ -721,39 +691,37 @@ const LuxCatamaranServiceView: React.FC<CatamaranServiceViewProps> = ({
             </div>
             <div>
               <h3 className='font-bold text-amber-800 mb-3 text-lg'>
-                {t(
-                  'services.standard.luxCatamaran.serviceView.importantInfo.title'
-                )}
+                {t('services.premium.luxCatamaran.importantInfo.title')}
               </h3>
               <div className='text-amber-700 leading-relaxed space-y-2'>
                 <p>
                   •{' '}
                   {t(
-                    'services.standard.luxCatamaran.serviceView.importantInfo.points.weather'
+                    'services.premium.luxCatamaran.importantInfo.points.weather'
                   )}
                 </p>
                 <p>
                   •{' '}
                   {t(
-                    'services.standard.luxCatamaran.serviceView.importantInfo.points.booking'
+                    'services.premium.luxCatamaran.importantInfo.points.booking'
                   )}
                 </p>
                 <p>
                   •{' '}
                   {t(
-                    'services.standard.luxCatamaran.serviceView.importantInfo.points.refund'
+                    'services.premium.luxCatamaran.importantInfo.points.refund'
                   )}
                 </p>
                 <p>
                   •{' '}
                   {t(
-                    'services.standard.luxCatamaran.serviceView.importantInfo.points.safety'
+                    'services.premium.luxCatamaran.importantInfo.points.safety'
                   )}
                 </p>
                 <p>
                   •{' '}
                   {t(
-                    'services.standard.luxCatamaran.serviceView.importantInfo.points.ageLimit'
+                    'services.premium.luxCatamaran.importantInfo.points.ageLimit'
                   )}
                 </p>
               </div>

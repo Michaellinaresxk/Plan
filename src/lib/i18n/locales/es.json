@@ -2370,113 +2370,111 @@
         }
       },
       "luxCatamaran": {
-        "serviceView": {
-          "hero": {
-            "badge": "Aventura Caribeña",
-            "title": "Paraíso Caribeño",
-            "subtitle": "Experiencia de Catamarán de Lujo",
-            "description": "Descubre el paraíso a bordo de nuestros catamaranes de lujo. Elige entre nuestra experiencia clásica o mejora a nuestra embarcación premium con tobogán acuático para la aventura definitiva.",
-            "ctaButton": "Explorar Opciones"
-          },
-          "catamaranTypes": {
-            "classic": {
-              "name": "Aventura Clásica",
-              "features": {
-                "openBar": "Barra Libre",
-                "gourmetBuffet": "Buffet Gourmet",
-                "snorkelingEquipment": "Equipo de Snorkel",
-                "professionalCrew": "Tripulación Profesional"
-              }
-            },
-            "premium": {
-              "name": "Exclusivo con Tobogán Acuático",
-              "badge": "Exclusivo",
-              "waterSlideBadge": "Tobogán Acuático",
-              "features": {
-                "allClassic": "Todas las Características Clásicas",
-                "waterSlide": "Tobogán Acuático",
-                "premiumBar": "Barra Exclusiva",
-                "vipService": "Servicio VIP",
-                "photoPackage": "Paquete de Fotos"
-              }
-            },
-            "perPerson": "/persona",
-            "guests": "personas",
-            "moreFeatures": "características más"
-          },
-          "sections": {
-            "chooseAdventure": {
-              "title": "Elige Tu Aventura",
-              "subtitle": "Selecciona la experiencia de catamarán perfecta para tu grupo"
-            },
-            "chooseTime": {
-              "title": "Elige Tu Hora de Salida",
-              "subtitle": "Selecciona el momento perfecto para tu aventura",
-              "mostPopular": "Más Popular",
-              "selectButton": "Seleccionar"
-            },
-            "experienceGallery": {
-              "title": "Galería de Experiencias",
-              "subtitle": "Mira lo que te espera en este increíble viaje",
-              "experiences": {
-                "crystalWaters": {
-                  "title": "Aguas Cristalinas",
-                  "description": "Nada en aguas caribeñas prístinas"
-                },
-                "snorkeling": {
-                  "title": "Aventura de Snorkel",
-                  "description": "Descubre vibrante vida marina"
-                },
-                "waterSlide": {
-                  "title": "Diversión en Tobogán",
-                  "description": "Emocionantes toboganes hacia el océano"
-                },
-                "dining": {
-                  "title": "Comida Gourmet",
-                  "description": "Mariscos frescos y cocina tropical"
-                },
-                "beach": {
-                  "title": "Exploración de Playas",
-                  "description": "Playas aisladas y calas escondidas"
-                },
-                "sunset": {
-                  "title": "Vistas del Atardecer",
-                  "description": "Impresionantes atardeceres caribeños"
-                }
-              }
+        "hero": {
+          "badge": "Aventura Caribeña",
+          "title": "Paraíso Caribeño",
+          "subtitle": "Experiencia de Catamarán de Lujo",
+          "description": "Descubre el paraíso a bordo de nuestros catamaranes de lujo. Elige entre nuestra experiencia clásica o mejora a nuestra embarcación premium con tobogán acuático para la aventura definitiva.",
+          "ctaButton": "Explorar Opciones"
+        },
+        "catamaranTypes": {
+          "classic": {
+            "name": "Aventura Clásica",
+            "features": {
+              "openBar": "Barra Libre",
+              "gourmetBuffet": "Buffet Gourmet",
+              "snorkelingEquipment": "Equipo de Snorkel",
+              "professionalCrew": "Tripulación Profesional"
             }
           },
-          "timeSlots": {
-            "morning": {
-              "label": "Aventura Matutina"
-            },
-            "afternoon": {
-              "label": "Experiencia al Atardecer"
+          "premium": {
+            "name": "Exclusivo con Tobogán Acuático",
+            "badge": "Exclusivo",
+            "waterSlideBadge": "Tobogán Acuático",
+            "features": {
+              "allClassic": "Todas las Características Clásicas",
+              "waterSlide": "Tobogán Acuático",
+              "premiumBar": "Barra Exclusiva",
+              "vipService": "Servicio VIP",
+              "photoPackage": "Paquete de Fotos"
             }
           },
-          "details": {
-            "classicDescription": "Disfruta de nuestra experiencia clásica en catamarán con todos los elementos esenciales para una perfecta aventura caribeña, incluyendo snorkel, comida y relajación en el paraíso.",
-            "premiumDescription": "Experimenta el lujo definitivo con nuestro catamarán premium que cuenta con un emocionante tobogán acuático, servicio VIP y comodidades exclusivas. Perfecto para grupos que buscan una aventura inolvidable con emociones adicionales.",
-            "perPerson": "por persona",
-            "maxGuests": "personas máx.",
-            "hours": "horas",
-            "bookButton": "Reservar Esta Experiencia"
+          "perPerson": "/persona",
+          "guests": "personas",
+          "moreFeatures": "características más"
+        },
+        "sections": {
+          "chooseAdventure": {
+            "title": "Elige Tu Aventura",
+            "subtitle": "Selecciona la experiencia de catamarán perfecta para tu grupo"
           },
-          "cta": {
-            "title": "¿Listo para el Paraíso?",
-            "subtitle": "Reserva tu aventura en catamarán hoy y crea recuerdos que durarán toda la vida. ¡Plazas limitadas disponibles!",
-            "bookButton": "Reservar Ahora",
-            "guarantee": "Cancelación gratuita • Confirmación instantánea • Garantía del mejor precio"
+          "chooseTime": {
+            "title": "Elige Tu Hora de Salida",
+            "subtitle": "Selecciona el momento perfecto para tu aventura",
+            "mostPopular": "Más Popular",
+            "selectButton": "Seleccionar"
           },
-          "importantInfo": {
-            "title": "Información Importante",
-            "points": {
-              "weather": "Los tours dependen del clima y pueden reprogramarse por seguridad",
-              "booking": "Recomendamos reservar con 24-48 horas de anticipación",
-              "refund": "Reembolso completo disponible por cancelaciones climáticas",
-              "safety": "Chalecos salvavidas y equipo de seguridad proporcionados para todos los huéspedes",
-              "ageLimit": "Edad mínima para el tobogán acuático: 8 años"
+          "experienceGallery": {
+            "title": "Galería de Experiencias",
+            "subtitle": "Mira lo que te espera en este increíble viaje",
+            "experiences": {
+              "crystalWaters": {
+                "title": "Aguas Cristalinas",
+                "description": "Nada en aguas caribeñas prístinas"
+              },
+              "snorkeling": {
+                "title": "Aventura de Snorkel",
+                "description": "Descubre vibrante vida marina"
+              },
+              "waterSlide": {
+                "title": "Diversión en Tobogán",
+                "description": "Emocionantes toboganes hacia el océano"
+              },
+              "dining": {
+                "title": "Comida Gourmet",
+                "description": "Mariscos frescos y cocina tropical"
+              },
+              "beach": {
+                "title": "Exploración de Playas",
+                "description": "Playas aisladas y calas escondidas"
+              },
+              "sunset": {
+                "title": "Vistas del Atardecer",
+                "description": "Impresionantes atardeceres caribeños"
+              }
             }
+          }
+        },
+        "timeSlots": {
+          "morning": {
+            "label": "Aventura Matutina"
+          },
+          "afternoon": {
+            "label": "Experiencia al Atardecer"
+          }
+        },
+        "details": {
+          "classicDescription": "Disfruta de nuestra experiencia clásica en catamarán con todos los elementos esenciales para una perfecta aventura caribeña, incluyendo snorkel, comida y relajación en el paraíso.",
+          "premiumDescription": "Experimenta el lujo definitivo con nuestro catamarán premium que cuenta con un emocionante tobogán acuático, servicio VIP y comodidades exclusivas. Perfecto para grupos que buscan una aventura inolvidable con emociones adicionales.",
+          "perPerson": "por persona",
+          "maxGuests": "personas máx.",
+          "hours": "horas",
+          "bookButton": "Reservar Esta Experiencia"
+        },
+        "cta": {
+          "title": "¿Listo para el Paraíso?",
+          "subtitle": "Reserva tu aventura en catamarán hoy y crea recuerdos que durarán toda la vida. ¡Plazas limitadas disponibles!",
+          "bookButton": "Reservar Ahora",
+          "guarantee": "Cancelación gratuita • Confirmación instantánea • Garantía del mejor precio"
+        },
+        "importantInfo": {
+          "title": "Información Importante",
+          "points": {
+            "weather": "Los tours dependen del clima y pueden reprogramarse por seguridad",
+            "booking": "Recomendamos reservar con 24-48 horas de anticipación",
+            "refund": "Reembolso completo disponible por cancelaciones climáticas",
+            "safety": "Chalecos salvavidas y equipo de seguridad proporcionados para todos los huéspedes",
+            "ageLimit": "Edad mínima para el tobogán acuático: 8 años"
           }
         }
       },
