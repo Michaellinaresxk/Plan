@@ -2577,113 +2577,111 @@
         }
       },
       "luxCatamaran": {
-        "serviceView": {
-          "hero": {
-            "badge": "Caribbean Adventure",
-            "title": "Caribbean Paradise",
-            "subtitle": "Luxury Catamaran Experience",
-            "description": "Discover paradise aboard our luxury catamarans. Choose between our classic experience or upgrade to our premium vessel with water slide for the ultimate adventure.",
-            "ctaButton": "Explore Options"
-          },
-          "catamaranTypes": {
-            "classic": {
-              "name": "Classic Adventure",
-              "features": {
-                "openBar": "Open Bar",
-                "gourmetBuffet": "Gourmet Buffet",
-                "snorkelingEquipment": "Snorkeling Equipment",
-                "professionalCrew": "Professional Crew"
-              }
-            },
-            "premium": {
-              "name": "Xclusive with Water Slide",
-              "badge": "Xclusive",
-              "waterSlideBadge": "Water Slide",
-              "features": {
-                "allClassic": "All Classic Features",
-                "waterSlide": "Water Slide",
-                "premiumBar": "Xclusive Bar",
-                "vipService": "VIP Service",
-                "photoPackage": "Photo Package"
-              }
-            },
-            "perPerson": "/person",
-            "guests": "guests",
-            "moreFeatures": "more features"
-          },
-          "sections": {
-            "chooseAdventure": {
-              "title": "Choose Your Adventure",
-              "subtitle": "Select the perfect catamaran experience for your group"
-            },
-            "chooseTime": {
-              "title": "Choose Your Departure Time",
-              "subtitle": "Select the perfect time for your adventure",
-              "mostPopular": "Most Popular",
-              "selectButton": "Select"
-            },
-            "experienceGallery": {
-              "title": "Experience Gallery",
-              "subtitle": "See what awaits you on this incredible journey",
-              "experiences": {
-                "crystalWaters": {
-                  "title": "Crystal Clear Waters",
-                  "description": "Swim in pristine Caribbean waters"
-                },
-                "snorkeling": {
-                  "title": "Snorkeling Adventure",
-                  "description": "Discover vibrant marine life"
-                },
-                "waterSlide": {
-                  "title": "Water Slide Fun",
-                  "description": "Thrilling slides into the ocean"
-                },
-                "dining": {
-                  "title": "Gourmet Dining",
-                  "description": "Fresh seafood and tropical cuisine"
-                },
-                "beach": {
-                  "title": "Beach Exploration",
-                  "description": "Secluded beaches and hidden coves"
-                },
-                "sunset": {
-                  "title": "Sunset Views",
-                  "description": "Breathtaking Caribbean sunsets"
-                }
-              }
+        "hero": {
+          "badge": "Caribbean Adventure",
+          "title": "Caribbean Paradise",
+          "subtitle": "Luxury Catamaran Experience",
+          "description": "Discover paradise aboard our luxury catamarans. Choose between our classic experience or upgrade to our premium vessel with water slide for the ultimate adventure.",
+          "ctaButton": "Explore Options"
+        },
+        "catamaranTypes": {
+          "classic": {
+            "name": "Classic Adventure",
+            "features": {
+              "openBar": "Open Bar",
+              "gourmetBuffet": "Gourmet Buffet",
+              "snorkelingEquipment": "Snorkeling Equipment",
+              "professionalCrew": "Professional Crew"
             }
           },
-          "timeSlots": {
-            "morning": {
-              "label": "Morning Adventure"
-            },
-            "afternoon": {
-              "label": "Sunset Experience"
+          "premium": {
+            "name": "Xclusive with Water Slide",
+            "badge": "Xclusive",
+            "waterSlideBadge": "Water Slide",
+            "features": {
+              "allClassic": "All Classic Features",
+              "waterSlide": "Water Slide",
+              "premiumBar": "Xclusive Bar",
+              "vipService": "VIP Service",
+              "photoPackage": "Photo Package"
             }
           },
-          "details": {
-            "classicDescription": "Enjoy our classic catamaran experience with all the essentials for a perfect Caribbean adventure, including snorkeling, dining, and relaxation in paradise.",
-            "premiumDescription": "Experience the ultimate luxury with our premium catamaran featuring an exciting water slide, VIP service, and exclusive amenities. Perfect for groups looking for an unforgettable adventure with extra thrills.",
-            "perPerson": "per person",
-            "maxGuests": "max guests",
-            "hours": "hours",
-            "bookButton": "Book This Experience"
+          "perPerson": "/person",
+          "guests": "guests",
+          "moreFeatures": "more features"
+        },
+        "sections": {
+          "chooseAdventure": {
+            "title": "Choose Your Adventure",
+            "subtitle": "Select the perfect catamaran experience for your group"
           },
-          "cta": {
-            "title": "Ready for Paradise?",
-            "subtitle": "Book your catamaran adventure today and create memories that will last a lifetime. Limited spots available!",
-            "bookButton": "Book Now",
-            "guarantee": "Free cancellation • Instant confirmation • Best price guarantee"
+          "chooseTime": {
+            "title": "Choose Your Departure Time",
+            "subtitle": "Select the perfect time for your adventure",
+            "mostPopular": "Most Popular",
+            "selectButton": "Select"
           },
-          "importantInfo": {
-            "title": "Important Information",
-            "points": {
-              "weather": "Tours are weather dependent and may be rescheduled for safety",
-              "booking": "We recommend booking 24-48 hours in advance",
-              "refund": "Full refund available for weather cancellations",
-              "safety": "Life jackets and safety equipment provided for all guests",
-              "ageLimit": "Minimum age for water slide: 8 years old"
+          "experienceGallery": {
+            "title": "Experience Gallery",
+            "subtitle": "See what awaits you on this incredible journey",
+            "experiences": {
+              "crystalWaters": {
+                "title": "Crystal Clear Waters",
+                "description": "Swim in pristine Caribbean waters"
+              },
+              "snorkeling": {
+                "title": "Snorkeling Adventure",
+                "description": "Discover vibrant marine life"
+              },
+              "waterSlide": {
+                "title": "Water Slide Fun",
+                "description": "Thrilling slides into the ocean"
+              },
+              "dining": {
+                "title": "Gourmet Dining",
+                "description": "Fresh seafood and tropical cuisine"
+              },
+              "beach": {
+                "title": "Beach Exploration",
+                "description": "Secluded beaches and hidden coves"
+              },
+              "sunset": {
+                "title": "Sunset Views",
+                "description": "Breathtaking Caribbean sunsets"
+              }
             }
+          }
+        },
+        "timeSlots": {
+          "morning": {
+            "label": "Morning Adventure"
+          },
+          "afternoon": {
+            "label": "Sunset Experience"
+          }
+        },
+        "details": {
+          "classicDescription": "Enjoy our classic catamaran experience with all the essentials for a perfect Caribbean adventure, including snorkeling, dining, and relaxation in paradise.",
+          "premiumDescription": "Experience the ultimate luxury with our premium catamaran featuring an exciting water slide, VIP service, and exclusive amenities. Perfect for groups looking for an unforgettable adventure with extra thrills.",
+          "perPerson": "per person",
+          "maxGuests": "max guests",
+          "hours": "hours",
+          "bookButton": "Book This Experience"
+        },
+        "cta": {
+          "title": "Ready for Paradise?",
+          "subtitle": "Book your catamaran adventure today and create memories that will last a lifetime. Limited spots available!",
+          "bookButton": "Book Now",
+          "guarantee": "Free cancellation • Instant confirmation • Best price guarantee"
+        },
+        "importantInfo": {
+          "title": "Important Information",
+          "points": {
+            "weather": "Tours are weather dependent and may be rescheduled for safety",
+            "booking": "We recommend booking 24-48 hours in advance",
+            "refund": "Full refund available for weather cancellations",
+            "safety": "Life jackets and safety equipment provided for all guests",
+            "ageLimit": "Minimum age for water slide: 8 years old"
           }
         }
       },

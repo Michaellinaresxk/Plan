@@ -211,88 +211,63 @@ const CinematicHero: React.FC<{ onBookingClick: () => void }> = ({
   );
 };
 
-// Componente separado para las formas animadas del fondo
+// Animated Background Component
 const AnimatedBackground = () => {
   return (
     <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-      {/* Círculos flotantes */}
-      <motion.div
-        className='absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full opacity-40'
-        animate={{
-          y: [0, -30, 0],
-          x: [0, 20, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      <motion.div
-        className='absolute bottom-32 right-20 w-96 h-96 bg-gradient-to-tl from-purple-100 to-pink-100 rounded-full opacity-30'
-        animate={{
-          y: [0, 40, 0],
-          x: [0, -25, 0],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      <motion.div
-        className='absolute top-1/2 left-1/3 w-64 h-64 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-full opacity-25'
-        animate={{
-          rotate: [0, 360],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-      />
-
-      {/* Formas geométricas decorativas */}
-      {[...Array(12)].map((_, i) => (
-        <motion.div
-          key={i}
-          className='absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full'
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            opacity: [0.2, 0.6, 0.2],
-            scale: [1, 1.5, 1],
-          }}
-          transition={{
-            duration: 3 + Math.random() * 3,
-            repeat: Infinity,
-            delay: Math.random() * 2,
-          }}
-        />
-      ))}
-
-      {/* Líneas decorativas */}
-      <motion.div
-        className='absolute top-40 right-1/4 w-32 h-0.5 bg-gradient-to-r from-transparent via-cyan-300 to-transparent'
-        animate={{
-          x: [-100, 100],
-          opacity: [0, 1, 0],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-      />
+      <div className='absolute top-0 left-0 w-96 h-96 bg-cyan-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob' />
+      <div className='absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000' />
+      <div className='absolute bottom-0 left-1/2 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000' />
     </div>
   );
 };
 
-// Componente para el player de video
+// Feature Card Component
+const FeatureCard = ({ icon: Icon, label, index }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.05 }}
+      className='bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300'
+    >
+      <div className='flex items-center gap-3'>
+        <div className='w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0'>
+          <Icon className='w-5 h-5 text-white' />
+        </div>
+        <span className='text-gray-700 font-medium text-sm'>{label}</span>
+      </div>
+    </motion.div>
+  );
+};
+
+// Video Player Component (CORREGIDO)
 const VideoPlayer = ({ isPlaying, onToggle }) => {
   const videoRef = useRef(null);
 
-  const handleClick = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
+  // Sincronizar el estado con el video
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.error('Error al reproducir:', error);
+          onToggle();
+        });
       }
-      onToggle();
+    } else {
+      video.pause();
     }
+  }, [isPlaying, onToggle]);
+
+  const handleClick = () => {
+    onToggle();
   };
 
   return (
@@ -312,17 +287,23 @@ const VideoPlayer = ({ isPlaying, onToggle }) => {
             ref={videoRef}
             className='w-full h-full object-cover'
             poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
-            onClick={handleClick}
+            preload='metadata'
+            playsInline
           >
-            <source src='/video/yates-promo.mp4' type='video/mp4' />
+            <source
+              src='https://res.cloudinary.com/ddg92xar5/video/upload/v1759669338/yate_m7z3ve.mp4'
+              type='video/mp4'
+            />
           </video>
 
           {/* Play/Pause Button Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: isPlaying ? 0 : 1 }}
-            className='absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/30 to-black/50 backdrop-blur-sm cursor-pointer transition-opacity duration-300'
+            transition={{ duration: 0.2 }}
+            className='absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/30 to-black/50 backdrop-blur-sm cursor-pointer'
             onClick={handleClick}
+            style={{ pointerEvents: isPlaying ? 'none' : 'auto' }}
           >
             <motion.div
               whileHover={{ scale: 1.1 }}
@@ -336,14 +317,15 @@ const VideoPlayer = ({ isPlaying, onToggle }) => {
           {/* Click overlay when playing */}
           {isPlaying && (
             <div
-              className='absolute inset-0 cursor-pointer group'
+              className='absolute inset-0 cursor-pointer group/video'
               onClick={handleClick}
             >
-              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center'>
+              <div className='absolute inset-0 bg-black/0 group-hover/video:bg-black/10 transition-colors duration-200 flex items-center justify-center'>
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  className='w-16 h-16 bg-white/90 rounded-full flex items-center justify-center'
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileHover={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className='w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-xl'
                 >
                   <Pause className='w-8 h-8 text-cyan-600' />
                 </motion.div>
@@ -356,24 +338,7 @@ const VideoPlayer = ({ isPlaying, onToggle }) => {
   );
 };
 
-// Componente para las características
-const FeatureCard = ({ icon: Icon, label, index }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: index * 0.1 }}
-    whileHover={{ y: -5, scale: 1.02 }}
-    className='bg-white rounded-xl p-5 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300'
-  >
-    <div className='w-12 h-12 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-cyan-100'>
-      <Icon className='w-6 h-6 text-cyan-600' />
-    </div>
-    <p className='text-gray-800 font-medium text-sm text-center'>{label}</p>
-  </motion.div>
-);
-
-// Componente principal
+// Main Component
 const PromoVideoSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
