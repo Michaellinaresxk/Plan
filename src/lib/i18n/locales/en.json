@@ -438,266 +438,7 @@
         "short": "Enjoy a guided ride along beaches, trails, and breathtaking landscapes—perfect for all experience levels. Book your horseback adventure and live an unforgettable experience.",
         "full": "Discover the natural beauty of Punta Cana on horseback. Enjoy a guided ride along beaches, trails, and breathtaking landscapes—perfect for all experience levels. Book your horseback adventure and live an unforgettable experience."
       },
-      "luxCatamaran": {
-        "serviceView": {
-          "hero": {
-            "badge": "Caribbean Adventure",
-            "title": "Caribbean Paradise",
-            "subtitle": "Luxury Catamaran Experience",
-            "description": "Discover paradise aboard our luxury catamarans. Choose between our classic experience or upgrade to our premium vessel with water slide for the ultimate adventure.",
-            "ctaButton": "Explore Options"
-          },
-          "catamaranTypes": {
-            "classic": {
-              "name": "Classic Adventure",
-              "features": {
-                "openBar": "Open Bar",
-                "gourmetBuffet": "Gourmet Buffet",
-                "snorkelingEquipment": "Snorkeling Equipment",
-                "professionalCrew": "Professional Crew"
-              }
-            },
-            "premium": {
-              "name": "Xclusive with Water Slide",
-              "badge": "Xclusive",
-              "waterSlideBadge": "Water Slide",
-              "features": {
-                "allClassic": "All Classic Features",
-                "waterSlide": "Water Slide",
-                "premiumBar": "Xclusive Bar",
-                "vipService": "VIP Service",
-                "photoPackage": "Photo Package"
-              }
-            },
-            "perPerson": "/person",
-            "guests": "guests",
-            "moreFeatures": "more features"
-          },
-          "sections": {
-            "chooseAdventure": {
-              "title": "Choose Your Adventure",
-              "subtitle": "Select the perfect catamaran experience for your group"
-            },
-            "chooseTime": {
-              "title": "Choose Your Departure Time",
-              "subtitle": "Select the perfect time for your adventure",
-              "mostPopular": "Most Popular",
-              "selectButton": "Select"
-            },
-            "experienceGallery": {
-              "title": "Experience Gallery",
-              "subtitle": "See what awaits you on this incredible journey",
-              "experiences": {
-                "crystalWaters": {
-                  "title": "Crystal Clear Waters",
-                  "description": "Swim in pristine Caribbean waters"
-                },
-                "snorkeling": {
-                  "title": "Snorkeling Adventure",
-                  "description": "Discover vibrant marine life"
-                },
-                "waterSlide": {
-                  "title": "Water Slide Fun",
-                  "description": "Thrilling slides into the ocean"
-                },
-                "dining": {
-                  "title": "Gourmet Dining",
-                  "description": "Fresh seafood and tropical cuisine"
-                },
-                "beach": {
-                  "title": "Beach Exploration",
-                  "description": "Secluded beaches and hidden coves"
-                },
-                "sunset": {
-                  "title": "Sunset Views",
-                  "description": "Breathtaking Caribbean sunsets"
-                }
-              }
-            }
-          },
-          "timeSlots": {
-            "morning": {
-              "label": "Morning Adventure"
-            },
-            "afternoon": {
-              "label": "Sunset Experience"
-            }
-          },
-          "details": {
-            "classicDescription": "Enjoy our classic catamaran experience with all the essentials for a perfect Caribbean adventure, including snorkeling, dining, and relaxation in paradise.",
-            "premiumDescription": "Experience the ultimate luxury with our premium catamaran featuring an exciting water slide, VIP service, and exclusive amenities. Perfect for groups looking for an unforgettable adventure with extra thrills.",
-            "perPerson": "per person",
-            "maxGuests": "max guests",
-            "hours": "hours",
-            "bookButton": "Book This Experience"
-          },
-          "cta": {
-            "title": "Ready for Paradise?",
-            "subtitle": "Book your catamaran adventure today and create memories that will last a lifetime. Limited spots available!",
-            "bookButton": "Book Now",
-            "guarantee": "Free cancellation • Instant confirmation • Best price guarantee"
-          },
-          "importantInfo": {
-            "title": "Important Information",
-            "points": {
-              "weather": "Tours are weather dependent and may be rescheduled for safety",
-              "booking": "We recommend booking 24-48 hours in advance",
-              "refund": "Full refund available for weather cancellations",
-              "safety": "Life jackets and safety equipment provided for all guests",
-              "ageLimit": "Minimum age for water slide: 8 years old"
-            }
-          }
-        }
-      },
 
-      "luxCatamaranForm": {
-        "header": {
-          "title": "Catamaran Adventure Booking",
-          "subtitle": "Choose your perfect Caribbean catamaran experience"
-        },
-        "sections": {
-          "chooseCatamaran": "Choose Your Catamaran",
-          "tourDateTime": "Tour Date & Time",
-          "pickupLocation": "Pickup Location",
-          "participants": "Participants",
-          "whatsIncluded": "What's Included",
-          "additionalInfo": "Additional Information"
-        },
-        "locations": {
-          "puntaCanaResorts": "Punta Cana Resorts",
-          "capCana": "Cap Cana",
-          "bavaro": "Bavaro",
-          "puntaVillage": "Puntacana Village",
-          "uveroAlto": "Uvero Alto",
-          "macao": "Macao Beach Area"
-        },
-        "catamarans": {
-          "classic": {
-            "name": "Classic Adventure",
-            "description": "Perfect for groups looking for a complete Caribbean catamaran experience with all the essentials.",
-            "features": {
-              "openBar": "Open Bar with Standard Drinks",
-              "gourmetBuffet": "Gourmet Buffet Lunch",
-              "snorkeling": "Professional Snorkeling Equipment",
-              "crew": "Experienced Crew",
-              "beach": "Beach Access",
-              "safety": "Life Jackets & Safety Equipment"
-            }
-          },
-          "premium": {
-            "name": "Xclusive with Water Slide",
-            "badge": "Xclusive",
-            "description": "Ultimate luxury experience with water slide, premium amenities, and VIP treatment for special celebrations.",
-            "features": {
-              "allClassic": "All Classic Features Included",
-              "waterSlide": "Thrilling Water Slide",
-              "premiumBar": "Xclusive Bar with Craft Cocktails",
-              "vipService": "VIP Service & Priority Boarding",
-              "photoPackage": "Professional Photo Package",
-              "exclusiveBeach": "Exclusive Beach Areas",
-              "soundSystem": "Enhanced Sound System"
-            }
-          },
-          "perAdult": "per adult",
-          "guests": "guests"
-        },
-        "timeSlots": {
-          "morning": {
-            "label": "Morning Adventure"
-          },
-          "afternoon": {
-            "label": "Sunset Experience"
-          },
-          "mostPopular": "Most Popular"
-        },
-        "form": {
-          "tourDate": {
-            "label": "Select Tour Date",
-            "required": "*"
-          },
-          "timeSlot": {
-            "label": "Departure Time",
-            "required": "*"
-          },
-          "location": {
-            "label": "Select Pickup Location",
-            "required": "*"
-          },
-          "adults": {
-            "label": "Adults (13+)"
-          },
-          "children": {
-            "label": "Children (0-17)",
-            "detailsTitle": "Children Details",
-            "ageLabel": "Age",
-            "baby": "Baby (under 1)",
-            "yearsOld": "years old"
-          },
-          "specialRequests": {
-            "label": "Special Requests or Requirements",
-            "placeholder": "Celebration details, dietary requirements, mobility assistance, or any special requests..."
-          }
-        },
-        "pricing": {
-          "free": "Free",
-          "childPrice": "Child Price",
-          "adultPrice": "Adult Price"
-        },
-        "restrictions": {
-          "title": "Tour Restrictions & Important Information",
-          "items": {
-            "pregnant": "Not recommended for pregnant women",
-            "waterSlide": "Children under 8 cannot use the water slide (Xclusive option)",
-            "minAge": "Minimum age: No restrictions (babies welcome)",
-            "supervision": "Children must be supervised at all times",
-            "weather": "Weather dependent - may be rescheduled"
-          }
-        },
-        "warnings": {
-          "sameDayBooking": {
-            "title": "Same-day booking:",
-            "message": "Requires immediate confirmation from our team. Subject to availability."
-          },
-          "advanceBooking": {
-            "title": "Advance booking required:",
-            "message": "Please book at least 24 hours in advance."
-          },
-          "capacity": {
-            "message": "Maximum capacity for selected catamaran:",
-            "exceeds": "Selected catamaran capacity is {{capacity}} people. Please reduce participants or choose a different option."
-          },
-          "waterSlideAge": "Note: Children under 8 cannot use the water slide",
-          "sameDayConfirm": "You are booking for today. This requires immediate confirmation from our team. Continue?"
-        },
-        "validation": {
-          "tourDateRequired": "Tour date is required",
-          "locationRequired": "Pickup location is required",
-          "timeSlotRequired": "Time slot is required",
-          "catamaranRequired": "Please select a catamaran option",
-          "advanceBooking": "Bookings must be made at least 24 hours in advance",
-          "minParticipants": "At least one participant is required",
-          "childAge": "Child age must be between 0 and 17",
-          "submitError": "Failed to submit reservation. Please try again."
-        },
-        "footer": {
-          "totalPrice": "Total Price",
-          "person": "person",
-          "people": "people",
-          "priceBreakdown": {
-            "adults": "Adults:",
-            "child": "Child",
-            "years": "years",
-            "includes": "Includes:",
-            "premiumIncludes": "Water slide, premium bar, buffet, snorkeling & all equipment",
-            "classicIncludes": "Open bar, buffet, snorkeling & all equipment"
-          },
-          "buttons": {
-            "cancel": "Cancel",
-            "book": "Book Catamaran",
-            "booking": "Booking..."
-          }
-        }
-      },
       "atvService": {
         "hero": {
           "imageAlt": "ATV adventures in tropical paradise",
@@ -1787,7 +1528,6 @@
           "processing": "Processing..."
         }
       },
-
       "saonaIslandView": {
         "hero": {
           "locationBadge": "Saona Tour",
@@ -2135,27 +1875,6 @@
         "name": "ATV Adventures",
         "short": "Explore hidden beaches, jungle trails, and crystal-clear cenotes on the ultimate off-road adventure."
       },
-      "massageDetails": {
-        "title": "Masssage Experience",
-        "short": "yeafh",
-        "experience": "Experience",
-        "premiumExperience": "Xclusive Massage Experience",
-        "professionalExperience": "Professional Massage Experience",
-        "sessionDuration": "Session Duration",
-        "massageTypes": "Massage Types",
-        "durationOptions": "Duration Options",
-        "techniques": "Massage Techniques",
-        "technique1Description": "Relaxing technique that uses long, smooth strokes to release tension",
-        "technique2Description": "Targets deeper layers of muscle and connective tissue",
-        "technique3Description": "Combines massage with essential oils for enhanced relaxation",
-        "technique4Description": "Uses heated stones to ease muscle tension and improve circulation",
-        "benefits": "Benefits",
-        "sessionPreparation": "Preparing for Your Session",
-        "preparation1": "Arrive 10-15 minutes before your scheduled appointment",
-        "preparation2": "Communicate any preferences or concerns to your massage therapist",
-        "preparation3": "Stay hydrated before and after your massage session",
-        "preparation4": "Avoid heavy meals right before your massage"
-      },
       "privateCatamaran": {
         "name": "Catamaran Experience",
         "short": "Enjoy stunning landscapes, crystal-clear waters, and the tranquility of sailing along the coast of Punta Cana.",
@@ -2288,6 +2007,288 @@
           "performerTypeRequired": "Please select a performer type",
           "durationRequired": "Please select a duration",
           "specificSongsRequired": "Please specify your song preferences"
+        }
+      },
+      "massageView": {
+        "hero": {
+          "badge": {
+            "title": "BF Paradise • Premium Wellness Sanctuary"
+          },
+          "title": {
+            "line1": "Therapeutic",
+            "line2": "Massage Sanctuary"
+          },
+          "subtitle": "Experience the transformative power of healing touch with our collection of {{count}} expertly crafted therapeutic treatments",
+          "features": {
+            "licensed": "Licensed Therapists",
+            "home": "In-Home Service",
+            "premium": "Premium Experience",
+            "guaranteed": "Satisfaction Guaranteed"
+          }
+        },
+        "quote": {
+          "emoji": "🌸",
+          "text": "Take time to make your soul happy. Your body deserves the gift of healing touch, and your mind craves the peace that only comes from true relaxation.",
+          "stats": {
+            "sessions": {
+              "count": "500+",
+              "label": "Blissful Sessions",
+              "description": "completed this year"
+            },
+            "satisfaction": {
+              "count": "98%",
+              "label": "Satisfaction Rate",
+              "description": "from our valued clients"
+            },
+            "availability": {
+              "count": "24/7",
+              "label": "Availability",
+              "description": "for your convenience"
+            }
+          }
+        },
+        "services": {
+          "title": {
+            "line1": "Choose Your Perfect",
+            "line2": "Healing Experience"
+          },
+          "subtitle": "Each treatment is thoughtfully designed to address your unique wellness needs, combining ancient wisdom with modern therapeutic techniques",
+          "count": {
+            "available": "{{count}} therapeutic experiences available",
+            "viewAll": "View all treatments"
+          },
+          "noResults": {
+            "emoji": "🌿",
+            "title": "No treatments match your search",
+            "description": "Try adjusting your filters to discover more healing experiences",
+            "button": "Show All Treatments"
+          }
+        },
+        "cta": {
+          "title": {
+            "line1": "Your Journey to",
+            "line2": "Complete Wellness"
+          },
+          "description": "Escape the stress of daily life and immerse yourself in pure tranquility. Our expert therapists bring the spa experience directly to you.",
+          "features": {
+            "therapists": "Certified massage therapists with 5+ years experience",
+            "premium": "Premium organic oils and heated massage tables",
+            "customized": "Customized treatments for your unique needs"
+          },
+          "button": "Start Your Wellness Journey",
+          "cards": {
+            "mindBalance": {
+              "emoji": "🧘‍♀️",
+              "title": "Mind Balance",
+              "description": "Achieve mental clarity and emotional harmony"
+            },
+            "bodyRenewal": {
+              "emoji": "💆‍♀️",
+              "title": "Body Renewal",
+              "description": "Release tension and restore vitality"
+            },
+            "naturalHealing": {
+              "emoji": "🌿",
+              "title": "Natural Healing",
+              "description": "Pure organic products for your wellness"
+            },
+            "homeComfort": {
+              "emoji": "🏠",
+              "title": "Home Comfort",
+              "description": "Luxury spa experience in your space"
+            }
+          }
+        },
+        "massages": {
+          "swedish": {
+            "name": "Swedish Relaxation",
+            "description": "Gentle, flowing strokes to melt away tension and restore inner peace",
+            "longDescription": "Our signature Swedish massage combines traditional techniques with aromatherapy to create a deeply relaxing experience that soothes both body and mind.",
+            "emoji": "🌿",
+            "benefits": {
+              "stress": "Stress Relief",
+              "circulation": "Improved Circulation",
+              "sleep": "Better Sleep",
+              "relaxation": "Muscle Relaxation"
+            },
+            "perfectFor": {
+              "firstTime": "First-time clients",
+              "stress": "Stress relief",
+              "wellness": "General wellness"
+            },
+            "techniques": {
+              "strokes": "Long gliding strokes",
+              "kneading": "Kneading",
+              "aromatherapy": "Aromatherapy"
+            }
+          },
+          "deepTissue": {
+            "name": "Deep Tissue Therapy",
+            "description": "Intensive therapeutic massage targeting chronic tension and pain",
+            "longDescription": "Designed for those who need serious muscle work, this therapy focuses on the deeper layers of muscle tissue to release chronic patterns of tension.",
+            "emoji": "💪",
+            "benefits": {
+              "pain": "Pain Relief",
+              "tension": "Tension Release",
+              "mobility": "Improved Mobility",
+              "recovery": "Injury Recovery"
+            },
+            "perfectFor": {
+              "athletes": "Athletes",
+              "pain": "Chronic pain",
+              "injury": "Injury recovery"
+            },
+            "techniques": {
+              "pressure": "Deep pressure",
+              "trigger": "Trigger point therapy",
+              "myofascial": "Myofascial release"
+            }
+          },
+          "hotStone": {
+            "name": "Sacred Stone Ritual",
+            "description": "Heated volcanic stones create deep warmth and profound relaxation",
+            "longDescription": "Ancient healing meets modern luxury. Smooth, heated stones are placed on key points while warm stone massage melts away every trace of stress.",
+            "emoji": "🔥",
+            "benefits": {
+              "relaxation": "Deep Relaxation",
+              "blood": "Improved Blood Flow",
+              "tension": "Muscle Tension Relief",
+              "spiritual": "Spiritual Balance"
+            },
+            "perfectFor": {
+              "relaxation": "Ultimate relaxation",
+              "weather": "Cold weather",
+              "spiritual": "Spiritual wellness"
+            },
+            "techniques": {
+              "placement": "Hot stone placement",
+              "massage": "Stone massage",
+              "energy": "Energy balancing"
+            }
+          },
+          "aromatherapy": {
+            "name": "Botanical Bliss",
+            "description": "A sensory journey with pure essential oils and healing touch",
+            "longDescription": "Customized essential oil blends enhance this therapeutic massage, creating a multi-sensory experience that harmonizes mind, body, and spirit.",
+            "emoji": "🌸",
+            "benefits": {
+              "clarity": "Mental Clarity",
+              "balance": "Emotional Balance",
+              "stress": "Stress Reduction",
+              "mood": "Mood Enhancement"
+            },
+            "perfectFor": {
+              "emotional": "Emotional wellness",
+              "lovers": "Aromatherapy lovers",
+              "holistic": "Holistic healing"
+            },
+            "techniques": {
+              "blending": "Custom oil blending",
+              "lymphatic": "Lymphatic drainage",
+              "chakra": "Chakra balancing"
+            }
+          },
+          "prenatal": {
+            "name": "Nurturing Mother",
+            "description": "Specialized care designed for the expecting mother's unique needs",
+            "longDescription": "Our certified prenatal therapists provide safe, effective massage therapy to support you through your pregnancy journey with comfort and care.",
+            "emoji": "🤱",
+            "benefits": {
+              "comfort": "Pregnancy Comfort",
+              "swelling": "Swelling Reduction",
+              "pain": "Back Pain Relief",
+              "sleep": "Improved Sleep"
+            },
+            "perfectFor": {
+              "pregnant": "Pregnant women",
+              "pain": "Back pain relief",
+              "support": "Emotional support"
+            },
+            "techniques": {
+              "positioning": "Side-lying positioning",
+              "pressure": "Gentle pressure",
+              "safe": "Prenatal-safe techniques"
+            }
+          },
+          "sports": {
+            "name": "Athletic Recovery",
+            "description": "Performance-focused therapy to enhance athletic potential",
+            "longDescription": "Designed specifically for athletes and active individuals, combining therapeutic techniques to improve performance and prevent injuries.",
+            "emoji": "🏃‍♂️",
+            "benefits": {
+              "performance": "Performance Enhancement",
+              "prevention": "Injury Prevention",
+              "recovery": "Faster Recovery",
+              "flexibility": "Flexibility"
+            },
+            "perfectFor": {
+              "athletes": "Athletes",
+              "active": "Active lifestyle",
+              "performance": "Performance goals"
+            },
+            "techniques": {
+              "massage": "Sports massage",
+              "stretching": "Stretching",
+              "compression": "Compression therapy"
+            }
+          },
+          "couples": {
+            "name": "Romantic Escape",
+            "description": "Share the bliss of relaxation with your loved one",
+            "longDescription": "Side-by-side massage tables, candlelight, and synchronized treatments create an intimate wellness experience you'll treasure forever.",
+            "emoji": "💑",
+            "benefits": {
+              "romantic": "Romantic Experience",
+              "shared": "Shared Relaxation",
+              "bonding": "Bonding Time",
+              "stress": "Stress Relief"
+            },
+            "perfectFor": {
+              "couples": "Couples",
+              "anniversaries": "Anniversaries",
+              "dates": "Date nights"
+            },
+            "techniques": {
+              "synchronized": "Synchronized massage",
+              "aromatherapy": "Couples aromatherapy",
+              "ambiance": "Romantic ambiance"
+            }
+          },
+          "thai": {
+            "name": "Ancient Thai Healing",
+            "description": "Traditional stretching and pressure point massage from Thailand",
+            "longDescription": "This ancient healing art combines acupressure, assisted yoga stretches, and energy work to restore balance and flexibility to your entire being.",
+            "emoji": "🧘‍♀️",
+            "benefits": {
+              "flexibility": "Flexibility",
+              "energy": "Energy Balance",
+              "stress": "Stress Relief",
+              "spiritual": "Spiritual Wellness"
+            },
+            "perfectFor": {
+              "flexibility": "Flexibility needs",
+              "energy": "Energy work",
+              "traditional": "Traditional healing"
+            },
+            "techniques": {
+              "stretching": "Thai stretching",
+              "pressure": "Pressure points",
+              "energy": "Energy lines"
+            }
+          }
+        },
+        "categories": {
+          "relaxation": "Relaxation",
+          "therapeutic": "Therapeutic",
+          "signature": "Signature"
+        },
+        "intensity": {
+          "gentle": "Gentle",
+          "medium": "Medium",
+          "strong": "Strong"
+        },
+        "errors": {
+          "booking": "Error processing booking. Please try again."
         }
       }
     },
@@ -2575,41 +2576,265 @@
           }
         }
       },
+      "luxCatamaran": {
+        "serviceView": {
+          "hero": {
+            "badge": "Caribbean Adventure",
+            "title": "Caribbean Paradise",
+            "subtitle": "Luxury Catamaran Experience",
+            "description": "Discover paradise aboard our luxury catamarans. Choose between our classic experience or upgrade to our premium vessel with water slide for the ultimate adventure.",
+            "ctaButton": "Explore Options"
+          },
+          "catamaranTypes": {
+            "classic": {
+              "name": "Classic Adventure",
+              "features": {
+                "openBar": "Open Bar",
+                "gourmetBuffet": "Gourmet Buffet",
+                "snorkelingEquipment": "Snorkeling Equipment",
+                "professionalCrew": "Professional Crew"
+              }
+            },
+            "premium": {
+              "name": "Xclusive with Water Slide",
+              "badge": "Xclusive",
+              "waterSlideBadge": "Water Slide",
+              "features": {
+                "allClassic": "All Classic Features",
+                "waterSlide": "Water Slide",
+                "premiumBar": "Xclusive Bar",
+                "vipService": "VIP Service",
+                "photoPackage": "Photo Package"
+              }
+            },
+            "perPerson": "/person",
+            "guests": "guests",
+            "moreFeatures": "more features"
+          },
+          "sections": {
+            "chooseAdventure": {
+              "title": "Choose Your Adventure",
+              "subtitle": "Select the perfect catamaran experience for your group"
+            },
+            "chooseTime": {
+              "title": "Choose Your Departure Time",
+              "subtitle": "Select the perfect time for your adventure",
+              "mostPopular": "Most Popular",
+              "selectButton": "Select"
+            },
+            "experienceGallery": {
+              "title": "Experience Gallery",
+              "subtitle": "See what awaits you on this incredible journey",
+              "experiences": {
+                "crystalWaters": {
+                  "title": "Crystal Clear Waters",
+                  "description": "Swim in pristine Caribbean waters"
+                },
+                "snorkeling": {
+                  "title": "Snorkeling Adventure",
+                  "description": "Discover vibrant marine life"
+                },
+                "waterSlide": {
+                  "title": "Water Slide Fun",
+                  "description": "Thrilling slides into the ocean"
+                },
+                "dining": {
+                  "title": "Gourmet Dining",
+                  "description": "Fresh seafood and tropical cuisine"
+                },
+                "beach": {
+                  "title": "Beach Exploration",
+                  "description": "Secluded beaches and hidden coves"
+                },
+                "sunset": {
+                  "title": "Sunset Views",
+                  "description": "Breathtaking Caribbean sunsets"
+                }
+              }
+            }
+          },
+          "timeSlots": {
+            "morning": {
+              "label": "Morning Adventure"
+            },
+            "afternoon": {
+              "label": "Sunset Experience"
+            }
+          },
+          "details": {
+            "classicDescription": "Enjoy our classic catamaran experience with all the essentials for a perfect Caribbean adventure, including snorkeling, dining, and relaxation in paradise.",
+            "premiumDescription": "Experience the ultimate luxury with our premium catamaran featuring an exciting water slide, VIP service, and exclusive amenities. Perfect for groups looking for an unforgettable adventure with extra thrills.",
+            "perPerson": "per person",
+            "maxGuests": "max guests",
+            "hours": "hours",
+            "bookButton": "Book This Experience"
+          },
+          "cta": {
+            "title": "Ready for Paradise?",
+            "subtitle": "Book your catamaran adventure today and create memories that will last a lifetime. Limited spots available!",
+            "bookButton": "Book Now",
+            "guarantee": "Free cancellation • Instant confirmation • Best price guarantee"
+          },
+          "importantInfo": {
+            "title": "Important Information",
+            "points": {
+              "weather": "Tours are weather dependent and may be rescheduled for safety",
+              "booking": "We recommend booking 24-48 hours in advance",
+              "refund": "Full refund available for weather cancellations",
+              "safety": "Life jackets and safety equipment provided for all guests",
+              "ageLimit": "Minimum age for water slide: 8 years old"
+            }
+          }
+        }
+      },
 
-      "luxeEBikes": {
-        "name": "Lux E-Bikes",
-        "short": "Xclusive electric bikes for effortless exploration",
-        "full": "Discover Punta Cana in style with our premium electric bikes. Enjoy effortless exploration of beaches, trails, and local attractions with top-of-the-line e-bikes featuring extended battery life and comfortable ergonomics."
-      },
-      "luxeGolfCart": {
-        "name": "Lux Golf Cart",
-        "short": "Xclusive golf cart with extended features",
-        "full": "Travel in style with our luxury golf carts featuring premium leather seats, extended battery range, and upgraded features. Perfect for exploring resorts and local areas with elegance and comfort."
-      },
-      "luxeYoga": {
-        "name": "Lux Yoga Sessions",
-        "short": "Private beachfront yoga with premium amenities",
-        "full": "Elevate your wellness journey with our exclusive private yoga sessions held in breathtaking locations. Experience personalized instruction, premium mats and equipment, and post-session organic refreshments."
-      },
-      "luxeFitness": {
-        "name": "Lux Fitness Sessions",
-        "short": "Elite personal training with specialized equipment",
-        "full": "Transform your fitness routine with our elite training sessions. Work with top-tier personal trainers using premium equipment and cutting-edge techniques tailored specifically to your goals and fitness level."
-      },
-      "luxeCulinary": {
-        "name": "Lux Culinary Service",
-        "short": "Gourmet chef experience with premium ingredients",
-        "full": "Indulge in the ultimate dining experience with our gourmet chef service. Enjoy exquisite multi-course meals prepared with the finest local and imported ingredients, paired with premium wines and served in the comfort of your accommodation."
-      },
-      "luxeMasseuse": {
-        "name": "Lux Masseuse Service",
-        "short": "Xclusive spa treatments in your accommodation",
-        "full": "Unwind with our luxury spa experience brought directly to your accommodation. Our elite massage therapists provide premium treatments using organic oils and top-tier techniques, complete with aromatherapy and ambient music."
-      },
-      "luxeArrival": {
-        "name": "Lux Arrival - SUV Service",
-        "short": "Luxury SUV airport transfer with premium amenities",
-        "full": "Begin your luxury experience from the moment you land with our premium SUV airport transfer. Enjoy plush leather seating, climate control, complimentary refreshments, and a professional chauffeur ready to ensure a seamless arrival to your destination."
+      "luxCatamaranForm": {
+        "header": {
+          "title": "Catamaran Adventure Booking",
+          "subtitle": "Choose your perfect Caribbean catamaran experience"
+        },
+        "sections": {
+          "chooseCatamaran": "Choose Your Catamaran",
+          "tourDateTime": "Tour Date & Time",
+          "pickupLocation": "Pickup Location",
+          "participants": "Participants",
+          "whatsIncluded": "What's Included",
+          "additionalInfo": "Additional Information"
+        },
+        "locations": {
+          "puntaCanaResorts": "Punta Cana Resorts",
+          "capCana": "Cap Cana",
+          "bavaro": "Bavaro",
+          "puntaVillage": "Puntacana Village",
+          "uveroAlto": "Uvero Alto",
+          "macao": "Macao Beach Area"
+        },
+        "catamarans": {
+          "classic": {
+            "name": "Classic Adventure",
+            "description": "Perfect for groups looking for a complete Caribbean catamaran experience with all the essentials.",
+            "features": {
+              "openBar": "Open Bar with Standard Drinks",
+              "gourmetBuffet": "Gourmet Buffet Lunch",
+              "snorkeling": "Professional Snorkeling Equipment",
+              "crew": "Experienced Crew",
+              "beach": "Beach Access",
+              "safety": "Life Jackets & Safety Equipment"
+            }
+          },
+          "premium": {
+            "name": "Xclusive with Water Slide",
+            "badge": "Xclusive",
+            "description": "Ultimate luxury experience with water slide, premium amenities, and VIP treatment for special celebrations.",
+            "features": {
+              "allClassic": "All Classic Features Included",
+              "waterSlide": "Thrilling Water Slide",
+              "premiumBar": "Xclusive Bar with Craft Cocktails",
+              "vipService": "VIP Service & Priority Boarding",
+              "photoPackage": "Professional Photo Package",
+              "exclusiveBeach": "Exclusive Beach Areas",
+              "soundSystem": "Enhanced Sound System"
+            }
+          },
+          "perAdult": "per adult",
+          "guests": "guests"
+        },
+        "timeSlots": {
+          "morning": {
+            "label": "Morning Adventure"
+          },
+          "afternoon": {
+            "label": "Sunset Experience"
+          },
+          "mostPopular": "Most Popular"
+        },
+        "form": {
+          "tourDate": {
+            "label": "Select Tour Date",
+            "required": "*"
+          },
+          "timeSlot": {
+            "label": "Departure Time",
+            "required": "*"
+          },
+          "location": {
+            "label": "Select Pickup Location",
+            "required": "*"
+          },
+          "adults": {
+            "label": "Adults (13+)"
+          },
+          "children": {
+            "label": "Children (0-17)",
+            "detailsTitle": "Children Details",
+            "ageLabel": "Age",
+            "baby": "Baby (under 1)",
+            "yearsOld": "years old"
+          },
+          "specialRequests": {
+            "label": "Special Requests or Requirements",
+            "placeholder": "Celebration details, dietary requirements, mobility assistance, or any special requests..."
+          }
+        },
+        "pricing": {
+          "free": "Free",
+          "childPrice": "Child Price",
+          "adultPrice": "Adult Price"
+        },
+        "restrictions": {
+          "title": "Tour Restrictions & Important Information",
+          "items": {
+            "pregnant": "Not recommended for pregnant women",
+            "waterSlide": "Children under 8 cannot use the water slide (Xclusive option)",
+            "minAge": "Minimum age: No restrictions (babies welcome)",
+            "supervision": "Children must be supervised at all times",
+            "weather": "Weather dependent - may be rescheduled"
+          }
+        },
+        "warnings": {
+          "sameDayBooking": {
+            "title": "Same-day booking:",
+            "message": "Requires immediate confirmation from our team. Subject to availability."
+          },
+          "advanceBooking": {
+            "title": "Advance booking required:",
+            "message": "Please book at least 24 hours in advance."
+          },
+          "capacity": {
+            "message": "Maximum capacity for selected catamaran:",
+            "exceeds": "Selected catamaran capacity is {{capacity}} people. Please reduce participants or choose a different option."
+          },
+          "waterSlideAge": "Note: Children under 8 cannot use the water slide",
+          "sameDayConfirm": "You are booking for today. This requires immediate confirmation from our team. Continue?"
+        },
+        "validation": {
+          "tourDateRequired": "Tour date is required",
+          "locationRequired": "Pickup location is required",
+          "timeSlotRequired": "Time slot is required",
+          "catamaranRequired": "Please select a catamaran option",
+          "advanceBooking": "Bookings must be made at least 24 hours in advance",
+          "minParticipants": "At least one participant is required",
+          "childAge": "Child age must be between 0 and 17",
+          "submitError": "Failed to submit reservation. Please try again."
+        },
+        "footer": {
+          "totalPrice": "Total Price",
+          "person": "person",
+          "people": "people",
+          "priceBreakdown": {
+            "adults": "Adults:",
+            "child": "Child",
+            "years": "years",
+            "includes": "Includes:",
+            "premiumIncludes": "Water slide, premium bar, buffet, snorkeling & all equipment",
+            "classicIncludes": "Open bar, buffet, snorkeling & all equipment"
+          },
+          "buttons": {
+            "cancel": "Cancel",
+            "book": "Book Catamaran",
+            "booking": "Booking..."
+          }
+        }
       }
     },
     "hours": {

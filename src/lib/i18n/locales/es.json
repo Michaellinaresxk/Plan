@@ -444,25 +444,96 @@
         "preparation3": "Stay hydrated before and after your massage session",
         "preparation4": "Avoid heavy meals right before your massage"
       },
-      "customDecorations": {
-        "name": "Decoraciones Personalizadas",
-        "short": "Decoraciones especiales para eventos y celebraciones",
-        "full": "Embellece tus eventos con decoraciones personalizadas que reflejan tu estilo y temática. Desde arreglos florales hasta ambientaciones completas, nuestro equipo crea espacios únicos y memorables. Sorprende, emociona y celebra a lo grande. Reserva tu decoración a medida hoy y convierte cada detalle en una ocasión extraordinaria."
-      },
-      "adventureExcursions": {
-        "name": "Excursiones de Aventura",
-        "short": "Actividades emocionantes y recorridos por Punta Cana",
-        "full": "Vive la emoción de la aventura con nuestras excursiones. Experiencias únicas rodeado de la naturaleza exuberante de Punta Cana. Atrévete, explora y supera tus límites. Reserva tu excursión de aventura hoy y desafía tus límites."
-      },
-      "karaoke": {
-        "name": "Sesiones Privadas de Karaoke",
-        "short": "Divertido montaje de karaoke en tu alojamiento",
-        "full": "La excursión a la isla Saona es una popular excursión desde Punta Cana y Bayahibe, en la República Dominicana, que ofrece una visita de un día a la idílica isla caribeña conocida por sus playas vírgenes y sus aguas turquesas. Las excursiones suelen incluir transporte en lancha rápida y catamarán, una parada en una piscina natural, un almuerzo bufé y barra libre, así como tiempo para relajarse en la playa y disfrutar del paisaje."
-      },
-      "saonaIslandTour": {
-        "name": "Excursión a la isla Saona",
-        "short": "Excursión de un día a la idílica isla caribeña conocida por sus playas vírgenes y sus aguas turquesas",
-        "full": "A Saona Island tour is a popular excursion from Punta Cana and Bayahibe in the Dominican Republic, offering a day trip to the idyllic Caribbean island known for its pristine beaches and turquoise waters. Tours typically include transportation by speedboat and catamaran, a stop at a natural swimming pool, a buffet lunch, and an open bar, as well as time to relax on the beach and enjoy the scenery. "
+      "massageView": {
+        "hero": {
+          "badge": {
+            "title": "BF Paradise • Santuario Premium de Bienestar"
+          },
+          "title": {
+            "line1": "Santuario de",
+            "line2": "Masajes Terapéuticos"
+          },
+          "subtitle": "Experimenta el poder transformador del toque sanador con nuestra colección de {{count}} tratamientos terapéuticos expertamente diseñados",
+          "features": {
+            "licensed": "Terapeutas Certificados",
+            "home": "Servicio a Domicilio",
+            "premium": "Experiencia Premium",
+            "guaranteed": "Satisfacción Garantizada"
+          }
+        },
+        "quote": {
+          "emoji": "🌸",
+          "text": "Tómate tiempo para hacer feliz a tu alma. Tu cuerpo merece el regalo del toque sanador, y tu mente anhela la paz que solo viene de la verdadera relajación.",
+          "stats": {
+            "sessions": {
+              "count": "500+",
+              "label": "Sesiones de Bienestar",
+              "description": "completadas este año"
+            },
+            "satisfaction": {
+              "count": "98%",
+              "label": "Tasa de Satisfacción",
+              "description": "de nuestros clientes"
+            },
+            "availability": {
+              "count": "24/7",
+              "label": "Disponibilidad",
+              "description": "para tu comodidad"
+            }
+          }
+        },
+        "services": {
+          "title": {
+            "line1": "Elige Tu Experiencia",
+            "line2": "Sanadora Perfecta"
+          },
+          "subtitle": "Cada tratamiento está cuidadosamente diseñado para abordar tus necesidades únicas de bienestar, combinando sabiduría ancestral con técnicas terapéuticas modernas",
+          "count": {
+            "available": "{{count}} experiencias terapéuticas disponibles",
+            "viewAll": "Ver todos los tratamientos"
+          },
+          "noResults": {
+            "emoji": "🌿",
+            "title": "No hay tratamientos que coincidan con tu búsqueda",
+            "description": "Intenta ajustar tus filtros para descubrir más experiencias sanadoras",
+            "button": "Mostrar Todos los Tratamientos"
+          }
+        },
+        "cta": {
+          "title": {
+            "line1": "Tu Viaje Hacia el",
+            "line2": "Bienestar Completo"
+          },
+          "description": "Escapa del estrés de la vida diaria y sumérgete en pura tranquilidad. Nuestros terapeutas expertos llevan la experiencia del spa directamente a ti.",
+          "features": {
+            "therapists": "Masajistas certificados con más de 5 años de experiencia",
+            "premium": "Aceites orgánicos premium y camillas de masaje con calefacción",
+            "customized": "Tratamientos personalizados para tus necesidades únicas"
+          },
+          "button": "Comienza Tu Viaje de Bienestar",
+          "cards": {
+            "mindBalance": {
+              "emoji": "🧘‍♀️",
+              "title": "Balance Mental",
+              "description": "Alcanza claridad mental y armonía emocional"
+            },
+            "bodyRenewal": {
+              "emoji": "💆‍♀️",
+              "title": "Renovación Corporal",
+              "description": "Libera tensión y restaura vitalidad"
+            },
+            "naturalHealing": {
+              "emoji": "🌿",
+              "title": "Sanación Natural",
+              "description": "Productos orgánicos puros para tu bienestar"
+            },
+            "homeComfort": {
+              "emoji": "🏠",
+              "title": "Confort en Casa",
+              "description": "Experiencia de spa de lujo en tu espacio"
+            }
+          }
+        }
       },
       "liveMusic": {
         "name": "Live Music",
@@ -1053,41 +1124,6 @@
           "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
         }
       },
-      "babysitter": {
-        "chip": "Professional Childcare",
-        "headerOption1": "Certified & Background-Checked",
-        "headerOption2": "Age-Appropriate Activities",
-        "headerOption3": "Flexible Scheduling",
-        "name": "Babysitter",
-        "short": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort",
-        "full": "Trust our experienced, background-checked babysitters to care for your little ones in the comfort of your villa or resort. Whether you need a few hours of evening respite or full-day childcare, our professionals engage children with safe, age-appropriate activities and attentive supervision.",
-        "slogan": "ENJOY WORRY-FREE VACATION TIME",
-        "ageRange": "Age Range",
-        "ageRangeAnswer": "From 6 months - 12 years",
-        "availability": "Availability:",
-        "availabilityAnswer": "Day, afternoon and evening; night service on request.",
-        "safety": "Estándares de Seguridad:",
-        "safetyAnswer": "CPR-trained, first-aid certified",
-        "subTitle1": "ENJOY WORRY-FREE VACATION TIME",
-        "option1": "Evening Babysitting",
-        "option2": "Daytime Supervision",
-        "option3": "Group Care (siblings)",
-        "option4": "Overnight Sitting",
-        "CTAHeaderSubTitle": "Your Peace of Mind. Their Happiness.",
-        "CTATitle": "Ready to Enjoy Your Time While Your Children are in Great Hands?",
-        "CTASubTitle": "Schedule professional, reliable childcare and treat yourself to worry-free time away",
-        "faqsTitle": "Frequently Asked Questions",
-        "faqQuestion1": "What if I need to extend the babysitting time?",
-        "faqAnswer1": "Extensions are possible subject to the babysitter is availability. Please notify us as soon as possible, and we will confirm with your assigned sitter.",
-        "faqQuestion2": "Can I meet the babysitter before booking?",
-        "faqAnswer2": "Absolutely! We encourage a meet-and-greet before your scheduled service. This can be arranged in-person or via video call.",
-        "faqQuestion3": "What happens if my child gets sick?",
-        "faqAnswer3": "Our babysitters are trained to handle minor health concerns. For emergencies, they will contact you immediately and follow predetermined emergency protocols.",
-        "testimonialTitle": "What Parents Say",
-        "testimonial1": "'Our children absolutely adored their babysitter! She was punctual, professional, and had an amazing rapport with the kids. We could enjoy our evening knowing they were in safe, caring hands.'",
-        "testimonial2": "The level of professionalism was outstanding. Our babysitter came prepared with age-appropriate activities that kept our children engaged throughout the evening.",
-        "testimonial3": "This is the only babysitting service I trust with my little ones. The screening process for caregivers is thorough, and the sitter assigned to us was exceptional."
-      },
       "babysitterView": {
         "hero": {
           "premiumBadge": "Experiencia Xclusivo",
@@ -1253,265 +1289,6 @@
           "cancel": "Cancelar",
           "submit": "Reservar Tu Niñera",
           "processing": "Procesando..."
-        }
-      },
-      "luxCatamaran": {
-        "serviceView": {
-          "hero": {
-            "badge": "Aventura Caribeña",
-            "title": "Paraíso Caribeño",
-            "subtitle": "Experiencia de Catamarán de Lujo",
-            "description": "Descubre el paraíso a bordo de nuestros catamaranes de lujo. Elige entre nuestra experiencia clásica o mejora a nuestra embarcación premium con tobogán acuático para la aventura definitiva.",
-            "ctaButton": "Explorar Opciones"
-          },
-          "catamaranTypes": {
-            "classic": {
-              "name": "Aventura Clásica",
-              "features": {
-                "openBar": "Barra Libre",
-                "gourmetBuffet": "Buffet Gourmet",
-                "snorkelingEquipment": "Equipo de Snorkel",
-                "professionalCrew": "Tripulación Profesional"
-              }
-            },
-            "premium": {
-              "name": "Exclusivo con Tobogán Acuático",
-              "badge": "Exclusivo",
-              "waterSlideBadge": "Tobogán Acuático",
-              "features": {
-                "allClassic": "Todas las Características Clásicas",
-                "waterSlide": "Tobogán Acuático",
-                "premiumBar": "Barra Exclusiva",
-                "vipService": "Servicio VIP",
-                "photoPackage": "Paquete de Fotos"
-              }
-            },
-            "perPerson": "/persona",
-            "guests": "personas",
-            "moreFeatures": "características más"
-          },
-          "sections": {
-            "chooseAdventure": {
-              "title": "Elige Tu Aventura",
-              "subtitle": "Selecciona la experiencia de catamarán perfecta para tu grupo"
-            },
-            "chooseTime": {
-              "title": "Elige Tu Hora de Salida",
-              "subtitle": "Selecciona el momento perfecto para tu aventura",
-              "mostPopular": "Más Popular",
-              "selectButton": "Seleccionar"
-            },
-            "experienceGallery": {
-              "title": "Galería de Experiencias",
-              "subtitle": "Mira lo que te espera en este increíble viaje",
-              "experiences": {
-                "crystalWaters": {
-                  "title": "Aguas Cristalinas",
-                  "description": "Nada en aguas caribeñas prístinas"
-                },
-                "snorkeling": {
-                  "title": "Aventura de Snorkel",
-                  "description": "Descubre vibrante vida marina"
-                },
-                "waterSlide": {
-                  "title": "Diversión en Tobogán",
-                  "description": "Emocionantes toboganes hacia el océano"
-                },
-                "dining": {
-                  "title": "Comida Gourmet",
-                  "description": "Mariscos frescos y cocina tropical"
-                },
-                "beach": {
-                  "title": "Exploración de Playas",
-                  "description": "Playas aisladas y calas escondidas"
-                },
-                "sunset": {
-                  "title": "Vistas del Atardecer",
-                  "description": "Impresionantes atardeceres caribeños"
-                }
-              }
-            }
-          },
-          "timeSlots": {
-            "morning": {
-              "label": "Aventura Matutina"
-            },
-            "afternoon": {
-              "label": "Experiencia al Atardecer"
-            }
-          },
-          "details": {
-            "classicDescription": "Disfruta de nuestra experiencia clásica en catamarán con todos los elementos esenciales para una perfecta aventura caribeña, incluyendo snorkel, comida y relajación en el paraíso.",
-            "premiumDescription": "Experimenta el lujo definitivo con nuestro catamarán premium que cuenta con un emocionante tobogán acuático, servicio VIP y comodidades exclusivas. Perfecto para grupos que buscan una aventura inolvidable con emociones adicionales.",
-            "perPerson": "por persona",
-            "maxGuests": "personas máx.",
-            "hours": "horas",
-            "bookButton": "Reservar Esta Experiencia"
-          },
-          "cta": {
-            "title": "¿Listo para el Paraíso?",
-            "subtitle": "Reserva tu aventura en catamarán hoy y crea recuerdos que durarán toda la vida. ¡Plazas limitadas disponibles!",
-            "bookButton": "Reservar Ahora",
-            "guarantee": "Cancelación gratuita • Confirmación instantánea • Garantía del mejor precio"
-          },
-          "importantInfo": {
-            "title": "Información Importante",
-            "points": {
-              "weather": "Los tours dependen del clima y pueden reprogramarse por seguridad",
-              "booking": "Recomendamos reservar con 24-48 horas de anticipación",
-              "refund": "Reembolso completo disponible por cancelaciones climáticas",
-              "safety": "Chalecos salvavidas y equipo de seguridad proporcionados para todos los huéspedes",
-              "ageLimit": "Edad mínima para el tobogán acuático: 8 años"
-            }
-          }
-        }
-      },
-      "luxCatamaranForm": {
-        "header": {
-          "title": "Reserva de Aventura en Catamarán",
-          "subtitle": "Elige tu experiencia perfecta en catamarán en el Caribe"
-        },
-        "sections": {
-          "chooseCatamaran": "Elige Tu Catamarán",
-          "tourDateTime": "Fecha y Hora del Tour",
-          "pickupLocation": "Ubicación de Recogida",
-          "participants": "Participantes",
-          "whatsIncluded": "Qué Incluye",
-          "additionalInfo": "Información Adicional"
-        },
-        "locations": {
-          "puntaCanaResorts": "Resorts de Punta Cana",
-          "capCana": "Cap Cana",
-          "bavaro": "Bávaro",
-          "puntaVillage": "Puntacana Village",
-          "uveroAlto": "Uvero Alto",
-          "macao": "Zona de Playa Macao"
-        },
-        "catamarans": {
-          "classic": {
-            "name": "Aventura Clásica",
-            "description": "Perfecto para grupos que buscan una experiencia completa en catamarán caribeño con todo lo esencial.",
-            "features": {
-              "openBar": "Barra Libre con Bebidas Estándar",
-              "gourmetBuffet": "Almuerzo Buffet Gourmet",
-              "snorkeling": "Equipo Profesional de Snorkel",
-              "crew": "Tripulación Experimentada",
-              "beach": "Acceso a la Playa",
-              "safety": "Chalecos Salvavidas y Equipo de Seguridad"
-            }
-          },
-          "premium": {
-            "name": "Exclusivo con Tobogán Acuático",
-            "badge": "Exclusivo",
-            "description": "Experiencia de lujo definitiva con tobogán acuático, comodidades premium y tratamiento VIP para celebraciones especiales.",
-            "features": {
-              "allClassic": "Todas las Características Clásicas Incluidas",
-              "waterSlide": "Tobogán Acuático Emocionante",
-              "premiumBar": "Barra Exclusivo con Cócteles Artesanales",
-              "vipService": "Servicio VIP y Embarque Prioritario",
-              "photoPackage": "Paquete Fotográfico Profesional",
-              "exclusiveBeach": "Áreas de Playa Exclusivas",
-              "soundSystem": "Sistema de Sonido Mejorado"
-            }
-          },
-          "perAdult": "por adulto",
-          "guests": "personas"
-        },
-        "timeSlots": {
-          "morning": {
-            "label": "Aventura Matutina"
-          },
-          "afternoon": {
-            "label": "Experiencia al Atardecer"
-          },
-          "mostPopular": "Más Popular"
-        },
-        "form": {
-          "tourDate": {
-            "label": "Selecciona Fecha del Tour",
-            "required": "*"
-          },
-          "timeSlot": {
-            "label": "Hora de Salida",
-            "required": "*"
-          },
-          "location": {
-            "label": "Selecciona Ubicación de Recogida",
-            "required": "*"
-          },
-          "adults": {
-            "label": "Adultos (13+)"
-          },
-          "children": {
-            "label": "Niños (0-17)",
-            "detailsTitle": "Detalles de Niños",
-            "ageLabel": "Edad",
-            "baby": "Bebé (menor de 1)",
-            "yearsOld": "años"
-          },
-          "specialRequests": {
-            "label": "Solicitudes Especiales o Requisitos",
-            "placeholder": "Detalles de celebración, requisitos dietéticos, asistencia de movilidad o cualquier solicitud especial..."
-          }
-        },
-        "pricing": {
-          "free": "Gratis",
-          "childPrice": "Precio Niño",
-          "adultPrice": "Precio Adulto"
-        },
-        "restrictions": {
-          "title": "Restricciones del Tour e Información Importante",
-          "items": {
-            "pregnant": "No recomendado para mujeres embarazadas",
-            "waterSlide": "Niños menores de 8 años no pueden usar el tobogán acuático (opción Exclusiva)",
-            "minAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
-            "supervision": "Los niños deben estar supervisados en todo momento",
-            "weather": "Dependiente del clima - puede reprogramarse"
-          }
-        },
-        "warnings": {
-          "sameDayBooking": {
-            "title": "Reserva del mismo día:",
-            "message": "Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad."
-          },
-          "advanceBooking": {
-            "title": "Reserva anticipada requerida:",
-            "message": "Por favor reserve con al menos 24 horas de anticipación."
-          },
-          "capacity": {
-            "message": "Capacidad máxima para el catamarán seleccionado:",
-            "exceeds": "La capacidad del catamarán seleccionado es de {{capacity}} personas. Por favor reduzca los participantes o elija una opción diferente."
-          },
-          "waterSlideAge": "Nota: Niños menores de 8 años no pueden usar el tobogán acuático",
-          "sameDayConfirm": "Está reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?"
-        },
-        "validation": {
-          "tourDateRequired": "La fecha del tour es requerida",
-          "locationRequired": "La ubicación de recogida es requerida",
-          "timeSlotRequired": "El horario es requerido",
-          "catamaranRequired": "Por favor seleccione una opción de catamarán",
-          "advanceBooking": "Las reservas deben hacerse con al menos 24 horas de anticipación",
-          "minParticipants": "Se requiere al menos un participante",
-          "childAge": "La edad del niño debe estar entre 0 y 17",
-          "submitError": "Error al enviar la reserva. Por favor intente de nuevo."
-        },
-        "footer": {
-          "totalPrice": "Precio Total",
-          "person": "persona",
-          "people": "personas",
-          "priceBreakdown": {
-            "adults": "Adultos:",
-            "child": "Niño",
-            "years": "años",
-            "includes": "Incluye:",
-            "premiumIncludes": "Tobogán acuático, barra premium, buffet, snorkel y todo el equipo",
-            "classicIncludes": "Barra libre, buffet, snorkel y todo el equipo"
-          },
-          "buttons": {
-            "cancel": "Cancelar",
-            "book": "Reservar Catamarán",
-            "booking": "Reservando..."
-          }
         }
       },
 
@@ -2308,6 +2085,7 @@
         "customOptions": "Additional Options"
       }
     },
+
     "premium": {
       "luxeYacht": {
         "name": "Yate de Lujo",
@@ -2591,41 +2369,264 @@
           }
         }
       },
-
-      "luxeEBikes": {
-        "name": "Bicicletas Eléctricas de Lujo",
-        "short": "Bicicletas eléctricas premium para una exploración sin esfuerzo",
-        "full": "Descubre Punta Cana con estilo con nuestras bicicletas eléctricas premium. Disfruta de una exploración sin esfuerzo de playas, senderos y atracciones locales con e-bikes de primera línea que cuentan con batería de larga duración y ergonomía confortable."
+      "luxCatamaran": {
+        "serviceView": {
+          "hero": {
+            "badge": "Aventura Caribeña",
+            "title": "Paraíso Caribeño",
+            "subtitle": "Experiencia de Catamarán de Lujo",
+            "description": "Descubre el paraíso a bordo de nuestros catamaranes de lujo. Elige entre nuestra experiencia clásica o mejora a nuestra embarcación premium con tobogán acuático para la aventura definitiva.",
+            "ctaButton": "Explorar Opciones"
+          },
+          "catamaranTypes": {
+            "classic": {
+              "name": "Aventura Clásica",
+              "features": {
+                "openBar": "Barra Libre",
+                "gourmetBuffet": "Buffet Gourmet",
+                "snorkelingEquipment": "Equipo de Snorkel",
+                "professionalCrew": "Tripulación Profesional"
+              }
+            },
+            "premium": {
+              "name": "Exclusivo con Tobogán Acuático",
+              "badge": "Exclusivo",
+              "waterSlideBadge": "Tobogán Acuático",
+              "features": {
+                "allClassic": "Todas las Características Clásicas",
+                "waterSlide": "Tobogán Acuático",
+                "premiumBar": "Barra Exclusiva",
+                "vipService": "Servicio VIP",
+                "photoPackage": "Paquete de Fotos"
+              }
+            },
+            "perPerson": "/persona",
+            "guests": "personas",
+            "moreFeatures": "características más"
+          },
+          "sections": {
+            "chooseAdventure": {
+              "title": "Elige Tu Aventura",
+              "subtitle": "Selecciona la experiencia de catamarán perfecta para tu grupo"
+            },
+            "chooseTime": {
+              "title": "Elige Tu Hora de Salida",
+              "subtitle": "Selecciona el momento perfecto para tu aventura",
+              "mostPopular": "Más Popular",
+              "selectButton": "Seleccionar"
+            },
+            "experienceGallery": {
+              "title": "Galería de Experiencias",
+              "subtitle": "Mira lo que te espera en este increíble viaje",
+              "experiences": {
+                "crystalWaters": {
+                  "title": "Aguas Cristalinas",
+                  "description": "Nada en aguas caribeñas prístinas"
+                },
+                "snorkeling": {
+                  "title": "Aventura de Snorkel",
+                  "description": "Descubre vibrante vida marina"
+                },
+                "waterSlide": {
+                  "title": "Diversión en Tobogán",
+                  "description": "Emocionantes toboganes hacia el océano"
+                },
+                "dining": {
+                  "title": "Comida Gourmet",
+                  "description": "Mariscos frescos y cocina tropical"
+                },
+                "beach": {
+                  "title": "Exploración de Playas",
+                  "description": "Playas aisladas y calas escondidas"
+                },
+                "sunset": {
+                  "title": "Vistas del Atardecer",
+                  "description": "Impresionantes atardeceres caribeños"
+                }
+              }
+            }
+          },
+          "timeSlots": {
+            "morning": {
+              "label": "Aventura Matutina"
+            },
+            "afternoon": {
+              "label": "Experiencia al Atardecer"
+            }
+          },
+          "details": {
+            "classicDescription": "Disfruta de nuestra experiencia clásica en catamarán con todos los elementos esenciales para una perfecta aventura caribeña, incluyendo snorkel, comida y relajación en el paraíso.",
+            "premiumDescription": "Experimenta el lujo definitivo con nuestro catamarán premium que cuenta con un emocionante tobogán acuático, servicio VIP y comodidades exclusivas. Perfecto para grupos que buscan una aventura inolvidable con emociones adicionales.",
+            "perPerson": "por persona",
+            "maxGuests": "personas máx.",
+            "hours": "horas",
+            "bookButton": "Reservar Esta Experiencia"
+          },
+          "cta": {
+            "title": "¿Listo para el Paraíso?",
+            "subtitle": "Reserva tu aventura en catamarán hoy y crea recuerdos que durarán toda la vida. ¡Plazas limitadas disponibles!",
+            "bookButton": "Reservar Ahora",
+            "guarantee": "Cancelación gratuita • Confirmación instantánea • Garantía del mejor precio"
+          },
+          "importantInfo": {
+            "title": "Información Importante",
+            "points": {
+              "weather": "Los tours dependen del clima y pueden reprogramarse por seguridad",
+              "booking": "Recomendamos reservar con 24-48 horas de anticipación",
+              "refund": "Reembolso completo disponible por cancelaciones climáticas",
+              "safety": "Chalecos salvavidas y equipo de seguridad proporcionados para todos los huéspedes",
+              "ageLimit": "Edad mínima para el tobogán acuático: 8 años"
+            }
+          }
+        }
       },
-      "luxeGolfCart": {
-        "name": "Carrito de Golf de Lujo",
-        "short": "Carrito de golf premium con características extendidas",
-        "full": "Viaja con estilo con nuestros carritos de golf de lujo con asientos de cuero premium, batería de mayor autonomía y características mejoradas. Perfectos para explorar resorts y áreas locales con elegancia y comodidad."
-      },
-      "luxeYoga": {
-        "name": "Sesiones de Yoga de Lujo",
-        "short": "Yoga privado frente a la playa con amenidades premium",
-        "full": "Eleva tu camino de bienestar con nuestras exclusivas sesiones privadas de yoga realizadas en lugares impresionantes. Experimenta instrucción personalizada, colchonetas y equipos premium, y refrigerios orgánicos después de la sesión."
-      },
-      "luxeFitness": {
-        "name": "Sesiones de Fitness de Lujo",
-        "short": "Entrenamiento personal de élite con equipo especializado",
-        "full": "Transforma tu rutina de fitness con nuestras sesiones de entrenamiento de élite. Trabaja con entrenadores personales de primer nivel utilizando equipos premium y técnicas de vanguardia adaptadas específicamente a tus objetivos y nivel de condición física."
-      },
-      "luxeCulinary": {
-        "name": "Servicio Culinario de Lujo",
-        "short": "Experiencia de chef gourmet con ingredientes premium",
-        "full": "Disfruta de la experiencia gastronómica definitiva con nuestro servicio de chef gourmet. Disfruta de exquisitas comidas de varios platos preparadas con los mejores ingredientes locales e importados, combinadas con vinos premium y servidas en la comodidad de tu alojamiento."
-      },
-      "luxeMasseuse": {
-        "name": "Servicio de Masajes de Lujo",
-        "short": "Tratamientos de spa premium en tu alojamiento",
-        "full": "Relájate con nuestra experiencia de spa de lujo llevada directamente a tu alojamiento. Nuestros terapeutas de masaje de élite proporcionan tratamientos premium utilizando aceites orgánicos y técnicas de primer nivel, complementados con aromaterapia y música ambiental."
-      },
-      "luxeArrival": {
-        "name": "Llegada Lujosa - Servicio SUV",
-        "short": "Traslado al aeropuerto en SUV de lujo con amenidades premium",
-        "full": "Comienza tu experiencia de lujo desde el momento en que aterrizas con nuestro servicio premium de traslado al aeropuerto en SUV. Disfruta de asientos de cuero de lujo, control de clima, refrescos de cortesía y un chófer profesional listo para garantizar una llegada perfecta a tu destino."
+      "luxCatamaranForm": {
+        "header": {
+          "title": "Reserva de Aventura en Catamarán",
+          "subtitle": "Elige tu experiencia perfecta en catamarán en el Caribe"
+        },
+        "sections": {
+          "chooseCatamaran": "Elige Tu Catamarán",
+          "tourDateTime": "Fecha y Hora del Tour",
+          "pickupLocation": "Ubicación de Recogida",
+          "participants": "Participantes",
+          "whatsIncluded": "Qué Incluye",
+          "additionalInfo": "Información Adicional"
+        },
+        "locations": {
+          "puntaCanaResorts": "Resorts de Punta Cana",
+          "capCana": "Cap Cana",
+          "bavaro": "Bávaro",
+          "puntaVillage": "Puntacana Village",
+          "uveroAlto": "Uvero Alto",
+          "macao": "Zona de Playa Macao"
+        },
+        "catamarans": {
+          "classic": {
+            "name": "Aventura Clásica",
+            "description": "Perfecto para grupos que buscan una experiencia completa en catamarán caribeño con todo lo esencial.",
+            "features": {
+              "openBar": "Barra Libre con Bebidas Estándar",
+              "gourmetBuffet": "Almuerzo Buffet Gourmet",
+              "snorkeling": "Equipo Profesional de Snorkel",
+              "crew": "Tripulación Experimentada",
+              "beach": "Acceso a la Playa",
+              "safety": "Chalecos Salvavidas y Equipo de Seguridad"
+            }
+          },
+          "premium": {
+            "name": "Exclusivo con Tobogán Acuático",
+            "badge": "Exclusivo",
+            "description": "Experiencia de lujo definitiva con tobogán acuático, comodidades premium y tratamiento VIP para celebraciones especiales.",
+            "features": {
+              "allClassic": "Todas las Características Clásicas Incluidas",
+              "waterSlide": "Tobogán Acuático Emocionante",
+              "premiumBar": "Barra Exclusivo con Cócteles Artesanales",
+              "vipService": "Servicio VIP y Embarque Prioritario",
+              "photoPackage": "Paquete Fotográfico Profesional",
+              "exclusiveBeach": "Áreas de Playa Exclusivas",
+              "soundSystem": "Sistema de Sonido Mejorado"
+            }
+          },
+          "perAdult": "por adulto",
+          "guests": "personas"
+        },
+        "timeSlots": {
+          "morning": {
+            "label": "Aventura Matutina"
+          },
+          "afternoon": {
+            "label": "Experiencia al Atardecer"
+          },
+          "mostPopular": "Más Popular"
+        },
+        "form": {
+          "tourDate": {
+            "label": "Selecciona Fecha del Tour",
+            "required": "*"
+          },
+          "timeSlot": {
+            "label": "Hora de Salida",
+            "required": "*"
+          },
+          "location": {
+            "label": "Selecciona Ubicación de Recogida",
+            "required": "*"
+          },
+          "adults": {
+            "label": "Adultos (13+)"
+          },
+          "children": {
+            "label": "Niños (0-17)",
+            "detailsTitle": "Detalles de Niños",
+            "ageLabel": "Edad",
+            "baby": "Bebé (menor de 1)",
+            "yearsOld": "años"
+          },
+          "specialRequests": {
+            "label": "Solicitudes Especiales o Requisitos",
+            "placeholder": "Detalles de celebración, requisitos dietéticos, asistencia de movilidad o cualquier solicitud especial..."
+          }
+        },
+        "pricing": {
+          "free": "Gratis",
+          "childPrice": "Precio Niño",
+          "adultPrice": "Precio Adulto"
+        },
+        "restrictions": {
+          "title": "Restricciones del Tour e Información Importante",
+          "items": {
+            "pregnant": "No recomendado para mujeres embarazadas",
+            "waterSlide": "Niños menores de 8 años no pueden usar el tobogán acuático (opción Exclusiva)",
+            "minAge": "Edad mínima: Sin restricciones (bebés bienvenidos)",
+            "supervision": "Los niños deben estar supervisados en todo momento",
+            "weather": "Dependiente del clima - puede reprogramarse"
+          }
+        },
+        "warnings": {
+          "sameDayBooking": {
+            "title": "Reserva del mismo día:",
+            "message": "Requiere confirmación inmediata de nuestro equipo. Sujeto a disponibilidad."
+          },
+          "advanceBooking": {
+            "title": "Reserva anticipada requerida:",
+            "message": "Por favor reserve con al menos 24 horas de anticipación."
+          },
+          "capacity": {
+            "message": "Capacidad máxima para el catamarán seleccionado:",
+            "exceeds": "La capacidad del catamarán seleccionado es de {{capacity}} personas. Por favor reduzca los participantes o elija una opción diferente."
+          },
+          "waterSlideAge": "Nota: Niños menores de 8 años no pueden usar el tobogán acuático",
+          "sameDayConfirm": "Está reservando para hoy. Esto requiere confirmación inmediata de nuestro equipo. ¿Continuar?"
+        },
+        "validation": {
+          "tourDateRequired": "La fecha del tour es requerida",
+          "locationRequired": "La ubicación de recogida es requerida",
+          "timeSlotRequired": "El horario es requerido",
+          "catamaranRequired": "Por favor seleccione una opción de catamarán",
+          "advanceBooking": "Las reservas deben hacerse con al menos 24 horas de anticipación",
+          "minParticipants": "Se requiere al menos un participante",
+          "childAge": "La edad del niño debe estar entre 0 y 17",
+          "submitError": "Error al enviar la reserva. Por favor intente de nuevo."
+        },
+        "footer": {
+          "totalPrice": "Precio Total",
+          "person": "persona",
+          "people": "personas",
+          "priceBreakdown": {
+            "adults": "Adultos:",
+            "child": "Niño",
+            "years": "años",
+            "includes": "Incluye:",
+            "premiumIncludes": "Tobogán acuático, barra premium, buffet, snorkel y todo el equipo",
+            "classicIncludes": "Barra libre, buffet, snorkel y todo el equipo"
+          },
+          "buttons": {
+            "cancel": "Cancelar",
+            "book": "Reservar Catamarán",
+            "booking": "Reservando..."
+          }
+        }
       }
     },
     "hours": {
