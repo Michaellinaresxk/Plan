@@ -1552,7 +1552,7 @@
             "error": "Por favor selecciona un lugar de recogida"
           },
           "adults": {
-            "label": "Adultos (7+ años) - $55 cada uno"
+            "label": "Adultos (7+ años) - $75 cada uno"
           },
           "children": {
             "label": "Niños (0-17 años)",
@@ -1577,13 +1577,16 @@
           },
           "uveroAlto": {
             "name": "Uvero Alto"
+          },
+          "puntacanaVillage": {
+            "name": "Punta Cana Village"
           }
         },
         "pricing": {
           "title": "Precios por Edad",
           "free": "0-4 años: Gratis",
           "child": "5-6 años: $27.50 (Precio de niño - 50% descuento)",
-          "adult": "7+ años: $55 (Precio de adulto)",
+          "adult": "7+ años: $75 (Precio de adulto)",
           "priceLabels": {
             "free": "Gratis",
             "child": "Precio de Niño",

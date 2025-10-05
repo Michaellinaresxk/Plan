@@ -26,7 +26,7 @@ export const DEFAULT_LOCATION_OPTIONS: LocationOption[] = [
     description: 'Base price',
   },
   {
-    id: 'punta-village',
+    id: 'puntacana-village',
     name: 'Puntacana Village',
     surcharge: 10,
     description: 'Base price',
@@ -35,9 +35,10 @@ export const DEFAULT_LOCATION_OPTIONS: LocationOption[] = [
 
 export const LOCATION_OPTIONS = [
   { id: 'punta-cana-resorts', name: 'Puntacana Resorts' },
-  { id: 'cap-cana', name: 'Cap Cana' },
   { id: 'bavaro', name: 'Bavaro' },
-  { id: 'punta-village', name: 'Puntacana Village' },
+  { id: 'cap-cana', name: 'Cap Cana' },
+  { id: 'uvero-alto', name: 'Uvero Alto' },
+  { id: 'puntacana-village', name: 'Punta Cana Village' },
 ] as const;
 
 export const DEFAULT_TRANSPORT_PRICING: TransportPricing = {

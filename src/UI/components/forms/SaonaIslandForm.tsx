@@ -15,10 +15,11 @@ import {
   Star,
   CheckCircle,
   Car,
-  DollarSign,
 } from 'lucide-react';
 import { useFormModal } from '@/hooks/useFormModal';
 import FormHeader from './FormHeader';
+import { useScrollToError } from '@/hooks/useScrollToError';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
 interface ChildInfo {
   id: string;
@@ -53,24 +54,34 @@ const LOCATION_IDS = [
   'bavaro',
   'cap-cana',
   'uvero-alto',
+  'puntacana-village',
 ] as const;
 
 const PRICING_CONFIG = {
-  FREE_AGE_LIMIT: 4,
-  CHILD_AGE_LIMIT: 6,
-  ADULT_AGE_START: 7,
+  // Edades
+  FREE_AGE_LIMIT: 4, // 0-4 años gratis
+  CHILD_AGE_LIMIT: 6, // 5-6 años 50% descuento
+  ADULT_AGE_START: 7, // 7+ años precio completo
   MAX_AGE_LIMIT: 75,
+
+  // Precios excursión
   BASE_PRICE_PER_PERSON: 75,
   FREE_PRICE: 0,
-  TRANSPORT_1_8_PEOPLE: 120,
-  TRANSPORT_9_15_PEOPLE: 160,
+
+  // Transporte
+  TRANSPORT_BASE: 60, // Base para todos
+
+  // Tax
+  TAX_RATE: 5, // 5%
 } as const;
 
+// ✅ SURCHARGES POR UBICACIÓN (sobre el base de $60)
 const LOCATION_SURCHARGES = {
-  'punta-cana-resorts': 60,
-  bavaro: 60,
-  'cap-cana': 15,
-  'uvero-alto': 15,
+  'punta-cana-resorts': 0, // $60 + $0 = $60
+  bavaro: 0, // $60 + $0 = $60
+  'cap-cana': 15, // $60 + $15 = $75
+  'uvero-alto': 15, // $60 + $15 = $75
+  'puntacana-village': 10, // $60 + $10 = $70
 } as const;
 
 const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
@@ -99,6 +110,9 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ✅ HOOK PARA SCROLL A ERRORES
+  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
 
   const updateFormField = useCallback((field: string, value: any) => {
     setFormData((prev) => ({
@@ -152,52 +166,55 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     }
   }, [formData.childCount]);
 
+  // ✅ Cálculo de precio por niño según edad
   const calculateChildPrice = (age: number): number => {
     if (age <= PRICING_CONFIG.FREE_AGE_LIMIT) {
-      return PRICING_CONFIG.FREE_PRICE;
+      return PRICING_CONFIG.FREE_PRICE; // 0-4 años: Gratis
     } else if (age <= PRICING_CONFIG.CHILD_AGE_LIMIT) {
-      return PRICING_CONFIG.BASE_PRICE_PER_PERSON * 0.5;
+      return PRICING_CONFIG.BASE_PRICE_PER_PERSON * 0.5; // 5-6 años: 50% ($37.50)
     } else {
-      return PRICING_CONFIG.BASE_PRICE_PER_PERSON;
+      return PRICING_CONFIG.BASE_PRICE_PER_PERSON; // 7+ años: Precio completo ($75)
     }
   };
 
-  const calculateTransportCost = (totalPeople: number): number => {
-    if (totalPeople <= 8) {
-      return PRICING_CONFIG.TRANSPORT_1_8_PEOPLE;
-    } else if (totalPeople <= 15) {
-      return PRICING_CONFIG.TRANSPORT_9_15_PEOPLE;
-    }
-    return PRICING_CONFIG.TRANSPORT_9_15_PEOPLE;
-  };
-
-  const getLocationSurcharge = (): number => {
-    return (
+  // ✅ NUEVO: Cálculo simplificado de transporte (base + surcharge)
+  const calculateTransportCost = (): number => {
+    const base = PRICING_CONFIG.TRANSPORT_BASE;
+    const surcharge =
       LOCATION_SURCHARGES[
         formData.location as keyof typeof LOCATION_SURCHARGES
-      ] || 60
-    );
+      ] || 0;
+
+    return base + surcharge;
   };
 
-  const calculatePrice = useMemo(() => {
-    let basePrice = 0;
+  // ✅ CÁLCULO DE PRECIO BASE (sin transporte)
+  const basePrice = useMemo(() => {
+    let total = 0;
 
-    basePrice += formData.adultCount * PRICING_CONFIG.BASE_PRICE_PER_PERSON;
+    // Adultos
+    total += formData.adultCount * PRICING_CONFIG.BASE_PRICE_PER_PERSON;
 
+    // Niños según edad
     formData.children.forEach((child) => {
-      basePrice += calculateChildPrice(child.age);
+      total += calculateChildPrice(child.age);
     });
 
-    const transportCost = calculateTransportCost(totalParticipants);
-    const locationSurcharge = getLocationSurcharge();
+    return total;
+  }, [formData.adultCount, formData.children]);
 
-    return basePrice + transportCost + locationSurcharge;
-  }, [
-    formData.adultCount,
-    formData.children,
-    totalParticipants,
-    formData.location,
-  ]);
+  // ✅ SUBTOTAL (base + transporte)
+  const subtotal = useMemo(() => {
+    const transportCost = formData.location ? calculateTransportCost() : 0;
+    return basePrice + transportCost;
+  }, [basePrice, formData.location]);
+
+  // ✅ PRECIO CON TAX
+  const priceWithTax = useMemo(() => {
+    return calculatePriceWithTax(subtotal, PRICING_CONFIG.TAX_RATE);
+  }, [subtotal]);
+
+  const totalPrice = priceWithTax.total;
 
   const isSameDay = (dateString: string): boolean => {
     if (!dateString) return false;
@@ -271,6 +288,8 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('❌ SaonaForm - Validation errors:', validationErrors);
+      // ✅ SCROLL AL PRIMER ERROR
+      scrollToFirstError();
       return;
     }
 
@@ -304,32 +323,37 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           )
         : formData.location;
 
-      // Build includes array
       const includes = Array.from({ length: 9 }, (_, i) =>
         t(`services.standard.saonaIslandForm.included.item${i + 1}`)
       );
 
-      // Build restrictions array
       const restrictions = Array.from({ length: 6 }, (_, i) =>
         t(`services.standard.saonaIslandForm.restrictions.item${i + 1}`)
       );
+
+      const transportCost = calculateTransportCost();
+      const locationSurcharge =
+        LOCATION_SURCHARGES[
+          formData.location as keyof typeof LOCATION_SURCHARGES
+        ] || 0;
 
       const reservationData = {
         service: service,
         formData: {
           ...formData,
           serviceType: 'saona-island',
-          totalPrice: calculatePrice,
+          totalPrice,
           pickupTime: TOUR_INFO.PICKUP_TIME,
           locationName,
-          transportCost: calculateTransportCost(totalParticipants),
-          locationSurcharge: getLocationSurcharge(),
-          basePrice:
-            calculatePrice -
-            calculateTransportCost(totalParticipants) -
-            getLocationSurcharge(),
+          transportCost,
+          locationSurcharge,
+          basePrice,
+          // ✅ AGREGAR info de tax
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: PRICING_CONFIG.TAX_RATE,
         },
-        totalPrice: calculatePrice,
+        totalPrice,
         bookingDate: bookingStartDate,
         endDate: bookingEndDate,
         participants: {
@@ -342,8 +366,8 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             id: 'saona-island-tour',
             name: 'Saona Island Tour',
             quantity: 1,
-            price: calculatePrice,
-            totalPrice: calculatePrice,
+            price: totalPrice,
+            totalPrice,
             pickupTime: TOUR_INFO.PICKUP_TIME,
             duration: TOUR_INFO.DURATION,
           },
@@ -361,13 +385,13 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           location: formData.location,
           locationName,
           pricing: {
-            basePrice:
-              calculatePrice -
-              calculateTransportCost(totalParticipants) -
-              getLocationSurcharge(),
-            transportCost: calculateTransportCost(totalParticipants),
-            locationSurcharge: getLocationSurcharge(),
-            totalPrice: calculatePrice,
+            basePrice,
+            transportCost,
+            locationSurcharge,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: PRICING_CONFIG.TAX_RATE,
+            totalPrice,
           },
         },
       };
@@ -379,7 +403,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       if (onSubmit) {
         await onSubmit({
           ...formData,
-          totalPrice: calculatePrice,
+          totalPrice,
           pickupTime: TOUR_INFO.PICKUP_TIME,
         });
       }
@@ -537,7 +561,8 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             </h3>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div>
+              {/* ✅ Date con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('tourDate', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar className='w-4 h-4 mr-2 text-blue-700' />
                   {t(
@@ -616,7 +641,11 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
               {t('services.standard.saonaIslandForm.sections.pickupLocation')}
             </h3>
 
-            <div className='bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm'>
+            {/* ✅ Location con REF */}
+            <div
+              className='bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm'
+              ref={(el) => el && fieldRefs.current.set('location', el)}
+            >
               <label className='flex items-center text-sm font-medium text-blue-800 mb-4'>
                 <MapPin className='w-5 h-5 mr-2 text-blue-600' />
                 {t('services.standard.saonaIslandForm.fields.location.label')} *
@@ -626,32 +655,33 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                 {LOCATION_IDS.map((locationId) => {
                   const locationKey = kebabToCamel(locationId);
                   const surcharge = LOCATION_SURCHARGES[locationId];
-                  const baseTransport = 60; // Precio base de transporte
+                  const totalTransport =
+                    PRICING_CONFIG.TRANSPORT_BASE + surcharge;
 
                   return (
                     <div
                       key={locationId}
                       className={`
-              border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
-              ${
-                formData.location === locationId
-                  ? 'border-blue-500 bg-white shadow-lg ring-2 ring-blue-200'
-                  : 'border-blue-200 bg-white hover:border-blue-300'
-              }
-            `}
+                        border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
+                        ${
+                          formData.location === locationId
+                            ? 'border-blue-500 bg-white shadow-lg ring-2 ring-blue-200'
+                            : 'border-blue-200 bg-white hover:border-blue-300'
+                        }
+                      `}
                       onClick={() => handleLocationSelect(locationId)}
                     >
                       <div className='flex items-start justify-between'>
                         <div className='flex items-center flex-1'>
                           <div
                             className={`
-                    w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all flex-shrink-0
-                    ${
-                      formData.location === locationId
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-blue-300'
-                    }
-                  `}
+                              w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all flex-shrink-0
+                              ${
+                                formData.location === locationId
+                                  ? 'border-blue-500 bg-blue-500'
+                                  : 'border-blue-300'
+                              }
+                            `}
                           >
                             {formData.location === locationId && (
                               <CheckCircle className='w-4 h-4 text-white' />
@@ -666,10 +696,11 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                                 )}
                               </span>
                             </div>
-                            {/* ✅ Mostrar precio base + recargo si aplica */}
-                            {/* <div className='flex items-center gap-1 mt-1'>
+                            {/* ✅ Mostrar precio de transporte */}
+                            <div className='flex items-center gap-1 mt-1'>
+                              <Car className='w-3 h-3 text-blue-600' />
                               <span className='text-xs text-blue-700 font-medium'>
-                                ${baseTransport}
+                                ${PRICING_CONFIG.TRANSPORT_BASE}
                               </span>
                               {surcharge > 0 && (
                                 <>
@@ -683,11 +714,11 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                                     =
                                   </span>
                                   <span className='text-xs text-blue-800 font-bold'>
-                                    ${baseTransport + surcharge}
+                                    ${totalTransport}
                                   </span>
                                 </>
                               )}
-                            </div> */}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -712,17 +743,25 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             </h3>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <Counter
-                label={t(
-                  'services.standard.saonaIslandForm.fields.adults.label'
+              {/* ✅ Adults con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('adultCount', el)}>
+                <Counter
+                  label={t(
+                    'services.standard.saonaIslandForm.fields.adults.label'
+                  )}
+                  value={formData.adultCount}
+                  onIncrement={adultCounter.increment}
+                  onDecrement={adultCounter.decrement}
+                  icon={Users}
+                  min={1}
+                  max={15}
+                />
+                {errors.adultCount && (
+                  <p className='text-red-500 text-xs mt-1'>
+                    {errors.adultCount}
+                  </p>
                 )}
-                value={formData.adultCount}
-                onIncrement={adultCounter.increment}
-                onDecrement={adultCounter.decrement}
-                icon={Users}
-                min={1}
-                max={15}
-              />
+              </div>
 
               <Counter
                 label={t(
@@ -891,6 +930,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           )}
         </div>
 
+        {/* ✅ FOOTER CON DESGLOSE DE TAX */}
         <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
           <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
             <span className='text-gray-400 text-sm uppercase tracking-wide'>
@@ -898,7 +938,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             </span>
             <div className='flex items-center mt-1'>
               <span className='text-3xl font-light'>
-                ${calculatePrice.toFixed(2)}
+                ${totalPrice.toFixed(2)}
               </span>
               <span className='ml-2 text-sm bg-blue-800 px-2 py-1 rounded'>
                 {totalParticipants}{' '}
@@ -911,42 +951,45 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
             </div>
 
             <div className='text-xs text-gray-400 mt-2 space-y-1'>
+              <div className='text-blue-400 font-medium'>Tour Saona Island</div>
               <div>
                 {t(
                   'services.standard.saonaIslandForm.priceBreakdown.perPerson'
                 )}{' '}
-                $
-                {(
-                  calculatePrice -
-                  calculateTransportCost(totalParticipants) -
-                  getLocationSurcharge()
-                ).toFixed(2)}
+                ${basePrice.toFixed(2)}
               </div>
-              <div>
-                {t(
-                  'services.standard.saonaIslandForm.priceBreakdown.transport'
-                )}{' '}
-                (
-                {totalParticipants <= 8
-                  ? t(
-                      'services.standard.saonaIslandForm.priceBreakdown.transportRange1'
-                    )
-                  : t(
-                      'services.standard.saonaIslandForm.priceBreakdown.transportRange2'
+              {formData.location && (
+                <>
+                  <div>
+                    {t(
+                      'services.standard.saonaIslandForm.priceBreakdown.transport'
                     )}{' '}
-                {t(
-                  'services.standard.saonaIslandForm.priceBreakdown.transportLabel'
-                )}
-                ): ${calculateTransportCost(totalParticipants)}
-              </div>
-              {getLocationSurcharge() > 0 && (
-                <div className='text-blue-400'>
-                  {t(
-                    'services.standard.saonaIslandForm.priceBreakdown.locationSurcharge'
-                  )}{' '}
-                  ${getLocationSurcharge()}
-                </div>
+                    ${calculateTransportCost().toFixed(2)}
+                  </div>
+                  {LOCATION_SURCHARGES[
+                    formData.location as keyof typeof LOCATION_SURCHARGES
+                  ] > 0 && (
+                    <div className='text-amber-400'>
+                      Location surcharge: +$
+                      {
+                        LOCATION_SURCHARGES[
+                          formData.location as keyof typeof LOCATION_SURCHARGES
+                        ]
+                      }
+                    </div>
+                  )}
+                </>
               )}
+
+              {/* ✅ DESGLOSE DE TAX */}
+              <div className='border-t border-gray-700 pt-1 mt-1'>
+                <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                <div className='text-yellow-400'>
+                  Tax ({PRICING_CONFIG.TAX_RATE}%): $
+                  {priceWithTax.tax.toFixed(2)}
+                </div>
+              </div>
+
               {formData.location && (
                 <div className='text-blue-400'>
                   {t(
