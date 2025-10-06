@@ -886,7 +886,7 @@
             "required": "La fecha es requerida"
           },
           "timeSlot": {
-            "label": "Horario",
+            "label": "Hora de recogida",
             "required": "Por favor selecciona un horario"
           },
           "location": {
@@ -905,14 +905,14 @@
           }
         },
         "timeSlots": {
-          "8am": {
+          "7am": {
             "name": "Inicio Matutino",
-            "time": "8:00 AM",
+            "time": "7:00 AM",
             "description": "Perfecto para clima fresco"
           },
-          "10am": {
+          "9am": {
             "name": "Media Mañana",
-            "time": "10:00 AM",
+            "time": "9:00 AM",
             "description": "Excelentes condiciones de iluminación"
           }
         },
@@ -1153,6 +1153,41 @@
         "errors": {
           "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
         }
+      },
+      "babysitter": {
+        "chip": "Cuidado Infantil Profesional",
+        "headerOption1": "Certificadas y con Antecedentes Verificados",
+        "headerOption2": "Actividades Apropiadas para cada Edad",
+        "headerOption3": "Horarios Flexibles",
+        "name": "Niñera",
+        "short": "Confía en nuestras niñeras experimentadas y con antecedentes verificados para cuidar a tus pequeños en la comodidad de tu villa o resort",
+        "full": "Confía en nuestras niñeras experimentadas y con antecedentes verificados para cuidar a tus pequeños en la comodidad de tu villa o resort. Ya sea que necesites unas horas de descanso por la noche o cuidado durante todo el día, nuestras profesionales entretienen a los niños con actividades seguras y apropiadas para su edad, con supervisión atenta.",
+        "slogan": "DISFRUTA DE TU TIEMPO DE VACACIONES SIN PREOCUPACIONES",
+        "ageRange": "Rango de Edad",
+        "ageRangeAnswer": "Desde 6 meses - 12 años",
+        "availability": "Disponibilidad:",
+        "availabilityAnswer": "Día, tarde y noche; servicio nocturno bajo solicitud.",
+        "safety": "Estándares de Seguridad:",
+        "safetyAnswer": "Entrenadas en RCP, certificadas en primeros auxilios",
+        "subTitle1": "DISFRUTA DE TU TIEMPO DE VACACIONES SIN PREOCUPACIONES",
+        "option1": "Cuidado Nocturno",
+        "option2": "Supervisión Diurna",
+        "option3": "Cuidado Grupal (hermanos)",
+        "option4": "Cuidado Durante la Noche",
+        "CTAHeaderSubTitle": "Tu Tranquilidad. Su Felicidad.",
+        "CTATitle": "¿Listo para Disfrutar tu Tiempo Mientras tus Hijos están en Buenas Manos?",
+        "CTASubTitle": "Agenda cuidado infantil profesional y confiable y date el lujo de tiempo libre sin preocupaciones",
+        "faqsTitle": "Preguntas Frecuentes",
+        "faqQuestion1": "¿Qué pasa si necesito extender el tiempo de cuidado?",
+        "faqAnswer1": "Las extensiones son posibles sujetas a la disponibilidad de la niñera. Por favor notifícanos lo antes posible, y confirmaremos con la niñera asignada.",
+        "faqQuestion2": "¿Puedo conocer a la niñera antes de reservar?",
+        "faqAnswer2": "¡Por supuesto! Alentamos una reunión previa antes del servicio programado. Esto puede organizarse en persona o por videollamada.",
+        "faqQuestion3": "¿Qué sucede si mi hijo se enferma?",
+        "faqAnswer3": "Nuestras niñeras están entrenadas para manejar problemas menores de salud. Para emergencias, te contactarán de inmediato y seguirán los protocolos de emergencia predeterminados.",
+        "testimonialTitle": "Lo que Dicen los Padres",
+        "testimonial1": "'¡Nuestros hijos adoraron absolutamente a su niñera! Fue puntual, profesional y tuvo una relación increíble con los niños. Pudimos disfrutar nuestra noche sabiendo que estaban en manos seguras y cariñosas.'",
+        "testimonial2": "El nivel de profesionalismo fue excepcional. Nuestra niñera llegó preparada con actividades apropiadas para la edad que mantuvieron a nuestros hijos entretenidos durante toda la noche.",
+        "testimonial3": "Este es el único servicio de niñeras en el que confío con mis pequeños. El proceso de selección de cuidadoras es minucioso, y la niñera asignada a nosotros fue excepcional."
       },
       "babysitterView": {
         "hero": {
