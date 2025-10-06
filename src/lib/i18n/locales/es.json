@@ -886,7 +886,7 @@
             "required": "La fecha es requerida"
           },
           "timeSlot": {
-            "label": "Horario",
+            "label": "Hora de recogida",
             "required": "Por favor selecciona un horario"
           },
           "location": {
@@ -905,14 +905,14 @@
           }
         },
         "timeSlots": {
-          "8am": {
+          "7am": {
             "name": "Inicio Matutino",
-            "time": "8:00 AM",
+            "time": "7:00 AM",
             "description": "Perfecto para clima fresco"
           },
-          "10am": {
+          "9am": {
             "name": "Media Mañana",
-            "time": "10:00 AM",
+            "time": "9:00 AM",
             "description": "Excelentes condiciones de iluminación"
           }
         },

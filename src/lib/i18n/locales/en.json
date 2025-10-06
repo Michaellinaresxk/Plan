@@ -1123,7 +1123,7 @@
             "required": "Date is required"
           },
           "timeSlot": {
-            "label": "Time Slot",
+            "label": "Pickup time",
             "required": "Please select a time slot"
           },
           "location": {
@@ -1142,14 +1142,14 @@
           }
         },
         "timeSlots": {
-          "8am": {
+          "7am": {
             "name": "Morning Start",
-            "time": "8:00 AM",
+            "time": "7:00 AM",
             "description": "Perfect for cooler weather"
           },
-          "10am": {
+          "9am": {
             "name": "Mid-Morning",
-            "time": "10:00 AM",
+            "time": "9:00 AM",
             "description": "Great lighting conditions"
           }
         },

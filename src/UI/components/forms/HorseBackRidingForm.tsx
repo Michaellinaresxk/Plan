@@ -19,6 +19,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { useLocationPricing } from '@/hooks/useLocationPricing';
+import { LocationSelector } from '../service/LocationSelector';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
 
@@ -46,11 +47,11 @@ interface FormErrors {
 
 const TIME_SLOTS = [
   {
-    id: '8am',
+    id: '7am',
     icon: Sunrise,
   },
   {
-    id: '10am',
+    id: '9am',
     icon: Sun,
   },
 ] as const;
@@ -105,6 +106,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   }, []);
 
   const {
+    locationOptions,
     selectedLocation,
     locationSurcharge,
     transportCost,
@@ -136,6 +138,12 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     [updateFormField]
   );
 
+  const handleLocationSelect = useCallback(
+    (locationId: string) => {
+      updateFormField('location', locationId);
+    },
+    [updateFormField]
+  );
 
   const createCounterHandler = (field: keyof FormData, min = 0, max = 8) => ({
     increment: () =>
@@ -478,6 +486,24 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 {errors.timeSlot && (
                   <p className='text-red-500 text-xs mt-1'>{errors.timeSlot}</p>
                 )}
+              </div>
+            </div>
+
+            {/* Location Selection */}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
+                {t('services.standard.horsebackRidingForm.sections.location')}
+              </h3>
+
+              {/* ✅ LocationSelector con REF */}
+              <div ref={(el) => el && fieldRefs.current.set('location', el)}>
+                <LocationSelector
+                  selectedLocationId={formData.location}
+                  onLocationSelect={handleLocationSelect}
+                  locationOptions={locationOptions}
+                  error={errors.location}
+                  isPremium={false}
+                />
               </div>
             </div>
 
