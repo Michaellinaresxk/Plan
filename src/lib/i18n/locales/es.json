@@ -4,6 +4,9 @@
       "yes": "Si",
       "not": "No requiere electridad"
     },
+    "fee": {
+      "creditcard": "Cargo por tarjeta de crédito"
+    },
     "instagram": {
       "followUs": "Síguenos en Instagram",
       "description": "Descubre las mejores experiencias en Punta Cana, fotos exclusivas y ofertas especiales solo para nuestros seguidores.",
@@ -1274,7 +1277,7 @@
             "error": "La hora de inicio es requerida"
           },
           "endTime": {
-            "label": "Hora de Finalización",
+            "label": "Duración del Servicio",
             "error": "La hora de finalización es requerida"
           },
           "location": {
@@ -1302,15 +1305,13 @@
           }
         },
         "info": {
-          "minimumBooking": "La duración mínima de reserva es de {hours} horas. Las reservas más cortas se cobrarán a la tarifa de {hours} horas.",
-          "additionalChild": "+$10 por niño adicional",
-          "specialCareFee": "+$15 tarifa adicional por cuidado especializado"
+          "additionalChild": "+$10 por niño adicional"
         },
         "pricing": {
+          "pricePerChild": "Precio por niño",
           "totalPrice": "Precio Total",
           "babysittingAt": "Cuidado infantil en",
-          "childrenCount": "{count} niños (+$10 por niño adicional)",
-          "specialCare": "Necesidades de cuidado especial: +$15"
+          "childrenCount": "{count} niños (+$10 por niño adicional)"
         },
         "buttons": {
           "cancel": "Cancelar",
@@ -1326,8 +1327,8 @@
           "subtitle": "Excursión de Un Día",
           "description": "Disfruta de un día completo en una de las islas más hermosas del Caribe. Playa, naturaleza y cultura dominicana en una sola excursión.",
           "priceFrom": "Desde",
-          "priceNote": "por persona + transporte",
-          "pricingDetails": "Niños 0-4 años gratis • Máximo 15 personas",
+          "priceNote": "por persona",
+          "pricingDetails": "Niños 0-4 años gratis",
           "bookButton": "Reservar Excursión",
           "rating": "4.8/5",
           "excursionists": "Más de 1,000 excursionistas",
@@ -1523,12 +1524,12 @@
       "saonaIslandForm": {
         "header": {
           "title": "Tour Isla Saona",
-          "subtitle": "Aventura paradisíaca con catamarán, piscinas naturales y playas vírgenes"
+          "subtitle": "Aventura paradisíaca en catamarán, piscinas naturales y playas vírgenes"
         },
         "sections": {
           "tourDate": "Fecha del Tour",
-          "pickupLocation": "Lugar de Recogida",
-          "participants": "Participantes (Máximo 15)",
+          "pickupLocation": "Añadir transporte de ida y vuelta (costo adicional)",
+          "participants": "Participantes",
           "whatsIncluded": "Qué Está Incluido",
           "additionalInfo": "Información Adicional",
           "restrictions": "Restricciones del Tour e Información Importante"
@@ -1552,10 +1553,10 @@
             "error": "Por favor selecciona un lugar de recogida"
           },
           "adults": {
-            "label": "Adultos (7+ años) - $75 cada uno"
+            "label": "Adultos"
           },
           "children": {
-            "label": "Niños (0-17 años)",
+            "label": "Niños",
             "detailsTitle": "Detalles de los Niños",
             "childLabel": "Niño",
             "childAge": "Edad"
@@ -1586,7 +1587,7 @@
           "title": "Precios por Edad",
           "free": "0-4 años: Gratis",
           "child": "5-6 años: $27.50 (Precio de niño - 50% descuento)",
-          "adult": "7+ años: $75 (Precio de adulto)",
+          "adult": "7+ años: (Precio de adulto)",
           "priceLabels": {
             "free": "Gratis",
             "child": "Precio de Niño",
@@ -1598,15 +1599,14 @@
           }
         },
         "included": {
-          "item1": "Transporte de ida y vuelta",
+          "item1": "Chalecos salvavidas",
           "item2": "Viaje en catamarán o lancha rápida",
           "item3": "Nado en piscina natural (parada de 15 min)",
           "item4": "Tiempo en la playa de Isla Saona",
           "item5": "Almuerzo buffet dominicano",
           "item6": "Bebidas (refrescos, ron, agua)",
           "item7": "Animación y música en el catamarán",
-          "item8": "Guía profesional",
-          "item9": "Chalecos salvavidas"
+          "item8": "Guía profesional"
         },
         "restrictions": {
           "item1": "No recomendado para mujeres embarazadas",
@@ -1966,7 +1966,7 @@
         },
         "sections": {
           "schedule": "Programa Tu Aventura",
-          "location": "Lugar de Recogida",
+          "location": "Añadir transporte de ida y vuelta",
           "vehicleAndGroup": "Vehículo y Tamaño del Grupo",
           "additionalInfo": "Información Adicional",
           "safetyInfo": "Requisitos y Restricciones de Seguridad"

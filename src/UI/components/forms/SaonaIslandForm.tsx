@@ -54,7 +54,6 @@ const LOCATION_IDS = [
   'bavaro',
   'cap-cana',
   'uvero-alto',
-  'puntacana-village',
 ] as const;
 
 const PRICING_CONFIG = {
@@ -62,10 +61,10 @@ const PRICING_CONFIG = {
   FREE_AGE_LIMIT: 4, // 0-4 años gratis
   CHILD_AGE_LIMIT: 6, // 5-6 años 50% descuento
   ADULT_AGE_START: 7, // 7+ años precio completo
-  MAX_AGE_LIMIT: 75,
+  MAX_AGE_LIMIT: 70,
 
   // Precios excursión
-  BASE_PRICE_PER_PERSON: 75,
+  BASE_PRICE_PER_PERSON: 70,
   FREE_PRICE: 0,
 
   // Transporte
@@ -696,29 +695,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                                 )}
                               </span>
                             </div>
-                            {/* ✅ Mostrar precio de transporte */}
-                            <div className='flex items-center gap-1 mt-1'>
-                              <Car className='w-3 h-3 text-blue-600' />
-                              <span className='text-xs text-blue-700 font-medium'>
-                                ${PRICING_CONFIG.TRANSPORT_BASE}
-                              </span>
-                              {surcharge > 0 && (
-                                <>
-                                  <span className='text-xs text-blue-600'>
-                                    +
-                                  </span>
-                                  <span className='text-xs text-amber-700 font-medium'>
-                                    ${surcharge}
-                                  </span>
-                                  <span className='text-xs text-blue-600'>
-                                    =
-                                  </span>
-                                  <span className='text-xs text-blue-800 font-bold'>
-                                    ${totalTransport}
-                                  </span>
-                                </>
-                              )}
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -883,7 +859,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
               {t('services.standard.saonaIslandForm.sections.whatsIncluded')}
             </h3>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-              {Array.from({ length: 9 }, (_, i) => (
+              {Array.from({ length: 8 }, (_, i) => (
                 <div
                   key={i}
                   className='flex items-center text-sm text-gray-700'
@@ -985,7 +961,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
               <div className='border-t border-gray-700 pt-1 mt-1'>
                 <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
                 <div className='text-yellow-400'>
-                  Tax ({PRICING_CONFIG.TAX_RATE}%): $
+                  {t('common.fee.creditcard')} ({PRICING_CONFIG.TAX_RATE}%): $
                   {priceWithTax.tax.toFixed(2)}
                 </div>
               </div>

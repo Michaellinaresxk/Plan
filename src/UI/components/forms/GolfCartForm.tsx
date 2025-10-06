@@ -73,16 +73,6 @@ const GOLF_CART_OPTIONS: GolfCartOption[] = [
   },
 ];
 
-const DELIVERY_LOCATION_KEYS = [
-  'puntacanaResorts',
-  'capCana',
-  'bavaro',
-  'puntaVillage',
-  'uveroAlto',
-  'macao',
-  'other',
-] as const;
-
 const GolfCartForm: React.FC<GolfCartFormProps> = ({
   service,
   onSubmit,
@@ -462,21 +452,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
     }
   };
 
-  const handleLocationSelect = (locationId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      deliveryLocation: locationId,
-    }));
-
-    if (errors.deliveryLocation) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.deliveryLocation;
-        return newErrors;
-      });
-    }
-  };
-
   const QuantityInput: React.FC<{
     cartId: string;
     currentQuantity: number;
@@ -561,7 +536,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
               <div className='p-6'>
                 <div className='flex items-center justify-between mb-3'>
                   <h4 className='text-xl font-bold text-gray-800 flex items-center gap-2'>
-                    <Car className='w-6 h-6 text-blue-600' />
+                    {/* <Car className='w-6 h-6 text-blue-600' /> */}
                     {t(`services.standard.golfCartForm.carts.${cartKey}.name`)}
                   </h4>
                 </div>
@@ -868,111 +843,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
 
           <div className='space-y-6'>
             <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              {t('services.standard.golfCartForm.sections.deliveryLocation')}
-            </h3>
-
-            {/* ✅ Delivery Location con REF */}
-            <div
-              ref={(el) => el && fieldRefs.current.set('deliveryLocation', el)}
-            >
-              <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3'>
-                {DELIVERY_LOCATION_KEYS.map((key) => {
-                  const locationId =
-                    key === 'puntacanaResorts'
-                      ? 'punta-cana-resorts'
-                      : key === 'capCana'
-                      ? 'cap-cana'
-                      : key === 'puntaVillage'
-                      ? 'punta-village'
-                      : key === 'uveroAlto'
-                      ? 'uvero-alto'
-                      : key;
-
-                  return (
-                    <div
-                      key={key}
-                      className={`
-                      border rounded-lg p-4 cursor-pointer transition-all
-                      ${
-                        formData.deliveryLocation === locationId
-                          ? 'bg-blue-50 border-blue-300 shadow-sm'
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }
-                    `}
-                      onClick={() => handleLocationSelect(locationId)}
-                    >
-                      <div className='flex items-center'>
-                        <div
-                          className={`
-                        w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                        ${
-                          formData.deliveryLocation === locationId
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300'
-                        }
-                      `}
-                        >
-                          {formData.deliveryLocation === locationId && (
-                            <Check className='w-3 h-3 text-white' />
-                          )}
-                        </div>
-                        <span className='text-xl-1 text-xl-2 text-gray-800'>
-                          {t(`services.standard.golfCartForm.locations.${key}`)}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {errors.deliveryLocation && (
-                <p className='text-red-500 text-xs mt-2'>
-                  {errors.deliveryLocation}
-                </p>
-              )}
-
-              {/* ✅ Specific Address con REF */}
-              {formData.deliveryLocation === 'other' && (
-                <div
-                  className='mt-4'
-                  ref={(el) =>
-                    el && fieldRefs.current.set('specificAddress', el)
-                  }
-                >
-                  <label className='block text-sm font-medium text-gray-700 mb-2'>
-                    {t(
-                      'services.standard.golfCartForm.fields.specificAddress.label'
-                    )}{' '}
-                    *
-                  </label>
-                  <input
-                    type='text'
-                    name='specificAddress'
-                    value={formData.specificAddress}
-                    onChange={handleInputChange}
-                    placeholder={t(
-                      'services.standard.golfCartForm.fields.specificAddress.placeholder'
-                    )}
-                    className={`w-full p-3 border ${
-                      errors.specificAddress
-                        ? 'border-red-500'
-                        : 'border-gray-300'
-                    } rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50`}
-                  />
-                  {errors.specificAddress && (
-                    <p className='text-red-500 text-xs mt-1'>
-                      {errors.specificAddress}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <WhatToExpectSection />
-
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
               {t('services.standard.golfCartForm.sections.whatsIncluded')}
             </h3>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
@@ -985,16 +855,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                   {t(`services.standard.golfCartForm.included.feature${num}`)}
                 </div>
               ))}
-            </div>
-
-            <div className='pt-4 border-t border-gray-200'>
-              <h4 className='font-medium text-gray-800 mb-2'>
-                {t('services.standard.golfCartForm.sections.notIncluded')}
-              </h4>
-              <div className='flex items-center text-sm text-gray-600'>
-                <Info className='w-4 h-4 text-gray-400 mr-2 flex-shrink-0' />
-                {t('services.standard.golfCartForm.notIncluded.item1')}
-              </div>
             </div>
           </div>
 
@@ -1083,12 +943,9 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                   <div className='border-t border-gray-700 pt-1 mt-1'>
                     <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
                     <div className='text-yellow-400'>
-                      Tax ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                      {t('common.fee.creditcard')}({TAX_RATE}%): $
+                      {priceWithTax.tax.toFixed(2)}
                     </div>
-                  </div>
-
-                  <div className='text-cyan-400'>
-                    {t('services.standard.golfCartForm.pricing.includes')}
                   </div>
                 </>
               )}

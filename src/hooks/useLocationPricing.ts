@@ -27,12 +27,12 @@ export const useLocationPricing = ({
 
   // Calculate transport cost based on group size
   const transportCost = useMemo(() => {
-    if (totalParticipants <= 8) {
+    // ✅ Usar maxCapacity como punto de corte, no 8 hardcodeado
+    if (totalParticipants <= servicePricing.maxCapacity) {
       return servicePricing.small;
-    } else if (totalParticipants <= servicePricing.maxCapacity) {
+    } else {
       return servicePricing.large;
     }
-    return servicePricing.large; // Max capacity
   }, [totalParticipants, servicePricing]);
 
   // Total location-based costs

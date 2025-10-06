@@ -4,6 +4,9 @@
       "yes": "Yes",
       "not": "Not requier"
     },
+    "fee": {
+      "creditcard": "Credit card fee"
+    },
     "instagram": {
       "followUs": "Follow us on Instagram",
       "description": "Discover the best experiences in Punta Cana, exclusive photos, and special offers only for our followers.",
@@ -779,7 +782,7 @@
         },
         "sections": {
           "schedule": "Schedule Your Adventure",
-          "location": "Pickup Location",
+          "location": "Add Round trip transportation",
           "vehicleAndGroup": "Vehicle & Group Size",
           "additionalInfo": "Additional Information",
           "safetyInfo": "Safety Requirements & Restrictions"
@@ -1511,7 +1514,7 @@
             "error": "Start time is required"
           },
           "endTime": {
-            "label": "End Time",
+            "label": "Service Duration",
             "error": "End time is required"
           },
           "location": {
@@ -1539,15 +1542,13 @@
           }
         },
         "info": {
-          "minimumBooking": "Minimum booking duration is {hours} hours. Shorter bookings will be charged at the {hours}-hour rate.",
-          "additionalChild": "+$10 per additional child",
-          "specialCareFee": "+$15 additional fee for specialized care"
+          "additionalChild": "+$10 per additional child"
         },
         "pricing": {
+          "pricePerChild": "Price per kid",
           "totalPrice": "Total Price",
           "babysittingAt": "Babysitting at",
-          "childrenCount": "{count} children (+$10 per additional child)",
-          "specialCare": "Special care needs: +$15"
+          "childrenCount": "{count} children (+$10 per additional child)"
         },
         "buttons": {
           "cancel": "Cancel",
@@ -1562,8 +1563,8 @@
           "subtitle": "Full Day Excursion",
           "description": "Enjoy a full day on one of the most beautiful islands in the Caribbean. Beach, nature and Dominican culture in one excursion.",
           "priceFrom": "From",
-          "priceNote": "per person + transport",
-          "pricingDetails": "Children 0-4 years free • Maximum 15 people",
+          "priceNote": "per person",
+          "pricingDetails": "Children 0-4 years free",
           "bookButton": "Book Excursion",
           "rating": "4.8/5",
           "excursionists": "Over 1,000 excursionists",
@@ -1759,12 +1760,12 @@
       "saonaIslandForm": {
         "header": {
           "title": "Saona Island Tour",
-          "subtitle": "Paradise adventure with catamaran, natural pools, and pristine beaches"
+          "subtitle": "Paradise adventure in catamaran, natural pools, and pristine beaches"
         },
         "sections": {
           "tourDate": "Tour Date",
-          "pickupLocation": "Pickup Location",
-          "participants": "Participants (Maximum 15)",
+          "pickupLocation": "Add round trip Transportation (aditional fee)",
+          "participants": "Participants",
           "whatsIncluded": "What's Included",
           "additionalInfo": "Additional Information",
           "restrictions": "Tour Restrictions & Important Information"
@@ -1784,10 +1785,10 @@
             "error": "Please select a pickup location"
           },
           "adults": {
-            "label": "Adults (7+ years) - $55 each"
+            "label": "Adults"
           },
           "children": {
-            "label": "Children (0-17 years)",
+            "label": "Children",
             "detailsTitle": "Children Details",
             "childLabel": "Child",
             "childAge": "Age"
@@ -1821,7 +1822,7 @@
           "title": "Age-Based Pricing",
           "free": "0-4 years: Free",
           "child": "5-6 years: $27.50 (Child price - 50% off)",
-          "adult": "7+ years: $55 (Adult price)",
+          "adult": "7+ years: (Adult price)",
           "priceLabels": {
             "free": "Free",
             "child": "Child Price",
@@ -1833,15 +1834,14 @@
           }
         },
         "included": {
-          "item1": "Round-trip transportation",
+          "item1": "Life jackets",
           "item2": "Catamaran or speedboat ride",
           "item3": "Natural pool swimming (15 min stop)",
           "item4": "Beach time at Saona Island",
           "item5": "Dominican buffet lunch",
           "item6": "Drinks (soft drinks, rum, water)",
           "item7": "Animation and music on catamaran",
-          "item8": "Professional guide",
-          "item9": "Life jackets"
+          "item8": "Professional guide"
         },
         "restrictions": {
           "item1": "Not recommended for pregnant women",

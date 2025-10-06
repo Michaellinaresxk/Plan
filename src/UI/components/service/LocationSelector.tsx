@@ -1,6 +1,6 @@
 import { DEFAULT_LOCATION_OPTIONS } from '@/constants/location/location';
 import { LocationSelectorProps } from '@/types/location';
-import { CheckCircle, MapPin } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 
 export const LocationSelector: React.FC<LocationSelectorProps> = ({
   selectedLocationId,
@@ -53,16 +53,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
                   <span className='font-medium text-gray-800 text-sm'>
                     {location.name}
                   </span>
-                  <p className='text-xs text-gray-500 mt-1'>
-                    {location.description}
-                  </p>
                 </div>
               </div>
-              {location.surcharge > 0 && (
-                <span className='bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full'>
-                  +${location.surcharge}
-                </span>
-              )}
             </div>
           </div>
         ))}
