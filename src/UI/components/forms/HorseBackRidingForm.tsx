@@ -19,7 +19,6 @@ import {
   Sun,
 } from 'lucide-react';
 import { useLocationPricing } from '@/hooks/useLocationPricing';
-import { LocationSelector } from '../service/LocationSelector';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
 
@@ -106,7 +105,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   }, []);
 
   const {
-    locationOptions,
     selectedLocation,
     locationSurcharge,
     transportCost,
@@ -138,12 +136,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     [updateFormField]
   );
 
-  const handleLocationSelect = useCallback(
-    (locationId: string) => {
-      updateFormField('location', locationId);
-    },
-    [updateFormField]
-  );
 
   const createCounterHandler = (field: keyof FormData, min = 0, max = 8) => ({
     increment: () =>
@@ -489,24 +481,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               </div>
             </div>
 
-            {/* Location Selection */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                {t('services.standard.horsebackRidingForm.sections.location')}
-              </h3>
-
-              {/* ✅ LocationSelector con REF */}
-              <div ref={(el) => el && fieldRefs.current.set('location', el)}>
-                <LocationSelector
-                  selectedLocationId={formData.location}
-                  onLocationSelect={handleLocationSelect}
-                  locationOptions={locationOptions}
-                  error={errors.location}
-                  isPremium={false}
-                />
-              </div>
-            </div>
-
             {/* Participants Section */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
@@ -689,7 +663,8 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 <div className='border-t border-gray-700 pt-1 mt-1'>
                   <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
                   <div className='text-yellow-400'>
-                    Tax ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                    {t('common.fee.creditcard')} ({TAX_RATE}%): $
+                    {priceWithTax.tax.toFixed(2)}
                   </div>
                 </div>
 

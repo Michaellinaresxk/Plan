@@ -186,7 +186,7 @@ const IslandHero: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
           <div className='bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-6 inline-block'>
             <p className='text-white text-lg'>
               {t('services.standard.saonaIslandView.hero.priceFrom')}{' '}
-              <span className='text-3xl font-bold text-cyan-400'>$75</span>
+              <span className='text-3xl font-bold text-cyan-400'>$70</span>
               <span className='text-sm text-white/80 ml-1'>
                 {t('services.standard.saonaIslandView.hero.priceNote')}
               </span>

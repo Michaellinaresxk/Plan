@@ -57,15 +57,15 @@ const VEHICLE_TYPES = {
     maxParticipants: 2,
   },
   atv: {
-    price: 85,
+    price: 75,
     maxParticipants: 2,
   },
   polaris: {
-    price: 160,
+    price: 150,
     maxParticipants: 2,
   },
   polarisFamiliar: {
-    price: 215,
+    price: 200,
     maxParticipants: 4,
   },
 };
@@ -86,11 +86,16 @@ const TIME_SLOTS = [
   },
 ] as const;
 
+// ✅ TRANSPORTE POR GRUPO (no por persona)
+// ✅ TRANSPORTE POR GRUPO (no por persona)
 const ATV_TRANSPORT_PRICING = {
-  small: 60,
-  large: 100,
-  maxCapacity: 8,
+  small: 120, // 1-6 personas: $120
+  large: 140, // 7-12 personas: $140
+  maxCapacity: 6, // Punto de corte para cambiar a "large"
 };
+
+// ✅ LÍMITE MÁXIMO DE PARTICIPANTES (según capacidad de transporte)
+const MAX_PARTICIPANTS = 12;
 
 const AtvRideForm: React.FC<AtvRideFormProps> = ({
   service,
@@ -206,7 +211,11 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     }
   }, [formData.totalParticipants, formData.vehicleType, currentVehicle]);
 
-  const createCounterHandler = (field: keyof FormData, min = 0, max = 16) => ({
+  const createCounterHandler = (
+    field: keyof FormData,
+    min = 0,
+    max = MAX_PARTICIPANTS
+  ) => ({
     increment: () =>
       setFormData((prev) => ({
         ...prev,
@@ -257,7 +266,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       );
     }
 
-    if (formData.totalParticipants > 16) {
+    if (formData.totalParticipants > MAX_PARTICIPANTS) {
       newErrors.totalParticipants = t(
         'services.standard.atvExcurtionsForm.fields.participants.max'
       );
@@ -430,7 +439,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     onDecrement,
     icon: Icon,
     min = 0,
-    max = 16,
+    max = MAX_PARTICIPANTS,
   }: {
     label: string;
     value: number;
@@ -948,38 +957,77 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             )}
           </div>
 
-          {/* ✅ Form Footer - */}
-          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
-            <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-              <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                {t('services.standard.atvExcurtionsForm.pricing.totalPrice')}
-              </span>
-              <div className='flex items-center mt-1'>
-                <span className='text-3xl font-light'>
-                  {currentVehicle?.price
-                    ? `$${totalPrice.toFixed(2)}`
-                    : t('services.standard.atvExcurtionsForm.buttons.contact')}
-                </span>
-                <span className='ml-2 text-sm bg-green-800 px-2 py-1 rounded'>
-                  {formData.totalParticipants}{' '}
-                  {formData.totalParticipants === 1
-                    ? t(
-                        'services.standard.atvExcurtionsForm.capacity.perfect.person'
-                      )
-                    : t(
-                        'services.standard.atvExcurtionsForm.capacity.perfect.people'
+          {/* ✅ Form Footer - ACTUALIZADO con desglose de tax */}
+          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center  justify-between'>
+            <div className='flex flex-col-2 items-center md:items-start mb-4 md:mb-0'>
+              <div className='flex flex-col-2 gap-10'>
+                {currentVehicle?.price && (
+                  <div className='text-xs text-gray-400 mt-2 space-y-1'>
+                    <div className='text-green-400 font-medium'>
+                      {t(
+                        `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
                       )}
-                </span>
-              </div>
+                    </div>
+                    <div>
+                      {formData.totalParticipants}{' '}
+                      {formData.totalParticipants === 1
+                        ? t(
+                            'services.standard.atvExcurtionsForm.capacity.perfect.person'
+                          )
+                        : t(
+                            'services.standard.atvExcurtionsForm.capacity.perfect.people'
+                          )}{' '}
+                      × ${currentVehicle.price} = ${basePrice.toFixed(2)}
+                    </div>
+                    <div>
+                      {t(
+                        'services.standard.atvExcurtionsForm.pricing.transport'
+                      )}
+                      : ${transportCost.toFixed(2)}
+                    </div>
+                    {locationSurcharge > 0 && (
+                      <div>
+                        {t(
+                          'services.standard.atvExcurtionsForm.pricing.locationSurcharge'
+                        )}
+                        : +${locationSurcharge.toFixed(2)}
+                      </div>
+                    )}
 
-              {currentVehicle?.price && (
-                <div className='text-xs text-gray-400 mt-2 space-y-1'>
-                  <div className='text-green-400 font-medium'>
-                    {t(
-                      `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+                    {/* ✅ DESGLOSE DE TAX */}
+                    <div className='border-t border-gray-700 pt-1 mt-1'>
+                      <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                      <div className='text-yellow-400'>
+                        {t('common.fee.creditcard')}
+                        {''} ({TAX_RATE}%): $ {priceWithTax.tax.toFixed(2)}
+                      </div>
+                    </div>
+
+                    {selectedLocation && (
+                      <div className='text-green-400'>
+                        {t(
+                          'services.standard.atvExcurtionsForm.pricing.pickup'
+                        )}
+                        : {selectedLocation.name}
+                      </div>
                     )}
                   </div>
-                  <div>
+                )}
+              </div>
+
+              <div>
+                <span className='text-gray-400 text-sm uppercase tracking-wide'>
+                  {t('services.standard.atvExcurtionsForm.pricing.totalPrice')}
+                </span>
+                <div className='flex items-center mt-1'>
+                  <span className='text-3xl font-light'>
+                    {currentVehicle?.price
+                      ? `$${totalPrice.toFixed(2)}`
+                      : t(
+                          'services.standard.atvExcurtionsForm.buttons.contact'
+                        )}
+                  </span>
+                  <span className='ml-2 text-sm bg-green-800 px-2 py-1 rounded'>
                     {formData.totalParticipants}{' '}
                     {formData.totalParticipants === 1
                       ? t(
@@ -987,38 +1035,10 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                         )
                       : t(
                           'services.standard.atvExcurtionsForm.capacity.perfect.people'
-                        )}{' '}
-                    × ${currentVehicle.price} = ${basePrice.toFixed(2)}
-                  </div>
-                  <div>
-                    {t('services.standard.atvExcurtionsForm.pricing.transport')}
-                    : ${transportCost.toFixed(2)}
-                  </div>
-                  {locationSurcharge > 0 && (
-                    <div>
-                      {t(
-                        'services.standard.atvExcurtionsForm.pricing.locationSurcharge'
-                      )}
-                      : +${locationSurcharge.toFixed(2)}
-                    </div>
-                  )}
-
-                  {/* ✅ DESGLOSE DE TAX */}
-                  <div className='border-t border-gray-700 pt-1 mt-1'>
-                    <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
-                    <div className='text-yellow-400'>
-                      Tax ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
-                    </div>
-                  </div>
-
-                  {selectedLocation && (
-                    <div className='text-green-400'>
-                      {t('services.standard.atvExcurtionsForm.pricing.pickup')}:{' '}
-                      {selectedLocation.name}
-                    </div>
-                  )}
+                        )}
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
 
             <div className='flex space-x-4'>
