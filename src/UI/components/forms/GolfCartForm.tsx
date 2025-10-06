@@ -203,13 +203,13 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
     return today.toDateString() === selectedDate.toDateString();
   };
 
-  const hasMinimum24Hours = (dateString: string): boolean => {
+  const hasMinimum12Hours = (dateString: string): boolean => {
     if (!dateString) return false;
     const now = new Date();
     const selectedDate = new Date(dateString);
     const differenceMs = selectedDate.getTime() - now.getTime();
     const hours = differenceMs / (1000 * 60 * 60);
-    return hours >= 24;
+    return hours >= 12; // ✅ Cambiado de 24 a 12 horas
   };
 
   const isEndDateValid = (): boolean => {
@@ -254,17 +254,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
         'services.standard.golfCartForm.fields.specificAddress.required'
       );
     }
-
-    if (
-      formData.startDate &&
-      !isSameDay(formData.startDate) &&
-      !hasMinimum24Hours(formData.startDate)
-    ) {
-      newErrors.startDate = t(
-        'services.standard.golfCartForm.validation.advance24Hours'
-      );
-    }
-
     if (!isEndDateValid()) {
       newErrors.endDate = t(
         'services.standard.golfCartForm.validation.endDateInvalid'
@@ -825,13 +814,13 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                       </strong>
                     </div>
                   </div>
-                ) : !hasMinimum24Hours(formData.startDate) ? (
-                  <div className='p-3 bg-red-50 border border-red-200 rounded-lg flex items-start'>
-                    <AlertTriangle className='w-4 h-4 text-red-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-red-800'>
+                ) : !hasMinimum12Hours(formData.startDate) ? (
+                  <div className='p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start'>
+                    <AlertTriangle className='w-4 h-4 text-amber-600 mr-2 mt-0.5' />
+                    <div className='text-sm text-amber-800'>
                       <strong>
                         {t(
-                          'services.standard.golfCartForm.warnings.advanceBooking'
+                          'services.standard.golfCartForm.warnings.advance12Hours'
                         )}
                       </strong>
                     </div>

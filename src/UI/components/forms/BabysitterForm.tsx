@@ -12,19 +12,13 @@ import {
   MessageSquare,
   CreditCard,
   AlertCircle,
-  Info,
-  Shield,
   DollarSign,
-  MapPin,
 } from 'lucide-react';
-import ServiceManager from '@/constants/services/ServiceManager';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
 import { LOCATION_OPTIONS } from '@/constants/location/location';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
-
-// ✅ NUEVAS IMPORTACIONES
 import { useScrollToError } from '@/hooks/useScrollToError';
 import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
@@ -36,7 +30,6 @@ interface BabysitterFormProps {
 
 const BabysitterForm: React.FC<BabysitterFormProps> = ({
   service,
-  onSubmit,
   onCancel,
 }) => {
   const { t } = useTranslation();
@@ -47,7 +40,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
   const [formData, setFormData] = useState({
     date: '',
     startTime: '',
-    hours: 2, // ✅ NUEVO: horas en lugar de endTime
+    hours: 1,
     location: '',
     childrenCount: 1,
     childrenAges: [''],
