@@ -162,44 +162,6 @@ You will receive a confirmation email shortly.`;
             animate={{ opacity: 1, y: 0 }}
             className='space-y-6'
           >
-            {/* Compact Service Summary */}
-            <div className='bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-100'>
-              <div className='flex items-start justify-between'>
-                <div>
-                  <h3 className='text-xl font-bold text-blue-900 mb-2'>
-                    {reservationData.service.name}
-                  </h3>
-                  {reservationData.service.description && (
-                    <p className='text-blue-800 text-sm'>
-                      {reservationData.service.description}
-                    </p>
-                  )}
-                </div>
-                <div className='text-right'>
-                  <div className='flex items-center text-blue-700 mb-1'>
-                    <DollarSign className='w-5 h-5 mr-1' />
-                    <span className='text-3xl font-bold'>
-                      ${reservationData.totalPrice.toFixed(2)}
-                    </span>
-                  </div>
-                  <p className='text-sm text-blue-600'>Total Price</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Collapsible Booking Details */}
-            <details className='group bg-gray-50 rounded-lg border border-gray-200'>
-              <summary className='cursor-pointer p-4 font-medium text-gray-900 hover:bg-gray-100 rounded-lg transition-colors'>
-                <span className='select-none'>📋 View Booking Details</span>
-              </summary>
-              <div className='px-4 pb-4 border-t border-gray-200'>
-                <FormDataRenderer
-                  formData={reservationData.formData}
-                  serviceId={reservationData.service.id}
-                />
-              </div>
-            </details>
-
             {/* Contact Information Form */}
             <div className='bg-white border border-gray-200 rounded-lg p-6'>
               <div className='text-center mb-6'>
@@ -288,45 +250,6 @@ You will receive a confirmation email shortly.`;
                     {clientFormErrors.phone && (
                       <p className='mt-1 text-sm text-red-600'>
                         {clientFormErrors.phone}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Pickup Location Host Contact */}
-                  <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-4'>
-                    <label className='block text-sm font-medium text-gray-700 mb-3'>
-                      <MapPin className='inline w-4 h-4 mr-2' />
-                      Pickup Location Contact *
-                    </label>
-                    <div className='space-y-2 mb-3'>
-                      <p className='text-sm text-gray-600'>
-                        <strong>Where should we pick you up?</strong>
-                      </p>
-                      <p className='text-xs text-gray-500'>
-                        Please provide the name and contact info of your
-                        accommodation (hotel, villa, Airbnb, etc.) so we can
-                        coordinate the exact pickup location and time.
-                      </p>
-                    </div>
-                    <textarea
-                      rows={3}
-                      value={clientForm.hostInfo}
-                      onChange={(e) =>
-                        setClientForm({
-                          ...clientForm,
-                          hostInfo: e.target.value,
-                        })
-                      }
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none ${
-                        clientFormErrors.hostInfo
-                          ? 'border-red-300'
-                          : 'border-gray-300'
-                      }`}
-                      placeholder='Example: Paradise Beach, Front Desk: +1-555-0123, or: Villa Casa Blanca, Contact: Maria +1-555-9876, 123 Puntacana'
-                    />
-                    {clientFormErrors.hostInfo && (
-                      <p className='mt-1 text-sm text-red-600'>
-                        {clientFormErrors.hostInfo}
                       </p>
                     )}
                   </div>

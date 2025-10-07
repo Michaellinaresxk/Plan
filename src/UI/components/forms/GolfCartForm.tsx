@@ -240,11 +240,11 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
       );
     }
 
-    if (!formData.deliveryLocation) {
-      newErrors.deliveryLocation = t(
-        'services.standard.golfCartForm.fields.deliveryLocation.required'
-      );
-    }
+    // if (!formData.deliveryLocation) {
+    //   newErrors.deliveryLocation = t(
+    //     'services.standard.golfCartForm.fields.deliveryLocation.required'
+    //   );
+    // }
 
     if (
       formData.deliveryLocation === 'other' &&
