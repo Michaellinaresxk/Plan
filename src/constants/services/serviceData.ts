@@ -344,153 +344,153 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   },
 
   // MaSSAGE
-  [SERVICE_IDS.MASSAGE]: {
-    id: SERVICE_IDS.MASSAGE,
-    titleKey: 'services.standard.massage.name',
-    short: 'services.standard.massage.short',
-    descriptionKey: 'yeah',
-    fullDescriptionKey: 'services.standard.massage.full',
-    basePrice: 100,
-    priceUnit: 'services.priceUnits.perSession',
-    category: 'wellness',
-    packageType: ['standard'],
-    imageUrl:
-      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 1,
-    bookingDuration: {
-      min: 0.5,
-      max: 4,
-      unit: 'hours',
-    },
-    options: {
-      massageType: {
-        id: 'massageType',
-        nameKey: 'services.massage.options.massageType.title',
-        subOptions: {
-          relaxing: {
-            id: 'relaxing',
-            nameKey: 'services.massage.options.massageType.options.relaxing',
-            price: 120,
-            duration: 60,
-          },
-          deep: {
-            id: 'deep',
-            nameKey: 'services.massage.options.massageType.options.deep',
-            price: 130,
-            duration: 60,
-          },
-          sport: {
-            id: 'sport',
-            nameKey: 'services.massage.options.massageType.options.sport',
-            price: 150,
-            duration: 90,
-          },
-          head: {
-            id: 'head',
-            nameKey: 'services.massage.options.massageType.options.head',
-            price: 50,
-            duration: 30,
-          },
-          foot: {
-            id: 'foot',
-            nameKey: 'services.massage.options.massageType.options.foot',
-            price: 50,
-            duration: 30,
-          },
-          thai: {
-            id: 'thai',
-            nameKey: 'services.massage.options.massageType.options.thai',
-            price: 100,
-            duration: 60,
-          },
-          pregnancy: {
-            id: 'pregnancy',
-            nameKey: 'services.massage.options.massageType.options.pregnancy',
-            price: 100,
-            duration: 60,
-          },
-          bfParadise: {
-            id: 'bfParadise',
-            nameKey: 'services.massage.options.massageType.options.bfParadise',
-            price: 120,
-            duration: 60,
-          },
-        },
-      },
-      duration: {
-        id: 'duration',
-        nameKey: 'services.massage.options.duration.title',
-        subOptions: {
-          30: {
-            id: '30',
-            nameKey: 'services.massage.options.duration.options.30',
-            price: 0,
-          },
-          60: {
-            id: '60',
-            nameKey: 'services.massage.options.duration.options.60',
-            price: 0,
-          },
-          90: {
-            id: '90',
-            nameKey: 'services.massage.options.duration.options.90',
-            price: 20,
-          },
-        },
-      },
-      therapyType: {
-        id: 'therapyType',
-        nameKey: 'services.massage.options.therapyType.title',
-        subOptions: {
-          stone: {
-            id: 'stone',
-            nameKey: 'services.massage.options.therapyType.options.stone',
-            price: 160,
-            duration: 90,
-          },
-          bamboo: {
-            id: 'bamboo',
-            nameKey: 'services.massage.options.therapyType.options.bamboo',
-            price: 160,
-            duration: 90,
-          },
-          cupping: {
-            id: 'cupping',
-            nameKey: 'services.massage.options.therapyType.options.cupping',
-            price: 160,
-            duration: 90,
-          },
-          lymphatic: {
-            id: 'lymphatic',
-            nameKey: 'services.massage.options.therapyType.options.lymphatic',
-            price: 150,
-            duration: 90,
-          },
-        },
-      },
-    },
-    additionalInfoKeys: [
-      'services.massage.additionalInfo.1',
-      'services.massage.additionalInfo.2',
-      'services.massage.additionalInfo.3',
-    ],
-    specialRender: 'massage',
-    relatedServices: [SERVICE_IDS.YOGA],
-    tags: ['wellness', 'relaxation', 'therapy', 'spa'],
-    availability: {
-      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
-      hoursOfDay: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
-    },
-    metaData: {
-      professionalTherapists: true,
-      allAges: true,
-      customDuration: true,
-      inRoomService: true,
-      organicProducts: true,
-      languages: 'english,spanish',
-      specialties: 'relaxation,therapeutic,couples,pregnancy,kids',
-    },
-  },
+  // [SERVICE_IDS.MASSAGE]: {
+  //   id: SERVICE_IDS.MASSAGE,
+  //   titleKey: 'services.standard.massage.name',
+  //   short: 'services.standard.massage.short',
+  //   descriptionKey: 'yeah',
+  //   fullDescriptionKey: 'services.standard.massage.full',
+  //   basePrice: 100,
+  //   priceUnit: 'services.priceUnits.perSession',
+  //   category: 'wellness',
+  //   packageType: ['standard'],
+  //   imageUrl:
+  //     'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   duration: 1,
+  //   bookingDuration: {
+  //     min: 0.5,
+  //     max: 4,
+  //     unit: 'hours',
+  //   },
+  //   options: {
+  //     massageType: {
+  //       id: 'massageType',
+  //       nameKey: 'services.massage.options.massageType.title',
+  //       subOptions: {
+  //         relaxing: {
+  //           id: 'relaxing',
+  //           nameKey: 'services.massage.options.massageType.options.relaxing',
+  //           price: 120,
+  //           duration: 60,
+  //         },
+  //         deep: {
+  //           id: 'deep',
+  //           nameKey: 'services.massage.options.massageType.options.deep',
+  //           price: 130,
+  //           duration: 60,
+  //         },
+  //         sport: {
+  //           id: 'sport',
+  //           nameKey: 'services.massage.options.massageType.options.sport',
+  //           price: 150,
+  //           duration: 90,
+  //         },
+  //         head: {
+  //           id: 'head',
+  //           nameKey: 'services.massage.options.massageType.options.head',
+  //           price: 50,
+  //           duration: 30,
+  //         },
+  //         foot: {
+  //           id: 'foot',
+  //           nameKey: 'services.massage.options.massageType.options.foot',
+  //           price: 50,
+  //           duration: 30,
+  //         },
+  //         thai: {
+  //           id: 'thai',
+  //           nameKey: 'services.massage.options.massageType.options.thai',
+  //           price: 100,
+  //           duration: 60,
+  //         },
+  //         pregnancy: {
+  //           id: 'pregnancy',
+  //           nameKey: 'services.massage.options.massageType.options.pregnancy',
+  //           price: 100,
+  //           duration: 60,
+  //         },
+  //         bfParadise: {
+  //           id: 'bfParadise',
+  //           nameKey: 'services.massage.options.massageType.options.bfParadise',
+  //           price: 120,
+  //           duration: 60,
+  //         },
+  //       },
+  //     },
+  //     duration: {
+  //       id: 'duration',
+  //       nameKey: 'services.massage.options.duration.title',
+  //       subOptions: {
+  //         30: {
+  //           id: '30',
+  //           nameKey: 'services.massage.options.duration.options.30',
+  //           price: 0,
+  //         },
+  //         60: {
+  //           id: '60',
+  //           nameKey: 'services.massage.options.duration.options.60',
+  //           price: 0,
+  //         },
+  //         90: {
+  //           id: '90',
+  //           nameKey: 'services.massage.options.duration.options.90',
+  //           price: 20,
+  //         },
+  //       },
+  //     },
+  //     therapyType: {
+  //       id: 'therapyType',
+  //       nameKey: 'services.massage.options.therapyType.title',
+  //       subOptions: {
+  //         stone: {
+  //           id: 'stone',
+  //           nameKey: 'services.massage.options.therapyType.options.stone',
+  //           price: 160,
+  //           duration: 90,
+  //         },
+  //         bamboo: {
+  //           id: 'bamboo',
+  //           nameKey: 'services.massage.options.therapyType.options.bamboo',
+  //           price: 160,
+  //           duration: 90,
+  //         },
+  //         cupping: {
+  //           id: 'cupping',
+  //           nameKey: 'services.massage.options.therapyType.options.cupping',
+  //           price: 160,
+  //           duration: 90,
+  //         },
+  //         lymphatic: {
+  //           id: 'lymphatic',
+  //           nameKey: 'services.massage.options.therapyType.options.lymphatic',
+  //           price: 150,
+  //           duration: 90,
+  //         },
+  //       },
+  //     },
+  //   },
+  //   additionalInfoKeys: [
+  //     'services.massage.additionalInfo.1',
+  //     'services.massage.additionalInfo.2',
+  //     'services.massage.additionalInfo.3',
+  //   ],
+  //   specialRender: 'massage',
+  //   relatedServices: [SERVICE_IDS.YOGA],
+  //   tags: ['wellness', 'relaxation', 'therapy', 'spa'],
+  //   availability: {
+  //     daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
+  //     hoursOfDay: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+  //   },
+  //   metaData: {
+  //     professionalTherapists: true,
+  //     allAges: true,
+  //     customDuration: true,
+  //     inRoomService: true,
+  //     organicProducts: true,
+  //     languages: 'english,spanish',
+  //     specialties: 'relaxation,therapeutic,couples,pregnancy,kids',
+  //   },
+  // },
 
   // SAONA ISLAND TOUR
   [SERVICE_IDS.SAONA_TOUR]: {
