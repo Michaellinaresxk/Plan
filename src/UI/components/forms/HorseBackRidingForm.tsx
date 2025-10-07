@@ -6,7 +6,6 @@ import { Service } from '@/types/type';
 import { motion } from 'framer-motion';
 import {
   Calendar,
-  MapPin,
   Users,
   Baby,
   Clock,
@@ -15,15 +14,11 @@ import {
   CheckCircle,
   Mountain,
   CreditCard,
-  Sunrise,
-  Sun,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
-import { useLocationPricing } from '@/hooks/useLocationPricing';
-import { LocationSelector } from '../service/LocationSelector';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
-
-// ✅ NUEVAS IMPORTACIONES
 import { useScrollToError } from '@/hooks/useScrollToError';
 import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
@@ -36,7 +31,6 @@ interface HorseBackRidingFormProps {
 interface FormData {
   date: string;
   timeSlot: string;
-  location: string;
   participantCount: number;
   minorsCount: number;
 }
@@ -45,22 +39,21 @@ interface FormErrors {
   [key: string]: string;
 }
 
-const TIME_SLOTS = [
-  {
-    id: '7am',
-    icon: Sunrise,
-  },
-  {
-    id: '9am',
-    icon: Sun,
-  },
-] as const;
-
-const HORSEBACK_TRANSPORT_PRICING = {
-  small: 80,
-  large: 120,
-  maxCapacity: 8,
+// Generar horarios entre 8 AM y 2 PM
+const generateTimeSlots = () => {
+  const slots = [];
+  for (let hour = 8; hour <= 14; hour++) {
+    const time12h = hour > 12 ? hour - 12 : hour;
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    slots.push({
+      value: `${hour}:00`,
+      label: `${time12h}:00 ${ampm}`,
+    });
+  }
+  return slots;
 };
+
+const TIME_SLOTS = generateTimeSlots();
 
 const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   service,
@@ -75,18 +68,16 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   const [formData, setFormData] = useState<FormData>({
     date: '',
     timeSlot: '',
-    location: '',
     participantCount: 2,
     minorsCount: 0,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTimeSlotOpen, setIsTimeSlotOpen] = useState(false);
 
-  // ✅ HOOK PARA SCROLL A ERRORES
   const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
 
-  // ✅ CONSTANTE DE TAX
   const TAX_RATE = 5; // 5%
 
   const updateFormField = useCallback((field: string, value: any) => {
@@ -105,42 +96,20 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     });
   }, []);
 
-  const {
-    locationOptions,
-    selectedLocation,
-    locationSurcharge,
-    transportCost,
-    totalLocationCost,
-  } = useLocationPricing({
-    selectedLocationId: formData.location,
-    totalParticipants: formData.participantCount,
-    servicePricing: HORSEBACK_TRANSPORT_PRICING,
-  });
-
   const basePrice = useMemo(() => {
     return service.price * formData.participantCount;
   }, [formData.participantCount, service.price]);
 
-  // ✅ CÁLCULO DE PRECIO CON TAX
   const priceWithTax = useMemo(() => {
-    const subtotal = basePrice + totalLocationCost;
-    return calculatePriceWithTax(subtotal, TAX_RATE);
-  }, [basePrice, totalLocationCost]);
+    return calculatePriceWithTax(basePrice, TAX_RATE);
+  }, [basePrice]);
 
-  // ✅ Mantener totalPrice para compatibilidad
   const totalPrice = priceWithTax.total;
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
       updateFormField(name, value);
-    },
-    [updateFormField]
-  );
-
-  const handleLocationSelect = useCallback(
-    (locationId: string) => {
-      updateFormField('location', locationId);
     },
     [updateFormField]
   );
@@ -175,12 +144,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
     if (!formData.date) {
       newErrors.date = t(
         'services.standard.horsebackRidingForm.fields.date.required'
-      );
-    }
-
-    if (!formData.location) {
-      newErrors.location = t(
-        'services.standard.horsebackRidingForm.fields.location.required'
       );
     }
 
@@ -219,7 +182,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('❌ HorseBackForm - Validation errors:', validationErrors);
-      // ✅ SCROLL AL PRIMER ERROR
       scrollToFirstError();
       return;
     }
@@ -231,16 +193,10 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
       const bookingStartDate = new Date(selectedDate);
       const bookingEndDate = new Date(selectedDate);
 
-      switch (formData.timeSlot) {
-        case '8am':
-          bookingStartDate.setHours(8, 0, 0, 0);
-          bookingEndDate.setHours(11, 0, 0, 0);
-          break;
-        case '10am':
-          bookingStartDate.setHours(10, 0, 0, 0);
-          bookingEndDate.setHours(13, 0, 0, 0);
-          break;
-      }
+      // Parsear la hora seleccionada
+      const [hour] = formData.timeSlot.split(':').map(Number);
+      bookingStartDate.setHours(hour, 0, 0, 0);
+      bookingEndDate.setHours(hour + 3, 0, 0, 0); // 3 horas de duración
 
       const reservationData = {
         service: service,
@@ -249,13 +205,9 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           serviceType: 'horseback-riding',
           totalPrice,
           basePrice,
-          transportCost,
-          locationSurcharge,
-          // ✅ AGREGAR info de tax
           subtotal: priceWithTax.subtotal,
           tax: priceWithTax.tax,
           taxRate: TAX_RATE,
-          locationName: selectedLocation?.name || formData.location,
         },
         totalPrice,
         bookingDate: bookingStartDate,
@@ -273,20 +225,15 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             price: totalPrice,
             totalPrice,
             timeSlot: formData.timeSlot,
-            location: selectedLocation?.name || formData.location,
           },
         ],
         clientInfo: undefined,
         horsebackSpecifics: {
           timeSlot: formData.timeSlot,
-          location: formData.location,
-          locationName: selectedLocation?.name || formData.location,
           participantCount: formData.participantCount,
           minorsCount: formData.minorsCount,
           pricing: {
             basePrice,
-            transportCost,
-            locationSurcharge,
             subtotal: priceWithTax.subtotal,
             tax: priceWithTax.tax,
             taxRate: TAX_RATE,
@@ -394,7 +341,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 {t('services.standard.horsebackRidingForm.sections.schedule')}
               </h3>
 
-              {/* ✅ Date Selection con REF */}
+              {/* Date Selection */}
               <div ref={(el) => el && fieldRefs.current.set('date', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar className='w-4 h-4 mr-2 text-amber-600' />
@@ -418,92 +365,77 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 )}
               </div>
 
-              {/* ✅ Time Slot Selection con REF */}
+              {/* Time Slot Accordion */}
               <div ref={(el) => el && fieldRefs.current.set('timeSlot', el)}>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock className='w-4 h-4 mr-2 text-amber-600' />
-                  {t(
-                    'services.standard.horsebackRidingForm.fields.timeSlot.label'
-                  )}{' '}
-                  *
-                </label>
-
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {TIME_SLOTS.map((slot) => {
-                    const IconComponent = slot.icon;
-                    return (
-                      <div
-                        key={slot.id}
-                        className={`
-                          border rounded-lg p-4 cursor-pointer transition-all
-                          ${
-                            formData.timeSlot === slot.id
-                              ? 'bg-amber-50 border-amber-300 shadow-sm'
-                              : 'border-gray-200 hover:bg-gray-50'
-                          }
-                        `}
-                        onClick={() => updateFormField('timeSlot', slot.id)}
-                      >
-                        <div className='flex items-center'>
-                          <div
-                            className={`
-                            w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                            ${
-                              formData.timeSlot === slot.id
-                                ? 'border-amber-500 bg-amber-500'
-                                : 'border-gray-300'
-                            }
-                          `}
-                          >
-                            {formData.timeSlot === slot.id && (
-                              <CheckCircle className='w-4 h-4 text-white' />
-                            )}
-                          </div>
-                          <div className='flex items-center'>
-                            <IconComponent className='w-5 h-5 mr-2 text-amber-500' />
-                            <span className='font-medium'>
-                              {t(
-                                `services.standard.horsebackRidingForm.timeSlots.${slot.id}.name`
+                <div className='border border-gray-200 rounded-lg overflow-hidden'>
+                  <button
+                    type='button'
+                    onClick={() => setIsTimeSlotOpen(!isTimeSlotOpen)}
+                    className='w-full p-4 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between'
+                  >
+                    <div className='flex items-center'>
+                      <Clock className='w-5 h-5 text-amber-600 mr-3' />
+                      <div className='text-left'>
+                        <h4 className='text-base font-medium text-gray-800'>
+                          {t(
+                            'services.standard.horsebackRidingForm.fields.timeSlot.label'
+                          )}{' '}
+                          *
+                        </h4>
+                        <p className='text-sm text-gray-600'>
+                          {formData.timeSlot
+                            ? TIME_SLOTS.find(
+                                (s) => s.value === formData.timeSlot
+                              )?.label
+                            : t(
+                                'services.standard.horsebackRidingForm.fields.timeSlot.placeholder'
                               )}
-                            </span>
-                          </div>
-                        </div>
-                        <p className='text-gray-500 text-sm mt-2 ml-8'>
-                          {t(
-                            `services.standard.horsebackRidingForm.timeSlots.${slot.id}.time`
-                          )}
-                        </p>
-                        <p className='text-gray-400 text-xs mt-1 ml-8'>
-                          {t(
-                            `services.standard.horsebackRidingForm.timeSlots.${slot.id}.description`
-                          )}
                         </p>
                       </div>
-                    );
-                  })}
+                    </div>
+                    {isTimeSlotOpen ? (
+                      <ChevronUp className='w-5 h-5 text-gray-600' />
+                    ) : (
+                      <ChevronDown className='w-5 h-5 text-gray-600' />
+                    )}
+                  </button>
+
+                  {isTimeSlotOpen && (
+                    <div className='p-4 bg-white max-h-64 overflow-y-auto'>
+                      <div className='grid grid-cols-2 md:grid-cols-3 gap-2'>
+                        {TIME_SLOTS.map((slot) => (
+                          <button
+                            key={slot.value}
+                            type='button'
+                            className={`
+                              p-3 rounded-lg border-2 transition-all text-sm font-medium
+                              ${
+                                formData.timeSlot === slot.value
+                                  ? 'border-amber-500 bg-amber-50 text-amber-700'
+                                  : 'border-gray-200 hover:border-amber-300 text-gray-700'
+                              }
+                            `}
+                            onClick={() => {
+                              updateFormField('timeSlot', slot.value);
+                              setIsTimeSlotOpen(false);
+                            }}
+                          >
+                            <div className='flex items-center justify-center'>
+                              {formData.timeSlot === slot.value && (
+                                <CheckCircle className='w-4 h-4 mr-1' />
+                              )}
+                              {slot.label}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {errors.timeSlot && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.timeSlot}</p>
+                  <p className='text-red-500 text-xs mt-2'>{errors.timeSlot}</p>
                 )}
-              </div>
-            </div>
-
-            {/* Location Selection */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-                {t('services.standard.horsebackRidingForm.sections.location')}
-              </h3>
-
-              {/* ✅ LocationSelector con REF */}
-              <div ref={(el) => el && fieldRefs.current.set('location', el)}>
-                <LocationSelector
-                  selectedLocationId={formData.location}
-                  onLocationSelect={handleLocationSelect}
-                  locationOptions={locationOptions}
-                  error={errors.location}
-                  isPremium={false}
-                />
               </div>
             </div>
 
@@ -516,7 +448,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               </h3>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                {/* ✅ Participant Counter con REF */}
                 <div
                   ref={(el) =>
                     el && fieldRefs.current.set('participantCount', el)
@@ -535,7 +466,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                   />
                 </div>
 
-                {/* ✅ Minors Count con REF */}
                 <div
                   ref={(el) => el && fieldRefs.current.set('minorsCount', el)}
                 >
@@ -633,7 +563,6 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               </div>
             </div>
 
-            {/* Error Display */}
             {errors.submit && (
               <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
                 <p className='text-red-800 text-sm'>{errors.submit}</p>
@@ -641,88 +570,107 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
             )}
           </div>
 
-          {/* ✅ Form Footer - ACTUALIZADO con desglose de tax */}
-          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
-            <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-              <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                {t('services.standard.horsebackRidingForm.pricing.totalPrice')}
-              </span>
-              <div className='flex items-center mt-1'>
-                <span className='text-3xl font-light'>
-                  ${totalPrice.toFixed(2)}
-                </span>
-                <span className='ml-2 text-sm bg-amber-800 px-2 py-1 rounded'>
-                  {formData.participantCount}{' '}
-                  {formData.participantCount === 1
-                    ? t('services.standard.horsebackRidingForm.capacity.person')
-                    : t(
-                        'services.standard.horsebackRidingForm.capacity.people'
-                      )}
-                </span>
-              </div>
+          {/* Footer */}
+          <div className='bg-gray-900 text-white p-6'>
+            <div className='flex flex-col space-y-6'>
+              {/* Price Breakdown */}
+              <div className='flex flex-col'>
+                <div className='text-xs text-gray-400 space-y-2'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-amber-400 font-medium'>
+                      {t('services.standard.horsebackRidingForm.header.title')}
+                    </span>
+                  </div>
 
-              {/* ✅ Price breakdown con TAX */}
-              <div className='text-xs text-gray-400 mt-2 space-y-1'>
-                <div className='text-amber-400 font-medium'>
-                  {t(
-                    'services.standard.horsebackRidingForm.pricing.adventureType'
+                  <div className='flex justify-between'>
+                    <span>
+                      {t(
+                        'services.standard.horsebackRidingForm.pricing.package'
+                      )}{' '}
+                      ({formData.participantCount}{' '}
+                      {formData.participantCount === 1
+                        ? t(
+                            'services.standard.horsebackRidingForm.capacity.person'
+                          )
+                        : t(
+                            'services.standard.horsebackRidingForm.capacity.people'
+                          )}
+                      )
+                    </span>
+                    <span className='font-medium'>${basePrice.toFixed(2)}</span>
+                  </div>
+
+                  <div className='border-t border-gray-700 pt-2 mt-2 space-y-1'>
+                    <div className='flex justify-between'>
+                      <span>Subtotal</span>
+                      <span className='font-medium'>
+                        ${priceWithTax.subtotal.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className='flex justify-between text-yellow-400'>
+                      <span>
+                        {t('common.fee.creditcard')} ({TAX_RATE}%)
+                      </span>
+                      <span className='font-medium'>
+                        ${priceWithTax.tax.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {formData.timeSlot && (
+                    <div className='text-amber-400 pt-2'>
+                      🕒{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.fields.timeSlot.label'
+                      )}
+                      :{' '}
+                      {
+                        TIME_SLOTS.find((s) => s.value === formData.timeSlot)
+                          ?.label
+                      }
+                    </div>
                   )}
                 </div>
-                <div>
-                  {t('services.standard.horsebackRidingForm.pricing.package')} $
-                  {basePrice.toFixed(2)}
-                </div>
-                <div>
-                  {t('services.standard.horsebackRidingForm.pricing.transport')}{' '}
-                  ${transportCost.toFixed(2)}
-                </div>
-                {locationSurcharge > 0 && (
-                  <div>
-                    {t(
-                      'services.standard.horsebackRidingForm.pricing.location'
-                    )}{' '}
-                    +${locationSurcharge.toFixed(2)}
-                  </div>
-                )}
 
-                {/* ✅ DESGLOSE DE TAX */}
-                <div className='border-t border-gray-700 pt-1 mt-1'>
-                  <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
-                  <div className='text-yellow-400'>
-                    {t('common.fee.creditcard')} ({TAX_RATE}%): $
-                    {priceWithTax.tax.toFixed(2)}
+                {/* Total Price */}
+                <div className='border-t border-gray-700 mt-4 pt-4'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-gray-400 text-sm uppercase tracking-wide'>
+                      {t(
+                        'services.standard.horsebackRidingForm.pricing.totalPrice'
+                      )}
+                    </span>
+                    <div className='flex items-center'>
+                      <span className='text-3xl font-light'>
+                        ${totalPrice.toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                 </div>
-
-                {selectedLocation && (
-                  <div className='text-amber-400'>
-                    {t('services.standard.horsebackRidingForm.pricing.pickup')}{' '}
-                    {selectedLocation.name}
-                  </div>
-                )}
               </div>
-            </div>
 
-            <div className='flex space-x-4'>
-              <button
-                type='button'
-                onClick={onCancel}
-                disabled={isSubmitting}
-                className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
-              >
-                {t('services.standard.horsebackRidingForm.buttons.cancel')}
-              </button>
+              {/* Action Buttons */}
+              <div className='flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-700'>
+                <button
+                  type='button'
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                  className='flex-1 px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
+                >
+                  {t('services.standard.horsebackRidingForm.buttons.cancel')}
+                </button>
 
-              <button
-                type='submit'
-                disabled={isSubmitting || formData.participantCount > 8}
-                className='px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition flex items-center disabled:opacity-50'
-              >
-                <CreditCard className='h-4 w-4 mr-2' />
-                {isSubmitting
-                  ? t('services.standard.horsebackRidingForm.buttons.booking')
-                  : t('services.standard.horsebackRidingForm.buttons.book')}
-              </button>
+                <button
+                  type='submit'
+                  disabled={isSubmitting || formData.participantCount > 8}
+                  className='flex-1 px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition flex items-center justify-center disabled:opacity-50'
+                >
+                  <CreditCard className='h-4 w-4 mr-2' />
+                  {isSubmitting
+                    ? t('services.standard.horsebackRidingForm.buttons.booking')
+                    : t('services.standard.horsebackRidingForm.buttons.book')}
+                </button>
+              </div>
             </div>
           </div>
         </div>
