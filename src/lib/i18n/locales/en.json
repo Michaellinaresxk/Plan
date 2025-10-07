@@ -2053,6 +2053,12 @@
             "guaranteed": "Satisfaction Guaranteed"
           }
         },
+        "massageCard": {
+          "selected": "Selected",
+          "upTo": "Up to",
+          "moreBenefits": "+{{count}} more",
+          "bookButton": "Book Now"
+        },
         "quote": {
           "emoji": "🌸",
           "text": "Take time to make your soul happy. Your body deserves the gift of healing touch, and your mind craves the peace that only comes from true relaxation.",
