@@ -265,10 +265,7 @@ You will receive a confirmation email shortly.`;
                       </h4>
                       <p className='text-sm text-green-700'>
                         Next step will open a secure payment window powered by
-                        Stripe. Total:{' '}
-                        <span className='font-bold'>
-                          ${reservationData.totalPrice.toFixed(2)}
-                        </span>
+                        Stripe.
                       </p>
                     </div>
                   </div>

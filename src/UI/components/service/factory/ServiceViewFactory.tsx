@@ -21,6 +21,7 @@ import GolfCartServiceView from '../renders/GolfCartServiceView';
 import HorseBackRidingServiceView from '../renders/HorseBackRidingServiceView';
 import AtvRideServiceView from '../renders/AtvRideServiceView';
 import PointToPointServiceView from '../renders/PointToPointServiceView';
+import HorsebackRidingSunsetView from '../renders/HorsebackRidingSunsetView';
 
 interface ServiceViewFactoryProps {
   service: Service;
@@ -59,6 +60,7 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'standard-massage': MassageServiceView,
     'golf-cart-rentals': GolfCartServiceView,
     'horseback-riding': HorseBackRidingServiceView,
+    'horseback-riding-sunset': HorsebackRidingSunsetView,
     'atv-excursions': AtvRideServiceView,
 
     // Premium services

@@ -1288,20 +1288,297 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     ],
   },
 
-  // Add empty objects for remaining services to prevent errors
-
-  [SERVICE_IDS.DEEP_SEA_FISHING]: {},
-  [SERVICE_IDS.PRIVATE_FISHING]: {},
-  [SERVICE_IDS.ADVENTURE_EXCURSIONS]: {},
-  [SERVICE_IDS.LUXE_GOLF_CART]: {},
-  [SERVICE_IDS.LUXE_YOGA]: {},
-  [SERVICE_IDS.LUXE_FITNESS]: {},
-  [SERVICE_IDS.LUXE_EBIKES]: {},
-  [SERVICE_IDS.LUXE_YACHT]: {},
-  [SERVICE_IDS.PRIVATE_YACHT]: {},
-  [SERVICE_IDS.LUXE_CULINARY]: {},
-  [SERVICE_IDS.LUXE_MASSEUSE]: {},
-  [SERVICE_IDS.LUXE_ARRIVAL]: {},
+  [SERVICE_IDS.HORSEBACK_RIDING_SUNSET]: {
+    priceUnit: 'per person',
+    gallery: {
+      title: 'Experience the Magic of Horseback Riding in Paradise',
+      images: [
+        {
+          src: '/images/services/horseback-beach-1.jpg',
+          alt: 'Horseback riding on pristine Macao Beach',
+          caption: 'Gallop along the pristine shores of Macao Beach',
+        },
+        {
+          src: '/images/services/horseback-sunset-2.jpg',
+          alt: 'Sunset horseback riding experience',
+          caption: 'Magical sunset rides with ocean views',
+        },
+        {
+          src: '/images/services/horseback-river-3.jpg',
+          alt: 'Riding through tropical river trails',
+          caption: 'Explore crystal-clear rivers on horseback',
+        },
+        {
+          src: '/images/services/horseback-swim-4.jpg',
+          alt: 'Swimming with horses in the Caribbean',
+          caption: 'Unique experience swimming with your horse',
+        },
+        {
+          src: '/images/services/horseback-group-5.jpg',
+          alt: 'Group horseback riding adventure',
+          caption: 'Perfect for families and groups of friends',
+        },
+        {
+          src: '/images/services/horseback-trail-6.jpg',
+          alt: 'Tropical trail horseback riding',
+          caption: 'Journey through lush tropical landscapes',
+        },
+      ],
+    },
+    includes: [
+      'Round-trip transportation from your hotel or villa',
+      'Professional bilingual guide (English/Spanish)',
+      'Safety equipment (helmet, instructions)',
+      'Horse matched to your riding skill level',
+      'Safety briefing and basic riding instruction',
+      'Bottled water and refreshments',
+      'Beach riding experience',
+      'Photo opportunities at scenic spots',
+      'Insurance coverage during the activity',
+    ],
+    ridingExperiences: {
+      beginner: [
+        'Basic horse handling instruction',
+        'Walking pace along the beach',
+        'Guided support throughout the ride',
+        'Shorter trail options available',
+        'Photo stops at calm locations',
+      ],
+      intermediate: [
+        'Trotting on beach sections',
+        'Extended trail options',
+        'River crossing experience',
+        'More independence during ride',
+        'Opportunity for controlled cantering',
+      ],
+      advanced: [
+        'Galloping on open beach stretches',
+        'Swimming with horses (seasonal)',
+        'Challenging trail sections',
+        'Minimal guidance needed',
+        'Extended ride duration options',
+      ],
+    },
+    places: [
+      'Macao Beach - Pristine untouched coastline',
+      'Uvero Alto Beach - Remote paradise beach',
+      'River Trail - Crystal-clear freshwater crossing',
+      'Dominican Countryside - Rural landscapes and farms',
+      'Coconut Palm Groves - Shaded tropical trails',
+      'Natural Pools - Shallow water areas (tide dependent)',
+    ],
+    timeSlots: [
+      '7:00 AM – 9:00 AM (Sunrise Ride)',
+      '9:00 AM – 11:00 AM (Morning Adventure)',
+      '11:00 AM – 1:00 PM (Midday Excursion)',
+      '2:00 PM – 4:00 PM (Afternoon Journey)',
+      '4:30 PM – 6:30 PM (Sunset Romance)',
+    ],
+    specialExperiences: [
+      {
+        name: 'Sunrise Beach Ride',
+        description:
+          'Start your day with a peaceful sunrise ride along the beach',
+        price: 85,
+        duration: '2 hours',
+        highlights: [
+          'Golden hour photography',
+          'Peaceful atmosphere',
+          'Wildlife sightings',
+        ],
+      },
+      {
+        name: 'Swim with Horses',
+        description: 'Unique experience riding your horse into the ocean',
+        price: 110,
+        duration: '2.5 hours',
+        highlights: [
+          'Horse swimming',
+          'Waterproof photos included',
+          'Advanced riders only',
+        ],
+      },
+      {
+        name: 'Romantic Sunset Ride',
+        description: 'Perfect for couples - ride into the sunset together',
+        price: 95,
+        duration: '2 hours',
+        highlights: [
+          'Champagne toast',
+          'Professional photos',
+          'Private guide option',
+        ],
+      },
+      {
+        name: 'Family Adventure',
+        description: 'Family-friendly ride suitable for all ages (5+)',
+        price: 65,
+        duration: '1.5 hours',
+        highlights: ['Shorter distance', 'Extra guides', 'Kid-friendly horses'],
+      },
+    ],
+    requirements: {
+      age: {
+        minimum: 5,
+        note: 'Children under 10 must ride with an adult',
+      },
+      weight: {
+        maximum: 250,
+        unit: 'lbs',
+        note: 'For the safety and comfort of our horses',
+      },
+      clothing: [
+        'Long pants recommended (jeans ideal)',
+        'Closed-toe shoes required (boots preferred)',
+        'Comfortable t-shirt',
+        'Sunscreen and sunglasses',
+        'Swimsuit (for swim experiences)',
+      ],
+      health: [
+        'No back problems or recent surgeries',
+        'Not recommended for pregnant women',
+        'Moderate physical fitness required',
+        'Notify guide of any medical conditions',
+      ],
+    },
+    horseFacts: {
+      breed: 'Dominican Criollo & Paso Fino',
+      training: 'All horses professionally trained for beach riding',
+      care: 'Veterinary certified and well-cared for',
+      temperament: 'Gentle and accustomed to beginners',
+      names: ['Estrella', 'Thunder', 'Mariposa', 'Champion', 'Luna', 'Sol'],
+    },
+    duration: {
+      standard: '2 hours',
+      actual: '1.5 hours riding time',
+      total: '3-4 hours including transportation',
+    },
+    groupSizes: {
+      minimum: 1,
+      maximum: 20,
+      private: {
+        available: true,
+        minGroup: 6,
+        price: 'Contact for pricing',
+      },
+    },
+    bookingPolicies: {
+      advance: 'Book at least 24 hours in advance',
+      cancellation: 'Free cancellation up to 24 hours before',
+      weather: 'Full refund if cancelled due to weather',
+      confirmation: 'Instant confirmation upon booking',
+      payment: 'Pay 3 days before activity or upon arrival',
+    },
+    seasonalInfo: {
+      bestTime: 'December to April (cooler temperatures)',
+      rainySeasonNote: 'May to November - rides continue in light rain',
+      swimAvailable: 'Year-round (weather permitting)',
+      sunsetTimes: {
+        winter: '5:30 PM - 6:00 PM',
+        summer: '6:30 PM - 7:30 PM',
+      },
+    },
+    addOns: [
+      {
+        name: 'Professional Photography Package',
+        price: 45,
+        includes: ['50+ edited photos', 'Action shots', 'Digital delivery'],
+      },
+      {
+        name: 'Video Documentation',
+        price: 65,
+        includes: [
+          'Drone footage',
+          '5-minute edited video',
+          'Raw footage included',
+        ],
+      },
+      {
+        name: 'Private Guide',
+        price: 30,
+        includes: [
+          'Dedicated guide',
+          'Customized route',
+          'Extended photo stops',
+        ],
+      },
+      {
+        name: 'Romantic Package',
+        price: 55,
+        includes: ['Decorated horses', 'Champagne', 'Rose petals on beach'],
+      },
+      {
+        name: 'Traditional Lunch',
+        price: 25,
+        includes: [
+          'Dominican cuisine',
+          'Fresh tropical fruits',
+          'Local beverages',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Do I need riding experience?',
+        answer:
+          'No experience required! Our guides provide basic instruction and match you with a suitable horse.',
+      },
+      {
+        question: 'What if it rains?',
+        answer:
+          'Light rain enhances the tropical experience! We only cancel for severe weather with full refund.',
+      },
+      {
+        question: 'Can children participate?',
+        answer:
+          'Yes! Children 5+ can ride. Under 10 must share a horse with an adult.',
+      },
+      {
+        question: 'Are the horses well-treated?',
+        answer:
+          'Absolutely! Our horses are veterinary certified, well-fed, and work limited hours with rest days.',
+      },
+      {
+        question: 'Can I bring my camera?',
+        answer:
+          'Yes, but we recommend waterproof cases. Our guides can also take photos for you.',
+      },
+    ],
+    reviews: {
+      rating: 4.9,
+      totalReviews: 847,
+      highlights: [
+        'Well-trained horses',
+        'Knowledgeable guides',
+        'Beautiful beaches',
+        'Great for beginners',
+        'Unforgettable experience',
+      ],
+      recentReviews: [
+        {
+          name: 'Sarah Mitchell',
+          date: '2025-07-28',
+          rating: 5,
+          comment:
+            'Absolutely magical! The sunset ride was the highlight of our honeymoon.',
+        },
+        {
+          name: 'Carlos Rodriguez',
+          date: '2025-07-25',
+          rating: 5,
+          comment:
+            'Perfect family activity. Kids loved it and felt safe the entire time.',
+        },
+        {
+          name: 'Emma Thompson',
+          date: '2025-07-22',
+          rating: 5,
+          comment:
+            'Swimming with the horses was a dream come true! Highly recommend.',
+        },
+      ],
+    },
+  },
 };
 
 /**
