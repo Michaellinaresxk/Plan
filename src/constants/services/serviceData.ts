@@ -1875,10 +1875,10 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
 
   [SERVICE_IDS.HORSEBACK_RIDING_SUNSET]: {
     id: SERVICE_IDS.HORSEBACK_RIDING_SUNSET,
-    titleKey: 'services.standard.horsebackRiding.name',
-    descriptionKey: 'services.standard.horsebackRiding.short',
-    fullDescriptionKey: 'services.standard.horsebackRiding.full',
-    basePrice: 75,
+    titleKey: 'services.standard.horsebackSunset.name',
+    descriptionKey: 'services.standard.horsebackSunset.short',
+    fullDescriptionKey: 'services.standard.horsebackSunset.full',
+    basePrice: 95,
     priceUnit: 'services.priceUnits.perPerson',
     category: 'tours',
     packageType: ['premium'],
@@ -1996,11 +1996,6 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
       'services.horsebackRiding.includes.5', // Beach ride experience
       'services.horsebackRiding.includes.6', // Bottle of water
     ],
-    // relatedServices: [
-    //   SERVICE_IDS.BUGGY_ADVENTURE,
-    //   SERVICE_IDS.ZIP_LINE,
-    //   SERVICE_IDS.CENOTE_SWIMMING,
-    // ],
     tags: ['adventure', 'beach', 'nature', 'family-friendly', 'romantic'],
     metaData: {
       capacity: '1-20 people',

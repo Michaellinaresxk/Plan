@@ -17,7 +17,7 @@ export const SERVICE_IDS = {
 
   SAONA_TOUR: 'saona-island-tour',
   HORSEBACK_RIDING: 'horseback-riding',
-  HORSEBACK_RIDING_SUNSET: 'horseback-riding-sunset',
+  HORSEBACK_RIDING_SUNSET: 'horseback-sunset',
   DEEP_SEA_FISHING: 'deep-sea-fishing',
   PRIVATE_FISHING: 'private-fishing-trip',
   CUSTOM_DECORATIONS: 'custom-decorations',

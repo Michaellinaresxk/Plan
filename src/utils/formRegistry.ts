@@ -158,7 +158,7 @@ registerForm({
   name: 'HorseBackRidingForm',
   component: () => import('@/UI/components/forms/HorseBackRidingForm'),
   servicePatterns: ['horseback-riding'],
-  requiresItems: false, // ✅ Cambié a false según el nuevo sistema
+  requiresItems: false,
   propsMapper: createStandardPropsMapper('HorseBackRidingForm'),
 });
 

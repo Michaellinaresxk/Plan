@@ -1,9 +1,14 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from '@/lib/i18n/client';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
+import { Service } from '@/types/type';
+import { motion } from 'framer-motion';
 import {
   Calendar,
-  Clock,
   Users,
   Baby,
+  Clock,
   AlertTriangle,
   Info,
   CheckCircle,
@@ -12,12 +17,21 @@ import {
   ChevronDown,
   ChevronUp,
   User,
-  UserPlus,
 } from 'lucide-react';
+import FormHeader from './FormHeader';
+import { useFormModal } from '@/hooks/useFormModal';
+import { useScrollToError } from '@/hooks/useScrollToError';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
+
+interface HorseBackRidingFormProps {
+  service: Service;
+  onSubmit?: (formData: any) => void;
+  onCancel?: () => void;
+}
 
 interface FormData {
   date: string;
-  pickupTime: string;
+  timeSlot: string;
   adults: number;
   children: number;
   infants: number;
@@ -27,22 +41,40 @@ interface FormErrors {
   [key: string]: string;
 }
 
-// Generar horarios de recogida (4pm = 5pm inicio)
-const generatePickupTimes = () => {
-  const times = [
-    { value: '16:00', label: '4:00 PM', startTime: '5:00 PM' },
-    { value: '15:00', label: '3:00 PM', startTime: '4:00 PM' },
-    { value: '14:00', label: '2:00 PM', startTime: '3:00 PM' },
-  ];
-  return times;
+// Precios por categoría
+const ADULT_PRICE = 75; // Más de 10 años
+const CHILD_PRICE = 75 * 0.5; // 5 a 10 años: 50%
+const INFANT_PRICE = 0; // Menores de 5 años: gratis
+
+// Generar horarios entre 8 AM y 2 PM
+const generateTimeSlots = () => {
+  const slots = [];
+  for (let hour = 8; hour <= 14; hour++) {
+    const time12h = hour > 12 ? hour - 12 : hour;
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    slots.push({
+      value: `${hour}:00`,
+      label: `${time12h}:00 ${ampm}`,
+    });
+  }
+  return slots;
 };
 
-const PICKUP_TIMES = generatePickupTimes();
+const TIME_SLOTS = generateTimeSlots();
 
-const HorseBackRidingForm: React.FC = () => {
+const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
+  service,
+  onSubmit,
+  onCancel,
+}) => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { setReservationData } = useReservation();
+  const { handleClose } = useFormModal({ onCancel });
+
   const [formData, setFormData] = useState<FormData>({
     date: '',
-    pickupTime: '',
+    timeSlot: '',
     adults: 1,
     children: 0,
     infants: 0,
@@ -52,8 +84,9 @@ const HorseBackRidingForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTimeSlotOpen, setIsTimeSlotOpen] = useState(false);
 
-  const TAX_RATE = 5;
-  const PRICE_PER_PERSON = 120;
+  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
+
+  const TAX_RATE = 5; // 5%
 
   const updateFormField = useCallback((field: string, value: any) => {
     setFormData((prev) => ({
@@ -71,64 +104,64 @@ const HorseBackRidingForm: React.FC = () => {
     });
   }, []);
 
-  const totalParticipants = useMemo(() => {
-    return formData.adults + formData.children + formData.infants;
+  // Calcular precio base por categoría
+  const basePrice = useMemo(() => {
+    return (
+      formData.adults * ADULT_PRICE +
+      formData.children * CHILD_PRICE +
+      formData.infants * INFANT_PRICE
+    );
   }, [formData.adults, formData.children, formData.infants]);
 
-  const basePrice = useMemo(() => {
-    return PRICE_PER_PERSON * totalParticipants;
-  }, [totalParticipants]);
-
-  const subtotal = useMemo(() => {
-    return basePrice;
+  const priceWithTax = useMemo(() => {
+    return calculatePriceWithTax(basePrice, TAX_RATE);
   }, [basePrice]);
 
-  const tax = useMemo(() => {
-    return (subtotal * TAX_RATE) / 100;
-  }, [subtotal]);
-
-  const totalPrice = useMemo(() => {
-    return subtotal + tax;
-  }, [subtotal, tax]);
+  const totalPrice = priceWithTax.total;
+  const totalParticipants =
+    formData.adults + formData.children + formData.infants;
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
       updateFormField(name, value);
     },
     [updateFormField]
   );
 
-  const createCounter = (field: keyof FormData, min = 0) => ({
-    value: formData[field] as number,
-    increment: () => {
-      const currentValue = formData[field] as number;
-      updateFormField(field, currentValue + 1);
-    },
-    decrement: () => {
-      const currentValue = formData[field] as number;
-      if (currentValue > min) {
-        updateFormField(field, currentValue - 1);
-      }
-    },
+  const createCounterHandler = (field: keyof FormData, min = 0, max = 999) => ({
+    increment: () =>
+      setFormData((prev) => ({
+        ...prev,
+        [field]: Math.min(max, (prev[field] as number) + 1),
+      })),
+    decrement: () =>
+      setFormData((prev) => ({
+        ...prev,
+        [field]: Math.max(min, (prev[field] as number) - 1),
+      })),
   });
 
-  const adultCounter = createCounter('adults', 1);
-  const childCounter = createCounter('children', 0);
-  const infantCounter = createCounter('infants', 0);
+  const adultsCounter = createCounterHandler('adults', 1);
+  const childrenCounter = createCounterHandler('children', 0);
+  const infantsCounter = createCounterHandler('infants', 0);
 
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
 
     if (!formData.date) {
-      newErrors.date = 'Please select a date';
+      newErrors.date = t(
+        'services.standard.horsebackRidingForm.fields.date.required'
+      );
     }
 
-    if (!formData.pickupTime) {
-      newErrors.pickupTime = 'Please select a pickup time';
+    if (!formData.timeSlot) {
+      newErrors.timeSlot = t(
+        'services.standard.horsebackRidingForm.fields.timeSlot.required'
+      );
     }
 
-    if (totalParticipants === 0) {
+    if (totalParticipants < 1) {
       newErrors.participants = 'At least one participant is required';
     }
 
@@ -142,18 +175,87 @@ const HorseBackRidingForm: React.FC = () => {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
+      console.log('❌ HorseBackForm - Validation errors:', validationErrors);
+      scrollToFirstError();
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      console.log('Booking data:', formData);
-      // Handle submission
+      const selectedDate = new Date(formData.date);
+      const bookingStartDate = new Date(selectedDate);
+      const bookingEndDate = new Date(selectedDate);
+
+      // Parsear la hora seleccionada
+      const [hour] = formData.timeSlot.split(':').map(Number);
+      bookingStartDate.setHours(hour, 0, 0, 0);
+      bookingEndDate.setHours(hour + 3, 0, 0, 0); // 3 horas de duración
+
+      const reservationData = {
+        service: service,
+        formData: {
+          ...formData,
+          participantCount: totalParticipants,
+          serviceType: 'horseback-riding',
+          totalPrice,
+          basePrice,
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: TAX_RATE,
+        },
+        totalPrice,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: formData.adults,
+          children: formData.children,
+          infants: formData.infants,
+          total: totalParticipants,
+        },
+        selectedItems: [
+          {
+            id: 'horseback-classic',
+            name: t('services.standard.horsebackRidingForm.header.title'),
+            quantity: 1,
+            price: totalPrice,
+            totalPrice,
+            timeSlot: formData.timeSlot,
+          },
+        ],
+        clientInfo: undefined,
+        horsebackSpecifics: {
+          timeSlot: formData.timeSlot,
+          participantCount: totalParticipants,
+          adults: formData.adults,
+          children: formData.children,
+          infants: formData.infants,
+          pricing: {
+            basePrice,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
+            totalPrice,
+          },
+        },
+      };
+
+      console.log(
+        '🐎 HorseBackForm - Reservation data created:',
+        reservationData
+      );
+
+      setReservationData(reservationData);
+
+      if (onSubmit) {
+        await onSubmit(reservationData);
+      }
+
+      router.push('/reservation-confirmation');
     } catch (error) {
-      console.error('Error:', error);
+      console.error('❌ HorseBackForm - Error submitting form:', error);
       setErrors({
-        submit: 'There was an error processing your booking',
+        submit: t('services.standard.horsebackRidingForm.errors.submit'),
       });
     } finally {
       setIsSubmitting(false);
@@ -170,21 +272,21 @@ const HorseBackRidingForm: React.FC = () => {
     min = 0,
   }: {
     label: string;
-    sublabel: string;
+    sublabel?: string;
     value: number;
     onIncrement: () => void;
     onDecrement: () => void;
     icon: React.ElementType;
     min?: number;
   }) => (
-    <div className='flex items-center justify-between py-4 border-b border-gray-100 last:border-0'>
+    <div className='flex items-center justify-between py-4 border-b border-gray-200 last:border-0'>
       <div className='flex items-center gap-3'>
-        <div className='w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center'>
+        <div className='w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0'>
           <Icon className='w-5 h-5 text-amber-600' />
         </div>
         <div>
-          <div className='text-sm font-medium text-gray-900'>{label}</div>
-          <div className='text-xs text-gray-500'>{sublabel}</div>
+          <div className='text-sm font-medium text-gray-800'>{label}</div>
+          {sublabel && <div className='text-xs text-gray-500'>{sublabel}</div>}
         </div>
       </div>
       <div className='flex items-center gap-3'>
@@ -192,305 +294,389 @@ const HorseBackRidingForm: React.FC = () => {
           type='button'
           onClick={onDecrement}
           disabled={value <= min}
-          className='w-10 h-10 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed'
+          className='w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed'
         >
-          <span className='text-xl font-light'>−</span>
+          <span className='text-lg font-light'>−</span>
         </button>
-        <div className='w-12 text-center text-base font-medium text-gray-900'>
+        <div className='w-10 text-center text-base font-medium text-gray-800'>
           {value}
         </div>
         <button
           type='button'
           onClick={onIncrement}
-          className='w-10 h-10 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white flex items-center justify-center transition'
+          className='w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-700 flex items-center justify-center transition'
         >
-          <span className='text-xl font-light'>+</span>
+          <span className='text-lg font-light'>+</span>
         </button>
       </div>
     </div>
   );
-
-  const selectedTime = PICKUP_TIMES.find(
-    (t) => t.value === formData.pickupTime
-  );
-
   return (
-    <div className='max-w-2xl mx-auto p-4'>
-      <form
-        onSubmit={handleSubmit}
-        className='bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden'
-      >
-        {/* Header */}
-        <div className='bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-6'>
-          <div className='flex items-center gap-3 mb-2'>
-            <Mountain className='w-8 h-8 text-white' />
-            <h2 className='text-2xl font-light text-white'>
-              Horseback Riding Experience
-            </h2>
-          </div>
-          <p className='text-amber-50 text-sm font-light'>
-            Book your unforgettable sunset adventure
-          </p>
-        </div>
-
-        <div className='p-8 space-y-8'>
-          {/* Date Selection */}
-          <div>
-            <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-              <Calendar className='w-4 h-4 mr-2 text-amber-600' />
-              Select Date *
-            </label>
-            <input
-              type='date'
-              name='date'
-              value={formData.date}
-              onChange={handleInputChange}
-              className={`w-full px-4 py-3 border ${
-                errors.date ? 'border-red-500' : 'border-gray-200'
-              } rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-gray-50 transition`}
-              min={new Date().toISOString().split('T')[0]}
-            />
-            {errors.date && (
-              <p className='text-red-500 text-xs mt-2 flex items-center gap-1'>
-                <AlertTriangle className='w-3 h-3' />
-                {errors.date}
-              </p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+    >
+      <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
+        <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
+          <FormHeader
+            title={t('services.standard.horsebackRidingForm.header.title')}
+            subtitle={t(
+              'services.standard.horsebackRidingForm.header.subtitle'
             )}
-          </div>
+            icon={Mountain}
+            isPremium={false}
+            onCancel={handleClose}
+            showCloseButton={true}
+          />
 
-          {/* Pickup Time Accordion */}
-          <div>
-            <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-              <Clock className='w-4 h-4 mr-2 text-amber-600' />
-              Pick Up Time *
-            </label>
-            <div className='border border-gray-200 rounded-xl overflow-hidden'>
-              <button
-                type='button'
-                onClick={() => setIsTimeSlotOpen(!isTimeSlotOpen)}
-                className='w-full px-4 py-4 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between'
-              >
-                <div className='text-left'>
-                  {formData.pickupTime ? (
-                    <div>
-                      <div className='text-base font-medium text-gray-900'>
-                        Pick up: {selectedTime?.label}
-                      </div>
-                      <div className='text-sm text-gray-500'>
-                        Experience starts: {selectedTime?.startTime}
+          <div className='p-8 space-y-8'>
+            {/* Date and Time Section */}
+            <div className='space-y-6'>
+              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
+                {t('services.standard.horsebackRidingForm.sections.schedule')}
+              </h3>
+
+              {/* Date Selection */}
+              <div ref={(el) => el && fieldRefs.current.set('date', el)}>
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
+                  <Calendar className='w-4 h-4 mr-2 text-amber-600' />
+                  {t(
+                    'services.standard.horsebackRidingForm.fields.date.label'
+                  )}{' '}
+                  *
+                </label>
+                <input
+                  type='date'
+                  name='date'
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  className={`w-full p-3 border ${
+                    errors.date ? 'border-red-500' : 'border-gray-300'
+                  } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+                {errors.date && (
+                  <p className='text-red-500 text-xs mt-1'>{errors.date}</p>
+                )}
+              </div>
+
+              {/* Time Slot Accordion */}
+              <div ref={(el) => el && fieldRefs.current.set('timeSlot', el)}>
+                <div className='border border-gray-200 rounded-lg overflow-hidden'>
+                  <button
+                    type='button'
+                    onClick={() => setIsTimeSlotOpen(!isTimeSlotOpen)}
+                    className='w-full p-4 bg-gray-50 hover:bg-gray-100 transition flex items-center justify-between'
+                  >
+                    <div className='flex items-center'>
+                      <Clock className='w-5 h-5 text-amber-600 mr-3' />
+                      <div className='text-left'>
+                        <h4 className='text-base font-medium text-gray-800'>
+                          {t(
+                            'services.standard.horsebackRidingForm.fields.timeSlot.label'
+                          )}{' '}
+                          *
+                        </h4>
+                        <p className='text-sm text-gray-600'>
+                          {TIME_SLOTS.find((s) => s.value === formData.timeSlot)
+                            ?.label || 'Select time'}
+                        </p>
                       </div>
                     </div>
-                  ) : (
-                    <div className='text-gray-500'>Select pickup time</div>
+                    {isTimeSlotOpen ? (
+                      <ChevronUp className='w-5 h-5 text-gray-600' />
+                    ) : (
+                      <ChevronDown className='w-5 h-5 text-gray-600' />
+                    )}
+                  </button>
+
+                  {isTimeSlotOpen && (
+                    <div className='p-4 bg-white max-h-64 overflow-y-auto'>
+                      <div className='grid grid-cols-2 md:grid-cols-3 gap-2'>
+                        {TIME_SLOTS.map((slot) => (
+                          <button
+                            key={slot.value}
+                            type='button'
+                            className={`
+                              p-3 rounded-lg border-2 transition-all text-sm font-medium
+                              ${
+                                formData.timeSlot === slot.value
+                                  ? 'border-amber-500 bg-amber-50 text-amber-700'
+                                  : 'border-gray-200 hover:border-amber-300 text-gray-700'
+                              }
+                            `}
+                            onClick={() => {
+                              updateFormField('timeSlot', slot.value);
+                              setIsTimeSlotOpen(false);
+                            }}
+                          >
+                            <div className='flex items-center justify-center'>
+                              {formData.timeSlot === slot.value && (
+                                <CheckCircle className='w-4 h-4 mr-1' />
+                              )}
+                              {slot.label}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
-                {isTimeSlotOpen ? (
-                  <ChevronUp className='w-5 h-5 text-gray-600' />
-                ) : (
-                  <ChevronDown className='w-5 h-5 text-gray-600' />
-                )}
-              </button>
 
-              {isTimeSlotOpen && (
-                <div className='p-4 bg-white border-t border-gray-100'>
-                  <div className='space-y-2'>
-                    {PICKUP_TIMES.map((time) => (
-                      <button
-                        key={time.value}
-                        type='button'
-                        className={`
-                          w-full p-4 rounded-lg border-2 transition-all text-left
-                          ${
-                            formData.pickupTime === time.value
-                              ? 'border-amber-500 bg-amber-50'
-                              : 'border-gray-200 hover:border-amber-300 bg-white'
-                          }
-                        `}
-                        onClick={() => {
-                          updateFormField('pickupTime', time.value);
-                          setIsTimeSlotOpen(false);
-                        }}
-                      >
-                        <div className='flex items-center justify-between'>
-                          <div>
-                            <div className='font-medium text-gray-900 flex items-center gap-2'>
-                              {formData.pickupTime === time.value && (
-                                <CheckCircle className='w-4 h-4 text-amber-600' />
-                              )}
-                              Pick up: {time.label}
-                            </div>
-                            <div className='text-sm text-gray-500 mt-1'>
-                              Experience starts: {time.startTime}
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                {errors.timeSlot && (
+                  <p className='text-red-500 text-xs mt-2'>{errors.timeSlot}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Participants Section */}
+            <div className='space-y-6'>
+              <h3 className='text-lg font-medium text-gray-800  border-gray-200 pb-2'>
+                {t(
+                  'services.standard.horsebackRidingForm.sections.participants'
+                )}
+              </h3>
+
+              <div
+                ref={(el) => el && fieldRefs.current.set('participants', el)}
+              >
+                <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
+                  <Users className='w-4 h-4 mr-2 text-amber-600' />
+                  Participants *
+                </label>
+                <div className='border border-gray-300 rounded-lg p-4 bg-gray-50'>
+                  <ParticipantCounter
+                    label='Adults'
+                    sublabel={`Above 10 years • $${ADULT_PRICE}`}
+                    value={formData.adults}
+                    onIncrement={adultsCounter.increment}
+                    onDecrement={adultsCounter.decrement}
+                    icon={User}
+                    min={1}
+                  />
+                  <ParticipantCounter
+                    label='Children'
+                    sublabel={`5 to 10 years • $${CHILD_PRICE.toFixed(
+                      2
+                    )} (50% off)`}
+                    value={formData.children}
+                    onIncrement={childrenCounter.increment}
+                    onDecrement={childrenCounter.decrement}
+                    icon={Users}
+                  />
+                  <ParticipantCounter
+                    label='Infants'
+                    sublabel='Under 5 years • Free'
+                    value={formData.infants}
+                    onIncrement={infantsCounter.increment}
+                    onDecrement={infantsCounter.decrement}
+                    icon={Baby}
+                  />
+                </div>
+
+                {errors.participants && (
+                  <p className='text-red-500 text-xs mt-2 flex items-center gap-1'>
+                    <AlertTriangle className='w-3 h-3' />
+                    {errors.participants}
+                  </p>
+                )}
+              </div>
+
+              {/* Info box for children/infants */}
+              {(formData.children > 0 || formData.infants > 0) && (
+                <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200'>
+                  <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
+                  <div className='text-xs text-blue-700'>
+                    <p className='font-medium mb-1'>Age Requirements:</p>
+                    <ul className='space-y-1'>
+                      <li>• Adults (10+ years): Full price ${ADULT_PRICE}</li>
+                      <li>
+                        • Children (5-10 years): 50% discount $
+                        {CHILD_PRICE.toFixed(2)}
+                      </li>
+                      <li>• Infants (under 5): Free</li>
+                    </ul>
                   </div>
                 </div>
               )}
             </div>
-            {errors.pickupTime && (
-              <p className='text-red-500 text-xs mt-2 flex items-center gap-1'>
-                <AlertTriangle className='w-3 h-3' />
-                {errors.pickupTime}
-              </p>
+
+            {/* Safety Information */}
+            <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+              <div className='flex items-start'>
+                <AlertTriangle className='w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5' />
+                <div>
+                  <h4 className='font-medium text-red-800 mb-2'>
+                    {t('services.standard.horsebackRidingForm.safety.title')}
+                  </h4>
+                  <ul className='text-sm text-red-700 space-y-1'>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement2'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement3'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement4'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement5'
+                      )}
+                    </li>
+                    <li>
+                      •{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.safety.requirement6'
+                      )}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {errors.submit && (
+              <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
+                <p className='text-red-800 text-sm'>{errors.submit}</p>
+              </div>
             )}
           </div>
 
-          {/* Participants */}
-          <div>
-            <label className='flex items-center text-sm font-medium text-gray-700 mb-4'>
-              <Users className='w-4 h-4 mr-2 text-amber-600' />
-              Participants *
-            </label>
-            <div className='border border-gray-200 rounded-xl p-4 bg-gray-50'>
-              <ParticipantCounter
-                label='Adult'
-                sublabel='Above 12 years'
-                value={adultCounter.value}
-                onIncrement={adultCounter.increment}
-                onDecrement={adultCounter.decrement}
-                icon={User}
-                min={1}
-              />
-              <ParticipantCounter
-                label='Child'
-                sublabel='3 - 12 years'
-                value={childCounter.value}
-                onIncrement={childCounter.increment}
-                onDecrement={childCounter.decrement}
-                icon={Users}
-              />
-              <ParticipantCounter
-                label='Infant'
-                sublabel='0 - 3 years'
-                value={infantCounter.value}
-                onIncrement={infantCounter.increment}
-                onDecrement={infantCounter.decrement}
-                icon={Baby}
-              />
-            </div>
-            {errors.participants && (
-              <p className='text-red-500 text-xs mt-2 flex items-center gap-1'>
-                <AlertTriangle className='w-3 h-3' />
-                {errors.participants}
-              </p>
-            )}
-            <div className='flex items-start gap-2 mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100'>
-              <Info className='w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0' />
-              <p className='text-xs text-blue-700'>
-                Children must be accompanied by an adult. Safety equipment
-                provided for all ages.
-              </p>
-            </div>
-          </div>
+          {/* Footer */}
+          <div className='bg-gray-900 text-white p-6'>
+            <div className='flex flex-col space-y-6'>
+              {/* Price Breakdown */}
+              <div className='flex flex-col'>
+                <div className='text-xs text-gray-400 space-y-2'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-amber-400 font-medium'>
+                      {t('services.standard.horsebackRidingForm.header.title')}
+                    </span>
+                  </div>
 
-          {/* Safety Information */}
-          <div className='bg-red-50 border border-red-200 rounded-xl p-4'>
-            <div className='flex items-start gap-3'>
-              <AlertTriangle className='w-5 h-5 text-red-600 flex-shrink-0 mt-0.5' />
-              <div>
-                <h4 className='font-medium text-red-800 mb-2'>
-                  Safety Requirements
-                </h4>
-                <ul className='text-xs text-red-700 space-y-1.5'>
-                  <li>• Minimum age: 3 years old</li>
-                  <li>• Weight limit: 250 lbs per rider</li>
-                  <li>• Closed-toe shoes required</li>
-                  <li>• No riding experience necessary</li>
-                  <li>• Pregnant women cannot participate</li>
-                  <li>• Medical conditions must be disclosed</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+                  {/* Breakdown por categoría */}
+                  {formData.adults > 0 && (
+                    <div className='flex justify-between'>
+                      <span>
+                        {formData.adults} Adult{formData.adults > 1 ? 's' : ''}{' '}
+                        × ${ADULT_PRICE}
+                      </span>
+                      <span className='font-medium'>
+                        ${(formData.adults * ADULT_PRICE).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
 
-          {errors.submit && (
-            <div className='p-4 bg-red-50 border border-red-200 rounded-xl'>
-              <p className='text-red-800 text-sm flex items-center gap-2'>
-                <AlertTriangle className='w-4 h-4' />
-                {errors.submit}
-              </p>
-            </div>
-          )}
-        </div>
+                  {formData.children > 0 && (
+                    <div className='flex justify-between'>
+                      <span>
+                        {formData.children} Child
+                        {formData.children > 1 ? 'ren' : ''} × $
+                        {CHILD_PRICE.toFixed(2)}
+                      </span>
+                      <span className='font-medium'>
+                        ${(formData.children * CHILD_PRICE).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
 
-        {/* Footer with Pricing */}
-        <div className='bg-zinc-900 text-white px-8 py-6'>
-          <div className='space-y-4'>
-            {/* Price Breakdown */}
-            <div className='space-y-3'>
-              <div className='flex items-center justify-between text-sm'>
-                <span className='text-amber-400 font-medium'>
-                  Horseback Riding Experience
-                </span>
-              </div>
+                  {formData.infants > 0 && (
+                    <div className='flex justify-between text-green-400'>
+                      <span>
+                        {formData.infants} Infant
+                        {formData.infants > 1 ? 's' : ''} × Free
+                      </span>
+                      <span className='font-medium'>$0.00</span>
+                    </div>
+                  )}
 
-              <div className='flex justify-between text-sm text-gray-400'>
-                <span>
-                  Package ({totalParticipants}{' '}
-                  {totalParticipants === 1 ? 'person' : 'people'})
-                </span>
-                <span className='font-medium text-white'>
-                  ${basePrice.toFixed(2)}
-                </span>
-              </div>
+                  <div className='border-t border-gray-700 pt-2 mt-2 space-y-1'>
+                    <div className='flex justify-between'>
+                      <span>Subtotal</span>
+                      <span className='font-medium'>
+                        ${priceWithTax.subtotal.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className='flex justify-between text-yellow-400'>
+                      <span>
+                        {t('common.fee.creditcard')} ({TAX_RATE}%)
+                      </span>
+                      <span className='font-medium'>
+                        ${priceWithTax.tax.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
 
-              <div className='border-t border-gray-700 pt-3 space-y-2'>
-                <div className='flex justify-between text-sm text-gray-400'>
-                  <span>Subtotal</span>
-                  <span className='font-medium text-white'>
-                    ${subtotal.toFixed(2)}
-                  </span>
+                  {formData.timeSlot && (
+                    <div className='text-amber-400 pt-2'>
+                      🕒{' '}
+                      {t(
+                        'services.standard.horsebackRidingForm.fields.timeSlot.label'
+                      )}
+                      :{' '}
+                      {
+                        TIME_SLOTS.find((s) => s.value === formData.timeSlot)
+                          ?.label
+                      }
+                    </div>
+                  )}
                 </div>
-                <div className='flex justify-between text-sm text-amber-400'>
-                  <span>Processing Fee ({TAX_RATE}%)</span>
-                  <span className='font-medium'>${tax.toFixed(2)}</span>
+
+                {/* Total Price */}
+                <div className='border-t border-gray-700 mt-4 pt-4'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-gray-400 text-sm uppercase tracking-wide'>
+                      {t(
+                        'services.standard.horsebackRidingForm.pricing.totalPrice'
+                      )}
+                    </span>
+                    <div className='flex items-center'>
+                      <span className='text-3xl font-light'>
+                        ${totalPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {formData.pickupTime && (
-                <div className='text-amber-400 text-sm pt-2'>
-                  🕒 Pick up: {selectedTime?.label} | Start:{' '}
-                  {selectedTime?.startTime}
-                </div>
-              )}
-            </div>
+              {/* Action Buttons */}
+              <div className='flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-700'>
+                <button
+                  type='button'
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                  className='flex-1 px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
+                >
+                  {t('services.standard.horsebackRidingForm.buttons.cancel')}
+                </button>
 
-            {/* Total */}
-            <div className='border-t border-gray-700 pt-4'>
-              <div className='flex items-center justify-between'>
-                <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                  Total Price
-                </span>
-                <span className='text-3xl font-light text-white'>
-                  ${totalPrice.toFixed(2)}
-                </span>
+                <button
+                  type='submit'
+                  disabled={isSubmitting}
+                  className='flex-1 px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition flex items-center justify-center disabled:opacity-50'
+                >
+                  <CreditCard className='h-4 w-4 mr-2' />
+                  {isSubmitting
+                    ? t('services.standard.horsebackRidingForm.buttons.booking')
+                    : t('services.standard.horsebackRidingForm.buttons.book')}
+                </button>
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className='flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-700'>
-              <button
-                type='button'
-                className='flex-1 px-6 py-3 border border-gray-700 rounded-xl text-gray-300 hover:text-white hover:border-gray-600 transition font-medium'
-              >
-                Cancel
-              </button>
-              <button
-                type='submit'
-                disabled={isSubmitting}
-                className='flex-1 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 font-medium shadow-lg hover:shadow-xl'
-              >
-                <CreditCard className='w-4 h-4' />
-                {isSubmitting ? 'Processing...' : 'Book Now'}
-              </button>
             </div>
           </div>
         </div>
       </form>
-    </div>
+    </motion.div>
   );
 };
 

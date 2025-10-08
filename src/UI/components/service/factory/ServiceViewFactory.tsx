@@ -60,7 +60,7 @@ const ServiceViewFactory: React.FC<ServiceViewFactoryProps> = ({
     'standard-massage': MassageServiceView,
     'golf-cart-rentals': GolfCartServiceView,
     'horseback-riding': HorseBackRidingServiceView,
-    'horseback-riding-sunset': HorsebackRidingSunsetView,
+    'horseback-sunset': HorsebackRidingSunsetView,
     'atv-excursions': AtvRideServiceView,
 
     // Premium services

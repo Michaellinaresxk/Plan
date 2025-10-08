@@ -883,7 +883,7 @@
         "sections": {
           "schedule": "Programa Tu Aventura",
           "location": "Lugar de Recogida",
-          "participants": "Participantes (Máximo 8)",
+          "participants": "Participantes",
           "safetyInfo": "Requisitos y Restricciones de Seguridad"
         },
         "fields": {
@@ -928,7 +928,6 @@
         },
         "safety": {
           "title": "Requisitos y Restricciones de Seguridad",
-          "requirement1": "Edad mínima: 6 años (con supervisión de un adulto)",
           "requirement2": "Peso máximo: 300 lbs (136 kg)",
           "requirement3": "Zapatos cerrados requeridos (sin sandalias)",
           "requirement4": "No recomendado para mujeres embarazadas",
@@ -951,6 +950,10 @@
         "errors": {
           "submit": "Error al enviar la reserva. Por favor intenta de nuevo."
         }
+      },
+      "horsebackSunset": {
+        "name": "Aventura al atardecer",
+        "short": "Donde el paraíso se une a la perfección, capturado en la luz más espectacular de la naturaleza."
       },
       "golfCartRentalView": {
         "hero": {

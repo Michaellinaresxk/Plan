@@ -1114,7 +1114,7 @@
         "sections": {
           "schedule": "Schedule Your Adventure",
           "location": "Pickup Location",
-          "participants": "Participants (Maximum 8)",
+          "participants": "Participants",
           "safetyInfo": "Safety Requirements & Restrictions"
         },
         "fields": {
@@ -1182,6 +1182,10 @@
         "errors": {
           "submit": "Failed to submit reservation. Please try again."
         }
+      },
+      "horsebackSunset": {
+        "title": "Sunset Adventure",
+        "short": "Where paradise meets perfection, captured in nature's most spectacular light"
       },
       "golfCartRentalView": {
         "hero": {

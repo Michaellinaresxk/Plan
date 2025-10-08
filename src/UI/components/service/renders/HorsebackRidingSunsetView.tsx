@@ -1,4 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useReservation } from '@/context/BookingContext';
+import { Service } from '@/types/type';
 import {
   X,
   ArrowRight,
@@ -20,6 +23,10 @@ import {
   Sparkles,
   TrendingUp,
   Zap,
+  User,
+  Baby,
+  AlertTriangle,
+  CreditCard,
 } from 'lucide-react';
 
 // ==================== TYPES ====================
@@ -29,6 +36,21 @@ interface MediaItem {
   src: string;
   thumbnail?: string;
   title: string;
+}
+
+interface FormData {
+  date: string;
+  adults: number;
+  children: number;
+  infants: number;
+}
+
+interface FormErrors {
+  [key: string]: string;
+}
+
+interface HorsebackRidingSunsetViewProps {
+  service: Service;
 }
 
 // ==================== CONSTANTS ====================
@@ -80,6 +102,15 @@ const GALLERY_IMAGES: MediaItem[] = [
   },
 ];
 
+const ADULT_PRICE = 95; // Adultos
+const CHILD_PRICE = 95 * 0.5; // 5-10 años: 50%
+const INFANT_PRICE = 0; // Menores de 5 años: gratis
+
+const PROCESSING_FEE_RATE = 5; // 5%
+const FIXED_PICKUP_TIME = '16:00'; // 4 PM
+const FIXED_START_TIME = '17:00'; // 5 PM
+const EXPERIENCE_DURATION_HOURS = 3;
+
 // ==================== HOOKS ====================
 const useScrollReveal = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -116,6 +147,55 @@ const useIntersectionObserver = (options = {}) => {
 };
 
 // ==================== COMPONENTS ====================
+const ParticipantCounter: React.FC<{
+  label: string;
+  sublabel: string;
+  value: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+  icon: React.ElementType;
+  min?: number;
+}> = ({
+  label,
+  sublabel,
+  value,
+  onIncrement,
+  onDecrement,
+  icon: Icon,
+  min = 0,
+}) => (
+  <div className='flex items-center justify-between py-4 border-b border-white/5 last:border-0'>
+    <div className='flex items-center gap-3'>
+      <div className='w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0'>
+        <Icon className='w-5 h-5 text-amber-300' />
+      </div>
+      <div>
+        <div className='text-sm font-medium text-white'>{label}</div>
+        <div className='text-xs text-white/40'>{sublabel}</div>
+      </div>
+    </div>
+    <div className='flex items-center gap-3'>
+      <button
+        type='button'
+        onClick={onDecrement}
+        disabled={value <= min}
+        className='w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed'
+      >
+        <span className='text-lg font-light'>−</span>
+      </button>
+      <div className='w-10 text-center text-base font-medium text-white'>
+        {value}
+      </div>
+      <button
+        type='button'
+        onClick={onIncrement}
+        className='w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white flex items-center justify-center transition'
+      >
+        <span className='text-lg font-light'>+</span>
+      </button>
+    </div>
+  </div>
+);
 
 const VideoPlayer: React.FC<{
   src: string;
@@ -208,6 +288,11 @@ const HeroSection: React.FC<{ onBookClick: () => void }> = ({
   const scrollY = useScrollReveal();
   const parallax = scrollY * 0.7;
 
+  const handleContactClick = () => {
+    window.location.href =
+      'mailto:info@luxpuntacana.com?subject=Horseback Riding Inquiry&body=Hello, I would like to know more about the sunset horseback riding experience.';
+  };
+
   return (
     <div className='relative h-screen min-h-[900px] overflow-hidden'>
       <div
@@ -255,7 +340,10 @@ const HeroSection: React.FC<{ onBookClick: () => void }> = ({
                 <div className='absolute inset-0 bg-gradient-to-r from-orange-300 via-amber-200 to-orange-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
               </button>
 
-              <button className='group px-10 md:px-14 py-4 md:py-5 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 text-white font-light text-base md:text-lg transition-all duration-500 hover:bg-white/10 hover:scale-105 flex items-center justify-center gap-3'>
+              <button
+                onClick={handleContactClick}
+                className='group px-10 md:px-14 py-4 md:py-5 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 text-white font-light text-base md:text-lg transition-all duration-500 hover:bg-white/10 hover:scale-105 flex items-center justify-center gap-3'
+              >
                 <Phone className='w-5 h-5' />
                 Contact
               </button>
@@ -265,7 +353,6 @@ const HeroSection: React.FC<{ onBookClick: () => void }> = ({
               {[
                 { label: '3.5 Hours', icon: Clock },
                 { label: 'Small Groups', icon: Users },
-                { label: 'Pro Photos', icon: Camera },
                 { label: 'All Inclusive', icon: Check },
               ].map((item, i) => {
                 const Icon = item.icon;
@@ -366,7 +453,6 @@ const VideoGallery: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Horizontal Scroll */}
         <div className='md:hidden mb-12'>
           <div
             ref={scrollContainerRef}
@@ -408,7 +494,6 @@ const VideoGallery: React.FC = () => {
                 </div>
               </div>
             ))}
-            {/* Spacer para mostrar que hay más */}
             <div className='flex-shrink-0 w-20 flex items-center justify-center'>
               <div className='w-1 h-20 bg-white/10 rounded-full' />
             </div>
@@ -421,7 +506,6 @@ const VideoGallery: React.FC = () => {
           </div>
         </div>
 
-        {/* Desktop Grid */}
         <div className='hidden md:grid md:grid-cols-3 gap-6 md:gap-8 mb-12'>
           {GALLERY_VIDEOS.map((video, i) => (
             <div
@@ -457,7 +541,6 @@ const VideoGallery: React.FC = () => {
           ))}
         </div>
 
-        {/* Images Grid */}
         <div className='grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8'>
           {GALLERY_IMAGES.map((image, i) => (
             <div
@@ -552,7 +635,6 @@ const ExperienceSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile: 2 Columns Grid */}
         <div className='grid grid-cols-2 gap-3 lg:hidden'>
           {experiences.map((exp, i) => (
             <div
@@ -577,7 +659,6 @@ const ExperienceSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Desktop: Single Row - All 5 items */}
         <div className='hidden lg:grid lg:grid-cols-5 gap-6'>
           {experiences.map((exp, i) => (
             <div
@@ -803,6 +884,11 @@ const UrgencySection: React.FC<{ onBookClick: () => void }> = ({
 }) => {
   const { elementRef, isVisible } = useIntersectionObserver();
 
+  const handleContactClick = () => {
+    window.location.href =
+      'mailto:info@luxpuntacana.com?subject=Horseback Riding Inquiry&body=Hello, I would like to know more about the sunset horseback riding experience.';
+  };
+
   return (
     <section
       ref={elementRef}
@@ -818,23 +904,24 @@ const UrgencySection: React.FC<{ onBookClick: () => void }> = ({
           <div className='inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 mb-6'>
             <Zap className='w-4 h-4 text-amber-400 animate-pulse' />
             <span className='text-amber-300 text-sm font-light tracking-wider uppercase'>
-              Limited Availability
+              Personal Support
             </span>
           </div>
 
           <h3 className='text-3xl md:text-5xl font-light text-white mb-4'>
-            Only 2 Slots Available Today
+            Need Booking Assistance?
           </h3>
           <p className='text-white/60 font-light mb-8 text-base md:text-lg'>
-            Secure your exclusive golden hour experience before it's gone
+            Email us directly—we'll contact you and help plan your perfect
+            sunset ride.
           </p>
 
           <button
-            onClick={onBookClick}
+            onClick={handleContactClick}
             className='group relative overflow-hidden px-12 py-4 rounded-full bg-gradient-to-r from-amber-200 via-orange-300 to-amber-200 text-zinc-950 font-medium transition-all duration-500 hover:shadow-2xl hover:shadow-amber-500/50 hover:scale-105 inline-flex items-center gap-3'
           >
             <TrendingUp className='w-5 h-5 relative z-10' />
-            <span className='relative z-10'>Book Now</span>
+            <span className='relative z-10'>Get Assistance</span>
           </button>
         </div>
       </div>
@@ -907,24 +994,367 @@ const FinalCTA: React.FC<{ onBookClick: () => void }> = ({ onBookClick }) => {
   );
 };
 
-// ==================== MAIN ====================
-const HorsebackRidingSunsetView: React.FC = () => {
+// ==================== BOOKING MODAL ====================
+const BookingModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  service: Service;
+}> = ({ isOpen, onClose, service }) => {
+  const router = useRouter();
+  const { setReservationData } = useReservation();
+
+  const [formData, setFormData] = useState<FormData>({
+    date: '',
+    adults: 1,
+    children: 0,
+    infants: 0,
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Calculate pricing
+  const totalParticipants =
+    formData.adults + formData.children + formData.infants;
+  const basePrice =
+    formData.adults * ADULT_PRICE +
+    formData.children * CHILD_PRICE +
+    formData.infants * INFANT_PRICE;
+  const subtotal = basePrice;
+  const processingFee = (subtotal * PROCESSING_FEE_RATE) / 100;
+  const total = subtotal + processingFee;
+
+  const updateField = useCallback((field: keyof FormData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
+
+  const validateForm = (): FormErrors => {
+    const newErrors: FormErrors = {};
+
+    if (!formData.date) {
+      newErrors.date = 'Date is required';
+    }
+
+    if (totalParticipants === 0) {
+      newErrors.participants = 'At least one participant is required';
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = async () => {
+    // Validate form
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      console.log('❌ Validation errors:', validationErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Parse selected date
+      const selectedDate = new Date(formData.date);
+      const bookingStartDate = new Date(selectedDate);
+      const bookingEndDate = new Date(selectedDate);
+
+      // Set fixed times (17:00 start, 20:00 end = 3 hours)
+      const [startHour] = FIXED_START_TIME.split(':').map(Number);
+      bookingStartDate.setHours(startHour, 0, 0, 0);
+      bookingEndDate.setHours(startHour + EXPERIENCE_DURATION_HOURS, 0, 0, 0);
+
+      // Build reservation data matching HorseBackRidingForm structure
+      const reservationData = {
+        service: service,
+        formData: {
+          date: formData.date,
+          participantCount: totalParticipants,
+          adults: formData.adults,
+          children: formData.children,
+          infants: formData.infants,
+          timeSlot: FIXED_START_TIME,
+          pickupTime: FIXED_PICKUP_TIME,
+          serviceType: 'horseback-sunset',
+          totalPrice: total,
+          basePrice: basePrice,
+          subtotal: subtotal,
+          tax: processingFee,
+          taxRate: PROCESSING_FEE_RATE,
+        },
+        totalPrice: total,
+        bookingDate: bookingStartDate,
+        endDate: bookingEndDate,
+        participants: {
+          adults: formData.adults,
+          children: formData.children,
+          infants: formData.infants,
+          total: totalParticipants,
+        },
+        selectedItems: [
+          {
+            id: 'horseback-sunset',
+            name: 'Sunset Horseback Riding Experience',
+            quantity: 1,
+            price: total,
+            totalPrice: total,
+            timeSlot: FIXED_START_TIME,
+            pickupTime: FIXED_PICKUP_TIME,
+          },
+        ],
+        clientInfo: undefined,
+        horsebackSpecifics: {
+          timeSlot: FIXED_START_TIME,
+          pickupTime: FIXED_PICKUP_TIME,
+          participantCount: totalParticipants,
+          adults: formData.adults,
+          children: formData.children,
+          infants: formData.infants,
+          pricing: {
+            basePrice: basePrice,
+            subtotal: subtotal,
+            tax: processingFee,
+            taxRate: PROCESSING_FEE_RATE,
+            totalPrice: total,
+          },
+        },
+      };
+
+      console.log('🐎 Sunset Reservation data created:', reservationData);
+
+      // Set reservation in context
+      setReservationData(reservationData);
+
+      // Navigate to confirmation page
+      router.push('/reservation-confirmation');
+    } catch (error) {
+      console.error('❌ Error submitting form:', error);
+      setErrors({
+        submit: 'Failed to submit booking. Please try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className='fixed inset-0 bg-black/98 z-50 flex items-center justify-center p-4 backdrop-blur-2xl animate-fadeIn overflow-y-auto'>
+      <div className='bg-zinc-900 rounded-3xl max-w-2xl w-full border border-white/10 my-8'>
+        {/* Header */}
+        <div className='bg-gradient-to-r from-amber-500 to-orange-500 px-6 md:px-8 py-6 rounded-t-3xl'>
+          <div className='flex justify-between items-start'>
+            <div>
+              <h3 className='text-2xl md:text-3xl font-light text-white mb-2 tracking-tight'>
+                Book Your Experience
+              </h3>
+              <p className='text-amber-50 text-sm font-light'>
+                Sunset Horseback Riding - From ${ADULT_PRICE}/person
+              </p>
+              <p className='text-amber-100 text-xs font-light mt-1'>
+                📍 Pickup: 4:00 PM | Experience: 5:00 PM
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className='text-white/80 hover:text-white transition-colors'
+            >
+              <X className='w-6 h-6' />
+            </button>
+          </div>
+        </div>
+
+        <div className='p-6 md:p-8 space-y-6'>
+          {/* Date Selection */}
+          <div>
+            <label className='flex items-center text-sm font-medium text-white/70 mb-2'>
+              <Calendar className='w-4 h-4 mr-2 text-amber-400' />
+              Select Date *
+            </label>
+            <input
+              type='date'
+              value={formData.date}
+              onChange={(e) => updateField('date', e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+              className={`w-full px-4 py-3 rounded-xl bg-white/5 border ${
+                errors.date ? 'border-red-500' : 'border-white/10'
+              } text-white focus:outline-none focus:border-amber-300/50 transition-colors`}
+            />
+            {errors.date && (
+              <p className='text-red-400 text-xs mt-2 flex items-center gap-1'>
+                <AlertTriangle className='w-3 h-3' />
+                {errors.date}
+              </p>
+            )}
+          </div>
+
+          {/* Fixed Pickup Time Info */}
+          <div className='border border-amber-500/20 rounded-xl p-4 bg-amber-500/5'>
+            <div className='flex items-start gap-3'>
+              <Clock className='w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5' />
+              <div>
+                <div className='text-sm font-medium text-white mb-1'>
+                  Pickup Time: 4:00 PM
+                </div>
+                <div className='text-xs text-white/60'>
+                  Experience starts at 5:00 PM for the perfect sunset
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Participants */}
+          <div>
+            <label className='flex items-center text-sm font-medium text-white/70 mb-3'>
+              <Users className='w-4 h-4 mr-2 text-amber-400' />
+              Participants *
+            </label>
+            <div className='border border-white/10 rounded-xl p-4 bg-white/5'>
+              <ParticipantCounter
+                label='Adult'
+                sublabel='Above 12 years'
+                value={formData.adults}
+                onIncrement={() => updateField('adults', formData.adults + 1)}
+                onDecrement={() =>
+                  formData.adults > 1 &&
+                  updateField('adults', formData.adults - 1)
+                }
+                icon={User}
+                min={1}
+              />
+              <ParticipantCounter
+                label='Child'
+                sublabel='5 - 10 years (50% off)'
+                value={formData.children}
+                onIncrement={() =>
+                  updateField('children', formData.children + 1)
+                }
+                onDecrement={() =>
+                  formData.children > 0 &&
+                  updateField('children', formData.children - 1)
+                }
+                icon={Users}
+              />
+              <ParticipantCounter
+                label='Infant'
+                sublabel='Under 5 years (Free)'
+                value={formData.infants}
+                onIncrement={() => updateField('infants', formData.infants + 1)}
+                onDecrement={() =>
+                  formData.infants > 0 &&
+                  updateField('infants', formData.infants - 1)
+                }
+                icon={Baby}
+              />
+            </div>
+            {errors.participants && (
+              <p className='text-red-400 text-xs mt-2 flex items-center gap-1'>
+                <AlertTriangle className='w-3 h-3' />
+                {errors.participants}
+              </p>
+            )}
+          </div>
+
+          {/* Price Summary */}
+          <div className='space-y-1'>
+            {formData.adults > 0 && (
+              <div className='flex justify-between text-sm text-white/60'>
+                <span>
+                  {formData.adults} Adult{formData.adults > 1 ? 's' : ''} × $
+                  {ADULT_PRICE}
+                </span>
+                <span className='font-medium text-white'>
+                  ${(formData.adults * ADULT_PRICE).toFixed(2)}
+                </span>
+              </div>
+            )}
+            {formData.children > 0 && (
+              <div className='flex justify-between text-sm text-white/60'>
+                <span>
+                  {formData.children} Child{formData.children > 1 ? 'ren' : ''}{' '}
+                  (5-10y) × ${CHILD_PRICE.toFixed(2)}
+                </span>
+                <span className='font-medium text-white'>
+                  ${(formData.children * CHILD_PRICE).toFixed(2)}
+                </span>
+              </div>
+            )}
+            {formData.infants > 0 && (
+              <div className='flex justify-between text-sm text-green-400'>
+                <span>
+                  {formData.infants} Infant{formData.infants > 1 ? 's' : ''}{' '}
+                  (&lt;5y) × Free
+                </span>
+                <span className='font-medium'>$0.00</span>
+              </div>
+            )}
+          </div>
+
+          {errors.submit && (
+            <div className='p-3 bg-red-500/10 border border-red-500/20 rounded-xl'>
+              <p className='text-red-400 text-sm flex items-center gap-2'>
+                <AlertTriangle className='w-4 h-4' />
+                {errors.submit}
+              </p>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className='flex flex-col sm:flex-row gap-3 pt-4'>
+            <button
+              type='button'
+              onClick={onClose}
+              disabled={isSubmitting}
+              className='flex-1 px-6 py-3 border border-white/20 rounded-xl text-white/70 hover:text-white hover:border-white/30 transition font-medium disabled:opacity-50'
+            >
+              Cancel
+            </button>
+            <button
+              type='button'
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className='flex-1 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 font-medium shadow-lg hover:shadow-xl'
+            >
+              <CreditCard className='w-4 h-4' />
+              {isSubmitting ? 'Processing...' : 'Confirm Booking'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==================== MAIN COMPONENT ====================
+const HorsebackRidingSunsetView: React.FC<HorsebackRidingSunsetViewProps> = ({
+  service,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleBookNow = useCallback(() => {
     setIsModalOpen(true);
   }, []);
 
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
   return (
     <div className='min-h-screen bg-zinc-950 antialiased'>
-      <style jsx global>{`
+      <style>{`
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out;
@@ -951,62 +1381,19 @@ const HorsebackRidingSunsetView: React.FC = () => {
       <button
         onClick={handleBookNow}
         className='fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 group'
+        aria-label='Book now'
       >
         <div className='w-14 h-14 md:w-20 md:h-20 rounded-full bg-gradient-to-r from-amber-200 via-orange-300 to-amber-200 flex items-center justify-center shadow-2xl shadow-amber-500/50 transition-all duration-500 group-hover:scale-110'>
           <Calendar className='w-6 h-6 md:w-9 md:h-9 text-zinc-950' />
         </div>
       </button>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className='fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-2xl animate-fadeIn'>
-          <div className='bg-zinc-900 rounded-3xl p-8 md:p-16 max-w-2xl w-full border border-white/10'>
-            <div className='flex justify-between items-start mb-10'>
-              <div>
-                <h3 className='text-3xl md:text-5xl font-light text-white mb-3 tracking-tight'>
-                  Reserve
-                </h3>
-                <p className='text-white/60 font-light'>
-                  Your golden hour experience
-                </p>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className='text-white/40 hover:text-white transition-colors'
-              >
-                <X className='w-6 h-6 md:w-7 md:h-7' />
-              </button>
-            </div>
-            <div className='space-y-6 mb-10'>
-              <input
-                type='text'
-                placeholder='Full Name'
-                className='w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-amber-300/50 transition-colors'
-              />
-              <input
-                type='email'
-                placeholder='Email'
-                className='w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-amber-300/50 transition-colors'
-              />
-              <input
-                type='tel'
-                placeholder='Phone'
-                className='w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-amber-300/50 transition-colors'
-              />
-              <input
-                type='date'
-                className='w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-amber-300/50 transition-colors'
-              />
-            </div>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className='w-full py-5 rounded-2xl bg-gradient-to-r from-amber-200 via-orange-300 to-amber-200 text-zinc-950 font-medium transition-all duration-500 hover:shadow-2xl hover:shadow-amber-500/50'
-            >
-              Confirm Reservation
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        service={service}
+      />
     </div>
   );
 };
