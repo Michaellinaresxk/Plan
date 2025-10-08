@@ -1114,7 +1114,7 @@
         "sections": {
           "schedule": "Schedule Your Adventure",
           "location": "Pickup Location",
-          "participants": "Participants (Maximum 8)",
+          "participants": "Participants",
           "safetyInfo": "Safety Requirements & Restrictions"
         },
         "fields": {
@@ -1164,8 +1164,7 @@
           "requirement3": "Closed-toe shoes required (no sandals)",
           "requirement4": "Not recommended for pregnant women",
           "requirement5": "Weather dependent - may be rescheduled",
-          "requirement6": "All riders must follow guide instructions",
-          "requirement7": "Maximum 8 participants per group for safety"
+          "requirement6": "All riders must follow guide instructions"
         },
         "pricing": {
           "totalPrice": "Total Price",
@@ -1183,6 +1182,10 @@
         "errors": {
           "submit": "Failed to submit reservation. Please try again."
         }
+      },
+      "horsebackSunset": {
+        "title": "Sunset Adventure",
+        "short": "Where paradise meets perfection, captured in nature's most spectacular light"
       },
       "golfCartRentalView": {
         "hero": {

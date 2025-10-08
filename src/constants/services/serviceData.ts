@@ -1873,6 +1873,144 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     },
   },
 
+  [SERVICE_IDS.HORSEBACK_RIDING_SUNSET]: {
+    id: SERVICE_IDS.HORSEBACK_RIDING_SUNSET,
+    titleKey: 'services.standard.horsebackSunset.name',
+    descriptionKey: 'services.standard.horsebackSunset.short',
+    fullDescriptionKey: 'services.standard.horsebackSunset.full',
+    basePrice: 95,
+    priceUnit: 'services.priceUnits.perPerson',
+    category: 'tours',
+    packageType: ['premium'],
+    imageUrl:
+      'https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/13/2b/dd/73.jpg',
+    duration: 3,
+    bookingDuration: {
+      min: 3,
+      max: 4,
+      unit: 'hours',
+    },
+    options: {
+      ridingLevel: {
+        id: 'ridingLevel',
+        nameKey: 'services.horsebackRiding.options.ridingLevel.title',
+        subOptions: {
+          beginner: {
+            id: 'beginner',
+            nameKey:
+              'services.horsebackRiding.options.ridingLevel.options.beginner',
+            price: 0,
+          },
+          intermediate: {
+            id: 'intermediate',
+            nameKey:
+              'services.horsebackRiding.options.ridingLevel.options.intermediate',
+            price: 10,
+          },
+          advanced: {
+            id: 'advanced',
+            nameKey:
+              'services.horsebackRiding.options.ridingLevel.options.advanced',
+            price: 25,
+          },
+        },
+      },
+      location: {
+        id: 'location',
+        nameKey: 'services.horsebackRiding.options.location.title',
+        subOptions: {
+          beach: {
+            id: 'beach',
+            nameKey: 'services.horsebackRiding.options.location.options.beach',
+            price: 0,
+          },
+          beachAndRiver: {
+            id: 'beachAndRiver',
+            nameKey:
+              'services.horsebackRiding.options.location.options.beachAndRiver',
+            price: 20,
+          },
+          beachAndSwim: {
+            id: 'beachAndSwim',
+            nameKey:
+              'services.horsebackRiding.options.location.options.beachAndSwim',
+            price: 35,
+          },
+        },
+      },
+      photography: {
+        id: 'photography',
+        nameKey: 'services.horsebackRiding.options.photography.title',
+        subOptions: {
+          none: {
+            id: 'none',
+            nameKey:
+              'services.horsebackRiding.options.photography.options.none',
+            price: 0,
+          },
+          basic: {
+            id: 'basic',
+            nameKey:
+              'services.horsebackRiding.options.photography.options.basic',
+            price: 25,
+          },
+          professional: {
+            id: 'professional',
+            nameKey:
+              'services.horsebackRiding.options.photography.options.professional',
+            price: 50,
+          },
+        },
+      },
+      refreshments: {
+        id: 'refreshments',
+        nameKey: 'services.horsebackRiding.options.refreshments.title',
+        subOptions: {
+          water: {
+            id: 'water',
+            nameKey:
+              'services.horsebackRiding.options.refreshments.options.water',
+            price: 0,
+          },
+          coconutWater: {
+            id: 'coconutWater',
+            nameKey:
+              'services.horsebackRiding.options.refreshments.options.coconutWater',
+            price: 10,
+          },
+          snacksAndDrinks: {
+            id: 'snacksAndDrinks',
+            nameKey:
+              'services.horsebackRiding.options.refreshments.options.snacksAndDrinks',
+            price: 20,
+          },
+        },
+      },
+    },
+    specialRender: 'adventure',
+    includes: [
+      'services.horsebackRiding.includes.1', // Round-trip transportation from hotel
+      'services.horsebackRiding.includes.2', // Professional bilingual guide
+      'services.horsebackRiding.includes.3', // Safety equipment (helmet, instructions)
+      'services.horsebackRiding.includes.4', // Horse matched to skill level
+      'services.horsebackRiding.includes.5', // Beach ride experience
+      'services.horsebackRiding.includes.6', // Bottle of water
+    ],
+    tags: ['adventure', 'beach', 'nature', 'family-friendly', 'romantic'],
+    metaData: {
+      capacity: '1-20 people',
+      minAge: 5,
+      maxWeight: '250 lbs',
+      skillLevels: ['beginner', 'intermediate', 'advanced'],
+      locations: ['Macao Beach', 'Uvero Alto', 'River Trail'],
+      horseBreeds: 'Dominican Criollo',
+      safetyBriefing: true,
+      privateGroup: false,
+      sunsetRide: true,
+      swimWithHorses: true,
+    },
+  },
+
   // BIKE_RENTALS SERVICE
   [SERVICE_IDS.ATV_RIDE_EXCURSION]: {
     id: SERVICE_IDS.ATV_RIDE_EXCURSION,

@@ -880,8 +880,6 @@ const FloatingActionButton: React.FC<BookingActions> = ({ onBookClick }) => {
 // Main Component
 const HorseBackRidingServiceView: React.FC<HorseBackRidingServiceViewProps> = ({
   service,
-  serviceData,
-  viewContext,
 }) => {
   const { t } = useTranslation();
   const { bookService } = useBooking();
