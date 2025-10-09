@@ -562,31 +562,6 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
     </div>
   );
 
-  const WhatToExpectSection = () => (
-    <div className='bg-blue-50 border border-blue-200 rounded-lg p-6'>
-      <div className='flex items-start'>
-        <Info className='w-5 h-5 text-blue-600 mr-3 flex-shrink-0 mt-0.5' />
-        <div className='w-full'>
-          <h4 className='font-medium text-blue-800 mb-3'>
-            {t('services.standard.golfCartForm.whatToExpect.title')}
-          </h4>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            {[1, 2, 3, 4].map((num) => (
-              <div key={num} className='flex items-start text-sm text-blue-700'>
-                <span className='bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold mr-3 flex-shrink-0 mt-0.5'>
-                  {num}
-                </span>
-                <span>
-                  {t(`services.standard.golfCartForm.whatToExpect.step${num}`)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   const RequirementsSection = () => (
     <div className='space-y-4'>
       <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
