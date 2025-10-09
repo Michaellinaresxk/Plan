@@ -287,7 +287,7 @@ const CartCard = ({ cart, onClick, t }) => {
         onClick={onClick}
       >
         <span className=' w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-4 px-8 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg'>
-          {t('common.button.details')}
+          {t('common.button.detai')}
         </span>
       </button>
     </motion.div>
@@ -296,7 +296,7 @@ const CartCard = ({ cart, onClick, t }) => {
 
 // Sidebar Component
 const CartDetailsSidebar = ({ cart, isOpen, onClose, t, onBookNow }) => {
-  const [currentImageIndex, setCurrent w-fullImageIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
