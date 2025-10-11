@@ -14,10 +14,8 @@ import {
   User,
   Mail,
   Phone,
-  MapPin,
 } from 'lucide-react';
 
-import FormDataRenderer from '@/UI/components/confirmation/FormDataRenderer';
 import type { ReservationData } from '@/context/BookingContext';
 import CheckoutModal from '../payment/CheckoutModal';
 
@@ -25,7 +23,6 @@ interface ClientInfo {
   name: string;
   email: string;
   phone: string;
-  hostInfo: string; // Required field for pickup location contact
 }
 
 interface ReservationStepsProps {
@@ -49,7 +46,6 @@ const ReservationSteps: React.FC<ReservationStepsProps> = ({
     name: reservationData.clientInfo?.name || '',
     email: reservationData.clientInfo?.email || '',
     phone: reservationData.clientInfo?.phone || '',
-    hostInfo: reservationData.clientInfo?.hostInfo || '',
   });
   const [clientFormErrors, setClientFormErrors] = useState<Partial<ClientInfo>>(
     {}
@@ -78,11 +74,6 @@ const ReservationSteps: React.FC<ReservationStepsProps> = ({
       if (!phoneRegex.test(clientForm.phone) || cleanPhone.length < 8) {
         errors.phone = 'Please enter a valid phone number';
       }
-    }
-
-    if (!clientForm.hostInfo.trim()) {
-      errors.hostInfo =
-        'Host contact information is required for pickup location';
     }
 
     setClientFormErrors(errors);
