@@ -54,7 +54,7 @@ interface FormErrors {
 const VEHICLE_TYPES = {
   buggy: {
     price: 65,
-    maxParticipants: 2,
+    maxParticipants: 4,
   },
   atv: {
     price: 75,
