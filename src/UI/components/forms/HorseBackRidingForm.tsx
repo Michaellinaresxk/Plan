@@ -141,7 +141,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
         [field]: Math.max(min, (prev[field] as number) - 1),
       })),
   });
-
+  const [isParticipantsOpen, setIsParticipantsOpen] = useState(true);
   const adultsCounter = createCounterHandler('adults', 1);
   const childrenCounter = createCounterHandler('children', 0);
   const infantsCounter = createCounterHandler('infants', 0);
@@ -430,78 +430,108 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
               </div>
             </div>
 
-            {/* Participants Section */}
-            <div className='space-y-6'>
-              <h3 className='text-lg font-medium text-gray-800  border-gray-200 pb-2'>
-                {t(
-                  'services.standard.horsebackRidingForm.sections.participants'
-                )}
-              </h3>
-
-              <div
-                ref={(el) => el && fieldRefs.current.set('participants', el)}
+            {/* Participants Section - Accordion */}
+            <div className='border border-gray-300 rounded-lg overflow-hidden bg-white'>
+              {/* Accordion Header */}
+              <button
+                onClick={() => setIsParticipantsOpen(!isParticipantsOpen)}
+                className='w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors'
+                aria-expanded={isParticipantsOpen}
               >
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                  <Users className='w-4 h-4 mr-2 text-amber-600' />
-                  Participants *
-                </label>
-                <div className='border border-gray-300 rounded-lg p-4 bg-gray-50'>
-                  <ParticipantCounter
-                    label='Adults'
-                    sublabel={`Above 10 years • $${ADULT_PRICE}`}
-                    value={formData.adults}
-                    onIncrement={adultsCounter.increment}
-                    onDecrement={adultsCounter.decrement}
-                    icon={User}
-                    min={1}
-                  />
-                  <ParticipantCounter
-                    label='Children'
-                    sublabel={`5 to 10 years • $${CHILD_PRICE.toFixed(
-                      2
-                    )} (50% off)`}
-                    value={formData.children}
-                    onIncrement={childrenCounter.increment}
-                    onDecrement={childrenCounter.decrement}
-                    icon={Users}
-                  />
-                  <ParticipantCounter
-                    label='Infants'
-                    sublabel='Under 5 years • Free'
-                    value={formData.infants}
-                    onIncrement={infantsCounter.increment}
-                    onDecrement={infantsCounter.decrement}
-                    icon={Baby}
-                  />
+                <div className='text-left flex '>
+                  <User className='w-5 h-5 text-amber-600 mr-3' />
+                  <h4 className='text-base font-medium text-gray-800'>
+                    {t(
+                      'services.standard.horsebackRidingForm.sections.participants'
+                    )}{' '}
+                    *
+                    {errors.participants && (
+                      <AlertTriangle className='w-4 h-4 text-red-500' />
+                    )}
+                  </h4>
                 </div>
 
-                {errors.participants && (
-                  <p className='text-red-500 text-xs mt-2 flex items-center gap-1'>
-                    <AlertTriangle className='w-3 h-3' />
-                    {errors.participants}
-                  </p>
-                )}
-              </div>
+                <ChevronDown
+                  className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
+                    isParticipantsOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
 
-              {/* Info box for children/infants */}
-              {(formData.children > 0 || formData.infants > 0) && (
-                <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200'>
-                  <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
-                  <div className='text-xs text-blue-700'>
-                    <p className='font-medium mb-1'>Age Requirements:</p>
-                    <ul className='space-y-1'>
-                      <li>• Adults (10+ years): Full price ${ADULT_PRICE}</li>
-                      <li>
-                        • Children (5-10 years): 50% discount $
-                        {CHILD_PRICE.toFixed(2)}
-                      </li>
-                      <li>• Infants (under 5): Free</li>
-                    </ul>
+              {/* Accordion Content */}
+              <div
+                className={`transition-all duration-300 ease-in-out ${
+                  isParticipantsOpen
+                    ? 'max-h-[2000px] opacity-100'
+                    : 'max-h-0 opacity-0'
+                } overflow-hidden`}
+              >
+                <div className='p-4 pt-0 space-y-4'>
+                  <div
+                    ref={(el) =>
+                      el && fieldRefs.current.set('participants', el)
+                    }
+                  >
+                    <div className='border border-gray-300 rounded-lg p-4 bg-gray-50'>
+                      <ParticipantCounter
+                        label='Adults'
+                        sublabel={`Above 10 years • $${ADULT_PRICE}`}
+                        value={formData.adults}
+                        onIncrement={adultsCounter.increment}
+                        onDecrement={adultsCounter.decrement}
+                        icon={User}
+                        min={1}
+                      />
+                      <ParticipantCounter
+                        label='Children'
+                        sublabel={`5 to 10 years • $${CHILD_PRICE.toFixed(
+                          2
+                        )} (50% off)`}
+                        value={formData.children}
+                        onIncrement={childrenCounter.increment}
+                        onDecrement={childrenCounter.decrement}
+                        icon={Users}
+                      />
+                      <ParticipantCounter
+                        label='Infants'
+                        sublabel='Under 5 years • Free'
+                        value={formData.infants}
+                        onIncrement={infantsCounter.increment}
+                        onDecrement={infantsCounter.decrement}
+                        icon={Baby}
+                      />
+                    </div>
+
+                    {errors.participants && (
+                      <p className='text-red-500 text-xs mt-2 flex items-center gap-1'>
+                        <AlertTriangle className='w-3 h-3' />
+                        {errors.participants}
+                      </p>
+                    )}
                   </div>
-                </div>
-              )}
-            </div>
 
+                  {/* Info box for children/infants */}
+                  {(formData.children > 0 || formData.infants > 0) && (
+                    <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200'>
+                      <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
+                      <div className='text-xs text-blue-700'>
+                        <p className='font-medium mb-1'>Age Requirements:</p>
+                        <ul className='space-y-1'>
+                          <li>
+                            • Adults (10+ years): Full price ${ADULT_PRICE}
+                          </li>
+                          <li>
+                            • Children (5-10 years): 50% discount $
+                            {CHILD_PRICE.toFixed(2)}
+                          </li>
+                          <li>• Infants (under 5): Free</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
             {/* Safety Information */}
             <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
               <div className='flex items-start'>

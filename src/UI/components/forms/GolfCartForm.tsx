@@ -709,7 +709,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
               {t('services.standard.golfCartForm.sections.rentalPeriod')}
             </h3>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className='grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-6'>
               {/* ✅ Start Date con REF */}
               <div
                 className='space-y-4'

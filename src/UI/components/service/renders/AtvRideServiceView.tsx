@@ -44,7 +44,7 @@ const VehicleSelection = ({ onVehicleSelect }) => {
       ],
       price: 65,
       duration: t('services.standard.atvService.vehicles.duration'),
-      maxParticipants: 2,
+      maxParticipants: 4,
     },
     ATV: {
       id: 'atv',
