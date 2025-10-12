@@ -859,13 +859,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
         {/* ✅ Footer ACTUALIZADO con desglose de tax */}
         <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
           <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-            <span className='text-gray-400 text-sm uppercase tracking-wide'>
-              {t('services.standard.golfCartForm.pricing.totalPrice')}
-            </span>
             <div className='flex items-center mt-1'>
-              <span className='text-3xl font-light'>
-                ${calculateTotalPrice.toFixed(2)}
-              </span>
               <span className='ml-2 text-sm bg-blue-800 px-2 py-1 rounded'>
                 {rentalDays}{' '}
                 {rentalDays > 1
@@ -913,6 +907,14 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                   </div>
                 </>
               )}
+            </div>
+            <div className='mt-2 mb-1 flex flex-col'>
+              <span className='text-gray-400 text-sm uppercase tracking-wide'>
+                {t('services.standard.golfCartForm.pricing.totalPrice')}
+              </span>
+              <span className='text-3xl font-light'>
+                ${calculateTotalPrice.toFixed(2)}
+              </span>
             </div>
           </div>
 
