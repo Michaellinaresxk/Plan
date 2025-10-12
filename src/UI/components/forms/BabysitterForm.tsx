@@ -39,8 +39,8 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
   const [formData, setFormData] = useState({
     date: '',
-    startTime: '09:00',
-    hours: 2,
+    startTime: '08:00',
+    hours: 1,
     childrenCount: 1,
     childrenAges: [''],
     hasSpecialNeeds: false,
@@ -865,13 +865,6 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
         >
           <div className='flex flex-col space-y-3 md:space-y-4'>
             <div className='text-center md:text-left'>
-              <p className='text-purple-200 text-xs md:text-sm'>
-                {t('services.standard.babysitterForm.pricing.totalPrice')}
-              </p>
-              <p className='text-2xl md:text-3xl font-bold'>
-                ${priceBreakdown.total.toFixed(2)}
-              </p>
-
               <div className='text-xs text-purple-200 mt-2 space-y-0.5'>
                 <div className='break-words'>
                   {formData.childrenCount}{' '}
@@ -888,6 +881,14 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                     {priceBreakdown.tax.toFixed(2)}
                   </div>
                 </div>
+              </div>
+              <div>
+                <p className='text-purple-200 text-xs md:text-sm'>
+                  {t('services.standard.babysitterForm.pricing.totalPrice')}
+                </p>
+                <p className='text-2xl md:text-3xl font-bold'>
+                  ${priceBreakdown.total.toFixed(2)}
+                </p>
               </div>
             </div>
 
