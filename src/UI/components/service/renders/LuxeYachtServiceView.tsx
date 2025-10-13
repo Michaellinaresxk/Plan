@@ -53,6 +53,7 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
+import YachtVideoGallery from '../YachtVideoGallery';
 
 // ============================================
 // TYPES & INTERFACES
@@ -544,6 +545,7 @@ const CinematicHero: React.FC<HeroProps> = ({
           </div>
         </div>
       </div>
+      <YachtVideoGallery />
     </div>
   );
 };
@@ -1067,187 +1069,6 @@ const CaribbeanYachtGrid: React.FC<{
           ))}
         </div>
       </div>
-    </section>
-  );
-};
-
-// Gallery Section
-const CaribbeanGallery: React.FC = () => {
-  const { t } = useTranslation();
-  const [selectedImage, setSelectedImage] = useState<{
-    src: string;
-    caption: string;
-  } | null>(null);
-  const [activeCategory, setActiveCategory] = useState('all');
-
-  const galleryImages = [
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg',
-      category: 'yachts',
-      caption: 'Luxury yacht at sunset',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600017/3_eapwql.jpg',
-      category: 'destinations',
-      caption: 'Crystal clear Caribbean waters',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600209/3_dvbeqw.jpg',
-      category: 'experiences',
-      caption: 'Snorkeling in paradise',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956399/3380551b-f82f-4fdc-86e2-47cf2ad3a6dc_foh9sp.jpg',
-      category: 'yachts',
-      caption: 'Princess yacht interior',
-    },
-    {
-      src: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600208/2_k72tfn.jpg',
-      category: 'experiences',
-      caption: 'Water sports adventure',
-    },
-  ];
-
-  const categories = [
-    {
-      id: 'all',
-      label: t('services.premium.luxYachtView.gallery.categoryAll'),
-      count: galleryImages.length,
-    },
-    {
-      id: 'yachts',
-      label: t('services.premium.luxYachtView.gallery.categoryYachts'),
-      count: galleryImages.filter((img) => img.category === 'yachts').length,
-    },
-    {
-      id: 'experiences',
-      label: t('services.premium.luxYachtView.gallery.categoryExperiences'),
-      count: galleryImages.filter((img) => img.category === 'experiences')
-        .length,
-    },
-    {
-      id: 'destinations',
-      label: t('services.premium.luxYachtView.gallery.categoryDestinations'),
-      count: galleryImages.filter((img) => img.category === 'destinations')
-        .length,
-    },
-  ];
-
-  const filteredImages = useMemo(() => {
-    return activeCategory === 'all'
-      ? galleryImages
-      : galleryImages.filter((img) => img.category === activeCategory);
-  }, [activeCategory]);
-
-  return (
-    <section className='py-24 bg-white'>
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='text-center mb-16'>
-          <div className='inline-flex items-center gap-2 bg-blue-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-blue-200/50'>
-            <Camera className='w-5 h-5 text-blue-700' />
-            <span className='text-blue-800 text-sm font-medium tracking-wide'>
-              {t('services.premium.luxYachtView.gallery.badgeLabel')}
-            </span>
-          </div>
-
-          <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            {t('services.premium.luxYachtView.gallery.titlePrefix')}{' '}
-            <span className='font-normal text-blue-600'>
-              {t('services.premium.luxYachtView.gallery.titleSuffix')}
-            </span>
-          </h2>
-          <p className='text-lg text-gray-600 mb-8'>
-            {t('services.premium.luxYachtView.gallery.description')}
-          </p>
-
-          <div className='flex flex-wrap justify-center gap-3'>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeCategory === category.id
-                    ? 'bg-teal-600 text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category.label}{' '}
-                <span className='opacity-70'>({category.count})</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-          {filteredImages.map((image, index) => (
-            <div
-              key={`${image.category}-${index}`}
-              className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${
-                index === 0 ? 'md:col-span-2 md:row-span-2' : ''
-              }`}
-              onClick={() => setSelectedImage(image)}
-            >
-              <div
-                className={`${
-                  index === 0
-                    ? 'h-full min-h-[200px] md:min-h-[350px]'
-                    : 'aspect-square'
-                } bg-gray-100`}
-              >
-                <img
-                  src={image.src}
-                  alt={image.caption}
-                  className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
-                />
-              </div>
-
-              <div className='absolute inset-0 bg-gradient-to-t from-blue-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                <div className='absolute bottom-4 left-4 text-white'>
-                  <p className='font-medium text-sm md:text-base'>
-                    {image.caption}
-                  </p>
-                  <p className='text-xs opacity-80 capitalize'>
-                    {image.category}
-                  </p>
-                </div>
-                <div className='absolute top-4 right-4'>
-                  <div className='w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center'>
-                    <Eye className='w-4 h-4 text-white' />
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {selectedImage && (
-        <div
-          className='fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4'
-          onClick={() => setSelectedImage(null)}
-        >
-          <button
-            className='absolute top-6 right-6 text-white hover:text-gray-300 z-50 p-2 rounded-full hover:bg-white/10 transition-colors'
-            onClick={() => setSelectedImage(null)}
-          >
-            <X className='w-8 h-8' />
-          </button>
-
-          <div className='relative'>
-            <img
-              src={selectedImage.src}
-              alt={selectedImage.caption}
-              className='max-w-full max-h-[85vh] rounded-lg'
-              onClick={(e) => e.stopPropagation()}
-            />
-            <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg'>
-              <h3 className='text-white font-semibold text-lg'>
-                {selectedImage.caption}
-              </h3>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };
@@ -2226,7 +2047,6 @@ const LuxeYachtServiceView: React.FC = () => {
             onExploreFleet={handleExploreFleet}
             onOpenBooking={() => handleOpenBooking()}
           />
-
           <div ref={fleetRef}>
             <CaribbeanYachtGrid
               onYachtSelect={handleYachtSelect}
@@ -2238,7 +2058,6 @@ const LuxeYachtServiceView: React.FC = () => {
 
           <TropicalCTABanner onOpenBooking={() => handleOpenBooking()} />
 
-          <CaribbeanGallery />
           <CaribbeanWhatToBring />
           <PrivateServiceInfo />
 
