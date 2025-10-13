@@ -9,12 +9,9 @@ import {
   Anchor,
   Users,
   Star,
-  MapPin,
   Clock,
   Wifi,
   Utensils,
-  ChevronLeft,
-  ChevronRight,
   Calendar,
   Phone,
   Mail,
@@ -27,19 +24,15 @@ import {
   Shield,
   Award,
   Coffee,
-  Fish,
   Sunset,
   Navigation,
-  Eye,
-  Share2,
   Info,
-  Palmtree,
   Wind,
   BedDouble,
   Zap,
   Music,
-  Droplets,
-  Globe,
+  User,
+  Eye,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
 import { motion } from 'framer-motion';
@@ -53,502 +46,14 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
-import YachtVideoGallery from '../YachtVideoGallery';
-
-// ============================================
-// TYPES & INTERFACES
-// ============================================
-interface Yacht {
-  id: string;
-  name: string;
-  category: 'catamaran' | 'luxury';
-  shortDescription: string;
-  mainImage: string;
-  gallery: string[];
-  specifications: {
-    length: string;
-    maxGuests: number;
-    cabins: number;
-    bathrooms: number;
-    crew: number;
-    maxSpeed: string;
-    manufacturer: string;
-    year: number;
-  };
-  amenities: Array<{
-    icon: React.ReactNode;
-    name: string;
-    description: string;
-  }>;
-  highlights: string[];
-  isPremium: boolean;
-  rating: number;
-  reviews: number;
-  location: string;
-  itinerary: string[];
-}
-
-interface BookingFormData {
-  date: string;
-  guests: number;
-  duration: 'half-day' | 'full-day';
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  addons: string[];
-}
-
-interface HeroProps {
-  onExploreFleet: () => void;
-  onOpenBooking: () => void;
-}
-
-interface CTABannerProps {
-  onExploreFleet: () => void;
-  onOpenBooking: () => void;
-}
-
-interface BookingFormProps {
-  yacht: Yacht | null;
-  onClose: () => void;
-}
-
-interface YachtDetailsModalProps {
-  yacht: Yacht;
-  onClose: () => void;
-  onBookYacht: (yacht: Yacht) => void;
-}
-
-interface YachtCardProps {
-  yacht: Yacht;
-  onSelect: (yacht: Yacht) => void;
-}
-
-// ============================================
-// UNIFIED BOOKING FORM COMPONENT
-// ============================================
-const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
-  const { t } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<BookingFormData>({
-    date: '',
-    guests: 2,
-    duration: 'full-day',
-    name: '',
-    email: '',
-    phone: '',
-    message: '',
-    addons: [],
-  });
-
-  const handleAddonToggle = (addonId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      addons: prev.addons.includes(addonId)
-        ? prev.addons.filter((id) => id !== addonId)
-        : [...prev.addons, addonId],
-    }));
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-
-    setTimeout(() => {
-      alert('Booking request submitted successfully!');
-      setIsSubmitting(false);
-      onClose();
-      setFormData({
-        date: '',
-        guests: 2,
-        duration: 'full-day',
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-        addons: [],
-      });
-    }, 2000);
-  };
-
-  const maxGuests = yacht?.specifications?.maxGuests || 20;
-
-  return (
-    <section className='relative py-10 sm:py-20 bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 overflow-hidden min-h-screen flex items-center'>
-      <div className='relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full'>
-        <div className='bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden'>
-          <div className='bg-gradient-to-r from-teal-600 to-cyan-600 px-4 sm:px-8 py-4 sm:py-6 flex justify-between items-center'>
-            <div>
-              <h3 className='text-xl sm:text-2xl font-bold text-white'>
-                {yacht ? `Book ${yacht.name}` : 'Request Your Yacht Experience'}
-              </h3>
-              <p className='text-teal-100 text-xs sm:text-sm mt-1'>
-                Fill out the form below
-              </p>
-            </div>
-            <button
-              onClick={onClose}
-              className='text-white hover:bg-white/20 rounded-full p-2 transition-colors'
-              aria-label='Close form'
-            >
-              <X className='w-5 h-5 sm:w-6 sm:h-6' />
-            </button>
-          </div>
-
-          <div className='p-4 sm:p-8 max-h-[70vh] overflow-y-auto'>
-            <div className='space-y-4 sm:space-y-5'>
-              <div className='grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4'>
-                <div>
-                  <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2'>
-                    Date <span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    type='date'
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    value={formData.date}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, date: e.target.value }))
-                    }
-                    className='w-full px-3 py-2 sm:px-4 sm:py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2'>
-                    Guests <span className='text-red-500'>*</span>
-                  </label>
-                  <select
-                    value={formData.guests}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        guests: parseInt(e.target.value),
-                      }))
-                    }
-                    className='w-full px-3 py-2 sm:px-4 sm:py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
-                  >
-                    {Array.from({ length: maxGuests }, (_, i) => i + 1).map(
-                      (num) => (
-                        <option key={num} value={num}>
-                          {num} {num > 1 ? 'Guests' : 'Guest'}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </div>
-
-                <div>
-                  <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2'>
-                    Duration <span className='text-red-500'>*</span>
-                  </label>
-                  <select
-                    value={formData.duration}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        duration: e.target.value as 'half-day' | 'full-day',
-                      }))
-                    }
-                    className='w-full px-3 py-2 sm:px-4 sm:py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
-                  >
-                    <option value='half-day'>Half Day (4h)</option>
-                    <option value='full-day'>Full Day (8h)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className='grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4'>
-                <div>
-                  <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2'>
-                    Name <span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    type='text'
-                    required
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                    className='w-full px-3 py-2 sm:px-4 sm:py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
-                    placeholder='John Doe'
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2'>
-                    Email <span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    type='email'
-                    required
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        email: e.target.value,
-                      }))
-                    }
-                    className='w-full px-3 py-2 sm:px-4 sm:py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
-                    placeholder='john@example.com'
-                  />
-                </div>
-
-                <div>
-                  <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2'>
-                    Phone <span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    type='tel'
-                    required
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        phone: e.target.value,
-                      }))
-                    }
-                    className='w-full px-3 py-2 sm:px-4 sm:py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all'
-                    placeholder='+1 234 567 8900'
-                  />
-                </div>
-              </div>
-
-              <div>
-                <h4 className='text-sm sm:text-base font-bold text-gray-900 mb-2'>
-                  Additional Services (Optional)
-                </h4>
-                <div className='grid grid-cols-2 sm:grid-cols-3 gap-2'>
-                  {[
-                    { id: 'catering', label: 'Catering', icon: Coffee },
-                    { id: 'massage', label: 'Massage', icon: Sparkles },
-                    { id: 'yoga', label: 'Yoga', icon: Heart },
-                    { id: 'photography', label: 'Photography', icon: Camera },
-                    { id: 'dj', label: 'DJ', icon: Music },
-                    { id: 'celebration', label: 'Celebration', icon: Sparkles },
-                  ].map((addon) => {
-                    const IconComponent = addon.icon;
-                    return (
-                      <label
-                        key={addon.id}
-                        className='flex items-center gap-2 p-2 sm:p-3 rounded-lg border-2 border-gray-200 hover:border-teal-300 cursor-pointer transition-all text-xs sm:text-sm'
-                      >
-                        <input
-                          type='checkbox'
-                          checked={formData.addons.includes(addon.id)}
-                          onChange={() => handleAddonToggle(addon.id)}
-                          className='w-4 h-4 text-teal-600 rounded focus:ring-teal-500'
-                        />
-                        <IconComponent className='w-3 h-3 sm:w-4 sm:h-4 text-teal-600 flex-shrink-0' />
-                        <span className='text-gray-700 font-medium truncate'>
-                          {addon.label}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-2'>
-                  Special Requests
-                </label>
-                <textarea
-                  value={formData.message}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      message: e.target.value,
-                    }))
-                  }
-                  rows={2}
-                  className='w-full px-3 py-2 sm:px-4 sm:py-3 text-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none'
-                  placeholder='Any special requests or questions?'
-                />
-              </div>
-
-              <div className='bg-teal-50 rounded-xl p-3 sm:p-4 border border-teal-200'>
-                <div className='flex gap-2 sm:gap-3'>
-                  <Info className='w-4 h-4 sm:w-5 sm:h-5 text-teal-600 flex-shrink-0 mt-0.5' />
-                  <div>
-                    <p className='text-xs sm:text-sm font-medium text-teal-900'>
-                      Response Time: 24-48 hours
-                    </p>
-                    <p className='text-xs sm:text-sm text-teal-700 mt-1'>
-                      We'll contact you to confirm availability and finalize
-                      details.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className={`w-full py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
-                  isSubmitting
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 shadow-lg hover:shadow-xl'
-                } text-white`}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white' />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className='w-5 h-5' />
-                    Submit Request
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// ============================================
-// HERO COMPONENT
-// ============================================
-const CinematicHero: React.FC<HeroProps> = ({
-  onExploreFleet,
-  onOpenBooking,
-}) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.log('Autoplay prevented:', error);
-        });
-      }
-    }
-  }, []);
-
-  return (
-    <div className='relative min-h-screen bg-black'>
-      <div className='absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950'>
-        <div className='absolute inset-0 opacity-30 bg-gradient-radial' />
-      </div>
-
-      <div className='relative mt-20 z-10 min-h-screen'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12'>
-          <div className='grid lg:grid-cols-2 gap-8 lg:gap-12 items-center'>
-            <div className='order-2 lg:order-1 space-y-6 lg:space-y-8'>
-              <div>
-                <div className='flex items-center space-x-3 mb-4'>
-                  <div className='h-px w-12 bg-gradient-to-r from-transparent to-cyan-400'></div>
-                  <Anchor className='w-5 h-5 text-cyan-400' />
-                </div>
-
-                <h1 className='text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-white mb-4 leading-tight'>
-                  Where
-                  <span className='block font-black text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mt-2 mb-3'>
-                    <span className='bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400 bg-clip-text text-transparent'>
-                      LUXURY
-                    </span>
-                  </span>
-                  Meets the Sea
-                </h1>
-
-                <p className='text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl'>
-                  Embark on an unforgettable journey aboard our meticulously
-                  curated fleet of premium yachts.
-                </p>
-              </div>
-
-              <div className='grid grid-cols-2 gap-4'>
-                {[
-                  { icon: Diamond, label: 'Premium Fleet', value: '50+' },
-                  { icon: Waves, label: 'Destinations', value: '120+' },
-                  { icon: Star, label: 'Rating', value: '5.0' },
-                  { icon: Anchor, label: 'Experience', value: '15Y' },
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className='bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 group cursor-pointer'
-                  >
-                    <item.icon className='w-6 h-6 text-cyan-400 mb-2 group-hover:scale-110 transition-transform' />
-                    <div className='text-2xl font-bold text-white mb-1'>
-                      {item.value}
-                    </div>
-                    <div className='text-xs text-gray-400'>{item.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className='flex flex-col sm:flex-row gap-4'>
-                <button
-                  onClick={onOpenBooking}
-                  className='relative overflow-hidden bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 px-8 py-4 rounded-full font-bold text-white shadow-xl shadow-cyan-500/30 group hover:scale-105 transition-transform'
-                >
-                  <span className='relative z-10 flex items-center justify-center space-x-2'>
-                    <span>Book Your Voyage</span>
-                    <Diamond className='w-5 h-5 group-hover:rotate-180 transition-transform duration-500' />
-                  </span>
-                </button>
-
-                <button
-                  onClick={onExploreFleet}
-                  className='px-8 py-4 rounded-full font-bold text-white border-2 border-white/20 backdrop-blur-sm hover:bg-white/10 transition-all'
-                >
-                  Explore Fleet
-                </button>
-              </div>
-            </div>
-
-            <div className='order-1 lg:order-2'>
-              <div className='relative'>
-                <div className='absolute inset-0 bg-gradient-to-r from-cyan-500/30 to-purple-500/30 blur-3xl scale-105' />
-
-                <div className='relative rounded-3xl overflow-hidden border border-white/20 shadow-2xl backdrop-blur-sm bg-gradient-to-br from-white/10 to-white/5'>
-                  <div className='absolute top-0 left-0 w-20 h-20 border-t-4 border-l-4 border-amber-400 rounded-tl-3xl z-10' />
-                  <div className='absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-cyan-400 rounded-br-3xl z-10' />
-
-                  <div className='relative aspect-[9/16] sm:aspect-video lg:aspect-[4/5]'>
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      className='absolute inset-0 w-full h-full object-cover'
-                      poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
-                    >
-                      <source
-                        src='https://res.cloudinary.com/ddg92xar5/video/upload/v1759669338/yate_m7z3ve.mp4'
-                        type='video/mp4'
-                      />
-                    </video>
-
-                    <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20' />
-
-                    <div className='absolute top-6 left-6 bg-black/60 backdrop-blur-xl border border-amber-400/50 rounded-2xl px-4 py-2'>
-                      <div className='flex items-center space-x-2'>
-                        <div className='w-2 h-2 bg-amber-400 rounded-full animate-pulse' />
-                        <span className='text-xs font-bold text-amber-300'>
-                          LIVE PREVIEW
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <YachtVideoGallery />
-    </div>
-  );
-};
+import {
+  CTABannerProps,
+  Yacht,
+  YachtCardProps,
+} from '@/constants/yacht/yachts';
+import YachtDetailsModal from '../yacht/YachtDetailsModal';
+import UnifiedBookingForm from '../yacht/UnifiedBookingForm';
+import CinematicHero from '../yacht/CinematicHero';
 
 // Animated Background Component
 const AnimatedBackground = () => {
@@ -781,37 +286,46 @@ const PhotoOnlyYachtCard: React.FC<YachtCardProps> = ({ yacht, onSelect }) => {
   const { t } = useTranslation();
 
   return (
-    <div
-      className='group relative h-50 lg:h-80 rounded-3xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-[1.02] hover:shadow-xl'
-      onClick={() => onSelect(yacht)}
-    >
+    <div className='group relative h-64 lg:h-80 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'>
       <img
         src={yacht.mainImage}
         alt={yacht.name}
         className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
       />
 
-      <div className='absolute inset-0 bg-gradient-to-t from-blue-900/70 via-transparent to-transparent' />
+      <div className='absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/40 to-transparent' />
 
       {yacht.isPremium && (
-        <div className='absolute top-4 right-4 bg-gradient-to-r from-coral-400 to-orange-400 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1'>
+        <div className='absolute top-4 right-4 bg-gradient-to-r from-coral-400 to-orange-400 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg z-10'>
           <Crown className='w-3 h-3' />
           {t('services.premium.luxYachtView.yachtGrid.cardPremiumBadge')}
         </div>
       )}
 
-      <div className='absolute bottom-0 left-0 right-0 p-5 text-white'>
-        <div className='flex items-center justify-between'>
-          <h3 className='text-1xl md:text-2xl font-semibold mb-2 group-hover:text-teal-300 transition-colors'>
+      <div className='absolute bottom-0 left-0 right-0 p-4 md:p-5 text-white'>
+        <div className='flex items-center justify-between mb-3'>
+          <h3 className='text-lg md:text-xl lg:text-2xl font-semibold group-hover:text-teal-300 transition-colors'>
             {yacht.name}
           </h3>
-          <div className='text-right'>
-            <div className='flex items-center gap-1'>
-              <Users className='w-4 h-4' />
-              <span>{yacht.specifications.maxGuests}</span>
-            </div>
+          <div className='flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full'>
+            <Users className='w-4 h-4' />
+            <span className='text-sm font-medium'>
+              {yacht.specifications.maxGuests}
+            </span>
           </div>
         </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(yacht);
+          }}
+          className='w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-2.5 md:py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] group/button'
+        >
+          <Eye className='w-4 h-4 group-hover/button:scale-110 transition-transform' />
+          <span>View Details</span>
+          <ArrowRight className='w-4 h-4 group-hover/button:translate-x-1 transition-transform' />
+        </button>
       </div>
     </div>
   );
@@ -1405,300 +919,6 @@ const YachtImportantInfo: React.FC = () => {
         </div>
       </div>
     </section>
-  );
-};
-
-// Yacht Details Modal
-const YachtDetailsModal: React.FC<YachtDetailsModalProps> = ({
-  yacht,
-  onClose,
-  onBookYacht,
-}) => {
-  const { t } = useTranslation();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState('overview');
-
-  return (
-    <div className='fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
-      <div className='bg-white rounded-3xl max-w-6xl w-full h-[95vh] overflow-hidden shadow-2xl flex flex-col lg:flex-row'>
-        <div className='lg:w-3/5 flex flex-col min-h-0'>
-          <div className='p-6 border-b border-gray-200 flex justify-between items-center flex-shrink-0'>
-            <div>
-              <h2 className='text-2xl font-semibold text-gray-900'>
-                {yacht.name}
-              </h2>
-              <div className='flex items-center gap-4 mt-1'>
-                <span className='text-gray-500'>
-                  {yacht.specifications.length}
-                </span>
-                <span className='text-gray-300'>•</span>
-                <div className='flex items-center gap-1'>
-                  <Star className='w-4 h-4 text-yellow-400 fill-yellow-400' />
-                  <span className='text-gray-600'>
-                    {yacht.rating} ({yacht.reviews})
-                  </span>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className='w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors'
-            >
-              <X className='w-5 h-5' />
-            </button>
-          </div>
-
-          <div className='relative flex-1 bg-gray-100 min-h-0'>
-            <img
-              src={yacht.gallery[currentImageIndex]}
-              alt={`${yacht.name} - Image ${currentImageIndex + 1}`}
-              className='w-full h-full object-cover'
-            />
-
-            <div className='absolute top-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm'>
-              {currentImageIndex + 1} / {yacht.gallery.length}
-            </div>
-
-            <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2'>
-              {yacht.gallery.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`w-12 h-8 rounded-md overflow-hidden border-2 transition-all ${
-                    index === currentImageIndex
-                      ? 'border-white'
-                      : 'border-white/50'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className='w-full h-full object-cover'
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className='lg:w-2/5 flex flex-col min-h-0'>
-          <div className='p-6 border-b border-gray-200 bg-gradient-to-br from-teal-50/50 to-blue-50/50 flex-shrink-0'>
-            <div className='text-center mb-4'>
-              <div className='inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-full text-sm font-semibold mb-3'>
-                <Calendar className='w-4 h-4' />
-                {t('services.premium.luxYachtView.modal.availableOnRequest')}
-              </div>
-              <p className='text-gray-600 text-sm'>
-                {t('services.premium.luxYachtView.modal.availabilityNote')}
-              </p>
-            </div>
-
-            {yacht.isPremium && (
-              <div className='flex justify-center mb-4'>
-                <div className='bg-gradient-to-r from-coral-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1'>
-                  <Crown className='w-3 h-3' />
-                  {t(
-                    'services.premium.luxYachtView.yachtGrid.cardPremiumBadge'
-                  )}
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={() => onBookYacht(yacht)}
-              className='w-full bg-teal-600 hover:bg-teal-700 text-white py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2'
-            >
-              <Calendar className='w-5 h-5' />
-              {t('services.premium.luxYachtView.modal.ctaBook')}
-            </button>
-          </div>
-
-          <div className='border-b border-gray-200 bg-gray-50 flex-shrink-0'>
-            <div className='flex'>
-              {[
-                {
-                  id: 'overview',
-                  name: t('services.premium.luxYachtView.modal.tabOverview'),
-                },
-                {
-                  id: 'itinerary',
-                  name: t('services.premium.luxYachtView.modal.tabItinerary'),
-                },
-                {
-                  id: 'amenities',
-                  name: t('services.premium.luxYachtView.modal.tabAmenities'),
-                },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-teal-600 text-teal-600 bg-white'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {tab.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className='flex-1 min-h-0 overflow-y-auto p-6 pb-30'>
-            {activeTab === 'overview' && (
-              <div className='space-y-6'>
-                <div>
-                  <h3 className='font-semibold text-gray-900 mb-3'>
-                    {t('services.premium.luxYachtView.modal.overviewTitle')}
-                  </h3>
-                  <p className='text-gray-600 leading-relaxed'>
-                    {yacht.shortDescription}
-                  </p>
-                </div>
-
-                <div className='grid grid-cols-2 gap-4'>
-                  {[
-                    {
-                      label: t(
-                        'services.premium.luxYachtView.modal.specLength'
-                      ),
-                      value: yacht.specifications.length,
-                      icon: <Anchor className='w-4 h-4' />,
-                    },
-                    {
-                      label: t(
-                        'services.premium.luxYachtView.modal.specGuests'
-                      ),
-                      value: yacht.specifications.maxGuests,
-                      icon: <Users className='w-4 h-4' />,
-                    },
-                    {
-                      label: t(
-                        'services.premium.luxYachtView.modal.specCabins'
-                      ),
-                      value: yacht.specifications.cabins,
-                      icon: <BedDouble className='w-4 h-4' />,
-                    },
-                    {
-                      label: t('services.premium.luxYachtView.modal.specSpeed'),
-                      value: yacht.specifications.maxSpeed,
-                      icon: <Zap className='w-4 h-4' />,
-                    },
-                  ].map((spec, index) => (
-                    <div
-                      key={index}
-                      className='text-center p-3 bg-teal-50 rounded-lg'
-                    >
-                      <div className='flex justify-center mb-2 text-teal-600'>
-                        {spec.icon}
-                      </div>
-                      <div className='font-bold text-gray-900'>
-                        {spec.value}
-                      </div>
-                      <div className='text-xs text-gray-500'>{spec.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'itinerary' && (
-              <div>
-                <h3 className='font-semibold text-gray-900 mb-4'>
-                  {t('services.premium.luxYachtView.modal.itineraryTitle')}
-                </h3>
-                <div className='space-y-4 mb-6'>
-                  <div className='p-4 bg-teal-50 rounded-lg'>
-                    <h4 className='font-semibold text-teal-900 mb-2'>
-                      {t(
-                        'services.premium.luxYachtView.modal.itineraryScheduleTitle'
-                      )}
-                    </h4>
-                    <p className='text-teal-700 text-sm'>
-                      {t(
-                        'services.premium.luxYachtView.modal.itineraryScheduleDesc'
-                      )}
-                    </p>
-                  </div>
-                  <div className='p-4 bg-blue-50 rounded-lg'>
-                    <h4 className='font-semibold text-blue-900 mb-2'>
-                      {t(
-                        'services.premium.luxYachtView.modal.itineraryPrivateTitle'
-                      )}
-                    </h4>
-                    <p className='text-blue-700 text-sm'>
-                      {t(
-                        'services.premium.luxYachtView.modal.itineraryPrivateDesc'
-                      )}
-                    </p>
-                  </div>
-                  <div className='p-4 bg-green-50 rounded-lg'>
-                    <h4 className='font-semibold text-green-900 mb-2'>
-                      {t(
-                        'services.premium.luxYachtView.modal.itineraryBookingTitle'
-                      )}
-                    </h4>
-                    <p className='text-green-700 text-sm'>
-                      {t(
-                        'services.premium.luxYachtView.modal.itineraryBookingDesc'
-                      )}
-                    </p>
-                  </div>
-                </div>
-                <div className='space-y-3'>
-                  <h4 className='font-semibold text-gray-900'>
-                    {t(
-                      'services.premium.luxYachtView.modal.itineraryOptionsLabel'
-                    )}
-                  </h4>
-                  {yacht.itinerary.map((item, index) => (
-                    <div
-                      key={index}
-                      className='flex items-start gap-3 p-3 bg-gray-50 rounded-lg'
-                    >
-                      <div className='w-6 h-6 bg-teal-200 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5'>
-                        <span className='text-xs font-bold text-teal-700'>
-                          {index + 1}
-                        </span>
-                      </div>
-                      <span className='text-gray-700 text-sm'>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'amenities' && (
-              <div className='space-y-4'>
-                <h3 className='font-semibold text-gray-900 mb-4'>
-                  {t('services.premium.luxYachtView.modal.amenitiesTitle')}
-                </h3>
-                {yacht.amenities.map((amenity, index) => (
-                  <div
-                    key={index}
-                    className='p-4 border border-gray-200 rounded-xl bg-white'
-                  >
-                    <div className='flex items-start gap-3'>
-                      <div className='w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center text-teal-600'>
-                        {amenity.icon}
-                      </div>
-                      <div>
-                        <h4 className='font-semibold text-gray-900 mb-1'>
-                          {amenity.name}
-                        </h4>
-                        <p className='text-gray-600 text-sm'>
-                          {amenity.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
   );
 };
 
