@@ -99,3 +99,70 @@ export const TIME_SLOTS = [
   { id: '13:00', name: '1:00 PM - Early Afternoon' },
   { id: '14:00', name: '2:00 PM - Mid Afternoon' },
 ];
+
+export interface Yacht {
+  id: string;
+  name: string;
+  category: 'catamaran' | 'luxury';
+  shortDescription: string;
+  mainImage: string;
+  gallery: string[];
+  specifications: {
+    length: string;
+    maxGuests: number;
+    cabins: number;
+    bathrooms: number;
+    crew: number;
+    maxSpeed: string;
+    manufacturer: string;
+    year: number;
+  };
+  amenities: Array<{
+    icon: React.ReactNode;
+    name: string;
+    description: string;
+  }>;
+  highlights: string[];
+  isPremium: boolean;
+  rating: number;
+  reviews: number;
+  location: string;
+  itinerary: string[];
+}
+
+export interface BookingFormData {
+  date: string;
+  guests: number;
+  duration: 'half-day' | 'full-day';
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  addons: string[];
+}
+
+export interface HeroProps {
+  onExploreFleet: () => void;
+  onOpenBooking: () => void;
+}
+
+export interface CTABannerProps {
+  onExploreFleet: () => void;
+  onOpenBooking: () => void;
+}
+
+export interface BookingFormProps {
+  yacht: Yacht | null;
+  onClose: () => void;
+}
+
+export interface YachtDetailsModalProps {
+  yacht: Yacht;
+  onClose: () => void;
+  onBookYacht: (yacht: Yacht) => void;
+}
+
+export interface YachtCardProps {
+  yacht: Yacht;
+  onSelect: (yacht: Yacht) => void;
+}
