@@ -339,14 +339,6 @@ const HeroSection: React.FC<{ onBookClick: () => void }> = ({
                 <ArrowRight className='w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform' />
                 <div className='absolute inset-0 bg-gradient-to-r from-orange-300 via-amber-200 to-orange-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
               </button>
-
-              <button
-                onClick={handleContactClick}
-                className='group px-10 md:px-14 py-4 md:py-5 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 text-white font-light text-base md:text-lg transition-all duration-500 hover:bg-white/10 hover:scale-105 flex items-center justify-center gap-3'
-              >
-                <Phone className='w-5 h-5' />
-                Contact
-              </button>
             </div>
 
             <div className='grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 pt-6 md:pt-8'>
@@ -384,7 +376,7 @@ const StatsSection: React.FC = () => {
     { number: '500+', label: 'Happy Guests', icon: Heart },
     { number: '5.0', label: 'Perfect Rating', icon: Star },
     { number: '100%', label: 'Satisfaction', icon: Award },
-    { number: '2-12', label: 'Group Size', icon: Users },
+    { number: '25+', label: 'Group Size', icon: Users },
   ];
 
   return (
@@ -596,26 +588,39 @@ const ExperienceSection: React.FC = () => {
     {
       number: '03',
       title: 'Golden Hour',
-      desc: "Witness nature's masterpiece",
+      desc: "Witness nature's masterpiece unfold",
     },
     {
       number: '04',
-      title: 'Capture',
-      desc: 'Professional photography session',
+      title: 'Serenity',
+      desc: 'Pause at the shore as waves meet hooves',
     },
     {
       number: '05',
-      title: 'Celebrate',
-      desc: 'Toast with champagne at twilight',
+      title: 'Reflection',
+      desc: 'Treasured moments under painted skies',
     },
   ];
 
   return (
     <section
       ref={elementRef}
-      className='py-20 md:py-32 bg-gradient-to-b from-zinc-50 via-amber-50/30 to-zinc-50 relative overflow-hidden'
+      className='py-20 md:py-32 relative overflow-hidden'
     >
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(251,191,36,0.08),transparent_50%)]' />
+      {/* Background Image */}
+      <div
+        className='absolute inset-0 bg-cover bg-center'
+        style={{
+          backgroundImage:
+            'url(https://images.pexels.com/photos/269583/pexels-photo-269583.jpeg?auto=compress&cs=tinysrgb&w=1920)',
+        }}
+      />
+
+      {/* Dark Overlay para contraste con títulos blancos */}
+      <div className='absolute inset-0 bg-zinc-900/75' />
+
+      {/* Radial Gradient Effect */}
+      <div className='absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(251,191,36,0.15),transparent_50%)]' />
 
       <div className='max-w-7xl mx-auto px-4 md:px-8 relative z-10'>
         <div className='text-center mb-12 md:mb-20'>
@@ -626,20 +631,21 @@ const ExperienceSection: React.FC = () => {
                 : 'opacity-0 translate-y-20'
             }`}
           >
-            <h2 className='text-4xl md:text-6xl lg:text-7xl font-extralight text-zinc-900 mb-4 tracking-tighter'>
+            <h2 className='text-4xl md:text-6xl lg:text-7xl font-extralight text-white mb-4 tracking-tighter'>
               The Journey
             </h2>
-            <p className='text-base md:text-lg text-zinc-500 font-light'>
+            <p className='text-base md:text-lg text-white/70 font-light'>
               Every moment thoughtfully orchestrated
             </p>
           </div>
         </div>
 
+        {/* Mobile Grid */}
         <div className='grid grid-cols-2 gap-3 lg:hidden'>
           {experiences.map((exp, i) => (
             <div
               key={i}
-              className={`bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-amber-100 transition-all duration-700 ${
+              className={`bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-xl transition-all duration-700 ${
                 isVisible
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-10'
@@ -649,21 +655,22 @@ const ExperienceSection: React.FC = () => {
               <div className='text-4xl font-extralight text-transparent bg-clip-text bg-gradient-to-b from-amber-300 to-orange-400 mb-2'>
                 {exp.number}
               </div>
-              <h3 className='text-base font-light text-zinc-900 mb-1 leading-tight'>
+              <h3 className='text-base font-light text-white mb-1 leading-tight'>
                 {exp.title}
               </h3>
-              <p className='text-xs text-zinc-500 font-light leading-relaxed'>
+              <p className='text-xs text-white/70 font-light leading-relaxed'>
                 {exp.desc}
               </p>
             </div>
           ))}
         </div>
 
+        {/* Desktop Grid */}
         <div className='hidden lg:grid lg:grid-cols-5 gap-6'>
           {experiences.map((exp, i) => (
             <div
               key={i}
-              className={`bg-white/70 backdrop-blur-sm rounded-3xl p-6 border border-amber-100 transition-all duration-1000 hover:scale-105 hover:shadow-xl hover:shadow-amber-200/50 ${
+              className={`bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl transition-all duration-1000 hover:scale-105 hover:bg-white/15 hover:shadow-2xl hover:shadow-amber-500/30 ${
                 isVisible
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-20'
@@ -673,204 +680,12 @@ const ExperienceSection: React.FC = () => {
               <div className='text-6xl font-extralight text-transparent bg-clip-text bg-gradient-to-b from-amber-300 to-orange-400 mb-4'>
                 {exp.number}
               </div>
-              <h3 className='text-xl font-light text-zinc-900 mb-3 tracking-tight leading-tight'>
+              <h3 className='text-xl font-light text-white mb-3 tracking-tight leading-tight'>
                 {exp.title}
               </h3>
-              <p className='text-sm text-zinc-500 font-light leading-relaxed'>
+              <p className='text-sm text-white/70 font-light leading-relaxed'>
                 {exp.desc}
               </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const FeaturesSection: React.FC<{ onBookClick: () => void }> = ({
-  onBookClick,
-}) => {
-  const { elementRef, isVisible } = useIntersectionObserver();
-
-  const features = [
-    {
-      icon: Shield,
-      title: 'Safe & Insured',
-      desc: 'Premium equipment and certified guides',
-    },
-    {
-      icon: Camera,
-      title: 'Pro Photography',
-      desc: 'Unlimited photos in golden hour light',
-    },
-    {
-      icon: Sparkles,
-      title: 'Luxury Experience',
-      desc: 'Champagne, refreshments & VIP service',
-    },
-    {
-      icon: Award,
-      title: 'Top Rated',
-      desc: '500+ five-star reviews from guests',
-    },
-  ];
-
-  return (
-    <section
-      ref={elementRef}
-      className='py-20 md:py-32 bg-zinc-950 relative overflow-hidden'
-    >
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(251,191,36,0.04),transparent_50%)]' />
-      <div className='max-w-7xl mx-auto px-4 md:px-8 relative z-10'>
-        <div className='text-center mb-16 md:mb-20'>
-          <h2
-            className={`text-4xl md:text-6xl font-extralight text-white mb-12 tracking-tighter transition-all duration-1000 ${
-              isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-20'
-            }`}
-          >
-            Why Choose Us
-          </h2>
-        </div>
-
-        <div className='grid sm:grid-cols-2 lg:grid-cols-4 gap-8'>
-          {features.map((feature, i) => {
-            const Icon = feature.icon;
-            return (
-              <div
-                key={i}
-                className={`group text-center transition-all duration-1000 ${
-                  isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-20'
-                }`}
-                style={{ transitionDelay: `${i * 150}ms` }}
-              >
-                <div className='w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-300/20 to-orange-400/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500'>
-                  <Icon className='w-10 h-10 md:w-12 md:h-12 text-amber-300' />
-                </div>
-                <h3 className='text-xl md:text-2xl font-light text-white mb-3'>
-                  {feature.title}
-                </h3>
-                <p className='text-sm md:text-base text-white/40 font-light'>
-                  {feature.desc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className='text-center mt-16'>
-          <button
-            onClick={onBookClick}
-            className='group relative overflow-hidden px-12 md:px-16 py-4 md:py-5 rounded-full bg-gradient-to-r from-amber-200 via-orange-300 to-amber-200 text-zinc-950 font-medium text-base md:text-lg transition-all duration-500 hover:shadow-2xl hover:shadow-amber-500/50 hover:scale-105 inline-flex items-center gap-3'
-          >
-            <span className='relative z-10'>Book Your Experience</span>
-            <ArrowRight className='w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform' />
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const TestimonialsSection: React.FC = () => {
-  const { elementRef, isVisible } = useIntersectionObserver();
-
-  const testimonials = [
-    {
-      name: 'Sarah Mitchell',
-      location: 'New York',
-      text: 'An absolutely transcendent experience. The golden hour was more magical than I could have imagined. Every detail was perfection.',
-      image: 'https://i.pravatar.cc/150?img=1',
-    },
-    {
-      name: 'Marco Rodriguez',
-      location: 'Miami',
-      text: 'The most romantic experience of our lives. The sunset, the horses, the champagne - pure luxury and elegance.',
-      image: 'https://i.pravatar.cc/150?img=2',
-    },
-    {
-      name: 'Emily Chen',
-      location: 'Los Angeles',
-      text: "Simply breathtaking. The professional photography captured memories we'll treasure forever. Worth every moment.",
-      image: 'https://i.pravatar.cc/150?img=3',
-    },
-  ];
-
-  return (
-    <section
-      ref={elementRef}
-      className='py-24 md:py-40 bg-gradient-to-b from-zinc-50 to-amber-50/30 relative overflow-hidden'
-    >
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(251,191,36,0.08),transparent_50%)]' />
-
-      <div className='max-w-7xl mx-auto px-4 md:px-8 relative z-10'>
-        <div className='text-center mb-16 md:mb-24'>
-          <div
-            className={`transition-all duration-1000 ${
-              isVisible
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-20'
-            }`}
-          >
-            <h2 className='text-4xl md:text-7xl font-extralight text-zinc-900 mb-8 tracking-tighter'>
-              Guest Stories
-            </h2>
-            <div className='flex justify-center items-center gap-2'>
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className='w-5 h-5 md:w-6 md:h-6 fill-amber-400 text-amber-400'
-                />
-              ))}
-              <span className='text-zinc-500 font-light ml-4 text-sm md:text-base'>
-                500+ Reviews
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className='grid md:grid-cols-3 gap-6 md:gap-8'>
-          {testimonials.map((test, i) => (
-            <div
-              key={i}
-              className={`group relative transition-all duration-1000 ${
-                isVisible
-                  ? 'opacity-100 translate-y-0'
-                  : 'opacity-0 translate-y-20'
-              }`}
-              style={{ transitionDelay: `${i * 200}ms` }}
-            >
-              <div className='bg-white/80 backdrop-blur-sm border border-amber-100 rounded-3xl p-6 md:p-8 hover:shadow-2xl hover:shadow-amber-200/50 transition-all duration-500 hover:scale-105'>
-                <div className='flex gap-1 mb-6'>
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className='w-4 h-4 fill-amber-400 text-amber-400'
-                    />
-                  ))}
-                </div>
-                <p className='text-zinc-600 font-light leading-relaxed mb-8 text-sm md:text-base italic'>
-                  "{test.text}"
-                </p>
-                <div className='flex items-center gap-4 pt-6 border-t border-amber-100'>
-                  <img
-                    src={test.image}
-                    alt={test.name}
-                    className='w-12 h-12 rounded-full'
-                  />
-                  <div>
-                    <div className='text-zinc-900 font-light text-sm md:text-base'>
-                      {test.name}
-                    </div>
-                    <div className='text-zinc-400 text-xs md:text-sm'>
-                      {test.location}
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           ))}
         </div>
@@ -1372,8 +1187,6 @@ const HorsebackRidingSunsetView: React.FC<HorsebackRidingSunsetViewProps> = ({
       <StatsSection />
       <VideoGallery />
       <ExperienceSection />
-      <FeaturesSection onBookClick={handleBookNow} />
-      <TestimonialsSection />
       <UrgencySection onBookClick={handleBookNow} />
       <FinalCTA onBookClick={handleBookNow} />
 

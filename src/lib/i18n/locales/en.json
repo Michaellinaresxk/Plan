@@ -2354,6 +2354,30 @@
           "ctaSubtitle": "Book now and get exclusive benefits",
           "ctaButton": "Explore Yachts"
         },
+        "promoVideoSection": {
+          "features": {
+            "provisioning": {
+              "title": "Provisioning Service",
+              "description": "Pre-stock your yacht with your preferred gourmet foods, fine wines and premium spirits before you even step aboard."
+            },
+            "wellness": {
+              "title": "Wellness & Relaxation",
+              "description": "Onboard Massage & Spa Services: Indulge in a relaxation massage or spa treatment by a professional therapist during your journey. Yoga & Fitness Sessions: Private yoga or fitness instruction available on deck to enhance your wellbeing."
+            },
+            "photography": {
+              "title": "Photography & Videography",
+              "description": "Professional Photo & Video Package: Capture your unforgettable moments with a dedicated photographer or videographer to preserve your luxury experience. Drone Photography: Bring memories to life with stunning aerial views of your yacht and surroundings."
+            },
+            "specialOccasion": {
+              "title": "Special Occasion Planning",
+              "description": "Celebration Packages: Custom decorations, specialized cakes and personalized arrangements for birthdays, anniversaries or proposals."
+            },
+            "liveEntertainment": {
+              "title": "Live Entertainment",
+              "description": "Enhance your Journey even more with our bespoke Live Entertainment Artists. Experience your celebration with a curated selection of live musical talent. Choose from: • Dynamic DJ: Spin your favorite tracks and create the perfect party vibe. • Soulful Saxophonist: Add a touch of elegance and smooth melodies. • Elegant Violinist: Infuse your journey with classical grace or modern flair.• Vibrant Percussionist: Ignite the energy with captivating rhythms. \"We don't just host events; we create symphonies of unforgettable moments.\""
+            }
+          }
+        },
         "yachtCta": {
           "cta1Badge": "LIMITED TIME OFFER",
           "cta1Title": "Your Caribbean Dream",

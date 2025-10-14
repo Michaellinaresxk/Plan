@@ -2189,6 +2189,30 @@
           "ctaSubtitle": "Reserva ahora y obtén beneficios exclusivos",
           "ctaButton": "Explorar Yates"
         },
+        "promoVideoSection": {
+          "features": {
+            "provisioning": {
+              "title": "Servicio de Aprovisionamiento",
+              "description": "Abastece tu yate con tus alimentos gourmet preferidos, vinos finos y licores premium antes de subir a bordo."
+            },
+            "wellness": {
+              "title": "Bienestar y Relajación",
+              "description": "Servicios de Masaje y Spa a Bordo: Disfruta de un masaje relajante o tratamiento de spa con un terapeuta profesional durante tu travesía. Sesiones de Yoga y Fitness: Instrucción privada de yoga o fitness disponible en cubierta para mejorar tu bienestar."
+            },
+            "photography": {
+              "title": "Fotografía y Videografía",
+              "description": "Paquete Profesional de Foto y Video: Captura tus momentos inolvidables con un fotógrafo o videógrafo dedicado para preservar tu experiencia de lujo.Fotografía con Dron: Dale vida a tus recuerdos con impresionantes vistas aéreas de tu yate y alrededores."
+            },
+            "specialOccasion": {
+              "title": "Planificación de Ocasiones Especiales",
+              "description": "Paquetes de Celebración: Decoraciones personalizadas, pasteles especializados y arreglos personalizados para cumpleaños, aniversarios o propuestas matrimoniales."
+            },
+            "liveEntertainment": {
+              "title": "Entretenimiento en Vivo",
+              "description": "Mejora tu viaje aún más con nuestros Artistas de Entretenimiento en Vivo personalizados. Experimenta tu celebración con una selección curada de talento musical en vivo. Elige entre: • DJ Dinámico: Mezcla tus canciones favoritas y crea el ambiente perfecto para la fiesta. • Saxofonista con Alma: Agrega un toque de elegancia y melodías suaves. • Violinista Elegante: Infunde tu viaje con gracia clásica o estilo moderno. • Percusionista Vibrante: Enciende la energía con ritmos cautivadores. \"No solo organizamos eventos; creamos sinfonías de momentos inolvidables.\""
+            }
+          }
+        },
         "yachtCta": {
           "cta1Badge": "OFERTA POR TIEMPO LIMITADO",
           "cta1Title": "Tu Sueño Caribeño",
