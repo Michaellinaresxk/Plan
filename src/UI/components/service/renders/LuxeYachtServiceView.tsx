@@ -13,8 +13,6 @@ import {
   Wifi,
   Utensils,
   Calendar,
-  Phone,
-  Mail,
   CheckCircle,
   Camera,
   X,
@@ -23,19 +21,17 @@ import {
   Sun,
   Shield,
   Award,
-  Coffee,
   Sunset,
   Navigation,
   Info,
   Wind,
-  BedDouble,
-  Zap,
-  Music,
-  User,
   Eye,
+  Minus,
+  Plus,
+  Music,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Play,
   Pause,
@@ -67,22 +63,55 @@ const AnimatedBackground = () => {
 };
 
 // Feature Card Component
-const FeatureCard = ({ icon: Icon, label, index }) => {
+const FeatureCard = ({ icon: Icon, label, description, index }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      whileHover={{ scale: 1.05 }}
-      className='bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300'
+      className='bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden'
     >
-      <div className='flex items-center gap-3'>
+      {/* Header - Clickable */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className='w-full p-4 flex items-center gap-3 hover:bg-gray-50/50 transition-colors'
+      >
         <div className='w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0'>
           <Icon className='w-5 h-5 text-white' />
         </div>
-        <span className='text-gray-700 font-medium text-sm'>{label}</span>
-      </div>
+        <span className='text-gray-700 font-medium text-sm flex-1 text-left'>
+          {label}
+        </span>
+        <div className='w-6 h-6 flex items-center justify-center text-cyan-600'>
+          {isOpen ? (
+            <Minus className='w-5 h-5' />
+          ) : (
+            <Plus className='w-5 h-5' />
+          )}
+        </div>
+      </button>
+
+      {/* Accordion Content */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='overflow-hidden'
+          >
+            <div className='px-4 pb-4 pt-2 border-t border-gray-100'>
+              <div className='prose prose-sm max-w-none text-gray-600'>
+                {description}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
@@ -181,12 +210,53 @@ const VideoPlayer = ({ isPlaying, onToggle }) => {
 // Promo Video Section
 const PromoVideoSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const { t } = useTranslation();
   const features = [
-    { icon: Diamond, label: 'Luxury Yachts' },
-    { icon: Waves, label: 'Premium Experience' },
-    { icon: Crown, label: 'Exclusive Service' },
-    { icon: Heart, label: 'Unforgettable Moments' },
+    {
+      icon: Diamond,
+      label: t(
+        'services.premium.luxYachtView.promoVideoSection.features.provisioning.title'
+      ),
+      description: t(
+        'services.premium.luxYachtView.promoVideoSection.features.provisioning.description'
+      ),
+    },
+    {
+      icon: Heart,
+      label: t(
+        'services.premium.luxYachtView.promoVideoSection.features.wellness.title'
+      ),
+      description: t(
+        'services.premium.luxYachtView.promoVideoSection.features.wellness.description'
+      ),
+    },
+    {
+      icon: Waves,
+      label: t(
+        'services.premium.luxYachtView.promoVideoSection.features.photography.title'
+      ),
+      description: t(
+        'services.premium.luxYachtView.promoVideoSection.features.photography.description'
+      ),
+    },
+    {
+      icon: Crown,
+      label: t(
+        'services.premium.luxYachtView.promoVideoSection.features.specialOccasion.title'
+      ),
+      description: t(
+        'services.premium.luxYachtView.promoVideoSection.features.specialOccasion.description'
+      ),
+    },
+    {
+      icon: Music,
+      label: t(
+        'services.premium.luxYachtView.promoVideoSection.features.liveEntertainment.title'
+      ),
+      description: t(
+        'services.premium.luxYachtView.promoVideoSection.features.liveEntertainment.description'
+      ),
+    },
   ];
 
   return (
@@ -234,6 +304,7 @@ const PromoVideoSection = () => {
                   key={index}
                   icon={feature.icon}
                   label={feature.label}
+                  description={feature.description}
                   index={index}
                 />
               ))}
@@ -332,10 +403,7 @@ const PhotoOnlyYachtCard: React.FC<YachtCardProps> = ({ yacht, onSelect }) => {
 };
 
 // Sunset CTA Banner
-const SunsetCTABanner: React.FC<CTABannerProps> = ({
-  onExploreFleet,
-  onOpenBooking,
-}) => {
+const SunsetCTABanner: React.FC<CTABannerProps> = ({ onOpenBooking }) => {
   const { t } = useTranslation();
 
   return (
@@ -461,7 +529,6 @@ const SunsetCTABanner: React.FC<CTABannerProps> = ({
   );
 };
 
-// Tropical CTA Banner (Simplified)
 const TropicalCTABanner: React.FC<{ onOpenBooking: () => void }> = ({
   onOpenBooking,
 }) => {
@@ -587,7 +654,6 @@ const CaribbeanYachtGrid: React.FC<{
   );
 };
 
-// What to Bring Section
 const CaribbeanWhatToBring: React.FC = () => {
   const { t } = useTranslation();
 
