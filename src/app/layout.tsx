@@ -176,6 +176,13 @@ const structuredData = {
   ],
 };
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+    gtag: (...args: any[]) => void;
+  }
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -217,6 +224,16 @@ export default function RootLayout({
           }}
         />
 
+        <script
+          async
+          src='https://www.googletagmanager.com/gtag/js?id=G-0HDR1ZMVET'
+        ></script>
+        <script>
+          window.dataLayer = window.dataLayer || []; function gtag()
+          {window.dataLayer.push(arguments)}
+          gtag('js', new Date()); gtag('config', 'G-0HDR1ZMVET');
+        </script>
+
         {/* Meta adicionales para thumbnails */}
         <meta
           name='thumbnail'
@@ -232,6 +249,7 @@ export default function RootLayout({
           content='https://luxpuntacana.com/images/punta-cana-luxury-hero.jpg'
         />
       </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
