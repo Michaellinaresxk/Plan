@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
@@ -26,9 +27,9 @@ export const metadata: Metadata = {
   keywords: [
     'Punta Cana luxury services',
     'Dominican Republic concierge',
-    'exclusive vacation services', // ✅ CONSISTENTE
+    'exclusive vacation services',
     'private chef Punta Cana',
-    'exclusive excursions', // ✅ CONSISTENTE
+    'exclusive excursions',
     'luxury resort services',
     'personalized vacation experiences',
     'Punta Cana resort concierge',
@@ -54,12 +55,11 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://luxpuntacana.com',
     siteName: 'Lux Punta Cana',
-    title: 'Lux Punta Cana - Exclusive Luxury Services & Concierge', // ✅ CONSISTENTE
+    title: 'Lux Punta Cana - Exclusive Luxury Services & Concierge',
     description:
-      'Experience luxury vacations in Punta Cana with our exclusive concierge services, private chefs, and premium excursions. Personalized experiences for resort guests.', // ✅ CONSISTENTE
+      'Experience luxury vacations in Punta Cana with our exclusive concierge services, private chefs, and premium excursions. Personalized experiences for resort guests.',
     images: [
       {
-        // ⚠️ USAR IMAGEN QUE SEPAS QUE EXISTE
         url: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1758745477/logo-borde-removebg-preview_za36cg.png',
         width: 1200,
         height: 630,
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lux Punta Cana - Exclusive Luxury Services', // ✅ CONSISTENTE
+    title: 'Lux Punta Cana - Exclusive Luxury Services',
     description:
       'Experience luxury vacations in Punta Cana with exclusive concierge services and personalized experiences.',
     images: [
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     ],
   },
   verification: {
-    google: 'oPvzSrKPE_LawXAm0InFeyYxibPpOalvIGo1ICIB4zg', // ✅ YA TIENES ESTO
+    google: 'oPvzSrKPE_LawXAm0InFeyYxibPpOalvIGo1ICIB4zg',
   },
   alternates: {
     canonical: 'https://luxpuntacana.com',
@@ -176,12 +176,8 @@ const structuredData = {
   ],
 };
 
-declare global {
-  interface Window {
-    dataLayer: any[];
-    gtag: (...args: any[]) => void;
-  }
-}
+// Google Analytics tracking ID constant
+const GA_TRACKING_ID = 'G-0HDR1ZMVET';
 
 export default function RootLayout({
   children,
@@ -216,7 +212,7 @@ export default function RootLayout({
         />
         <link rel='manifest' href='/site.webmanifest' />
 
-        {/* Structured Data para thumbnails en búsqueda */}
+        {/* Structured Data */}
         <script
           type='application/ld+json'
           dangerouslySetInnerHTML={{
@@ -224,17 +220,7 @@ export default function RootLayout({
           }}
         />
 
-        <script
-          async
-          src='https://www.googletagmanager.com/gtag/js?id=G-0HDR1ZMVET'
-        ></script>
-        <script>
-          window.dataLayer = window.dataLayer || []; function gtag()
-          {window.dataLayer.push(arguments)}
-          gtag('js', new Date()); gtag('config', 'G-0HDR1ZMVET');
-        </script>
-
-        {/* Meta adicionales para thumbnails */}
+        {/* Additional meta tags for thumbnails */}
         <meta
           name='thumbnail'
           content='https://luxpuntacana.com/images/punta-cana-luxury-hero.jpg'
@@ -249,10 +235,29 @@ export default function RootLayout({
           content='https://luxpuntacana.com/images/punta-cana-luxury-hero.jpg'
         />
       </head>
-
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Google Analytics - Using Next.js Script component */}
+        <Script
+          strategy='afterInteractive'
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
+        />
+        <Script
+          id='google-analytics'
+          strategy='afterInteractive'
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_TRACKING_ID}', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+
         <LanguageProvider>
           <BookingProvider>
             {children}
