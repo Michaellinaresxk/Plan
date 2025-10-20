@@ -411,8 +411,8 @@ const ServicesGallery = () => {
                         <div className='absolute bottom-0 left-0 right-0 p-4'>
                           {/* Hover Content for Desktop */}
                           <div className='hidden md:block transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
-                            <div className='bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-slate-200/50 grid justify-center'>
-                              <h3 className='font-bold text-slate-900 text-lg mb-2'>
+                            <div className='bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20 shadow-lg'>
+                              <h3 className='font-bold text-white text-lg mb-2 break-words hyphens-auto text-center drop-shadow-lg'>
                                 {t(`${translationPath}.name`, {
                                   fallback: service.name,
                                 })}
@@ -422,8 +422,8 @@ const ServicesGallery = () => {
 
                           {/* Always visible title for mobile */}
                           <div className='md:hidden'>
-                            <div className='bg-white/95 backdrop-blur-sm rounded-lg p-4 border border-slate-200/50'>
-                              <h3 className='font-bold text-slate-900 text-center'>
+                            <div className='bg-white/10 backdrop-blur-md rounded-lg p-4 border border-white/20 shadow-lg'>
+                              <h3 className='font-bold text-white text-center text-sm sm:text-base break-words hyphens-auto drop-shadow-lg'>
                                 {t(`${translationPath}.name`, {
                                   fallback: service.name,
                                 })}

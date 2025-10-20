@@ -310,6 +310,7 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
               <input
                 type='date'
                 value={formData.date}
+                onClick={(e) => e.currentTarget.showPicker()}
                 onChange={(e) => updateField('date', e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
                 className={`w-full p-4 border-2 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all text-lg ${

@@ -351,6 +351,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                   name='date'
                   value={formData.date}
                   onChange={handleInputChange}
+                  onClick={(e) => e.currentTarget.showPicker()}
                   className={`w-full p-3 border ${
                     errors.date ? 'border-red-500' : 'border-gray-300'
                   } rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-gray-50`}

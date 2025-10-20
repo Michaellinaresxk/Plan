@@ -464,6 +464,7 @@ const LuxeYachtForm: React.FC<LuxeYachtFormProps> = ({
                     name='date'
                     value={formData.date}
                     onChange={handleChange}
+                    onClick={(e) => e.currentTarget.showPicker()}
                     min={getTomorrowDate()}
                     className={`w-full p-3 border ${
                       errors.date ? 'border-red-500' : 'border-gray-300'

@@ -727,6 +727,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                     type='date'
                     name='startDate'
                     value={formData.startDate}
+                    onClick={(e) => e.currentTarget.showPicker()}
                     onChange={handleInputChange}
                     className={`w-full p-3 border ${
                       errors.startDate ? 'border-red-500' : 'border-gray-300'
@@ -758,6 +759,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                     type='date'
                     name='endDate'
                     value={formData.endDate}
+                    onClick={(e) => e.currentTarget.showPicker()}
                     onChange={handleInputChange}
                     className={`w-full p-3 border ${
                       errors.endDate ? 'border-red-500' : 'border-gray-300'

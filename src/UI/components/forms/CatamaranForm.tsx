@@ -731,6 +731,7 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
                   type='date'
                   name='tourDate'
                   value={formData.tourDate}
+                  onClick={(e) => e.currentTarget.showPicker()}
                   onChange={handleInputChange}
                   className={`w-full p-3 border ${
                     errors.tourDate ? 'border-red-500' : 'border-gray-300'
