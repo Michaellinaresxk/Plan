@@ -341,6 +341,26 @@ const LuxeYachtForm: React.FC<LuxeYachtFormProps> = ({
         },
       };
 
+      const emailData = {
+        serviceName: yacht?.name || defaultYacht.name,
+        serviceType: 'luxury-yacht',
+        customerName: formData.name,
+        customerEmail: formData.email,
+        customerPhone: formData.phone,
+        tourDate: formData.date,
+        timeSlot: formData.startTime,
+        totalGuests: formData.guests,
+        childCount: formData.minorsCount,
+        totalPrice: currentPrice,
+        message: formData.message,
+      };
+
+      fetch('/api/services/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData),
+      }).catch((error) => console.error('❌ Email failed:', error));
+
       console.log('🛥️ YachtForm - Reservation data created:', reservationData);
 
       // Use setReservationData and router.push like PersonalTrainerForm
