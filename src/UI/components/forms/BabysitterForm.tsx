@@ -356,6 +356,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                 name='date'
                 value={formData.date}
                 onChange={handleChange}
+                onClick={(e) => e.currentTarget.showPicker()}
                 min={new Date().toISOString().split('T')[0]}
                 className={`w-full p-2.5 md:p-3 lg:p-4 border rounded-lg md:rounded-xl shadow-sm transition-all duration-200 text-sm md:text-base lg:text-lg focus:ring-2 focus:outline-none bg-white/80 backdrop-blur-sm
                   ${

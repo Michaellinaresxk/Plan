@@ -522,29 +522,6 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     </div>
   );
 
-  const TourRestrictionsSection = () => (
-    <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
-      <div className='flex items-start'>
-        <AlertTriangle className='w-5 h-5 text-amber-600 mr-3 flex-shrink-0 mt-0.5' />
-        <div>
-          <h4 className='font-medium text-amber-800 mb-2'>
-            {t('services.standard.saonaIslandForm.sections.restrictions')}
-          </h4>
-          <ul className='text-sm text-amber-700 space-y-1'>
-            {Array.from({ length: 6 }, (_, i) => (
-              <li key={i}>
-                •{' '}
-                {t(
-                  `services.standard.saonaIslandForm.restrictions.item${i + 1}`
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-
   const kebabToCamel = (str: string): string => {
     return str.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
   };
@@ -582,6 +559,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                   type='date'
                   name='tourDate'
                   value={formData.tourDate}
+                  onClick={(e) => e.currentTarget.showPicker()}
                   onChange={handleInputChange}
                   className={`w-full p-3 border ${
                     errors.tourDate ? 'border-red-500' : 'border-gray-300'

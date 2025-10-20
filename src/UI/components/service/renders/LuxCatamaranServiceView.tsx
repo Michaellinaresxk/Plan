@@ -141,6 +141,7 @@ const InquiryModal: React.FC<{
                 type='date'
                 required
                 min={new Date().toISOString().split('T')[0]}
+                onClick={(e) => e.currentTarget.showPicker()}
                 value={formData.date}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, date: e.target.value }))

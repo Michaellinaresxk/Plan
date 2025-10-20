@@ -1875,7 +1875,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
 
   [SERVICE_IDS.HORSEBACK_RIDING_SUNSET]: {
     id: SERVICE_IDS.HORSEBACK_RIDING_SUNSET,
-    titleKey: 'services.standard.horsebackSunset.name',
+    titleKey: 'services.standard.horsebackSunset.title',
     descriptionKey: 'services.standard.horsebackSunset.short',
     fullDescriptionKey: 'services.standard.horsebackSunset.full',
     basePrice: 95,

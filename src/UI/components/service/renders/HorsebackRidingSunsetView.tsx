@@ -1000,6 +1000,7 @@ const BookingModal: React.FC<{
               type='date'
               value={formData.date}
               onChange={(e) => updateField('date', e.target.value)}
+              onClick={(e) => e.currentTarget.showPicker()}
               min={new Date().toISOString().split('T')[0]}
               className={`w-full px-4 py-3 rounded-xl bg-white/5 border ${
                 errors.date ? 'border-red-500' : 'border-white/10'
