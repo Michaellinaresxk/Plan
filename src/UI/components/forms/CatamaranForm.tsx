@@ -432,6 +432,29 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
         },
       };
 
+      const emailData = {
+        serviceName: selectedCatamaran?.name || 'Catamaran Experience',
+        serviceType: 'catamaran',
+        customerName: 'Pending', // Se llenará en el siguiente paso
+        customerEmail: 'pending@example.com', // Se llenará en el siguiente paso
+        customerPhone: 'Pending', // Se llenará en el siguiente paso
+        tourDate: formData.tourDate,
+        timeSlot: formData.timeSlot,
+        location: formData.location,
+        adultCount: formData.adultCount,
+        childCount: formData.childCount,
+        totalPrice: calculatePrice,
+        specialRequests: formData.specialRequests,
+      };
+
+      fetch('/api/services/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData),
+      }).catch((error) => {
+        console.error('❌ Email failed (non-blocking):', error);
+      });
+
       console.log(
         '🛥️ CatamaranForm - Reservation data created:',
         reservationData

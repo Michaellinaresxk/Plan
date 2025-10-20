@@ -476,6 +476,27 @@ const LuxCatamaranForm: React.FC<LuxCatamaranFormProps> = ({
         },
       };
 
+      const emailData = {
+        serviceName: selectedCatamaranData.name,
+        serviceType: 'lux-catamaran',
+        customerName: 'Pending', // Se llenará después
+        customerEmail: 'pending@example.com',
+        customerPhone: 'Pending',
+        tourDate: formData.tourDate,
+        timeSlot: formData.timeSlot,
+        location: formData.location,
+        adultCount: formData.adultCount,
+        childCount: formData.childCount,
+        totalPrice: calculatePrice,
+        specialRequests: formData.specialRequests,
+      };
+
+      fetch('/api/services/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(emailData),
+      }).catch((error) => console.error('❌ Email failed:', error));
+
       console.log(
         '🛥️ CatamaranForm - Reservation data created:',
         reservationData
