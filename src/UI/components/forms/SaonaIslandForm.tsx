@@ -95,7 +95,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   const [formData, setFormData] = useState<FormData>({
     tourDate: '',
     location: '',
-    adultCount: 2,
+    adultCount: 1,
     childCount: 0,
     children: [],
     specialRequests: '',

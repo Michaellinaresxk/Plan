@@ -56,7 +56,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
   const PRICE_PER_CHILD_PER_HOUR = 20;
   const SPECIAL_NEEDS_FEE = 15;
   const TAX_RATE = 5;
-  const MIN_HOURS = 2;
+  const MIN_HOURS = 1;
   const MAX_HOURS = 12;
 
   const checkFormValidity = useMemo(() => {
@@ -412,7 +412,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
                           const newHour = (parseInt(hour) + 1) % 24;
                           updateFormField(
                             'startTime',
-                            `${newHour.toString().padStart(2, '0')}:${minute}`
+                            `${newHour.toString().padStart(1, '0')}:${minute}`
                           );
                         }}
                         className='w-8 h-8 md:w-9 md:h-9 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-600 flex items-center justify-center transition-colors'

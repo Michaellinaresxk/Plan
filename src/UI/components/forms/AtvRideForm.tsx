@@ -95,7 +95,7 @@ const ATV_TRANSPORT_PRICING = {
 };
 
 // ✅ LÍMITE MÁXIMO DE PARTICIPANTES (según capacidad de transporte)
-const MAX_PARTICIPANTS = 12;
+const MAX_PARTICIPANTS = 100;
 
 const AtvRideForm: React.FC<AtvRideFormProps> = ({
   service,
@@ -229,7 +229,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
   });
 
   const participantCounter = createCounterHandler('totalParticipants', 1);
-  const vehicleCounter = createCounterHandler('vehicleCount', 1, 8);
+  const vehicleCounter = createCounterHandler('vehicleCount', 1, 25);
 
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
@@ -278,7 +278,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       );
     }
 
-    if (formData.vehicleCount > 8) {
+    if (formData.vehicleCount > 25) {
       newErrors.vehicleCount = t(
         'services.standard.atvExcurtionsForm.fields.vehicles.max'
       );
@@ -714,7 +714,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     onDecrement={participantCounter.decrement}
                     icon={Users}
                     min={1}
-                    max={16}
+                    max={50}
                   />
                   {errors.totalParticipants && (
                     <p className='text-red-500 text-xs mt-1'>
@@ -736,7 +736,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     onDecrement={vehicleCounter.decrement}
                     icon={Car}
                     min={1}
-                    max={8}
+                    max={25}
                   />
                   {errors.vehicleCount && (
                     <p className='text-red-500 text-xs mt-1'>

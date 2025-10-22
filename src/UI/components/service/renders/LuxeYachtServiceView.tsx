@@ -15,7 +15,6 @@ import {
   Calendar,
   CheckCircle,
   Camera,
-  X,
   Check,
   Shirt,
   Sun,
@@ -29,10 +28,6 @@ import {
   Minus,
   Plus,
   Music,
-} from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/client';
-import { AnimatePresence, motion } from 'framer-motion';
-import {
   Play,
   Pause,
   Diamond,
@@ -42,6 +37,8 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/client';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   CTABannerProps,
   Yacht,
