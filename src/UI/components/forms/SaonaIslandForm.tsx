@@ -33,6 +33,7 @@ interface ChildInfo {
 interface FormData {
   tourDate: string;
   location: string;
+  customLocation: string; // 🆕 PROBLEMA 1: Campo para ubicación personalizada
   adultCount: number;
   childCount: number;
   children: ChildInfo[];
@@ -58,6 +59,7 @@ const LOCATION_IDS = [
   'cap-cana',
   'uvero-alto',
   'puntacana-village',
+  'other', // 🆕 PROBLEMA 1: Agregada opción "Other"
 ] as const;
 
 const PRICING_CONFIG = {
@@ -81,6 +83,7 @@ const LOCATIONS = {
   'cap-cana': 'Cap Cana',
   'uvero-alto': 'Uvero Alto',
   'puntacana-village': 'Puntacana Village',
+  other: 'Other Location', // 🆕 PROBLEMA 1: Label para la nueva opción
 };
 
 const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
@@ -95,6 +98,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
   const [formData, setFormData] = useState<FormData>({
     tourDate: '',
     location: '',
+    customLocation: '', // 🆕 PROBLEMA 1: Inicializar campo personalizado
     adultCount: 1,
     childCount: 0,
     children: [],
@@ -199,6 +203,7 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
         ...prev,
         transportType: null,
         location: '',
+        customLocation: '', // 🆕 PROBLEMA 1: Limpiar ubicación personalizada también
       }));
       setIsLocationOpen(false);
     }
@@ -254,6 +259,11 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       );
     }
 
+    // 🆕 PROBLEMA 1: Validación para ubicación personalizada
+    if (formData.location === 'other' && !formData.customLocation.trim()) {
+      newErrors.customLocation = 'Please specify your pickup location';
+    }
+
     if (
       formData.tourDate &&
       !isSameDay(formData.tourDate) &&
@@ -299,15 +309,25 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
     return newErrors;
   };
 
+  // 🆕 PROBLEMA 2: Nueva función con lógica de toggle para deseleccionar
   const handleTransportTypeSelect = (type: '1-6' | '7-12') => {
     setFormData((prev) => ({
       ...prev,
-      transportType: type,
+      // Si ya está seleccionado, lo deseleccionamos (null), si no, lo seleccionamos
+      transportType: prev.transportType === type ? null : type,
+      // Al deseleccionar, limpiamos location y customLocation
+      location: prev.transportType === type ? '' : prev.location,
+      customLocation: prev.transportType === type ? '' : prev.customLocation,
     }));
 
     setErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors.transportType;
+      // Si estamos deseleccionando, limpiar errores de location también
+      if (formData.transportType === type) {
+        delete newErrors.location;
+        delete newErrors.customLocation;
+      }
       return newErrors;
     });
   };
@@ -344,15 +364,19 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
       const bookingEndDate = new Date(selectedDate);
       bookingEndDate.setHours(18, 30, 0, 0);
 
+      // 🆕 PROBLEMA 1: Usar ubicación personalizada si es "other"
       const locationKey = LOCATION_IDS.find((id) => id === formData.location);
-      const locationName = locationKey
-        ? t(
-            `services.standard.saonaIslandForm.locations.${locationKey.replace(
-              /-/g,
-              ''
-            )}.name`
-          )
-        : formData.location;
+      const locationName =
+        formData.location === 'other'
+          ? formData.customLocation
+          : locationKey
+          ? t(
+              `services.standard.saonaIslandForm.locations.${locationKey.replace(
+                /-/g,
+                ''
+              )}.name`
+            )
+          : formData.location;
 
       const includes = Array.from({ length: 9 }, (_, i) =>
         t(`services.standard.saonaIslandForm.included.item${i + 1}`)
@@ -408,7 +432,10 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
           specialRequests: formData.specialRequests,
           includes,
           restrictions,
-          location: formData.location,
+          location:
+            formData.location === 'other'
+              ? formData.customLocation
+              : formData.location,
           locationName,
           transportType: formData.transportType,
           pricing: {
@@ -888,6 +915,14 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                       </div>
                     </div>
 
+                    {/* 🆕 PROBLEMA 2: Hint para indicar que se puede deseleccionar */}
+                    {formData.transportType && (
+                      <p className='text-xs text-gray-500 italic mt-2 flex items-center'>
+                        <Info className='w-3 h-3 mr-1' />
+                        Click the selected option again to deselect
+                      </p>
+                    )}
+
                     {errors.transportType && (
                       <p className='text-red-500 text-xs mt-2 flex items-center'>
                         <AlertTriangle className='w-3 h-3 mr-1' />
@@ -912,9 +947,12 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                               </h4>
                               <p className='text-sm text-gray-600'>
                                 {formData.location
-                                  ? LOCATIONS[
-                                      formData.location as keyof typeof LOCATIONS
-                                    ]
+                                  ? formData.location === 'other'
+                                    ? formData.customLocation ||
+                                      'Other Location'
+                                    : LOCATIONS[
+                                        formData.location as keyof typeof LOCATIONS
+                                      ]
                                   : 'Select your pickup location'}
                               </p>
                             </div>
@@ -942,7 +980,11 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                                   `}
                                   onClick={() => {
                                     updateFormField('location', locationId);
-                                    setIsLocationOpen(false);
+                                    // 🆕 PROBLEMA 1: Limpiar customLocation si se selecciona otra opción
+                                    if (locationId !== 'other') {
+                                      updateFormField('customLocation', '');
+                                      setIsLocationOpen(false);
+                                    }
                                   }}
                                 >
                                   <div className='flex items-center'>
@@ -967,6 +1009,41 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                                 </div>
                               ))}
                             </div>
+
+                            {/* 🆕 PROBLEMA 1: Campo de texto para ubicación personalizada */}
+                            {formData.location === 'other' && (
+                              <div className='mt-4 pt-4 border-t border-gray-200'>
+                                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                  Specify Your Pickup Location *
+                                </label>
+                                <input
+                                  type='text'
+                                  name='customLocation'
+                                  value={formData.customLocation}
+                                  onChange={handleInputChange}
+                                  placeholder='Enter your full address or hotel name...'
+                                  className={`
+                                    w-full p-3 border rounded-lg 
+                                    focus:ring-blue-500 focus:border-blue-500
+                                    ${
+                                      errors.customLocation
+                                        ? 'border-red-500'
+                                        : 'border-gray-300'
+                                    }
+                                  `}
+                                />
+                                {errors.customLocation && (
+                                  <p className='text-red-500 text-xs mt-1 flex items-center'>
+                                    <AlertTriangle className='w-3 h-3 mr-1' />
+                                    {errors.customLocation}
+                                  </p>
+                                )}
+                                <p className='text-xs text-gray-500 mt-2'>
+                                  Please provide your complete pickup address
+                                  including hotel name if applicable
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -1127,11 +1204,13 @@ const SaonaIslandForm: React.FC<SaonaIslandFormProps> = ({
                     {t(
                       'services.standard.saonaIslandForm.priceBreakdown.pickupFrom'
                     )}{' '}
-                    {t(
-                      `services.standard.saonaIslandForm.locations.${kebabToCamel(
-                        formData.location
-                      )}.name`
-                    )}
+                    {formData.location === 'other'
+                      ? formData.customLocation || 'Other Location'
+                      : t(
+                          `services.standard.saonaIslandForm.locations.${kebabToCamel(
+                            formData.location
+                          )}.name`
+                        )}
                   </div>
                 )}
               </div>
