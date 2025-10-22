@@ -297,31 +297,6 @@ const CatamaranInquiryModal: React.FC<{
             </p>
           </div>
 
-          {/* Estimated Price Display */}
-          <div className='bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100'>
-            <div className='flex items-center justify-between'>
-              <div>
-                <p className='text-sm text-gray-600'>
-                  {t(
-                    'services.standard.catamaranServiceView.inquiry.estimatedTotal'
-                  )}
-                </p>
-                <p className='text-2xl font-bold text-gray-900'>
-                  ${calculatePrice(catamaran, formData.guests)}
-                </p>
-                <p className='text-xs text-gray-500'>
-                  {formData.guests}{' '}
-                  {t('services.standard.catamaranServiceView.inquiry.guests')} ×
-                  ${catamaran.price}{' '}
-                  {t(
-                    'services.standard.catamaranServiceView.inquiry.perPerson'
-                  )}
-                </p>
-              </div>
-              <Sparkles className='w-8 h-8 text-blue-500' />
-            </div>
-          </div>
-
           {/* Submit Button */}
           <button
             onClick={handleSubmit}

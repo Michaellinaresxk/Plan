@@ -28,6 +28,7 @@ import {
   AlertTriangle,
   CreditCard,
 } from 'lucide-react';
+import { useScrollToError } from '@/hooks/useScrollToError';
 
 // ==================== TYPES ====================
 interface MediaItem {
@@ -944,6 +945,8 @@ const BookingModal: React.FC<{
         },
       };
 
+      const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
+
       console.log('🐎 Sunset Reservation data created:', reservationData);
 
       // Set reservation in context
@@ -1038,7 +1041,7 @@ const BookingModal: React.FC<{
             <div className='border border-white/10 rounded-xl p-4 bg-white/5'>
               <ParticipantCounter
                 label='Adult'
-                sublabel='Above 12 years'
+                sublabel='Above 11 years'
                 value={formData.adults}
                 onIncrement={() => updateField('adults', formData.adults + 1)}
                 onDecrement={() =>

@@ -476,7 +476,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                     <div className='border border-gray-300 rounded-lg p-4 bg-gray-50'>
                       <ParticipantCounter
                         label='Adults'
-                        sublabel={`Above 10 years • $${ADULT_PRICE}`}
+                        sublabel={`Above 11 years • $${ADULT_PRICE}`}
                         value={formData.adults}
                         onIncrement={adultsCounter.increment}
                         onDecrement={adultsCounter.decrement}
