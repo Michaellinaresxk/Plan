@@ -2,14 +2,15 @@
 import type { Timestamp } from 'firebase/firestore';
 
 export interface ApiPayment {
-  paymentId?: string; // Optional because Firestore auto-generates
+  paymentId?: string; // Optional porque Firestore auto-genera
   reservationId: string;
-  amount: number; // in cents
+  amount: number; // en centavos
   currency: string;
-  status: string; // 'pending' | 'processing' | 'succeeded' | 'failed' | 'canceled'
-  paymentMethod: string; // 'card' | 'paypal' | 'apple_pay' | 'google_pay'
-  stripePaymentIntentId: string;
-  clientSecret: string;
+  status: string; // 'pending' | 'processing' | 'completed' | 'failed' | 'canceled'
+  paymentMethod: string; // 'card' | 'google_pay' | 'apple_pay'
+  squarePaymentId: string; // ID del pago en Square
+  receiptUrl?: string; // URL del recibo de Square
+  receiptNumber?: string; // Número de recibo de Square
   createdAt: Timestamp;
   updatedAt: Timestamp;
   metadata?: Record<string, any>;
@@ -21,8 +22,9 @@ export interface CreatePaymentData {
   currency: string;
   status: string;
   paymentMethod: string;
-  stripePaymentIntentId: string;
-  clientSecret: string;
+  squarePaymentId: string;
+  receiptUrl?: string;
+  receiptNumber?: string;
   metadata?: Record<string, any>;
 }
 

@@ -160,7 +160,7 @@ You will receive a confirmation email shortly.`;
             </h4>
             <p className='text-sm text-blue-700'>
               To complete your reservation, we need to process your payment
-              securely through Stripe. Your card information is encrypted and
+              securely through Square. Your card information is encrypted and
               never stored on our servers.
             </p>
           </div>

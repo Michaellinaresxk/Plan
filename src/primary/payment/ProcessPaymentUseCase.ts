@@ -1,25 +1,36 @@
+// primary/payment/useCases/ProcessPaymentUseCase.ts
 import PaymentRepository from '@/domain/payment/PaymentRepository';
 
+/**
+ * ProcessPaymentUseCase - Procesa un pago completo con Square
+ * En Square, el proceso es más directo
+ */
 export class ProcessPaymentUseCase {
   constructor(private readonly paymentRepository: PaymentRepository) {}
 
   async execute(data: {
+    sourceId: string; // Token de Square del frontend
     reservationId: string;
-    amount: number;
+    amount: number; // en centavos
     currency: string;
-    paymentMethodId: string;
+    locationId: string;
     metadata?: Record<string, any>;
-  }): Promise<any> {
+  }): Promise<{
+    paymentId: string;
+    status: string;
+    receiptUrl?: string;
+    receiptNumber?: string;
+  }> {
     try {
       console.log(
         '🎯 ProcessPaymentUseCase - Executing payment process for reservation:',
         data.reservationId
       );
 
-      // Validate input data
+      // Validar datos de entrada
       this.validateProcessPaymentData(data);
 
-      // Process payment through repository
+      // Procesar pago a través del repositorio
       const result = await this.paymentRepository.processPayment(data);
 
       console.log('✅ ProcessPaymentUseCase - Payment processed successfully');
@@ -35,11 +46,16 @@ export class ProcessPaymentUseCase {
   }
 
   private validateProcessPaymentData(data: {
+    sourceId: string;
     reservationId: string;
     amount: number;
     currency: string;
-    paymentMethodId: string;
+    locationId: string;
   }): void {
+    if (!data.sourceId?.trim()) {
+      throw new Error('Source ID (payment token) is required');
+    }
+
     if (!data.reservationId?.trim()) {
       throw new Error('Reservation ID is required');
     }
@@ -48,12 +64,17 @@ export class ProcessPaymentUseCase {
       throw new Error('Amount must be greater than 0');
     }
 
+    // Square requiere mínimo $1.00 (100 centavos)
+    if (data.amount < 100) {
+      throw new Error('Amount must be at least $1.00 (100 cents)');
+    }
+
     if (!data.currency?.trim()) {
       throw new Error('Currency is required');
     }
 
-    if (!data.paymentMethodId?.trim()) {
-      throw new Error('Payment Method ID is required');
+    if (!data.locationId?.trim()) {
+      throw new Error('Location ID is required');
     }
 
     console.log('✅ ProcessPaymentUseCase - Data validation passed');

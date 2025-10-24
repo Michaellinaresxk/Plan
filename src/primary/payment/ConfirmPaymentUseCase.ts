@@ -13,7 +13,7 @@ export class ConfirmPaymentUseCase {
       // Validate input data
       this.validateConfirmPaymentData(data);
 
-      // Confirm payment with Stripe
+      // Confirm payment with
       const payment = await this.paymentRepository.confirmPayment(data);
 
       console.log(

@@ -3,23 +3,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, CreditCard } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import PaymentForm from '@/UI/components/payment/PaymentForm';
-import { useReservation } from '@/hooks/useReservation';
+import SquarePaymentForm from '@/UI/components/payment/SquarePaymentForm';
 import type { ReservationData } from '@/context/BookingContext';
-// Initialize Stripe with validation
-const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-
-if (!stripePublishableKey) {
-  console.error('❌ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY not found');
-  console.error('❌ Make sure you have this variable in your .env.local file');
-  console.error('❌ Format: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...');
-}
-
-const stripePromise = stripePublishableKey
-  ? loadStripe(stripePublishableKey)
-  : null;
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -41,10 +26,17 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     'payment'
   );
 
-  const { createReservation } = useReservation();
+  // Validar configuración de Square
+  const squareApplicationId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID;
+  const squareLocationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
 
-  // Early return if Stripe is not configured
-  if (!stripePromise) {
+  // Early return si Square no está configurado
+  if (!squareApplicationId || !squareLocationId) {
+    console.error('❌ Square configuration missing');
+    console.error(
+      '❌ Required: NEXT_PUBLIC_SQUARE_APPLICATION_ID and NEXT_PUBLIC_SQUARE_LOCATION_ID'
+    );
+
     return isOpen ? (
       <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50'>
         <div className='bg-white rounded-xl shadow-2xl max-w-md w-full p-6'>
@@ -122,7 +114,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </h2>
                 <p className='text-blue-100 text-sm'>
                   {currentStep === 'payment'
-                    ? 'Secure checkout powered by Stripe'
+                    ? 'Secure checkout powered by Square'
                     : 'Your reservation has been confirmed'}
                 </p>
               </div>
@@ -171,26 +163,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                 </div>
 
-                {/* Payment Form */}
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    appearance: {
-                      theme: 'stripe',
-                      variables: {
-                        colorPrimary: '#2563eb',
-                      },
-                    },
-                  }}
-                >
-                  <PaymentForm
-                    reservationData={reservationData}
-                    onSuccess={handlePaymentSuccess}
-                    onError={handlePaymentError}
-                    createReservation={createReservation}
-                    onClose={handleClose}
-                  />
-                </Elements>
+                {/* Square Payment Form - Sin wrapper de Elements */}
+                <SquarePaymentForm
+                  reservationData={reservationData}
+                  onSuccess={handlePaymentSuccess}
+                  onError={handlePaymentError}
+                  onClose={handleClose}
+                />
               </div>
             )}
 

@@ -14,16 +14,17 @@ export type ReservationProperties = {
   notes?: string;
 };
 
-export type PaymentProperties = {
+export interface PaymentProperties {
   paymentId: string;
   reservationId: string;
-  amount: number; // in cents
+  amount: number; // en centavos
   currency: string;
-  status: PaymentStatus;
-  paymentMethod: PaymentMethod;
-  stripePaymentIntentId: string;
-  clientSecret: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'canceled';
+  paymentMethod: 'card' | 'google_pay' | 'apple_pay';
+  squarePaymentId: string; // ID del pago en Square
+  receiptUrl?: string; // URL del recibo de Square
+  receiptNumber?: string; // Número de recibo de Square
   createdAt: Date;
   updatedAt: Date;
   metadata?: Record<string, any>;
-};
+}

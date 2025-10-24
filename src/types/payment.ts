@@ -25,13 +25,6 @@ export type PaymentFormData = {
   };
 };
 
-export type StripeElements = {
-  card?: any;
-  cardNumber?: any;
-  cardExpiry?: any;
-  cardCvc?: any;
-};
-
 export type PaymentResult = {
   success: boolean;
   payment?: any;
@@ -39,12 +32,3 @@ export type PaymentResult = {
   requiresAction?: boolean;
   clientSecret?: string;
 };
-
-// Environment variables type
-export interface StripeConfig {
-  publishableKey: string;
-  secretKey: string;
-  webhookSecret: string;
-  currency: string;
-  companyName: string;
-}
