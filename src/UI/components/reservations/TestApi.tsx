@@ -317,8 +317,7 @@ const TestApi = () => {
           <h3 className='font-semibold text-blue-900 mb-2'>Expected Flow:</h3>
           <ol className='text-sm text-blue-800 space-y-1'>
             <li>
-              1. Click "Test Payment Intent" - should create a Stripe payment
-              intent
+              1. Click "Test Payment Intent" - should create a payment intent
             </li>
             <li>
               2. If successful, click "Test Full Process" - should create a

@@ -1,18 +1,19 @@
 // src/app/api/payments/process/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { SquareCaller } from '@/infra/payment/SquareCaller';
 import { reservationService } from '@/primary/Reservation/useCases';
 
 export async function POST(request: NextRequest) {
-  console.log('🎯 Process Payment API called');
+  console.log('🎯 Square Process Payment API called');
 
   try {
     const body = await request.json();
-    console.log('📥 Processing payment and reservation...');
+    console.log('📥 Processing payment with Square...');
 
-    const { reservationData, paymentMethodId, clientSecret } = body;
+    const { sourceId, reservationData, amount, currency } = body;
 
-    // Validation
-    if (!reservationData || !paymentMethodId || !clientSecret) {
+    // Validación
+    if (!sourceId || !reservationData || !amount || !currency) {
       return NextResponse.json(
         { error: 'Missing required payment data' },
         { status: 400 }
@@ -26,9 +27,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('📄 Creating reservation with service...');
+    const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
+    if (!locationId) {
+      return NextResponse.json(
+        { error: 'Square location not configured' },
+        { status: 500 }
+      );
+    }
 
-    // Usar el servicio real en lugar de mock
+    console.log('💳 Creating payment with Square...');
+
+    // Crear instancia de SquareCaller
+    const squareCaller = new SquareCaller();
+
+    // Crear el pago en Square
+    const payment = await squareCaller.createPayment({
+      sourceId: sourceId,
+      reservationId: `temp_${Date.now()}`,
+      amount: amount,
+      currency: currency,
+      locationId: locationId,
+      metadata: {
+        serviceName: reservationData.service.name,
+        clientEmail: reservationData.clientInfo.email,
+        clientName: reservationData.clientInfo.name,
+        timestamp: new Date().toISOString(),
+      },
+    });
+
+    console.log('✅ Square payment created:', payment.paymentId);
+    console.log('✅ Payment status:', payment.status);
+
+    // Verificar que el pago fue exitoso
+    if (payment.status !== 'COMPLETED') {
+      throw new Error(`Payment failed with status: ${payment.status}`);
+    }
+
+    console.log('📄 Creating reservation...');
+
+    // Crear la reservación usando el servicio existente
     const reservation = await reservationService.createReservation({
       serviceId: reservationData.service.id,
       serviceName: reservationData.service.name,
@@ -38,6 +75,12 @@ export async function POST(request: NextRequest) {
       clientPhone: reservationData.clientInfo.phone,
       formData: reservationData.formData || {},
       notes: reservationData.notes,
+      paymentInfo: {
+        paymentId: payment.paymentId,
+        status: payment.status,
+        receiptUrl: payment.receiptUrl,
+        receiptNumber: payment.receiptNumber,
+      },
     });
 
     console.log('✅ Reservation created:', reservation.bookingId);
@@ -54,14 +97,22 @@ export async function POST(request: NextRequest) {
         clientPhone: reservation.clientPhone,
         status: reservation.status,
         formData: reservation.formData,
+        paymentInfo: {
+          paymentId: payment.paymentId,
+          status: payment.status,
+          receiptUrl: payment.receiptUrl,
+          receiptNumber: payment.receiptNumber,
+        },
       },
     });
   } catch (error: any) {
     console.error('❌ Process payment error:', error);
     return NextResponse.json(
       {
-        error: 'Failed to process payment and create reservation',
+        error: 'Failed to process payment',
         message: error.message,
+        details:
+          process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
       { status: 500 }
     );

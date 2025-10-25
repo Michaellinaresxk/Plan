@@ -1,14 +1,14 @@
 // servicios/Payment.ts
-import { StripeCaller } from '@/infra/payment/StripeCaller';
+import { SquareCaller } from '@/infra/payment/SquareCaller';
 import { PaymentCaller } from '@/infra/payment/PaymentCaller';
 import { db } from '@/infra/api/FirebaseConfig';
 import { PaymentResource } from '@/infra/payment/PaymentResource';
 import { PaymentService } from '@/primary/payment';
 
 // Crear la cadena de dependencias
-const stripeCaller = new StripeCaller();
+const squareCaller = new SquareCaller();
 const paymentCaller = new PaymentCaller(db);
-const paymentResource = new PaymentResource(stripeCaller, paymentCaller);
+const paymentResource = new PaymentResource(squareCaller, paymentCaller);
 const paymentService = new PaymentService();
 
 export { paymentService };

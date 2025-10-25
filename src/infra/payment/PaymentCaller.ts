@@ -18,6 +18,10 @@ import type {
   UpdatePaymentData,
 } from './ApiPayment';
 
+/**
+ * PaymentCaller - Maneja la persistencia de pagos en Firestore
+ * Adaptado para Square Payments
+ */
 export class PaymentCaller {
   private readonly COLLECTION_NAME = 'payments';
 
@@ -30,10 +34,10 @@ export class PaymentCaller {
 
   async createPayment(data: CreatePaymentData): Promise<ApiPayment> {
     try {
-      console.log('🔥 PaymentCaller - Creating payment...');
-      console.log('🔥 Project ID:', this.db.app.options.projectId);
-      console.log('🔥 Collection:', this.COLLECTION_NAME);
-      console.log('🔥 Data to save:', data);
+      console.log('📥 PaymentCaller - Creating payment...');
+      console.log('📥 Project ID:', this.db.app.options.projectId);
+      console.log('📥 Collection:', this.COLLECTION_NAME);
+      console.log('📥 Data to save:', data);
 
       const paymentData: Omit<ApiPayment, 'paymentId'> = {
         reservationId: data.reservationId,
@@ -41,18 +45,19 @@ export class PaymentCaller {
         currency: data.currency,
         status: data.status,
         paymentMethod: data.paymentMethod,
-        stripePaymentIntentId: data.stripePaymentIntentId,
-        clientSecret: data.clientSecret,
+        squarePaymentId: data.squarePaymentId,
+        receiptUrl: data.receiptUrl,
+        receiptNumber: data.receiptNumber,
         createdAt: Timestamp.fromDate(new Date()),
         updatedAt: Timestamp.fromDate(new Date()),
         metadata: data.metadata || {},
       };
 
-      console.log('🔥 Formatted payment data:', paymentData);
+      console.log('📥 Formatted payment data:', paymentData);
 
       // Get collection reference
       const collectionRef = collection(this.db, this.COLLECTION_NAME);
-      console.log('🔥 Collection reference created');
+      console.log('📥 Collection reference created');
 
       // Attempt to add document
       const docRef = await addDoc(collectionRef, paymentData);
@@ -95,7 +100,7 @@ export class PaymentCaller {
 
   async getPayment(paymentId: string): Promise<ApiPayment | null> {
     try {
-      console.log('🔥 PaymentCaller - Getting payment:', paymentId);
+      console.log('📥 PaymentCaller - Getting payment:', paymentId);
 
       const collectionRef = collection(this.db, this.COLLECTION_NAME);
       const docRef = doc(collectionRef, paymentId);
@@ -130,7 +135,7 @@ export class PaymentCaller {
   ): Promise<ApiPayment | null> {
     try {
       console.log(
-        '🔥 PaymentCaller - Getting payment by reservation ID:',
+        '📥 PaymentCaller - Getting payment by reservation ID:',
         reservationId
       );
 
@@ -170,26 +175,26 @@ export class PaymentCaller {
     }
   }
 
-  async getPaymentByStripeId(
-    stripePaymentIntentId: string
+  async getPaymentBySquareId(
+    squarePaymentId: string
   ): Promise<ApiPayment | null> {
     try {
       console.log(
-        '🔥 PaymentCaller - Getting payment by Stripe ID:',
-        stripePaymentIntentId
+        '📥 PaymentCaller - Getting payment by Square ID:',
+        squarePaymentId
       );
 
       const q = query(
         collection(this.db, this.COLLECTION_NAME),
-        where('stripePaymentIntentId', '==', stripePaymentIntentId)
+        where('squarePaymentId', '==', squarePaymentId)
       );
 
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
         console.log(
-          '❌ PaymentCaller - No payment found for Stripe ID:',
-          stripePaymentIntentId
+          '❌ PaymentCaller - No payment found for Square ID:',
+          squarePaymentId
         );
         return null;
       }
@@ -197,17 +202,17 @@ export class PaymentCaller {
       const doc = querySnapshot.docs[0];
       const data = doc.data();
 
-      console.log('✅ PaymentCaller - Payment found for Stripe ID:', data);
+      console.log('✅ PaymentCaller - Payment found for Square ID:', data);
       return {
         paymentId: doc.id,
         ...data,
       } as ApiPayment;
     } catch (error: any) {
       console.error(
-        '❌ PaymentCaller - Error getting payment by Stripe ID:',
+        '❌ PaymentCaller - Error getting payment by Square ID:',
         error
       );
-      throw new Error(`Failed to get payment by Stripe ID: ${error.message}`);
+      throw new Error(`Failed to get payment by Square ID: ${error.message}`);
     }
   }
 
@@ -217,7 +222,7 @@ export class PaymentCaller {
     metadata?: Record<string, any>
   ): Promise<void> {
     try {
-      console.log('🔥 PaymentCaller - Updating payment status:', {
+      console.log('📥 PaymentCaller - Updating payment status:', {
         paymentId,
         status,
         metadata,
@@ -252,7 +257,7 @@ export class PaymentCaller {
 
   async getAllPayments(): Promise<ApiPayment[]> {
     try {
-      console.log('🔥 PaymentCaller - Getting all payments');
+      console.log('📥 PaymentCaller - Getting all payments');
 
       const q = query(
         collection(this.db, this.COLLECTION_NAME),

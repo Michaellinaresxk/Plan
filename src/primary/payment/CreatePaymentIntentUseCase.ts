@@ -18,7 +18,7 @@ export class CreatePaymentIntentUseCase {
       // Validate input data
       this.validatePaymentIntentData(data);
 
-      // Create payment intent with Stripe
+      // Create payment intent
       const paymentIntent = await this.paymentRepository.createPaymentIntent(
         data
       );
