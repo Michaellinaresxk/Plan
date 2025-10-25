@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   CreditCard,
   Lock,
@@ -25,425 +25,230 @@ interface SquarePaymentFormProps {
   onClose: () => void;
 }
 
+/**
+ * 🎯 ARQUITECTURA MEJORADA
+ *
+ * Cambios principales:
+ * 1. El card-container SIEMPRE se renderiza (no condicionalmente)
+ * 2. Estados separados para SDK loading vs Card initialization
+ * 3. useEffect separado para inicialización solo cuando el DOM está listo
+ * 4. Cleanup mejorado y sin memory leaks
+ */
 const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
   reservationData,
   onSuccess,
   onError,
   onClose,
 }) => {
-  // Estados
+  // ========================
+  // ESTADOS
+  // ========================
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
-  const [isSquareLoaded, setIsSquareLoaded] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [card, setCard] = useState<any>(null);
-  const [payments, setPayments] = useState<any>(null);
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+  const [cardReady, setCardReady] = useState(false);
   const [currentStep, setCurrentStep] = useState<
     'ready' | 'processing' | 'success'
   >('ready');
 
-  // Refs
-  const isMountedRef = useRef(true);
+  // ========================
+  // REFS
+  // ========================
+  const cardInstanceRef = useRef<any>(null);
+  const paymentsInstanceRef = useRef<any>(null);
   const cardContainerRef = useRef<HTMLDivElement>(null);
-  const initializationAttempted = useRef(false);
-  const squareScriptLoaded = useRef(false);
+  const initAttemptedRef = useRef(false);
+  const isMountedRef = useRef(true);
 
-  // Configuración de Square (desde variables de entorno)
+  // ========================
+  // CONFIGURACIÓN
+  // ========================
   const applicationId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID;
   const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
 
-  // 🔧 DETECCIÓN AUTOMÁTICA DE AMBIENTE
-  const detectEnvironment = () => {
-    if (!applicationId) return { isProduction: false, isSandbox: false };
+  // Detección de ambiente
+  const isProduction =
+    applicationId?.startsWith('sq0idp-') ||
+    applicationId?.startsWith('sq0idb-');
+  const isSandbox = applicationId?.startsWith('sandbox-');
 
-    const isSandbox = applicationId.startsWith('sandbox-');
-    const isProduction =
-      applicationId.startsWith('sq0idp-') ||
-      applicationId.startsWith('sq0idb-');
-
-    return { isProduction, isSandbox };
-  };
-
-  const { isProduction, isSandbox } = detectEnvironment();
-
-  // Determinar la URL correcta del SDK
   const getSquareSDKUrl = () => {
-    if (isProduction) {
-      console.log('🚨 PRODUCTION MODE - Real payments will be processed!');
-      return 'https://web.squarecdn.com/v1/square.js';
-    } else if (isSandbox) {
-      console.log('🧪 SANDBOX MODE - Test payments only');
-      return 'https://sandbox.web.squarecdn.com/v1/square.js';
-    } else {
-      console.error('❌ Invalid Application ID format');
-      return null;
-    }
+    if (isProduction) return 'https://web.squarecdn.com/v1/square.js';
+    if (isSandbox) return 'https://sandbox.web.squarecdn.com/v1/square.js';
+    return null;
   };
 
-  // Cleanup al desmontar
+  // ========================
+  // CLEANUP
+  // ========================
   useEffect(() => {
+    isMountedRef.current = true;
+
     return () => {
       isMountedRef.current = false;
-      if (card) {
+
+      // Destroy card instance
+      if (cardInstanceRef.current) {
         try {
-          card.destroy();
+          cardInstanceRef.current.destroy();
           console.log('🧹 Card instance destroyed');
         } catch (e) {
-          console.log('Card already destroyed or not initialized');
+          console.log('Card instance already destroyed');
         }
       }
     };
-  }, [card]);
+  }, []);
 
-  // 🔧 FIX: Esperar a que el elemento esté en el DOM con mejor lógica
-  const waitForCardContainer = (): Promise<HTMLElement> => {
-    return new Promise((resolve, reject) => {
-      console.log('⏳ Waiting for card container...');
-
-      // Timeout máximo de 5 segundos
-      const timeout = setTimeout(() => {
-        reject(
-          new Error('Card container element not found in DOM after 5 seconds')
-        );
-      }, 5000);
-
-      // Función para verificar el elemento
-      const checkElement = () => {
-        // Primero intentar con el ref
-        if (cardContainerRef.current) {
-          console.log('✅ Card container found via ref');
-          clearTimeout(timeout);
-          resolve(cardContainerRef.current);
-          return true;
-        }
-
-        // Luego intentar con getElementById
-        const element = document.getElementById('card-container');
-        if (element) {
-          console.log('✅ Card container found via getElementById');
-          clearTimeout(timeout);
-          resolve(element);
-          return true;
-        }
-
-        return false;
-      };
-
-      // Verificar inmediatamente
-      if (checkElement()) return;
-
-      // Si no existe, usar MutationObserver
-      console.log('👀 Setting up MutationObserver...');
-      const observer = new MutationObserver((mutations) => {
-        if (checkElement()) {
-          observer.disconnect();
-        }
-      });
-
-      // Observar cambios en el body
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-      });
-
-      // También intentar con requestAnimationFrame
-      const rafCheck = () => {
-        if (!checkElement()) {
-          requestAnimationFrame(rafCheck);
-        } else {
-          observer.disconnect();
-        }
-      };
-      requestAnimationFrame(rafCheck);
-    });
-  };
-
-  // Cargar Square Web Payments SDK
+  // ========================
+  // CARGAR SQUARE SDK
+  // ========================
   useEffect(() => {
     if (!applicationId || !locationId) {
-      setPaymentError(
-        'Square configuration is missing. Please contact support.'
-      );
-      setIsInitializing(false);
+      setPaymentError('Square configuration is missing');
       return;
     }
 
     const sdkUrl = getSquareSDKUrl();
     if (!sdkUrl) {
-      setPaymentError(
-        'Invalid Square Application ID format. Must start with "sandbox-" or "sq0idp-" or "sq0idb-"'
-      );
-      setIsInitializing(false);
+      setPaymentError('Invalid Square Application ID format');
       return;
     }
 
-    const loadSquareScript = async () => {
-      try {
-        // Verificar si Square ya está cargado
-        if (window.Square && squareScriptLoaded.current) {
-          console.log('✅ Square SDK already loaded, initializing...');
-          await initializeSquare();
-          return;
-        }
+    // Si ya está cargado, no hacer nada
+    if (window.Square) {
+      console.log('✅ Square SDK already loaded');
+      setSdkLoaded(true);
+      return;
+    }
 
-        console.log('📥 Loading Square Web Payments SDK...');
-        console.log(
-          `🔧 Environment: ${isProduction ? 'PRODUCTION 🚨' : 'SANDBOX 🧪'}`
-        );
-        console.log(`🔧 SDK URL: ${sdkUrl}`);
+    // Verificar si el script ya existe
+    if (document.getElementById('square-sdk-script')) {
+      console.log('✅ Square SDK script already in DOM');
+      return;
+    }
 
-        const script = document.createElement('script');
-        script.src = sdkUrl;
-        script.async = true;
-        script.id = 'square-sdk-script';
+    console.log('📥 Loading Square SDK...');
+    console.log(
+      `🔧 Environment: ${isProduction ? 'PRODUCTION 🚨' : 'SANDBOX 🧪'}`
+    );
 
-        script.onload = async () => {
-          if (!isMountedRef.current) return;
+    const script = document.createElement('script');
+    script.src = sdkUrl;
+    script.id = 'square-sdk-script';
+    script.async = true;
 
-          console.log('✅ Square SDK script loaded successfully');
-          squareScriptLoaded.current = true;
+    script.onload = () => {
+      if (!isMountedRef.current) return;
 
-          if (isProduction) {
-            console.log('🚨🚨🚨 PRODUCTION MODE ACTIVE 🚨🚨🚨');
-            console.log('💰 REAL MONEY WILL BE CHARGED!');
-          }
-
-          // Pequeño delay para asegurar que el SDK esté completamente listo
-          await new Promise((resolve) => setTimeout(resolve, 100));
-
-          await initializeSquare();
-        };
-
-        script.onerror = (error) => {
-          if (!isMountedRef.current) return;
-          console.error('❌ Failed to load Square SDK:', error);
-          setPaymentError(
-            'Failed to load payment system. Please refresh the page.'
-          );
-          setIsInitializing(false);
-        };
-
-        document.body.appendChild(script);
-      } catch (error) {
-        if (!isMountedRef.current) return;
-        console.error('❌ Error loading Square SDK:', error);
-        setPaymentError('Failed to initialize payment system.');
-        setIsInitializing(false);
+      console.log('✅ Square SDK loaded successfully');
+      if (isProduction) {
+        console.log('🚨 PRODUCTION MODE - Real payments will be charged!');
       }
+
+      setSdkLoaded(true);
     };
 
-    loadSquareScript();
+    script.onerror = () => {
+      if (!isMountedRef.current) return;
 
-    // Cleanup
+      console.error('❌ Failed to load Square SDK');
+      setPaymentError('Failed to load payment system');
+    };
+
+    document.body.appendChild(script);
+
     return () => {
-      const existingScript = document.getElementById('square-sdk-script');
-      if (existingScript) {
-        existingScript.remove();
-      }
+      // No remover el script en cleanup - puede ser reutilizado
     };
-  }, [applicationId, locationId]);
+  }, [applicationId, locationId, isProduction]);
 
-  // Inicializar Square Payments
-  const initializeSquare = async () => {
-    // Evitar inicialización múltiple
-    if (initializationAttempted.current) {
-      console.log('⚠️ Square initialization already attempted');
+  // ========================
+  // INICIALIZAR SQUARE CARD
+  // ========================
+  const initializeSquareCard = useCallback(async () => {
+    // Evitar múltiples inicializaciones
+    if (initAttemptedRef.current) {
+      console.log('⚠️ Card initialization already attempted');
       return;
     }
 
-    initializationAttempted.current = true;
-
-    if (!isMountedRef.current) {
-      console.log('⚠️ Component unmounted, skipping initialization');
+    if (!sdkLoaded || !window.Square) {
+      console.log('⚠️ Square SDK not ready yet');
       return;
     }
+
+    if (!cardContainerRef.current) {
+      console.log('⚠️ Card container ref not ready');
+      return;
+    }
+
+    initAttemptedRef.current = true;
 
     try {
-      if (!window.Square) {
-        throw new Error('Square SDK not loaded');
-      }
-
-      console.log('🔧 Initializing Square Payments...');
+      console.log('🔧 Initializing Square Card...');
       console.log(`🔧 Application ID: ${applicationId}`);
       console.log(`🔧 Location ID: ${locationId}`);
-      console.log(
-        `🔧 Environment: ${isProduction ? 'PRODUCTION 🚨' : 'SANDBOX 🧪'}`
-      );
 
-      // 🔧 FIX: Esperar a que el elemento exista
-      console.log('⏳ Waiting for card container element...');
-      const cardContainer = await waitForCardContainer();
-
-      if (!isMountedRef.current) {
-        console.log('⚠️ Component unmounted during wait, aborting');
-        return;
-      }
-
-      console.log('✅ Card container element ready:', cardContainer.id);
-
-      // Inicializar payments instance
-      const paymentsInstance = window.Square.payments(
-        applicationId,
-        locationId
-      );
-
-      if (!isMountedRef.current) return;
-      setPayments(paymentsInstance);
+      // 1. Crear payments instance
+      const payments = window.Square.payments(applicationId, locationId);
+      paymentsInstanceRef.current = payments;
       console.log('✅ Payments instance created');
 
-      // Inicializar Card
-      console.log('🔧 Creating card instance...');
-      const cardInstance = await paymentsInstance.card();
-
-      if (!isMountedRef.current) return;
+      // 2. Crear card instance
+      const card = await payments.card();
+      cardInstanceRef.current = card;
       console.log('✅ Card instance created');
 
-      // Attach card to container
-      console.log('🔧 Attaching card to container...');
-      await cardInstance.attach('#card-container');
-
-      if (!isMountedRef.current) return;
+      // 3. Attach al contenedor
+      await card.attach('#card-container');
       console.log('✅ Card attached to container');
 
-      setCard(cardInstance);
-      setIsSquareLoaded(true);
-      setIsInitializing(false);
+      if (!isMountedRef.current) return;
 
+      setCardReady(true);
       console.log('🎉 Square Card initialized successfully!');
-      if (isProduction) {
-        console.log('⚠️ PRODUCTION MODE: Real payments will be processed');
-      }
     } catch (error) {
       if (!isMountedRef.current) return;
 
-      console.error('❌ Error initializing Square:', error);
+      console.error('❌ Error initializing Square Card:', error);
 
-      let errorMessage = 'Failed to initialize payment form. ';
-
-      if (error instanceof Error) {
-        if (error.message.includes('not found in DOM')) {
-          errorMessage +=
-            'The payment form container is not ready. Please try again.';
-        } else {
-          errorMessage += error.message;
-        }
-      }
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to initialize payment form';
 
       setPaymentError(errorMessage);
-      setIsInitializing(false);
-      initializationAttempted.current = false; // Permitir reintento
+      initAttemptedRef.current = false; // Permitir reintento
     }
-  };
+  }, [sdkLoaded, applicationId, locationId]);
 
-  // Validación inicial
-  if (!reservationData.clientInfo) {
-    onError('Client information is required');
-    return null;
-  }
+  // ========================
+  // EJECUTAR INICIALIZACIÓN
+  // ========================
+  useEffect(() => {
+    // Solo inicializar cuando el SDK esté cargado y el contenedor exista
+    if (sdkLoaded && cardContainerRef.current) {
+      // Pequeño delay para asegurar que el DOM está completamente listo
+      const timer = setTimeout(() => {
+        initializeSquareCard();
+      }, 100);
 
-  if (!applicationId || !locationId) {
-    return (
-      <div className='flex items-center justify-center p-8'>
-        <div className='text-center'>
-          <AlertCircle className='w-12 h-12 text-red-600 mx-auto mb-4' />
-          <h3 className='text-xl font-bold text-red-900 mb-2'>
-            Configuration Error
-          </h3>
-          <p className='text-red-700 mb-4'>
-            Square payment system is not properly configured.
-          </p>
-          <button
-            onClick={onClose}
-            className='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700'
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  }
+      return () => clearTimeout(timer);
+    }
+  }, [sdkLoaded, initializeSquareCard]);
 
-  // Loading/Initializing state
-  if (isInitializing || !isSquareLoaded) {
-    return (
-      <div className='flex items-center justify-center p-8'>
-        <div className='text-center'>
-          <Loader2 className='w-8 h-8 animate-spin text-blue-600 mx-auto mb-4' />
-          <p className='text-gray-600 mb-2'>
-            {isInitializing
-              ? 'Initializing payment system...'
-              : 'Loading payment system...'}
-          </p>
-          <p className='text-xs text-gray-500'>
-            {isInitializing
-              ? 'Setting up secure connection...'
-              : 'Please wait...'}
-          </p>
-          {isProduction && (
-            <div className='mt-4 p-4 bg-red-50 border-2 border-red-300 rounded-lg'>
-              <div className='flex items-center justify-center mb-2'>
-                <AlertTriangle className='w-6 h-6 text-red-600 mr-2' />
-                <p className='text-sm font-bold text-red-900'>
-                  PRODUCTION MODE ACTIVE
-                </p>
-              </div>
-              <p className='text-xs text-red-800 font-semibold'>
-                💰 Real money will be charged!
-              </p>
-              <p className='text-xs text-red-700 mt-1'>
-                This is not a test payment
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (paymentError && !isSquareLoaded) {
-    return (
-      <div className='flex items-center justify-center p-8'>
-        <div className='text-center max-w-md'>
-          <AlertCircle className='w-12 h-12 text-red-600 mx-auto mb-4' />
-          <h3 className='text-xl font-bold text-red-900 mb-2'>
-            Initialization Error
-          </h3>
-          <p className='text-red-700 mb-4'>{paymentError}</p>
-          <div className='space-y-2'>
-            <button
-              onClick={() => {
-                setPaymentError(null);
-                setIsInitializing(true);
-                initializationAttempted.current = false;
-                initializeSquare();
-              }}
-              className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-full'
-            >
-              Try Again
-            </button>
-            <button
-              onClick={() => window.location.reload()}
-              className='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 w-full'
-            >
-              Refresh Page
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Manejar el submit del formulario
+  // ========================
+  // HANDLE PAYMENT SUBMIT
+  // ========================
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!card || !payments) {
+    if (!cardInstanceRef.current || !paymentsInstanceRef.current) {
       setPaymentError('Payment system not ready');
       return;
     }
 
-    // Confirmación adicional en producción
+    // Confirmación en producción
     if (isProduction) {
       const confirmed = window.confirm(
         '🚨 PRODUCTION MODE\n\n' +
@@ -469,15 +274,10 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
         console.log('🚨 PRODUCTION PAYMENT - Real money will be charged');
       }
 
-      const tokenResult = await card.tokenize();
+      const tokenResult = await cardInstanceRef.current.tokenize();
 
       if (tokenResult.status === 'OK') {
         console.log('✅ Card tokenized successfully');
-        console.log('🔐 Token:', tokenResult.token);
-
-        if (isProduction) {
-          console.log('💰 Processing REAL payment...');
-        }
 
         const response = await fetch('/api/payments/process', {
           method: 'POST',
@@ -506,6 +306,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
               `Amount charged: $${reservationData.totalPrice.toFixed(2)}`
             );
           }
+
           setCurrentStep('success');
 
           setTimeout(() => {
@@ -526,6 +327,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
       }
     } catch (error) {
       console.error('❌ Payment process error:', error);
+
       const errorMessage =
         error instanceof Error ? error.message : 'An unexpected error occurred';
 
@@ -537,7 +339,39 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     }
   };
 
-  // Success state
+  // ========================
+  // VALIDACIONES INICIALES
+  // ========================
+  if (!reservationData.clientInfo) {
+    onError('Client information is required');
+    return null;
+  }
+
+  if (!applicationId || !locationId) {
+    return (
+      <div className='flex items-center justify-center p-8'>
+        <div className='text-center'>
+          <AlertCircle className='w-12 h-12 text-red-600 mx-auto mb-4' />
+          <h3 className='text-xl font-bold text-red-900 mb-2'>
+            Configuration Error
+          </h3>
+          <p className='text-red-700 mb-4'>
+            Square payment system is not properly configured.
+          </p>
+          <button
+            onClick={onClose}
+            className='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700'
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ========================
+  // SUCCESS STATE
+  // ========================
   if (currentStep === 'success') {
     return (
       <div className='text-center py-8'>
@@ -573,6 +407,9 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
     );
   }
 
+  // ========================
+  // MAIN RENDER
+  // ========================
   return (
     <div className='space-y-6'>
       {/* Header */}
@@ -607,14 +444,40 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
             Card Information
           </label>
 
-          {/* Square Card Container */}
-          <div
-            id='card-container'
-            ref={cardContainerRef}
-            className='border rounded-lg p-4 bg-white border-gray-300 min-h-[120px]'
-            style={{ minHeight: '120px' }}
-          />
+          {/* Square Card Container - SIEMPRE RENDERIZADO */}
+          <div className='relative'>
+            <div
+              id='card-container'
+              ref={cardContainerRef}
+              className='border rounded-lg p-4 bg-white border-gray-300 min-h-[120px]'
+            />
 
+            {/* Loading overlay */}
+            {!cardReady && sdkLoaded && (
+              <div className='absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 rounded-lg'>
+                <div className='text-center'>
+                  <Loader2 className='w-6 h-6 animate-spin text-blue-600 mx-auto mb-2' />
+                  <p className='text-xs text-gray-600'>
+                    Initializing payment form...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* SDK Loading overlay */}
+            {!sdkLoaded && (
+              <div className='absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 rounded-lg'>
+                <div className='text-center'>
+                  <Loader2 className='w-6 h-6 animate-spin text-blue-600 mx-auto mb-2' />
+                  <p className='text-xs text-gray-600'>
+                    Loading payment system...
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Error Display */}
           {paymentError && (
             <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
               <div className='flex items-start'>
@@ -628,11 +491,12 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
                     type='button'
                     onClick={() => {
                       setPaymentError(null);
-                      window.location.reload();
+                      initAttemptedRef.current = false;
+                      initializeSquareCard();
                     }}
                     className='mt-2 text-sm text-red-600 hover:text-red-800 underline'
                   >
-                    Refresh Page
+                    Try Again
                   </button>
                 </div>
               </div>
@@ -672,11 +536,11 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
 
           <button
             type='submit'
-            disabled={!isSquareLoaded || isProcessing}
+            disabled={!cardReady || isProcessing}
             className={`
               flex-1 px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium text-lg
               ${
-                !isSquareLoaded || isProcessing
+                !cardReady || isProcessing
                   ? 'bg-gray-400 cursor-not-allowed text-white'
                   : isProduction
                   ? 'bg-red-600 hover:bg-red-700 text-white'
@@ -691,8 +555,11 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
                   ? 'Processing Payment...'
                   : 'Creating Reservation...'}
               </>
-            ) : !isSquareLoaded ? (
-              'Loading Square...'
+            ) : !cardReady ? (
+              <>
+                <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                Loading...
+              </>
             ) : (
               <>
                 <Lock className='w-4 h-4 mr-2' />
