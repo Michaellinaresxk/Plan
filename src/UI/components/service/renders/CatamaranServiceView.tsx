@@ -64,8 +64,8 @@ const CatamaranInquiryModal: React.FC<{
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    // Validation
+  const handleSubmit = async () => {
+    // Validación
     if (
       !formData.date ||
       !formData.name ||
@@ -80,12 +80,54 @@ const CatamaranInquiryModal: React.FC<{
 
     setIsSubmitting(true);
 
-    // Simulate API call - replace with your actual API endpoint
-    setTimeout(() => {
+    try {
+      // 📧 ENVIAR A LA API DE INQUIRY
+      const response = await fetch('/api/services/inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // Datos del servicio
+          serviceName: catamaran.name,
+          serviceType: 'catamaran',
+
+          // Datos del cliente
+          customerName: formData.name,
+          customerEmail: formData.email,
+          customerPhone: formData.phone,
+
+          // Detalles de la reserva
+          tourDate: formData.date,
+          timeSlot: formData.timeSlot,
+
+          // Participantes
+          totalGuests: formData.guests,
+
+          // Mensaje
+          message: formData.message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Error al enviar la consulta');
+      }
+
+      // ✅ ÉXITO
       alert(t('services.standard.catamaranServiceView.inquiry.successMessage'));
-      setIsSubmitting(false);
       onClose();
-    }, 2000);
+    } catch (error) {
+      console.error('❌ Error al enviar inquiry:', error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Ha ocurrido un error. Por favor intente nuevamente.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
