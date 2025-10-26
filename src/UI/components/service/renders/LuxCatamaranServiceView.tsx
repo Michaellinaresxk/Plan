@@ -77,8 +77,8 @@ const InquiryModal: React.FC<{
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    // Validation
+  const handleSubmit = async () => {
+    // Validación
     if (
       !formData.date ||
       !formData.name ||
@@ -91,14 +91,45 @@ const InquiryModal: React.FC<{
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/services/inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceName: catamaran.name,
+          serviceType: 'lux-catamaran',
+          customerName: formData.name,
+          customerEmail: formData.email,
+          customerPhone: formData.phone,
+          tourDate: formData.date,
+          timeSlot: formData.timeSlot,
+          totalGuests: formData.guests,
+          message: formData.message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit inquiry');
+      }
+
       alert(
-        'Inquiry submitted successfully! Our team will contact you within 24 hours to confirm availability.'
+        'Inquiry submitted successfully! Our team will contact you within 24 hours.'
       );
-      setIsSubmitting(false);
       onClose();
-    }, 2000);
+    } catch (error) {
+      console.error('❌ Error submitting inquiry:', error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'An error occurred. Please try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

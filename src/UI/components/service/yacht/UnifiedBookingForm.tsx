@@ -20,6 +20,8 @@ import { useState } from 'react';
 const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // ✅ NUEVO
+
   const [formData, setFormData] = useState<BookingFormData>({
     date: '',
     guests: 2,
@@ -40,13 +42,119 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
     }));
   };
 
+  // ✅ FUNCIÓN CORREGIDA - Ahora sí envía email
   const handleSubmit = async () => {
+    // Reset error
+    setErrorMessage(null);
+
+    // Validación
+    if (
+      !formData.date ||
+      !formData.name ||
+      !formData.email ||
+      !formData.phone
+    ) {
+      setErrorMessage(
+        'Please fill in all required fields (Date, Name, Email, Phone)'
+      );
+      return;
+    }
+
+    // Validación de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setErrorMessage('Please enter a valid email address');
+      return;
+    }
+
+    // Validación de teléfono (básica)
+    if (formData.phone.length < 7) {
+      setErrorMessage('Please enter a valid phone number');
+      return;
+    }
+
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      alert('Booking request submitted successfully!');
-      setIsSubmitting(false);
-      onClose();
+    try {
+      console.log('📤 Sending yacht booking inquiry...', {
+        yacht: yacht?.name || 'Luxury Yacht',
+        customer: formData.name,
+        date: formData.date,
+        guests: formData.guests,
+      });
+
+      // ✅ LLAMADA REAL A LA API
+      const response = await fetch('/api/services/inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // Datos del servicio
+          serviceName: yacht?.name || 'Luxury Yacht Experience',
+          serviceType: 'yacht',
+
+          // Datos del cliente
+          customerName: formData.name,
+          customerEmail: formData.email,
+          customerPhone: formData.phone,
+
+          // Detalles de la reserva
+          tourDate: formData.date,
+          timeSlot:
+            formData.duration === 'full-day'
+              ? 'Full Day (8 hours)'
+              : 'Half Day (4 hours)',
+
+          // Participantes
+          totalGuests: formData.guests,
+
+          // Servicios adicionales
+          specialRequests: [
+            formData.message,
+            formData.addons.length > 0
+              ? `Additional services: ${formData.addons.join(', ')}`
+              : null,
+          ]
+            .filter(Boolean)
+            .join('\n\n'),
+
+          // Info adicional para el email
+          message: `
+Booking Request Details:
+- Yacht: ${yacht?.name || 'Luxury Yacht Experience'}
+- Date: ${formData.date}
+- Guests: ${formData.guests}
+- Duration: ${
+            formData.duration === 'full-day' ? 'Full Day (8h)' : 'Half Day (4h)'
+          }
+${
+  formData.addons.length > 0
+    ? `- Additional Services: ${formData.addons.join(', ')}`
+    : ''
+}
+${formData.message ? `\nSpecial Requests:\n${formData.message}` : ''}
+          `.trim(),
+        }),
+      });
+
+      console.log('📡 Response status:', response.status);
+
+      const result = await response.json();
+      console.log('📡 Response data:', result);
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit booking request');
+      }
+
+      // ✅ ÉXITO
+      console.log('✅ Yacht booking inquiry sent successfully');
+
+      alert(
+        'Booking request submitted successfully! Our team will contact you within 24-48 hours to confirm availability and finalize details.'
+      );
+
+      // Reset form
       setFormData({
         date: '',
         guests: 2,
@@ -57,7 +165,18 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
         message: '',
         addons: [],
       });
-    }, 2000);
+
+      onClose();
+    } catch (error) {
+      console.error('❌ Error submitting yacht booking:', error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while submitting your request. Please try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const maxGuests = yacht?.specifications?.maxGuests || 20;
@@ -85,10 +204,10 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
             </button>
           </div>
 
-          {/* Form Content - SIN SCROLL */}
+          {/* Form Content */}
           <div className='p-4 sm:p-6 lg:p-8'>
             <div className='space-y-4 sm:space-y-5'>
-              {/* Row 1: Date & Guests - 2 columnas en móvil */}
+              {/* Row 1: Date & Guests */}
               <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                 <div>
                   <label className='flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2'>
@@ -133,7 +252,7 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
                 </div>
               </div>
 
-              {/* Row 2: Name & Duration - 2 columnas en móvil */}
+              {/* Row 2: Name & Duration */}
               <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                 <div>
                   <label className='flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2'>
@@ -173,7 +292,7 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
                 </div>
               </div>
 
-              {/* Row 3: Email & Phone - 2 columnas en móvil */}
+              {/* Row 3: Email & Phone */}
               <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                 <div>
                   <label className='flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2'>
@@ -216,7 +335,7 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
                 </div>
               </div>
 
-              {/* Additional Services - Grid compacto */}
+              {/* Additional Services */}
               <div>
                 <h4 className='text-sm sm:text-base font-bold text-gray-900 mb-2.5 sm:mb-3 flex items-center gap-2'>
                   <Sparkles className='w-4 h-4 sm:w-5 sm:h-5 text-teal-600' />
@@ -253,7 +372,7 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
                 </div>
               </div>
 
-              {/* Special Requests - Textarea compacto */}
+              {/* Special Requests */}
               <div>
                 <label className='block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2'>
                   Special Requests
@@ -272,7 +391,21 @@ const UnifiedBookingForm: React.FC<BookingFormProps> = ({ yacht, onClose }) => {
                 />
               </div>
 
-              {/* Info Box - Compacto */}
+              {/* ✅ NUEVO: Error Message Display */}
+              {errorMessage && (
+                <div className='p-3 sm:p-4 bg-red-50 border-2 border-red-200 rounded-xl'>
+                  <div className='flex items-start gap-2'>
+                    <div className='flex-shrink-0 w-5 h-5 bg-red-100 rounded-full flex items-center justify-center'>
+                      <span className='text-red-600 font-bold text-xs'>!</span>
+                    </div>
+                    <p className='text-sm text-red-700 font-medium'>
+                      {errorMessage}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Info Box */}
               <div className='bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-3 sm:p-4 border border-teal-200 shadow-sm'>
                 <div className='flex gap-2 sm:gap-3'>
                   <Info className='w-4 h-4 sm:w-5 sm:h-5 text-teal-600 flex-shrink-0 mt-0.5' />
