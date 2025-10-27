@@ -117,89 +117,89 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
   // },
 
   // YOGA SERVICE
-  // [SERVICE_IDS.YOGA]: {
-  //   id: SERVICE_IDS.YOGA,
-  //   titleKey: 'services.standard.yoga.short',
-  //   descriptionKey: 'services.standard.yoga.short',
-  //   fullDescriptionKey: 'ramon dime aver ',
-  //   basePrice: 10,
-  //   priceUnit: 'services.priceUnits.perSession',
-  //   category: 'wellness',
-  //   packageType: ['standard'],
-  //   imageUrl:
-  //     'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //   duration: 1,
-  //   bookingDuration: {
-  //     min: 1,
-  //     max: 10,
-  //     unit: 'hours',
-  //   },
-  //   options: {
-  //     yogaStyle: {
-  //       id: 'yogaStyle',
-  //       nameKey: 'services.yoga.options.yogaStyle.title',
-  //       subOptions: {
-  //         hatha: {
-  //           id: 'hatha',
-  //           nameKey: 'services.yoga.options.yogaStyle.options.hatha',
-  //           price: 0,
-  //         },
-  //         vinyasa: {
-  //           id: 'vinyasa',
-  //           nameKey: 'services.yoga.options.yogaStyle.options.vinyasa',
-  //           price: 0,
-  //         },
-  //         restorative: {
-  //           id: 'restorative',
-  //           nameKey: 'services.yoga.options.yogaStyle.options.restorative',
-  //           price: 0,
-  //         },
-  //         meditation: {
-  //           id: 'meditation',
-  //           nameKey: 'services.yoga.options.yogaStyle.options.meditation',
-  //           price: -10,
-  //         },
-  //       },
-  //     },
-  //     location: {
-  //       id: 'location',
-  //       nameKey: 'services.yoga.options.location.title',
-  //       subOptions: {
-  //         beach: {
-  //           id: 'beach',
-  //           nameKey: 'services.yoga.options.location.options.beach',
-  //           price: 15,
-  //         },
-  //         pool: {
-  //           id: 'pool',
-  //           nameKey: 'services.yoga.options.location.options.pool',
-  //           price: 0,
-  //         },
-  //         indoors: {
-  //           id: 'indoors',
-  //           nameKey: 'services.yoga.options.location.options.indoors',
-  //           price: 0,
-  //         },
-  //       },
-  //     },
-  //   },
-  //   additionalInfoKeys: [
-  //     'services.yoga.additionalInfo.1',
-  //     'services.yoga.additionalInfo.2',
-  //   ],
-  //   specialRender: 'yoga',
-  //   relatedServices: [SERVICE_IDS.PERSONAL_TRAINER],
-  //   tags: ['wellness', 'fitness', 'relaxation'],
-  //   availability: {
-  //     daysOfWeek: [1, 2, 3, 4, 5, 6],
-  //     hoursOfDay: [6, 7, 8, 9, 16, 17, 18],
-  //   },
-  //   metaData: {
-  //     equipmentProvided: true,
-  //     languages: 'english,spanish',
-  //     experienceLevel: 'beginner,intermediate,advanced',
-  //   },
-  // },
+  [SERVICE_IDS.YOGA]: {
+    id: SERVICE_IDS.YOGA,
+    titleKey: 'services.standard.yoga.short',
+    descriptionKey: 'services.standard.yoga.short',
+    fullDescriptionKey: 'ramon dime aver ',
+    basePrice: 10,
+    priceUnit: 'services.priceUnits.perSession',
+    category: 'wellness',
+    packageType: ['standard'],
+    imageUrl:
+      'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: 1,
+    bookingDuration: {
+      min: 1,
+      max: 10,
+      unit: 'hours',
+    },
+    options: {
+      yogaStyle: {
+        id: 'yogaStyle',
+        nameKey: 'services.yoga.options.yogaStyle.title',
+        subOptions: {
+          hatha: {
+            id: 'hatha',
+            nameKey: 'services.yoga.options.yogaStyle.options.hatha',
+            price: 0,
+          },
+          vinyasa: {
+            id: 'vinyasa',
+            nameKey: 'services.yoga.options.yogaStyle.options.vinyasa',
+            price: 0,
+          },
+          restorative: {
+            id: 'restorative',
+            nameKey: 'services.yoga.options.yogaStyle.options.restorative',
+            price: 0,
+          },
+          meditation: {
+            id: 'meditation',
+            nameKey: 'services.yoga.options.yogaStyle.options.meditation',
+            price: -10,
+          },
+        },
+      },
+      location: {
+        id: 'location',
+        nameKey: 'services.yoga.options.location.title',
+        subOptions: {
+          beach: {
+            id: 'beach',
+            nameKey: 'services.yoga.options.location.options.beach',
+            price: 15,
+          },
+          pool: {
+            id: 'pool',
+            nameKey: 'services.yoga.options.location.options.pool',
+            price: 0,
+          },
+          indoors: {
+            id: 'indoors',
+            nameKey: 'services.yoga.options.location.options.indoors',
+            price: 0,
+          },
+        },
+      },
+    },
+    additionalInfoKeys: [
+      'services.yoga.additionalInfo.1',
+      'services.yoga.additionalInfo.2',
+    ],
+    specialRender: 'yoga',
+    relatedServices: [SERVICE_IDS.PERSONAL_TRAINER],
+    tags: ['wellness', 'fitness', 'relaxation'],
+    availability: {
+      daysOfWeek: [1, 2, 3, 4, 5, 6],
+      hoursOfDay: [6, 7, 8, 9, 16, 17, 18],
+    },
+    metaData: {
+      equipmentProvided: true,
+      languages: 'english,spanish',
+      experienceLevel: 'beginner,intermediate,advanced',
+    },
+  },
 
   // GOLF CART SERVICE
   [SERVICE_IDS.GOLF_CART]: {

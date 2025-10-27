@@ -188,6 +188,232 @@
         }
       },
       "yoga": {
+        "yogaStyles": {
+          "hatha": "Hatha",
+          "vinyasa": "Vinyasa",
+          "ashtanga": "Ashtanga",
+          "yin": "Yin (Stretching)",
+          "restorative": "Restorative"
+        },
+        "locations": {
+          "beach": "Beach Yoga",
+          "pool": "Poolside Serenity",
+          "garden": "Garden Sanctuary",
+          "villa": "Private Villa"
+        },
+        "videos": {
+          "title1": "Video 1",
+          "description1": "Video description",
+          "title2": "Video 2",
+          "description2": "Video description",
+          "title3": "Video 3",
+          "description3": "Video description"
+        },
+        "hero": {
+          "title": "Private Yoga",
+          "titleHighlight": "Session",
+          "subtitle": "Your Space. Your Flow. Personalized yoga practice in the comfort of your vacation rental.",
+          "duration": "60 minutes",
+          "dutationTitle": "Duration",
+          "level": "All levels welcome",
+          "age": "Age 9+",
+          "weCome": "We come to you",
+          "participants": "Up to 6 people",
+          "bookNow": "Book Now"
+        },
+        "whatToExpect": {
+          "title": "What to Expect",
+          "subtitle": "A personalized yoga experience tailored to your needs",
+          "items": {
+            "setup": {
+              "title": "Setup & Arrival",
+              "description": "Instructor arrives & sets the space"
+            },
+            "welcome": {
+              "title": "Welcome Discussion",
+              "description": "Quick welcome and goal discussion"
+            },
+            "practice": {
+              "title": "Practice Time",
+              "description": "Quick welcome and goal discussion"
+            },
+            "relaxation": {
+              "title": "Grounding Relaxation",
+              "description": "Finish with a grounding relaxation"
+            }
+          }
+        },
+        "whatsIncluded": {
+          "title": "What's Included",
+          "subtitle": "Everything you need for a transformative experience",
+          "included": "Included:",
+          "items": {
+            "instructor": {
+              "title": "Certified Instructor",
+              "description": "Expert guidance with years of experience"
+            },
+            "equipment": {
+              "title": "All Equipment",
+              "description": "Mats, blocks, and props provided"
+            },
+            "personalized": {
+              "title": "Personalized Practice",
+              "description": "Tailored to your level and goals"
+            }
+          }
+        },
+        "notIncluded": {
+          "title": "Not Included:",
+          "secondaryText": "Gratuity",
+          "subtitle": "Optional but appreciated by our instructors",
+          "goodToKnow": {
+            "title": "Good to Know:",
+            "start": "Start & End Time",
+            "startText": "Promptly at scheduled hour",
+            "whatToWear": "What to Wear",
+            "whatToWearText": "Stretch-friendly clothing",
+            "adaptability": "Adaptability",
+            "adaptabilityText": "Sessions can be adapted for injuries or pregnancy"
+          }
+        },
+        "styles": {
+          "title": "Explore Different Styles",
+          "subtitle": "Find your perfect practice",
+          "selectStyle": "Select from these traditional yoga practices, each tailored to your experience level",
+          "hatha": {
+            "title": "Hatha Yoga",
+            "description": "Classic postures with focus on alignment and breath. Perfect for beginners and experienced practitioners looking to deepen basics."
+          },
+          "vinyasa": {
+            "title": "Vinyasa Flow",
+            "description": "Dynamic movement synchronized with breath. Build strength, flexibility, and awareness as you flow from pose to pose."
+          },
+          "ashtanga": {
+            "title": "Ashtanga",
+            "description": "Structured series system that builds strength and discipline. Powerful practice for those seeking physical challenge."
+          },
+          "yin": {
+            "title": "Yin Yoga (Stretching)",
+            "description": "Passive held poses targeting connective tissue. Deepen your flexibility while calming your mind."
+          },
+          "restorative": {
+            "title": "Restorative Yoga",
+            "description": "Deep relaxation with supported poses. Ideal for stress reduction and restoring body balance."
+          },
+          "slogan": "Whether you are new to yoga or deepening your practice, our internationally certified instructors tailor each session to your goals and preferred style."
+        },
+        "chooseLocation": {
+          "title": "Choose Your Sacred Space",
+          "subtitle": "Each location offers its own unique atmosphere",
+          "selectLocation": "Select your preferred location"
+        },
+        "benefits": {
+          "title": "The Benefits You'll Experience",
+          "subtitle": "Transform your body, mind, and spirit",
+          "items": {
+            "flexibility": {
+              "title": "Increased Flexibility",
+              "description": "Release tension and improve range of motion"
+            },
+            "strength": {
+              "title": "Enhanced Strength",
+              "description": "Build muscle strength and endurance"
+            },
+            "stress": {
+              "title": "Stress Reduction",
+              "description": "Calm your mind and find inner peace"
+            },
+            "balance": {
+              "title": "Better Balance",
+              "description": "Improve coordination and stability"
+            },
+            "energy": {
+              "title": "Renewed Energy",
+              "description": "Feel revitalized and rejuvenated"
+            },
+            "mindfulness": {
+              "title": "Mindfulness",
+              "description": "Develop present moment awareness"
+            }
+          }
+        },
+
+        "serviceDetails": {
+          "title": "Service Details",
+          "subtitle": "Enjoy a 60-minute private yoga class in the serene comfort of your vacation rental",
+          "duration": {
+            "title": "Duration",
+            "value": "60 minutes"
+          },
+          "meetingPoint": {
+            "title": "Meeting Point",
+            "value": "Your Vacation Rental"
+          },
+          "age": {
+            "title": "Age",
+            "value": "9+ (Minors with adult supervision)"
+          },
+          "cancellations": {
+            "title": "Cancellations",
+            "value": "24+ hours allowed",
+            "policyTitle": "Cancellation Policy",
+            "policyText": "Cancellations made more than 24 hours before the start time are allowed. However, during the holiday season (Dec 20th - Jan 4th), all bookings are final and non-refundable."
+          }
+        },
+        "finalCta": {
+          "title": "Ready to Transform?",
+          "subtitle": "Begin your journey to inner peace, strength, and vitality. Your personalized transformation awaits in your own space.",
+          "button": "Book Now"
+        },
+        "quote": {
+          "text": "Yoga is not about touching your toes. It is about what you learn on the way down.",
+          "author": "- Judith Hanson Lasater"
+        },
+        "healthSafety": {
+          "title": "Health & Wellness Guidelines",
+          "beforeSession": {
+            "title": "Before Your Session:",
+            "items": {
+              "inform": "• Inform instructor of any injuries or limitations",
+              "meals": "• Avoid heavy meals 2-3 hours before practice",
+              "hydration": "• Stay hydrated throughout the day",
+              "clothing": "• Wear comfortable, breathable clothing"
+            }
+          },
+          "duringPractice": {
+            "title": "During Practice:",
+            "items": {
+              "listen": "• Listen to your body and honor its limits",
+              "breathe": "• Breathe deeply and stay present",
+              "communicate": "• Communicate with your instructor",
+              "focus": "• Focus on your own practice, not others"
+            }
+          },
+          "disclaimer": {
+            "title": "DISCLAIMER",
+            "strongtext": "For your safety and peace of mind,",
+            "mainText": "we recommend consulting with your physician before beginning any new physical activity—especially if pregnant, recovering from an injury, or managing a health condition. Participation is at your own discretion.",
+            "secondaryText": "Listen to your body.",
+            "closingText": "This is your time. Your space. Your pace."
+          }
+        },
+        "swipeHint": "👈 Swipe to explore 👉",
+        "videoGallery": {
+          "badge": {
+            "text": "Watch & Discover"
+          },
+          "title": {
+            "main": "Experience the",
+            "highlight": "Magic"
+          },
+          "slogan": "Swipe through unforgettable moments. Your journey starts here. ✨",
+          "video": {
+            "tapToView": "Tap to view",
+            "counter": {
+              "separator": "/"
+            }
+          }
+        },
         "yogaTitlePage": "Yoga & meditation",
         "name": "Yoga",
         "title": "EXPERIENCE A PERSONALIZED PRACTICE:",
@@ -201,7 +427,6 @@
         "where": "Your Vacation Rental",
         "gallery": "Experience Gallery",
         "slogan2": "Let us bring wellness to your door.",
-        "styles": "Choose from:",
         "includesTitle": "Includes:",
         "disclaimer": "For your safety and peace of mind, we recommend consulting with your physician before beginning any new physical activity—especially if pregnant, recovering from an injury, or managing a health condition. Participation is at your own discretion.",
         "finalMessage": "Listen to your body. This is your time. Your space. Your pace."
