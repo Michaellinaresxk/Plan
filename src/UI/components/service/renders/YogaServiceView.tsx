@@ -10,14 +10,12 @@ import BookingModal from '../../modal/BookingModal';
 import {
   User,
   MapPin,
-  Leaf,
   Shield,
   Clock,
   Heart,
   Sparkles,
   ArrowRight,
   Wind,
-  Waves,
   CheckCircle,
   Play,
   Quote,
@@ -25,7 +23,11 @@ import {
   Info,
   XCircle,
   Gift,
+  Waves,
+  Leaf,
 } from 'lucide-react';
+import YogalVideoGallery from '../YogaVideoGallery';
+import { fadeInUp, slideIn, videos, YOGA_STYLES } from '@/constants/yoga';
 
 interface YogaServiceViewProps {
   service: Service;
@@ -34,92 +36,44 @@ interface YogaServiceViewProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Simple yoga styles matching PDF
-const YOGA_STYLES = [
-  {
-    id: 'hatha',
-    name: 'Hatha',
-    gradient: 'from-stone-100 via-stone-200 to-stone-300',
-  },
-  {
-    id: 'vinyasa',
-    name: 'Vinyasa',
-    gradient: 'from-slate-100 via-slate-200 to-slate-300',
-  },
-  {
-    id: 'ashtanga',
-    name: 'Ashtanga',
-    gradient: 'from-gray-100 via-gray-200 to-gray-300',
-  },
-  {
-    id: 'yin',
-    name: 'Yin (Estiramientos)',
-    gradient: 'from-neutral-100 via-neutral-200 to-neutral-300',
-  },
-  {
-    id: 'restorative',
-    name: 'Restaurativo',
-    gradient: 'from-zinc-100 via-zinc-200 to-zinc-300',
-  },
-];
-
-const LOCATIONS = [
-  {
-    id: 'beach',
-    name: 'Beach Yoga',
-    description: 'Practice with the sound of waves and ocean breeze',
-    image:
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800',
-    icon: <Waves className='w-5 h-5' />,
-    ambiance: 'Peaceful • Natural • Grounding',
-  },
-  {
-    id: 'pool',
-    name: 'Poolside Serenity',
-    description: 'Tranquil practice by the water with tropical views',
-    image:
-      'https://images.unsplash.com/photo-1588286840104-8957b019727f?auto=format&fit=crop&q=80&w=800',
-    icon: <Sparkles className='w-5 h-5' />,
-    ambiance: 'Luxurious • Refreshing • Inspiring',
-  },
-  {
-    id: 'garden',
-    name: 'Garden Sanctuary',
-    description: 'Immerse yourself in nature surrounded by tropical plants',
-    image:
-      'https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?auto=format&fit=crop&q=80&w=800',
-    icon: <Leaf className='w-5 h-5' />,
-    ambiance: 'Natural • Harmonious • Rejuvenating',
-  },
-  {
-    id: 'villa',
-    name: 'Private Villa',
-    description:
-      'Intimate setting in your own space with personalized attention',
-    image:
-      'https://images.unsplash.com/photo-1591228127791-8e2eaef098d3?auto=format&fit=crop&q=80&w=800',
-    icon: <User className='w-5 h-5' />,
-    ambiance: 'Private • Comfortable • Focused',
-  },
-];
-
 // Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
-};
-
-const slideIn = {
-  hidden: { opacity: 0, x: -30 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.6 } },
-};
 
 const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
   const { t } = useTranslation();
   const { bookService } = useBooking();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedStyle, setSelectedStyle] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
+
+  const LOCATIONS = [
+    {
+      id: 'beach',
+      name: t('services.standard.yoga.locations.beach'),
+      image:
+        'https://images.unsplash.com/photo-1591228127791-8e2eaef098d3?auto=format&fit=crop&q=80&w=800',
+      icon: <Waves className='w-5 h-5' />,
+    },
+    {
+      id: 'pool',
+      name: t('services.standard.yoga.locations.pool'),
+      image:
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1761494335/Yoga_Class_-_all_level_1_zs0q6u.jpg',
+      icon: <Sparkles className='w-5 h-5' />,
+    },
+    {
+      id: 'garden',
+      name: t('services.standard.yoga.locations.garden'),
+      image:
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1761494399/Stretching___Yin_Yoga_odnzpb.jpg',
+      icon: <Leaf className='w-5 h-5' />,
+    },
+    {
+      id: 'villa',
+      name: t('services.standard.yoga.locations.villa'),
+      image:
+        'https://res.cloudinary.com/ddg92xar5/image/upload/v1761494381/Yoga_Class_-_all_level_2_jx3vbp.jpg',
+      icon: <User className='w-5 h-5' />,
+    },
+  ];
 
   const handleBookingConfirm = (
     service: Service,
@@ -164,10 +118,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-bold text-white leading-tight'
                   variants={fadeInUp}
                 >
-                  Private Yoga
+                  {t('services.standard.yoga.hero.title')}
                   <br />
                   <span className='bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent'>
-                    Session
+                    {t('services.standard.yoga.hero.titleHighlight')}
                   </span>
                 </motion.h1>
 
@@ -175,8 +129,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   className='text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/90 max-w-4xl mx-auto leading-relaxed px-2'
                   variants={fadeInUp}
                 >
-                  Your Space. Your Flow. Personalized yoga practice in the
-                  comfort of your vacation rental.
+                  {t('services.standard.yoga.hero.subtitle')}
                 </motion.p>
 
                 <motion.div
@@ -187,10 +140,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                     <Clock className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
                     <div className='text-left min-w-0'>
                       <div className='text-white font-semibold text-sm sm:text-base truncate'>
-                        60 Minutes
+                        {t('services.standard.yoga.hero.duration')}
                       </div>
                       <div className='text-white/70 text-xs sm:text-sm truncate'>
-                        Duration
+                        {t('services.standard.yoga.hero.dutationTitle')}
                       </div>
                     </div>
                   </div>
@@ -198,10 +151,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                     <User className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
                     <div className='text-left min-w-0'>
                       <div className='text-white font-semibold text-sm sm:text-base truncate'>
-                        Age 9+
+                        {t('services.standard.yoga.hero.age')}
                       </div>
                       <div className='text-white/70 text-xs sm:text-sm truncate'>
-                        All Levels Welcome
+                        {t('services.standard.yoga.hero.level')}
                       </div>
                     </div>
                   </div>
@@ -212,7 +165,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                         Your Rental
                       </div>
                       <div className='text-white/70 text-xs sm:text-sm truncate'>
-                        We Come to You
+                        {t('services.standard.yoga.hero.weCome')}
                       </div>
                     </div>
                   </div>
@@ -231,239 +184,13 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                       fill='currentColor'
                     />
                     <span className='whitespace-nowrap'>
-                      Begin Your Journey
+                      {t('services.standard.yoga.hero.bookNow')}
                     </span>
                     <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:translate-x-1 transition-transform' />
                   </motion.button>
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-
-        {/* Yoga Styles - Simplified as requested */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='text-center mb-16'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
-              Choose Your Practice Style
-            </h2>
-            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-              Select from these traditional yoga practices, each tailored to
-              your experience level
-            </p>
-          </div>
-
-          {/* Simple grid of yoga styles */}
-          <div className='grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-8 max-w-6xl mx-auto'>
-            {YOGA_STYLES.map((style, index) => (
-              <motion.div
-                key={style.id}
-                className='group cursor-pointer'
-                variants={fadeInUp}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
-              >
-                <div className='bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden'>
-                  {/* Hero Image with centered text */}
-                  <div
-                    className={`relative h-30 :h-50 bg-gradient-to-br ${style.gradient} overflow-hidden`}
-                  >
-                    {/* Background pattern */}
-                    <div className='absolute inset-0 bg-gradient-to-br from-white/10 to-transparent'></div>
-
-                    {/* Centered name */}
-                    <div className='absolute inset-0 flex items-center justify-center'>
-                      <div className='text-center'>
-                        <h3 className='text-1xl md:text-2xl font-light text-gray-700 mb-2'>
-                          {style.name}
-                        </h3>
-                        <div className='w-12 h-px bg-gray-500 mx-auto'></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className='text-center mt-12'>
-            <p className='text-gray-600 max-w-2xl mx-auto'>
-              Whether you're new to yoga or deepening your practice, our
-              internationally certified instructors tailor each session to your
-              goals and preferred style.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* What's Included Section - Enhanced from PDF */}
-        <motion.div
-          className='px-4'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='bg-white rounded-3xl shadow-2xl overflow-hidden'>
-            <div className='bg-gradient-to-r from-emerald-600 to-teal-600 p-12 text-white text-center'>
-              <h2 className='text-4xl font-bold mb-4'>What's Included</h2>
-              <p className='text-xl opacity-90 max-w-2xl mx-auto'>
-                Everything you need for a transformative practice is provided
-              </p>
-            </div>
-
-            <div className='p-12'>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
-                <div className='space-y-8'>
-                  <h3 className='text-2xl font-bold text-gray-800 mb-6'>
-                    Included:
-                  </h3>
-                  {[
-                    {
-                      icon: CheckCircle,
-                      text: 'Yoga Mats',
-                      desc: 'Premium, eco-friendly mats for your practice',
-                    },
-                    {
-                      icon: CheckCircle,
-                      text: 'Props & Supports',
-                      desc: 'Blocks, straps, and bolsters as needed',
-                    },
-                    {
-                      icon: Shield,
-                      text: 'Certified Instructor',
-                      desc: 'Internationally certified with personalized guidance',
-                    },
-                  ].map((item, index) => (
-                    <div key={index} className='flex items-start space-x-4'>
-                      <div className='w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
-                        <item.icon className='w-6 h-6 text-emerald-600' />
-                      </div>
-                      <div>
-                        <h4 className='text-lg font-bold text-gray-800 mb-1'>
-                          {item.text}
-                        </h4>
-                        <p className='text-gray-600'>{item.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className='space-y-8'>
-                  <h3 className='text-2xl font-bold text-gray-800 mb-6'>
-                    Not Included:
-                  </h3>
-                  <div className='flex items-start space-x-4'>
-                    <div className='w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
-                      <Gift className='w-6 h-6 text-amber-600' />
-                    </div>
-                    <div>
-                      <h4 className='text-lg font-bold text-gray-800 mb-1'>
-                        Gratuity
-                      </h4>
-                      <p className='text-gray-600'>
-                        Optional but appreciated by our instructors
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className='bg-gray-50 rounded-2xl p-6'>
-                    <h4 className='text-lg font-semibold text-gray-800 mb-3'>
-                      Good to Know:
-                    </h4>
-                    <ul className='space-y-2 text-gray-600 text-sm'>
-                      <li>
-                        • <strong>Start & End Time:</strong> Promptly at
-                        scheduled hour
-                      </li>
-                      <li>
-                        • <strong>What to Wear:</strong> Stretch-friendly
-                        clothing
-                      </li>
-                      <li>
-                        • <strong>Adaptability:</strong> Sessions can be adapted
-                        for pregnancy or mobility needs
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* What to Expect Section - From PDF */}
-        <motion.div
-          className='px-2'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='text-center mb-16'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
-              What to Expect
-            </h2>
-            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-              Your personalized yoga journey in four simple steps
-            </p>
-          </div>
-
-          <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-            {[
-              {
-                step: '1',
-                title: 'Setup & Arrival',
-                description: 'Instructor arrives & sets the space',
-                icon: <Sparkles className='w-8 h-8' />,
-                color: 'from-emerald-500 to-teal-500',
-              },
-              {
-                step: '2',
-                title: 'Welcome Discussion',
-                description: 'Quick welcome and goal discussion',
-                icon: <Heart className='w-8 h-8' />,
-                color: 'from-teal-500 to-cyan-500',
-              },
-              {
-                step: '3',
-                title: 'Practice Time',
-                description: 'Move, breathe, and flow',
-                icon: <Wind className='w-8 h-8' />,
-                color: 'from-cyan-500 to-blue-500',
-              },
-              {
-                step: '4',
-                title: 'Grounding Relaxation',
-                description: 'Finish with a grounding relaxation',
-                icon: <Moon className='w-8 h-8' />,
-                color: 'from-blue-500 to-indigo-500',
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                className='text-center'
-                variants={fadeInUp}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div
-                  className={`w-20 h-20 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center mx-auto mb-6 text-white shadow-lg`}
-                >
-                  {item.icon}
-                </div>
-                <div className='mb-3'>
-                  <span className='text-3xl font-bold text-gray-300 mr-2'>
-                    {item.step}
-                  </span>
-                  <h3 className='text-xl font-bold text-gray-800 inline'>
-                    {item.title}
-                  </h3>
-                </div>
-                <p className='text-gray-600'>{item.description}</p>
-              </motion.div>
-            ))}
           </div>
         </motion.div>
 
@@ -477,11 +204,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
           <div className='bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-2'>
             <div className='text-center mb-16'>
               <h2 className='text-4xl font-bold text-gray-800 mb-6'>
-                Sacred Spaces
+                {t('services.standard.yoga.chooseLocation.title')}
               </h2>
               <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-                Choose your perfect sanctuary for practice within your vacation
-                rental
+                {t('services.standard.yoga.chooseLocation.subtitle')}
               </p>
             </div>
 
@@ -519,22 +245,228 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                         </span>
                       </div>
                     </div>
-
-                    <div className='absolute bottom-6 left-6 right-6 text-white'>
-                      <h3 className='text-2xl font-bold mb-2'>
-                        {location.name}
-                      </h3>
-                      <p className='text-white/90 mb-3 leading-relaxed'>
-                        {location.description}
-                      </p>
-                      <div className='text-sm font-medium text-emerald-300'>
-                        {location.ambiance}
-                      </div>
-                    </div>
                   </div>
                 </motion.div>
               ))}
             </div>
+          </div>
+        </motion.div>
+
+        {/* What's Included Section - Enhanced from PDF */}
+        <motion.div
+          className='px-4'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='bg-white rounded-3xl shadow-2xl overflow-hidden'>
+            <div className='bg-gradient-to-r from-emerald-600 to-teal-600 p-12 text-white text-center'>
+              <h2 className='text-4xl font-bold mb-4'>
+                {t('services.standard.yoga.whatsIncluded.title')}
+              </h2>
+              <p className='text-xl opacity-90 max-w-2xl mx-auto'>
+                {t('services.standard.yoga.whatsIncluded.subtitle')}
+              </p>
+            </div>
+
+            <div className='p-12'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-12'>
+                <div className='space-y-8'>
+                  <h3 className='text-2xl font-bold text-gray-800 mb-6'>
+                    {t('services.standard.yoga.whatsIncluded.included')}
+                  </h3>
+                  {[
+                    {
+                      icon: CheckCircle,
+                      text: t(
+                        'services.standard.yoga.whatsIncluded.items.equipment.title'
+                      ),
+                      desc: t(
+                        'services.standard.yoga.whatsIncluded.items.equipment.description'
+                      ),
+                    },
+                    {
+                      icon: CheckCircle,
+                      text: t(
+                        'services.standard.yoga.whatsIncluded.items.personalized.title'
+                      ),
+                      desc: t(
+                        'services.standard.yoga.whatsIncluded.items.personalized.description'
+                      ),
+                    },
+                    {
+                      icon: Shield,
+                      text: t(
+                        'services.standard.yoga.whatsIncluded.items.instructor.title'
+                      ),
+                      desc: t(
+                        'services.standard.yoga.whatsIncluded.items.instructor.description'
+                      ),
+                    },
+                  ].map((item, index) => (
+                    <div key={index} className='flex items-start space-x-4'>
+                      <div className='w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
+                        <item.icon className='w-6 h-6 text-emerald-600' />
+                      </div>
+                      <div>
+                        <h4 className='text-lg font-bold text-gray-800 mb-1'>
+                          {item.text}
+                        </h4>
+                        <p className='text-gray-600'>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className='space-y-8'>
+                  <h3 className='text-2xl font-bold text-gray-800 mb-6'>
+                    {t('services.standard.yoga.notIncluded.title')}
+                  </h3>
+                  <div className='flex items-start space-x-4'>
+                    <div className='w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
+                      <Gift className='w-6 h-6 text-amber-600' />
+                    </div>
+                    <div>
+                      <h4 className='text-lg font-bold text-gray-800 mb-1'>
+                        {t('services.standard.yoga.notIncluded.secondaryText')}
+                      </h4>
+                      <p className='text-gray-600'>
+                        {t('services.standard.yoga.notIncluded.subtitle')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className='bg-gray-50 rounded-2xl p-6'>
+                    <h4 className='text-lg font-semibold text-gray-800 mb-3'>
+                      {t('services.standard.yoga.notIncluded.goodToKnow.title')}
+                    </h4>
+                    <ul className='space-y-2 text-gray-600 text-sm'>
+                      <li>
+                        •{' '}
+                        <strong>
+                          {t(
+                            'services.standard.yoga.notIncluded.goodToKnow.start'
+                          )}
+                        </strong>{' '}
+                        {t(
+                          'services.standard.yoga.notIncluded.goodToKnow.startText'
+                        )}
+                      </li>
+                      <li>
+                        •{' '}
+                        <strong>
+                          {' '}
+                          {t(
+                            'services.standard.yoga.notIncluded.goodToKnow.whatToWear'
+                          )}
+                        </strong>{' '}
+                        {t(
+                          'services.standard.yoga.notIncluded.goodToKnow.whatToWearText'
+                        )}
+                      </li>
+                      <li>
+                        •{' '}
+                        <strong>
+                          {' '}
+                          {t(
+                            'services.standard.yoga.notIncluded.goodToKnow.adaptability'
+                          )}
+                        </strong>{' '}
+                        {t(
+                          'services.standard.yoga.notIncluded.goodToKnow.adaptabilityText'
+                        )}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <YogalVideoGallery videos={videos} />
+
+        {/* What to Expect Section - From PDF */}
+        <motion.div
+          className='px-2'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='text-center mb-16'>
+            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
+              {t('services.standard.yoga.whatToExpect.title')}
+            </h2>
+            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+              {t('services.standard.yoga.whatToExpect.subtitle')}
+            </p>
+          </div>
+
+          <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            {[
+              {
+                step: '1',
+                title: t(
+                  'services.standard.yoga.whatToExpect.items.setup.title'
+                ),
+                description: t(
+                  'services.standard.yoga.whatToExpect.items.setup.description'
+                ),
+                icon: <Sparkles className='w-8 h-8' />,
+                color: 'from-emerald-500 to-teal-500',
+              },
+              {
+                step: '2',
+                title: t(
+                  'services.standard.yoga.whatToExpect.items.welcome.title'
+                ),
+                description: t(
+                  'services.standard.yoga.whatToExpect.items.welcome.description'
+                ),
+                icon: <Heart className='w-8 h-8' />,
+                color: 'from-teal-500 to-cyan-500',
+              },
+              {
+                step: '3',
+                title: t(
+                  'services.standard.yoga.whatToExpect.items.practice.title'
+                ),
+                description: t(
+                  'services.standard.yoga.whatToExpect.items.practice.description'
+                ),
+                icon: <Wind className='w-8 h-8' />,
+                color: 'from-cyan-500 to-blue-500',
+              },
+              {
+                step: '4',
+                title: 'Grounding Relaxation',
+                description: 'Finish with a grounding relaxation',
+                icon: <Moon className='w-8 h-8' />,
+                color: 'from-blue-500 to-indigo-500',
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                className='text-center'
+                variants={fadeInUp}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div
+                  className={`w-20 h-20 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center mx-auto mb-6 text-white shadow-lg`}
+                >
+                  {item.icon}
+                </div>
+                <div className='mb-3'>
+                  <span className='text-3xl font-bold text-gray-300 mr-2'>
+                    {item.step}
+                  </span>
+                  <h3 className='text-xl font-bold text-gray-800 inline'>
+                    {item.title}
+                  </h3>
+                </div>
+                <p className='text-gray-600'>{item.description}</p>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
@@ -548,11 +480,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
           <div className='bg-white rounded-3xl shadow-xl p-8 md:p-12'>
             <div className='text-center mb-12'>
               <h2 className='text-4xl font-bold text-gray-800 mb-4'>
-                Service Overview
+                {t('services.standard.yoga.serviceDetails.title')}
               </h2>
               <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-                Enjoy a 60-minute private yoga class in the serene comfort of
-                your vacation rental
+                {t('services.standard.yoga.serviceDetails.subtitle')}
               </p>
             </div>
 
@@ -562,9 +493,12 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   <Clock className='w-8 h-8 text-emerald-600' />
                 </div>
                 <h3 className='text-lg font-semibold text-gray-800 mb-2'>
-                  Duration
+                  {t('services.standard.yoga.serviceDetails.duration.title')}
                 </h3>
-                <p className='text-gray-600'>60 minutes</p>
+                <p className='text-gray-600'>
+                  {' '}
+                  {t('services.standard.yoga.serviceDetails.duration.value')}
+                </p>
               </div>
 
               <div className='text-center'>
@@ -572,9 +506,16 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   <MapPin className='w-8 h-8 text-emerald-600' />
                 </div>
                 <h3 className='text-lg font-semibold text-gray-800 mb-2'>
-                  Meeting Point
+                  {t(
+                    'services.standard.yoga.serviceDetails.meetingPoint.title'
+                  )}
                 </h3>
-                <p className='text-gray-600'>Your Vacation Rental</p>
+                <p className='text-gray-600'>
+                  {' '}
+                  {t(
+                    'services.standard.yoga.serviceDetails.meetingPoint.value'
+                  )}
+                </p>
               </div>
 
               <div className='text-center'>
@@ -582,10 +523,10 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   <User className='w-8 h-8 text-emerald-600' />
                 </div>
                 <h3 className='text-lg font-semibold text-gray-800 mb-2'>
-                  Age
+                  {t('services.standard.yoga.serviceDetails.age.title')}
                 </h3>
                 <p className='text-gray-600'>
-                  9+ (Minors with adult supervision)
+                  {t('services.standard.yoga.serviceDetails.age.value')}
                 </p>
               </div>
 
@@ -594,9 +535,15 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   <XCircle className='w-8 h-8 text-emerald-600' />
                 </div>
                 <h3 className='text-lg font-semibold text-gray-800 mb-2'>
-                  Cancellations
+                  {t(
+                    'services.standard.yoga.serviceDetails.cancellations.title'
+                  )}
                 </h3>
-                <p className='text-gray-600'>24+ hours allowed</p>
+                <p className='text-gray-600'>
+                  {t(
+                    'services.standard.yoga.serviceDetails.cancellations.value'
+                  )}
+                </p>
               </div>
             </div>
 
@@ -606,12 +553,15 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                 <Info className='w-5 h-5 text-amber-600 mr-3 mt-0.5 flex-shrink-0' />
                 <div>
                   <h4 className='font-semibold text-amber-800 mb-2'>
-                    Cancellation Policy
+                    {/* Cancellation Policy */}
+                    {t(
+                      'services.standard.yoga.serviceDetails.cancellations.policyTitle'
+                    )}
                   </h4>
                   <p className='text-amber-700 text-sm'>
-                    Cancellations made more than 24 hours before the start time
-                    are allowed. However, during the holiday season (Dec 20th -
-                    Jan 4th), all bookings are final and non-refundable.
+                    {t(
+                      'services.standard.yoga.serviceDetails.cancellations.policyText'
+                    )}
                   </p>
                 </div>
               </div>
@@ -642,14 +592,13 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                 className='text-4xl md:text-6xl font-bold mb-6'
                 variants={fadeInUp}
               >
-                Ready to Transform?
+                {t('services.standard.yoga.finalCta.title')}
               </motion.h2>
               <motion.p
                 className='text-xl opacity-90 mb-12 max-w-3xl mx-auto leading-relaxed'
                 variants={fadeInUp}
               >
-                Begin your journey to inner peace, strength, and vitality. Your
-                personalized transformation awaits in your own space.
+                {t('services.standard.yoga.finalCta.subtitle')}
               </motion.p>
 
               <motion.div
@@ -661,7 +610,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   className='group bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-10 py-3 rounded-2xl font-bold text-1xl flex items-center gap-3 transition-all duration-300 hover:scale-105 shadow-2xl'
                 >
                   <Sparkles className='w-6 h-6' />
-                  Book Now
+                  {t('services.standard.yoga.finalCta.button')}
                   <ArrowRight className='w-6 h-6 group-hover:translate-x-1 transition-transform' />
                 </button>
               </motion.div>
@@ -679,8 +628,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
           <div className='bg-gradient-to-r from-emerald-100 via-teal-50 to-cyan-100 rounded-3xl p-6 text-center relative overflow-hidden'>
             <Quote className='w-12 h-12 text-emerald-500 mx-auto mb-6' />
             <blockquote className='text-3xl md:text-4xl font-light text-gray-800 mb-6 italic leading-relaxed'>
-              "Yoga is not about touching your toes. It is about what you learn
-              on the way down."
+              "{t('services.standard.yoga.quote.text')}"
             </blockquote>
             <cite className='text-xl text-emerald-600 font-medium'>
               - Judith Hanson Lasater
@@ -701,46 +649,94 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
             <Shield className='w-8 h-8 text-amber-600 mr-4 flex-shrink-0 mt-1' />
             <div className='flex-1'>
               <h3 className='font-bold text-amber-800 mb-6 text-2xl'>
-                Health & Wellness Guidelines
+                {t('services.standard.yoga.healthSafety.title')}
               </h3>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-8 text-amber-700'>
                 <div>
                   <h4 className='font-semibold mb-3 text-lg'>
-                    Before Your Session:
+                    {t(
+                      'services.standard.yoga.healthSafety.beforeSession.title'
+                    )}
                   </h4>
                   <ul className='space-y-2'>
-                    <li>• Inform instructor of any injuries or limitations</li>
-                    <li>• Avoid heavy meals 2-3 hours before practice</li>
-                    <li>• Stay hydrated throughout the day</li>
-                    <li>• Wear comfortable, breathable clothing</li>
+                    <li>
+                      {t(
+                        'services.standard.yoga.healthSafety.beforeSession.items.inform'
+                      )}
+                    </li>
+                    <li>
+                      {t(
+                        'services.standard.yoga.healthSafety.beforeSession.items.meals'
+                      )}
+                    </li>
+                    <li>
+                      {t(
+                        'services.standard.yoga.healthSafety.beforeSession.items.hydration'
+                      )}
+                    </li>
+                    <li>
+                      {t(
+                        'services.standard.yoga.healthSafety.beforeSession.items.clothing'
+                      )}
+                    </li>
                   </ul>
                 </div>
                 <div>
                   <h4 className='font-semibold mb-3 text-lg'>
-                    During Practice:
+                    {t(
+                      'services.standard.yoga.healthSafety.duringPractice.title'
+                    )}
                   </h4>
                   <ul className='space-y-2'>
-                    <li>• Listen to your body and honor its limits</li>
-                    <li>• Breathe deeply and stay present</li>
-                    <li>• Communicate with your instructor</li>
-                    <li>• Focus on your own practice, not others</li>
+                    <li>
+                      {t(
+                        'services.standard.yoga.healthSafety.duringPractice.items.listen'
+                      )}
+                    </li>
+                    <li>
+                      {t(
+                        'services.standard.yoga.healthSafety.duringPractice.items.breathe'
+                      )}
+                    </li>
+                    <li>
+                      {t(
+                        'services.standard.yoga.healthSafety.duringPractice.items.communicate'
+                      )}
+                    </li>
+                    <li>
+                      {' '}
+                      {t(
+                        'services.standard.yoga.healthSafety.duringPractice.items.focus'
+                      )}
+                    </li>
                   </ul>
                 </div>
               </div>
 
               <div className='bg-amber-100 rounded-2xl p-6 mt-6'>
-                <h4 className='font-bold text-amber-800 mb-3'>DISCLAIMER</h4>
+                <h4 className='font-bold text-amber-800 mb-3'>
+                  {t('services.standard.yoga.healthSafety.disclaimer.title')}
+                </h4>
                 <p className='text-amber-700'>
-                  <strong>For your safety and peace of mind,</strong> we
-                  recommend consulting with your physician before beginning any
-                  new physical activity—especially if pregnant, recovering from
-                  an injury, or managing a health condition. Participation is at
-                  your own discretion.
+                  <strong>
+                    {' '}
+                    {t(
+                      'services.standard.yoga.healthSafety.disclaimer.strongtext'
+                    )}
+                  </strong>{' '}
+                  {t('services.standard.yoga.healthSafety.disclaimer.mainText')}
                 </p>
                 <p className='text-amber-700 mt-3 italic'>
-                  <strong>Listen to your body.</strong>
+                  <strong>
+                    {' '}
+                    {t(
+                      'services.standard.yoga.healthSafety.disclaimer.secondaryText'
+                    )}
+                  </strong>
                   <br />
-                  This is your time. Your space. Your pace.
+                  {t(
+                    'services.standard.yoga.healthSafety.disclaimer.closingText'
+                  )}
                 </p>
               </div>
             </div>

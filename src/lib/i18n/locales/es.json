@@ -185,6 +185,232 @@
         }
       },
       "yoga": {
+        "yogaStyles": {
+          "hatha": "Hatha",
+          "vinyasa": "Vinyasa",
+          "ashtanga": "Ashtanga",
+          "yin": "Yin (Estiramientos)",
+          "restorative": "Restaurativo"
+        },
+        "locations": {
+          "beach": "Yoga en la playa",
+          "pool": "Serenidad junto a la piscina",
+          "garden": "Santuario en el jardín",
+          "villa": "Villa privada"
+        },
+        "videos": {
+          "title1": "Video 1",
+          "description1": "Descripción del video",
+          "title2": "Video 2",
+          "description2": "Descripción del video",
+          "title3": "Video 3",
+          "description3": "Descripción del video"
+        },
+        "hero": {
+          "title": "Sesión de Yoga",
+          "titleHighlight": "Privada",
+          "subtitle": "Tu Espacio. Tu Flujo. Práctica de yoga personalizada en la comodidad de tu alquiler vacacional.",
+          "duration": "60 minutos",
+          "dutationTitle": "Duración",
+          "level": "Todos los niveles",
+          "age": "Edad 9+",
+          "weCome": "Nosotros vamos a ti",
+          "participants": "Hasta 6 personas",
+          "bookNow": "Reservar Ahora"
+        },
+        "whatToExpect": {
+          "title": "Qué esperar",
+          "subtitle": "Una experiencia de yoga personalizada y adaptada a tus necesidades.",
+          "items": {
+            "setup": {
+              "title": "Preparación y llegada",
+              "description": "El instructor llega y prepara el espacio."
+            },
+            "welcome": {
+              "title": "Bienvenida y objetivos",
+              "description": "Bienvenida rápida y discusión de objetivos"
+            },
+            "practice": {
+              "title": "Tiempo de entrenamiento",
+              "description": "Muévete, respira y fluye."
+            },
+            "relaxation": {
+              "title": "Relajación con conexión a tierra",
+              "description": "Termina con una relajación profunda."
+            }
+          }
+        },
+        "whatsIncluded": {
+          "title": "Lo Que Está Incluido",
+          "subtitle": "Todo lo que necesitas para una experiencia transformadora",
+          "included": "Incluye:",
+          "items": {
+            "instructor": {
+              "title": "Instructora Certificada",
+              "description": "Guía experta con años de experiencia"
+            },
+            "equipment": {
+              "title": "Todo el Equipo",
+              "description": "Mats, bloques y accesorios proporcionados"
+            },
+            "personalized": {
+              "title": "Práctica Personalizada",
+              "description": "Adaptada a tu nivel y objetivos"
+            }
+          }
+        },
+        "notIncluded": {
+          "title": "No incluido:",
+          "secondaryText": "Gratificación",
+          "subtitle": "Opcional, pero apreciado por nuestros instructores.",
+          "goodToKnow": {
+            "title": "Es bueno saberlo:",
+            "start": "Hora de inicio y finalización",
+            "startText": "Puntualmente a la hora prevista.",
+            "whatToWear": "Qué ponerse",
+            "whatToWearText": "Ropa elástica y cómoda.",
+            "adaptability": "Adaptabilidad",
+            "adaptabilityText": "Las sesiones se pueden adaptar en caso de lesiones o embarazo."
+          }
+        },
+        "styles": {
+          "title": "Explora Diferentes Estilos",
+          "subtitle": "Encuentra tu práctica perfecta",
+          "selectStyle": "Elige entre estas prácticas tradicionales de yoga, cada una adaptada a tu nivel de experiencia.",
+          "hatha": {
+            "title": "Hatha Yoga",
+            "description": "Posturas clásicas con enfoque en alineación y respiración. Perfecto para principiantes y practicantes experimentados que buscan profundizar en lo básico."
+          },
+          "vinyasa": {
+            "title": "Vinyasa Flow",
+            "description": "Movimiento dinámico sincronizado con la respiración. Construye fuerza, flexibilidad y conciencia mientras fluyes de una postura a otra."
+          },
+          "ashtanga": {
+            "title": "Ashtanga",
+            "description": "Sistema estructurado de series que desarrolla fuerza y disciplina. Práctica poderosa para aquellos que buscan un desafío físico."
+          },
+          "yin": {
+            "title": "Yin Yoga (Estiramientos)",
+            "description": "Posturas pasivas sostenidas que apuntan al tejido conectivo. Profundiza tu flexibilidad mientras calmas tu mente."
+          },
+          "restorative": {
+            "title": "Yoga Restaurativo",
+            "description": "Relajación profunda con posturas apoyadas. Ideal para reducir el estrés y restaurar el equilibrio del cuerpo."
+          },
+          "slogan": "Tanto si eres nuevo en el yoga como si deseas profundizar en tu práctica, nuestros instructores con certificación internacional adaptan cada sesión a tus objetivos y estilo preferido."
+        },
+        "chooseLocation": {
+          "title": "Elige Tu Espacio Sagrado",
+          "subtitle": "Cada ubicación ofrece su propia atmósfera única",
+          "selectLocation": "Selecciona tu ubicación preferida"
+        },
+        "benefits": {
+          "title": "Los Beneficios Que Experimentarás",
+          "subtitle": "Transforma tu cuerpo, mente y espíritu",
+          "items": {
+            "flexibility": {
+              "title": "Mayor Flexibilidad",
+              "description": "Libera la tensión y mejora el rango de movimiento"
+            },
+            "strength": {
+              "title": "Mayor Fuerza",
+              "description": "Desarrolla fuerza muscular y resistencia"
+            },
+            "stress": {
+              "title": "Reducción del Estrés",
+              "description": "Calma tu mente y encuentra paz interior"
+            },
+            "balance": {
+              "title": "Mejor Equilibrio",
+              "description": "Mejora la coordinación y la estabilidad"
+            },
+            "energy": {
+              "title": "Energía Renovada",
+              "description": "Siente revitalizado y rejuvenecido"
+            },
+            "mindfulness": {
+              "title": "Atención Plena",
+              "description": "Desarrolla conciencia del momento presente"
+            }
+          }
+        },
+        "serviceDetails": {
+          "title": "Detalles del Servicio",
+          "subtitle": "Disfruta de una clase de yoga privada de 60 minutos en la serenidad y comodidad de tu alquiler vacacional",
+          "duration": {
+            "title": "Duración",
+            "value": "60 minutos"
+          },
+          "meetingPoint": {
+            "title": "Punto de Encuentro",
+            "value": "Tu Alquiler Vacacional"
+          },
+          "age": {
+            "title": "Edad",
+            "value": "9+ (Menores con supervisión de adultos)"
+          },
+          "cancellations": {
+            "title": "Cancelaciones",
+            "value": "Permitido con más de 24 horas",
+            "policyTitle": "Política de Cancelación",
+            "policyText": "Las cancelaciones realizadas con más de 24 horas antes de la hora de inicio están permitidas. Sin embargo, durante la temporada de vacaciones (20 de diciembre - 4 de enero), todas las reservas son finales y no reembolsables."
+          }
+        },
+        "finalCta": {
+          "title": "¿Listo para Transformarte?",
+          "subtitle": "Comienza tu viaje hacia la paz interior, la fuerza y la vitalidad. Tu transformación personalizada te espera en tu propio espacio.",
+          "button": "Reservar Ahora"
+        },
+        "quote": {
+          "text": "El yoga no se trata de tocar tus dedos de los pies. Se trata de lo que aprendes en el camino hacia abajo.",
+          "author": "- Judith Hanson Lasater"
+        },
+        "healthSafety": {
+          "title": "Pautas de Salud y Bienestar",
+          "beforeSession": {
+            "title": "Antes de Tu Sesión:",
+            "items": {
+              "inform": "• Informa al instructor sobre cualquier lesión o limitación",
+              "meals": "• Evita comidas pesadas 2-3 horas antes de la práctica",
+              "hydration": "• Mantente hidratado durante todo el día",
+              "clothing": "• Usa ropa cómoda y transpirable"
+            }
+          },
+          "duringPractice": {
+            "title": "Durante la Práctica:",
+            "items": {
+              "listen": "• Escucha a tu cuerpo y respeta sus límites",
+              "breathe": "• Respira profundamente y mantente presente",
+              "communicate": "• Comunícate con tu instructor",
+              "focus": "• Concéntrate en tu propia práctica, no en la de otros"
+            }
+          },
+          "disclaimer": {
+            "title": "AVISO LEGAL",
+            "strongtext": "Por tu seguridad y tranquilidad,",
+            "mainText": "recomendamos consultar con tu médico antes de comenzar cualquier actividad física nueva, especialmente si estás embarazada, te estás recuperando de una lesión o manejas una condición de salud. La participación es a tu propia discreción.",
+            "secondaryText": "Escucha a tu cuerpo.",
+            "closingText": "Este es tu tiempo. Tu espacio. Tu ritmo."
+          }
+        },
+        "swipeHint": "👈 Desliza para explorar  👉",
+        "videoGallery": {
+          "badge": {
+            "text": "Mira y Descubre"
+          },
+          "title": {
+            "main": "Experimenta la",
+            "highlight": "Magia"
+          },
+          "slogan": "Desliza a través de momentos inolvidables. Tu viaje comienza aquí. ✨",
+          "video": {
+            "tapToView": "Toca para ver",
+            "counter": {
+              "separator": "/"
+            }
+          },
+          "swipeHint": "👈 Desliza para explorar 👉"
+        },
         "yogaTitlePage": "Yoga & meditacion",
         "name": "Yoga",
         "title": "EXPERIMENTA UNA PRÁCTICA PERSONALIZADA",
@@ -198,7 +424,6 @@
         "where": "Su alquiler de vacaciones",
         "slogan2": "Déjanos llevar el bienestar hasta tu puerta.",
         "gallery": "Galeria de experiencias",
-        "styles": "Elige entre:",
         "includesTitle": "Incluye:",
         "disclaimer": "Por tu seguridad y tranquilidad, recomendamos consultar con tu médico antes de comenzar cualquier nueva actividad física, especialmente si estás embarazada, en proceso de recuperación o tienes alguna condición médica. La participación es bajo tu propia responsabilidad.",
         "finalMessage": "Escucha a tu cuerpo. Este es tu momento. Tu espacio. Tu ritmo."
