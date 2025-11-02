@@ -147,14 +147,14 @@ You will receive a confirmation email shortly.`;
           </p>
         </div>
 
-        <div className='p-6'>
+        <div className='p-2'>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className='space-y-6'
           >
             {/* Contact Information Form */}
-            <div className='bg-white border border-gray-200 rounded-lg p-6'>
+            <div className='bg-white border border-gray-200 rounded-lg p-4'>
               <div className='text-center mb-6'>
                 <h3 className='text-2xl font-bold text-gray-900 mb-2'>
                   Contact Information

@@ -185,6 +185,9 @@
         }
       },
       "yoga": {
+        "main": {
+          "short": "Sesiones dirigidas por expertos y adaptadas a sus necesidades en la comodidad de su espacio"
+        },
         "yogaStyles": {
           "hatha": "Hatha",
           "vinyasa": "Vinyasa",
@@ -414,7 +417,6 @@
         "yogaTitlePage": "Yoga & meditacion",
         "name": "Yoga",
         "title": "EXPERIMENTA UNA PRÁCTICA PERSONALIZADA",
-        "short": "Sesiones dirigidas por expertos y adaptadas a sus necesidades en la comodidad de su espacio",
         "full": "Disfruta de una clase privada de yoga de 60 minutos en la tranquilidad de tu alojamiento vacacional. Ya sea que estés comenzando o profundizando tu práctica, nuestros instructores certificados internacionalmente adaptan cada sesión a tus objetivos & estilo preferido.",
         "full2": "Esto no es solo una clase de yoga, es una experiencia de bienestar personalizada. Ya sea que busques mejorar tu flexibilidad, fuerza, conciencia plena, movilidad o cuidados prenatales, cada detalle se adapta a tu viaje personal.",
         "tagline": "Tu Espacio. Tu Ritmo.",
@@ -427,6 +429,41 @@
         "includesTitle": "Incluye:",
         "disclaimer": "Por tu seguridad y tranquilidad, recomendamos consultar con tu médico antes de comenzar cualquier nueva actividad física, especialmente si estás embarazada, en proceso de recuperación o tienes alguna condición médica. La participación es bajo tu propia responsabilidad.",
         "finalMessage": "Escucha a tu cuerpo. Este es tu momento. Tu espacio. Tu ritmo."
+      },
+      "yogaForm": {
+        "header": {
+          "title": "Sesión de Yoga",
+          "subtitle": "Encuentra tu práctica perfecta, en una sesión de yoga personalizada."
+        },
+        "timeslot": {
+          "date": "Fecha",
+          "title": "Horarios",
+          "morning": "Sesión Matutina",
+          "evening": "Sesión Vespertina"
+        },
+        "participants": {
+          "title": "Participantes",
+          "number": "Cantidad de Participantes",
+          "under18": "Menores a 18 ańos",
+          "warning": "Deben estar acompañados por un adulto"
+        },
+        "disability": {
+          "title": "Discapacidad o limitaciones de movilidad",
+          "specify": "Especifique la discapacidad o las limitaciones de movilidad",
+          "describe": "Describa cualquier discapacidad o limitación de movilidad que debamos tener en cuenta.",
+          "confirmation": "Confirmo que no tengo ninguna discapacidad o limitación de movilidad que requiera adaptaciones especiales para participar en la sesión de yoga."
+        },
+        "footer": {
+          "total": "Precio total",
+          "additionalInfo": "Información Adicional",
+          "under18": "menor(es) de 18 años",
+          "experience": "Nivel de experiencia, preferencias, metas especificas...",
+          "buttons": {
+            "cancel": "Cancelar",
+            "bookNow": "Reservar",
+            "booking": "Reservando..."
+          }
+        }
       },
       "catamaranServiceView": {
         "hero": {

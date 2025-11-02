@@ -121,7 +121,7 @@ export const SERVICES_DATA: Record<ServiceId, ServiceData> = {
     id: SERVICE_IDS.YOGA,
     titleKey: 'services.standard.yoga.short',
     descriptionKey: 'services.standard.yoga.short',
-    fullDescriptionKey: 'ramon dime aver ',
+    fullDescriptionKey: '',
     basePrice: 10,
     priceUnit: 'services.priceUnits.perSession',
     category: 'wellness',

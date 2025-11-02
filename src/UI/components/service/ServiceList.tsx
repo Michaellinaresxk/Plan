@@ -30,7 +30,6 @@ const ServiceList: React.FC<EnhancedServiceListProps> = ({
   services,
   servicePath,
   variant = 'light',
-  textColor,
   viewContext,
 }) => {
   const {
