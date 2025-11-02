@@ -211,7 +211,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
               </p>
             </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+            <div className='grid grid-cols-2 md:grid-cols-2 gap-8'>
               {LOCATIONS.map((location, index) => (
                 <motion.div
                   key={location.id}
@@ -228,7 +228,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                   variants={fadeInUp}
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className='relative h-80'>
+                  <div className='relative h-40 md:h-80'>
                     <Image
                       src={location.image}
                       alt={location.name}
@@ -240,9 +240,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                     <div className='absolute top-6 left-6'>
                       <div className='flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white border border-white/30'>
                         {location.icon}
-                        <span className='ml-2 font-medium'>
-                          {location.name}
-                        </span>
+                        <span className='ml-2 font-light'>{location.name}</span>
                       </div>
                     </div>
                   </div>
@@ -252,7 +250,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
           </div>
         </motion.div>
 
-        {/* What's Included Section - Enhanced from PDF */}
         <motion.div
           className='px-4'
           initial='hidden'

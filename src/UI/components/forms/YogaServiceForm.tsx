@@ -154,12 +154,6 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
       });
     }
 
-    if (!formData.location) {
-      newErrors.location = t('form.errors.required', {
-        fallback: 'Please select a location',
-      });
-    }
-
     if (!formData.timeSlot) {
       newErrors.timeSlot = t('form.errors.required', {
         fallback: 'Please select a time slot',
@@ -300,9 +294,8 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
           {/* Form Header */}
 
           <FormHeader
-            title='Yoga Session'
-            subtitle='Find your inner peace with a personalized yoga session'
-            // icon={Yoga}
+            title={t('services.standard.yogaForm.header.title')}
+            subtitle={t('services.standard.yogaForm.header.subtitle')}
             onCancel={handleClose}
             showCloseButton={true}
             gradientFrom='green-800'
@@ -311,14 +304,12 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
           />
 
           {/* Form Body */}
-          <div className='p-8 space-y-8'>
+          <div className='p-4 space-y-8'>
             {/* Date and Time Section */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
                 <Calendar className={`w-5 h-5 mr-2 'text-teal-600'`} />
-                {t('services.yoga.scheduling', {
-                  fallback: 'Select Date',
-                })}
+                {t('services.standard.yogaForm.timeslot.date')}
               </h3>
 
               {/* Date Selection */}
@@ -350,7 +341,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                       isPremium ? 'text-amber-600' : 'text-teal-600'
                     }`}
                   />
-                  {t('services.yoga.timeSlot', { fallback: 'Time Slot' })} *
+                  {t('services.standard.yogaForm.timeslot.title')} *
                 </label>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -398,16 +389,12 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                           }`}
                         />
                         <span className='font-medium'>
-                          {t('services.yoga.morning', {
-                            fallback: 'Morning Session',
-                          })}
+                          {t('services.standard.yogaForm.timeslot.morning')} *
                         </span>
                       </div>
                     </div>
                     <p className='text-gray-500 text-sm mt-2 ml-8'>
-                      {t('services.yoga.morningTime', {
-                        fallback: '7:00 AM - 11:00 AM',
-                      })}
+                      7:00 AM - 11:00 AM
                     </p>
                   </div>
 
@@ -455,85 +442,18 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                           }`}
                         />
                         <span className='font-medium'>
-                          {t('services.yoga.evening', {
-                            fallback: 'Evening Session',
-                          })}
+                          {t('services.standard.yogaForm.timeslot.evening')} *
                         </span>
                       </div>
                     </div>
                     <p className='text-gray-500 text-sm mt-2 ml-8'>
-                      {t('services.yoga.eveningTime', {
-                        fallback: '1:00 PM - 6:00 PM',
-                      })}
+                      1:00 PM - 6:00 PM
                     </p>
                   </div>
                 </div>
 
                 {errors.timeSlot && (
                   <p className='text-red-500 text-xs mt-1'>{errors.timeSlot}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Location Selection */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <MapPin
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-amber-600' : 'text-teal-600'
-                  }`}
-                />
-                {t('services.yoga.location', { fallback: ' Select Location' })}
-              </h3>
-
-              <div>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-                  {LOCATION_OPTIONS.map((location) => (
-                    <div
-                      key={location.id}
-                      className={`
-                        border rounded-lg p-4 cursor-pointer transition-all
-                        ${
-                          formData.location === location.id
-                            ? `${
-                                isPremium
-                                  ? 'bg-amber-50 border-amber-300'
-                                  : 'bg-teal-50 border-teal-300'
-                              } shadow-sm`
-                            : 'border-gray-200 hover:bg-gray-50'
-                        }
-                      `}
-                      onClick={() => handleLocationSelect(location.id)}
-                    >
-                      <div className='flex items-center'>
-                        <div
-                          className={`
-                          w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                          ${
-                            formData.location === location.id
-                              ? `${
-                                  isPremium
-                                    ? 'border-amber-500 bg-amber-500'
-                                    : 'border-teal-500 bg-teal-500'
-                                }`
-                              : 'border-gray-300'
-                          }
-                        `}
-                        >
-                          {formData.location === location.id && (
-                            <CheckCircle className='w-4 h-4 text-white' />
-                          )}
-                        </div>
-                        <span className='font-medium text-gray-800'>
-                          {location.name}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {errors.location && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
                 )}
               </div>
             </div>
@@ -546,10 +466,10 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     isPremium ? 'text-amber-600' : 'text-teal-600'
                   }`}
                 />
-                {t('services.yoga.participants', { fallback: 'Participants' })}
+                {t('services.standard.yogaForm.participants.title')} *
               </h3>
 
-              <section className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <section className='grid grid-cols-2 md:grid-cols-2 gap-6'>
                 {/* Participant Count */}
                 <div>
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
@@ -558,9 +478,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                         isPremium ? 'text-amber-600' : 'text-teal-600'
                       }`}
                     />
-                    {t('services.yoga.participantCount', {
-                      fallback: 'Number of Participants',
-                    })}
+                    {t('services.standard.yogaForm.participants.number')}
                   </label>
                   <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
                     <button
@@ -591,7 +509,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                         isPremium ? 'text-amber-600' : 'text-teal-600'
                       }`}
                     />
-                    Number of participants under 18
+                    {t('services.standard.yogaForm.participants.under18')}
                   </label>
                   <input
                     type='number'
@@ -600,7 +518,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     max={formData.participantCount}
                     value={formData.minorsCount}
                     onChange={handleChange}
-                    className={`w-full max-w-xs p-3 border ${
+                    className={`w-full max-w-xs p-2 border ${
                       errors.minorsCount ? 'border-red-500' : 'border-gray-300'
                     } rounded-lg focus:ring-2 ${
                       isPremium
@@ -619,8 +537,8 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200 mt-3'>
                       <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
                       <p className='text-xs text-blue-700'>
-                        {formData.minorsCount} participant(s) under 18 detected.
-                        Adult supervision is required during the yoga session.
+                        {formData.minorsCount} {''}
+                        {t('services.standard.yogaForm.participants.warning')}
                       </p>
                     </div>
                   )}
@@ -675,9 +593,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                       )}
                     </div>
                     <span className='font-medium text-gray-800'>
-                      {t('services.yoga.specialNeeds', {
-                        fallback: 'Disability or mobility constraints',
-                      })}
+                      {t('services.standard.yogaForm.disability.title')}
                     </span>
                   </div>
                   <AlertCircle
@@ -697,20 +613,15 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     }`}
                   >
                     <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      {t('services.yoga.specialNeedsDetails', {
-                        fallback:
-                          'Please specify disability or mobility constraints',
-                      })}{' '}
-                      *
+                      {t('services.standard.yogaForm.disability.specify')} *
                     </label>
                     <textarea
                       name='specialNeedsDetails'
                       value={formData.specialNeedsDetails}
                       onChange={handleChange}
-                      placeholder={t('services.yoga.specialNeedsPlaceholder', {
-                        fallback:
-                          'Describe any conditions that would require special accommodation...',
-                      })}
+                      placeholder={t(
+                        'services.standard.yogaForm.disability.describe'
+                      )}
                       className={`w-full p-3 border ${
                         errors.specialNeedsDetails
                           ? 'border-red-500'
@@ -746,10 +657,9 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                           htmlFor='confirmSpecialNeeds'
                           className='ml-3 text-sm text-gray-700'
                         >
-                          {t('services.yoga.confirmSpecialNeeds', {
-                            fallback:
-                              'I confirm that I or someone in my group has the special needs described above and requires accommodation',
-                          })}
+                          {t(
+                            'services.standard.yogaForm.disability.confirmation'
+                          )}
                         </label>
                       </div>
                       {errors.confirmSpecialNeeds && (
@@ -757,16 +667,6 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                           {errors.confirmSpecialNeeds}
                         </p>
                       )}
-                    </div>
-
-                    <div className='mt-3 flex items-start'>
-                      <Info className='h-5 w-5 text-gray-400 mt-0.5 mr-2 flex-shrink-0' />
-                      <p className='text-xs text-gray-500'>
-                        {t('services.yoga.specialNeedsNotice', {
-                          fallback:
-                            'There is a small additional fee for special accommodations. Our yoga instructor will contact you before the session to discuss specific adaptations needed.',
-                        })}
-                      </p>
                     </div>
                   </motion.div>
                 )}
@@ -781,9 +681,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                     isPremium ? 'text-amber-600' : 'text-teal-600'
                   }`}
                 />
-                {t('services.yoga.additionalInfo', {
-                  fallback: 'Additional Information',
-                })}
+                {t('services.standard.yogaForm.footer.additionalInfo')}
               </h3>
 
               <div>
@@ -791,10 +689,9 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                   name='additionalNotes'
                   value={formData.additionalNotes}
                   onChange={handleChange}
-                  placeholder={t('services.yoga.notesPlaceholder', {
-                    fallback:
-                      'Experience level, style preferences, specific goals for the session...',
-                  })}
+                  placeholder={t(
+                    'services.standard.yogaForm.footer.experience'
+                  )}
                   className={`w-full p-3 border border-gray-300 rounded-lg ${
                     isPremium
                       ? 'focus:ring-amber-500 focus:border-amber-500'
@@ -816,7 +713,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
           <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
               <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                {t('services.yoga.totalPrice', { fallback: 'Total Price' })}
+                {t('services.standard.yogaForm.footer.total')}
               </span>
               <div className='flex items-center mt-1'>
                 <span className='text-3xl font-light'>
@@ -834,21 +731,21 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
               <div className='text-xs text-gray-400 mt-2 space-y-1'>
                 <div>
                   {formData.timeSlot === 'morning' ? 'Morning' : 'Evening'} Yoga
-                  Session at{' '}
-                  {LOCATION_OPTIONS.find((loc) => loc.id === formData.location)
-                    ?.name || 'Selected Location'}
+                  Session
+                  {
+                    LOCATION_OPTIONS.find((loc) => loc.id === formData.location)
+                      ?.name
+                  }
                 </div>
                 {formData.participantCount > 1 && (
                   <div className='text-blue-400'>
                     Group discount applied (20% off per additional person)
                   </div>
                 )}
-                {formData.hasSpecialNeeds && (
-                  <div>Special accommodation fee: +$15</div>
-                )}
                 {formData.minorsCount > 0 && (
                   <div className='text-yellow-400'>
-                    {formData.minorsCount} participant(s) under 18
+                    {formData.minorsCount} participant(s){' '}
+                    {t('services.standard.yogaForm.footer.under18')}
                   </div>
                 )}
               </div>
@@ -861,7 +758,7 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
                 disabled={isSubmitting}
                 className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
               >
-                {t('common.cancel', { fallback: 'Cancel' })}
+                {t('services.standard.yogaForm.footer.buttons.cancel')}
               </button>
 
               <button
@@ -875,8 +772,8 @@ const YogaServiceForm: React.FC<YogaServiceFormProps> = ({
               >
                 <CreditCard className='h-4 w-4 mr-2' />
                 {isSubmitting
-                  ? t('services.yoga.booking', { fallback: 'Booking...' })
-                  : t('services.yoga.book', { fallback: 'Book Session' })}
+                  ? t('services.standard.yogaForm.footer.buttons.booking')
+                  : t('services.standard.yogaForm.footer.buttons.bookNow')}
               </button>
             </div>
           </div>
