@@ -248,22 +248,6 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
       return;
     }
 
-    // Confirmación en producción
-    if (isProduction) {
-      const confirmed = window.confirm(
-        '🚨 PRODUCTION MODE\n\n' +
-          'You are about to process a REAL payment.\n' +
-          `Amount: $${reservationData.totalPrice.toFixed(2)}\n\n` +
-          'Real money will be charged to this card.\n\n' +
-          'Do you want to continue?'
-      );
-
-      if (!confirmed) {
-        console.log('❌ Payment cancelled by user');
-        return;
-      }
-    }
-
     setIsProcessing(true);
     setPaymentError(null);
     setCurrentStep('processing');
@@ -423,17 +407,6 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
             ${reservationData.totalPrice.toFixed(2)}
           </span>
         </p>
-        {isProduction && (
-          <div className='mt-3 p-3 bg-red-50 border-2 border-red-300 rounded-lg'>
-            <div className='flex items-center justify-center mb-1'>
-              <AlertTriangle className='w-5 h-5 text-red-600 mr-2' />
-              <p className='text-sm font-bold text-red-900'>PRODUCTION MODE</p>
-            </div>
-            <p className='text-xs text-red-800 font-semibold'>
-              💰 Real money will be charged!
-            </p>
-          </div>
-        )}
       </div>
 
       <form onSubmit={handleSubmit} className='space-y-6'>
@@ -514,11 +487,6 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
                 Your payment is secured by PCI-compliant encryption and
                 processed by Square.
               </p>
-              {isProduction && (
-                <p className='text-xs text-blue-600 mt-2 font-semibold'>
-                  ⚠️ Production mode: Real charges will apply
-                </p>
-              )}
             </div>
           </div>
         </div>

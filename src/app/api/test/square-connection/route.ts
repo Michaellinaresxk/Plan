@@ -55,7 +55,7 @@ export async function GET() {
 
         if (result.square.environment === 'production') {
           result.validation.warnings.push(
-            '🚨 PRODUCTION MODE ACTIVE - Real money will be charged!'
+            '🚨 Real money will be charged!'
           );
         }
       } catch (squareError: any) {

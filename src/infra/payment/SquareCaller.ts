@@ -361,10 +361,6 @@ export class SquareCaller {
       );
     }
 
-    if (environment === 'production') {
-      warnings.push('🚨 PRODUCTION MODE ACTIVE - Real money will be charged!');
-    }
-
     return {
       valid: errors.length === 0,
       errors,

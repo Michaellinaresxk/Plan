@@ -27,7 +27,7 @@ import {
   Leaf,
 } from 'lucide-react';
 import YogalVideoGallery from '../YogaVideoGallery';
-import { fadeInUp, slideIn, videos, YOGA_STYLES } from '@/constants/yoga';
+import { fadeInUp, slideIn, videos } from '@/constants/yoga';
 
 interface YogaServiceViewProps {
   service: Service;
@@ -36,7 +36,16 @@ interface YogaServiceViewProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-// Animation variants
+export const SERVICE_METADATA = {
+  title: 'Yoga Sessions | Relax & Rejuvenate',
+  description:
+    'Professional yoga sessions for all levels. Relax and rejuvenate with our expert instructors in a beautiful beachfront setting.',
+  image: '/images/services/yoga-standard-og.jpg', // 1200x630px
+  imageAlt: 'Yoga session',
+  keywords: ['yoga', 'wellness', 'relaxation', 'punta cana', 'meditation'],
+  duration: '1.5 - 2 hours',
+  price: '$...',
+} as const;
 
 const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
   const { t } = useTranslation();
