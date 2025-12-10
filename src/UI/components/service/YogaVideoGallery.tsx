@@ -125,7 +125,7 @@ const YogalVideoSlider: React.FC<Props> = ({ videos }) => {
       {/* Slider Container */}
       <div
         ref={containerRef}
-        className='flex gap-6 px-[15%] overflow-x-auto scrollbar-hide scroll-smooth'
+        className='flex gap-6 px-[15%] overflow-x-auto scrollbar-hide scroll-smooth py-6'
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         style={{

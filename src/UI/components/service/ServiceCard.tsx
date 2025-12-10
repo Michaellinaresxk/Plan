@@ -116,6 +116,21 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     viewContext === 'premium-view' || packageType === 'premium';
 
   const getTranslationPath = (serviceId: string) => {
+    // Mapeo especial para servicios con sufijos
+    const specialMappings: Record<string, string> = {
+      'yoga-standard': 'yoga',
+      'luxe-yoga': 'luxeYoga',
+      // Agrega otros casos especiales aquí
+    };
+
+    // Si existe un mapeo especial, úsalo
+    if (specialMappings[serviceId]) {
+      const mappedKey = specialMappings[serviceId];
+      const type = serviceId.startsWith('luxe') ? 'premium' : 'standard';
+      return `services.${type}.${mappedKey}`;
+    }
+
+    // Lógica original para otros servicios
     const camelCaseKey = serviceId.replace(/-([a-z])/g, (_, letter) =>
       letter.toUpperCase()
     );
