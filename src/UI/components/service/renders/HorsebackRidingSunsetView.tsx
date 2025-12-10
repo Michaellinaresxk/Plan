@@ -840,6 +840,8 @@ const BookingModal: React.FC<{
   const processingFee = (subtotal * PROCESSING_FEE_RATE) / 100;
   const total = subtotal + processingFee;
 
+  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
+
   const updateField = useCallback((field: keyof FormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => {
@@ -869,11 +871,12 @@ const BookingModal: React.FC<{
   const handleSubmit = async () => {
     // Validate form
     const validationErrors = validateForm();
-    setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('❌ Validation errors:', validationErrors);
-      return;
+      setErrors(validationErrors);
+      scrollToFirstError(); // Ahora funciona porque el hook está declarado arriba
+      return; // Detener ejecución si hay errores
     }
 
     setIsSubmitting(true);
@@ -945,25 +948,25 @@ const BookingModal: React.FC<{
         },
       };
 
-      const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
-
       console.log('🐎 Sunset Reservation data created:', reservationData);
 
       // Set reservation in context
       setReservationData(reservationData);
 
       // Navigate to confirmation page
-      router.push('/reservation-confirmation');
+      await router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ Error submitting form:', error);
       setErrors({
-        submit: 'Failed to submit booking. Please try again.',
+        submit:
+          error instanceof Error
+            ? error.message
+            : 'Failed to submit booking. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
   if (!isOpen) return null;
 
   return (

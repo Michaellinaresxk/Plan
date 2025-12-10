@@ -172,7 +172,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                     <MapPin className='w-4 h-4 sm:w-6 sm:h-6 text-white mr-2 sm:mr-3 flex-shrink-0' />
                     <div className='text-left min-w-0'>
                       <div className='text-white font-semibold text-sm sm:text-base truncate'>
-                        Your Rental
+                        {t('services.standard.yoga.hero.yourPlace')}
                       </div>
                       <div className='text-white/70 text-xs sm:text-sm truncate'>
                         {t('services.standard.yoga.hero.weCome')}
