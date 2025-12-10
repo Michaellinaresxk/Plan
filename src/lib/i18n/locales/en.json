@@ -440,15 +440,35 @@
         },
         "timeslot": {
           "date": "Date",
-          "title": "Time Slot ",
+          "title": "Time Slot",
           "morning": "Morning Session",
           "evening": "Evening Session"
+        },
+        "yogaTypes": {
+          "title": "Yoga Type",
+          "fitness": {
+            "name": "Yoga | Pilates | Fitness",
+            "description": "Energizing session focused on strength and flexibility"
+          },
+          "relaxation": {
+            "name": "Relaxation | Meditation",
+            "description": "Calming session to reduce stress and anxiety"
+          },
+          "soundBath": {
+            "name": "Yoga w/Sound Bath",
+            "description": "Immersive experience with Tibetan singing bowls"
+          },
+          "aerial": {
+            "name": "Aerial Yoga or Pilates",
+            "description": "Suspended yoga or pilates practice in the air"
+          }
         },
         "participants": {
           "title": "Participants",
           "number": "Number of Participants",
           "under18": "Participants under 18",
-          "warning": "Minors must be accompanied by an adult"
+          "warning": "Minors must be accompanied by an adult",
+          "additionalPerson": "+$30 per additional person"
         },
         "disability": {
           "title": "Disability or mobility constraints",
@@ -456,15 +476,78 @@
           "describe": "Describe any disability or mobility constraints we should be aware of to tailor the session to your needs.",
           "confirmation": "I confirm that I do not have any disability or mobility constraints that require special accommodations to participate in the yoga session."
         },
+        "pricing": {
+          "basePrice": "Base price"
+        },
         "footer": {
           "total": "Total price",
-          "additionalInfo": "Información Adicional",
+          "additionalInfo": "Additional Information",
           "under18": "Under 18",
           "experience": "Experience level, style preferences, specific goals for the session...",
           "buttons": {
             "cancel": "Cancel",
             "bookNow": "Book now",
             "booking": "Booking..."
+          }
+        }
+      }
+    },
+    "es": {
+      "yogaForm": {
+        "header": {
+          "title": "Sesión de Yoga",
+          "subtitle": "Encuentra tu práctica perfecta, en una sesión de yoga personalizada."
+        },
+        "timeslot": {
+          "date": "Fecha",
+          "title": "Horarios",
+          "morning": "Sesión Matutina",
+          "evening": "Sesión Vespertina"
+        },
+        "yogaTypes": {
+          "title": "Tipo de Yoga",
+          "fitness": {
+            "name": "Yoga | Pilates | Fitness",
+            "description": "Sesión energizante enfocada en fuerza y flexibilidad"
+          },
+          "relaxation": {
+            "name": "Relajación | Meditación",
+            "description": "Sesión calmante para reducir estrés y ansiedad"
+          },
+          "soundBath": {
+            "name": "Yoga con Baño de Sonido",
+            "description": "Experiencia inmersiva con cuencos tibetanos"
+          },
+          "aerial": {
+            "name": "Aerial Yoga or Pilates",
+            "description": "Yoga o Pilates suspendido en el aire"
+          }
+        },
+        "participants": {
+          "title": "Participantes",
+          "number": "Cantidad de Participantes",
+          "under18": "Menores a 18 años",
+          "warning": "Deben estar acompañados por un adulto",
+          "additionalPerson": "+$30 por persona adicional"
+        },
+        "disability": {
+          "title": "Discapacidad o limitaciones de movilidad",
+          "specify": "Especifique la discapacidad o las limitaciones de movilidad",
+          "describe": "Describa cualquier discapacidad o limitación de movilidad que debamos tener en cuenta.",
+          "confirmation": "Confirmo que no tengo ninguna discapacidad o limitación de movilidad que requiera adaptaciones especiales para participar en la sesión de yoga."
+        },
+        "pricing": {
+          "basePrice": "Precio base"
+        },
+        "footer": {
+          "total": "Precio total",
+          "additionalInfo": "Información Adicional",
+          "under18": "menor(es) de 18 años",
+          "experience": "Nivel de experiencia, preferencias, metas especificas...",
+          "buttons": {
+            "cancel": "Cancelar",
+            "bookNow": "Reservar",
+            "booking": "Reservando..."
           }
         }
       },

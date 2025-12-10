@@ -97,6 +97,7 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
     <div className='min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-blue-50'>
       <div className='max-w-8xl mx-auto space-y-16 pb-16'>
         {/* Hero Section */}
+
         <motion.div
           className='relative overflow-hidden w-full my-6 sm:my-8 lg:my-12'
           initial='hidden'
@@ -197,9 +198,96 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
                     </span>
                     <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:translate-x-1 transition-transform' />
                   </motion.button>
+                  <div className='mt-10'></div>
                 </div>
               </div>
             </div>
+          </div>
+        </motion.div>
+
+        <YogalVideoGallery videos={videos} />
+
+        {/* What to Expect Section - From PDF */}
+        <motion.div
+          className='px-2'
+          initial='hidden'
+          animate='visible'
+          variants={fadeInUp}
+        >
+          <div className='text-center mb-16'>
+            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
+              {t('services.standard.yoga.whatToExpect.title')}
+            </h2>
+            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+              {t('services.standard.yoga.whatToExpect.subtitle')}
+            </p>
+          </div>
+
+          <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            {[
+              {
+                step: '1',
+                title: t(
+                  'services.standard.yoga.whatToExpect.items.setup.title'
+                ),
+                description: t(
+                  'services.standard.yoga.whatToExpect.items.setup.description'
+                ),
+                icon: <Sparkles className='w-8 h-8' />,
+                color: 'from-emerald-500 to-teal-500',
+              },
+              {
+                step: '2',
+                title: t(
+                  'services.standard.yoga.whatToExpect.items.welcome.title'
+                ),
+                description: t(
+                  'services.standard.yoga.whatToExpect.items.welcome.description'
+                ),
+                icon: <Heart className='w-8 h-8' />,
+                color: 'from-teal-500 to-cyan-500',
+              },
+              {
+                step: '3',
+                title: t(
+                  'services.standard.yoga.whatToExpect.items.practice.title'
+                ),
+                description: t(
+                  'services.standard.yoga.whatToExpect.items.practice.description'
+                ),
+                icon: <Wind className='w-8 h-8' />,
+                color: 'from-cyan-500 to-blue-500',
+              },
+              {
+                step: '4',
+                title: 'Grounding Relaxation',
+                description: 'Finish with a grounding relaxation',
+                icon: <Moon className='w-8 h-8' />,
+                color: 'from-blue-500 to-indigo-500',
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                className='text-center'
+                variants={fadeInUp}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div
+                  className={`w-20 h-20 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center mx-auto mb-6 text-white shadow-lg`}
+                >
+                  {item.icon}
+                </div>
+                <div className='mb-3'>
+                  <span className='text-3xl font-bold text-gray-300 mr-2'>
+                    {item.step}
+                  </span>
+                  <h3 className='text-xl font-bold text-gray-800 inline'>
+                    {item.title}
+                  </h3>
+                </div>
+                <p className='text-gray-600'>{item.description}</p>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
@@ -390,93 +478,6 @@ const YogaServiceView: React.FC<YogaServiceViewProps> = ({ service }) => {
           </div>
         </motion.div>
 
-        <YogalVideoGallery videos={videos} />
-
-        {/* What to Expect Section - From PDF */}
-        <motion.div
-          className='px-2'
-          initial='hidden'
-          animate='visible'
-          variants={fadeInUp}
-        >
-          <div className='text-center mb-16'>
-            <h2 className='text-4xl font-bold text-gray-800 mb-6'>
-              {t('services.standard.yoga.whatToExpect.title')}
-            </h2>
-            <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
-              {t('services.standard.yoga.whatToExpect.subtitle')}
-            </p>
-          </div>
-
-          <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8'>
-            {[
-              {
-                step: '1',
-                title: t(
-                  'services.standard.yoga.whatToExpect.items.setup.title'
-                ),
-                description: t(
-                  'services.standard.yoga.whatToExpect.items.setup.description'
-                ),
-                icon: <Sparkles className='w-8 h-8' />,
-                color: 'from-emerald-500 to-teal-500',
-              },
-              {
-                step: '2',
-                title: t(
-                  'services.standard.yoga.whatToExpect.items.welcome.title'
-                ),
-                description: t(
-                  'services.standard.yoga.whatToExpect.items.welcome.description'
-                ),
-                icon: <Heart className='w-8 h-8' />,
-                color: 'from-teal-500 to-cyan-500',
-              },
-              {
-                step: '3',
-                title: t(
-                  'services.standard.yoga.whatToExpect.items.practice.title'
-                ),
-                description: t(
-                  'services.standard.yoga.whatToExpect.items.practice.description'
-                ),
-                icon: <Wind className='w-8 h-8' />,
-                color: 'from-cyan-500 to-blue-500',
-              },
-              {
-                step: '4',
-                title: 'Grounding Relaxation',
-                description: 'Finish with a grounding relaxation',
-                icon: <Moon className='w-8 h-8' />,
-                color: 'from-blue-500 to-indigo-500',
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                className='text-center'
-                variants={fadeInUp}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div
-                  className={`w-20 h-20 bg-gradient-to-r ${item.color} rounded-full flex items-center justify-center mx-auto mb-6 text-white shadow-lg`}
-                >
-                  {item.icon}
-                </div>
-                <div className='mb-3'>
-                  <span className='text-3xl font-bold text-gray-300 mr-2'>
-                    {item.step}
-                  </span>
-                  <h3 className='text-xl font-bold text-gray-800 inline'>
-                    {item.title}
-                  </h3>
-                </div>
-                <p className='text-gray-600'>{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Service Overview Section - From PDF */}
         <motion.div
           className='px-2'
           initial='hidden'
