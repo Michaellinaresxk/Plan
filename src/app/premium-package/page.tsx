@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import ServiceList from '@/UI/components/service/ServiceList';
 import ServiceManager from '@/constants/services/ServiceManager';
+import FloatingActionButton from '@/UI/components/shared/WhatsAppFloatingButton';
 
 const PremiumPackageContent = () => {
   const { packageType, setPackageType } = useBooking();
@@ -342,6 +343,10 @@ const PremiumPackageContent = () => {
       </section>
 
       <CartSidebar />
+      <FloatingActionButton
+        message='Hi! I need help with luxury services'
+        position='bottom-right'
+      />
       <Footer />
     </div>
   );

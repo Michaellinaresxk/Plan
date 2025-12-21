@@ -20,6 +20,7 @@ import Image from 'next/image';
 import CustomPackageBuilder from '@/UI/components/layout/CustomPackageBuilder';
 import CustomPackageOrchestrator from '@/UI/components/packageBuilder/CustomPackageOrchestrator';
 import ServiceManager from '@/constants/services/ServiceManager';
+import FloatingActionButton from '@/UI/components/shared/WhatsAppFloatingButton';
 
 export default function CustomPackagePage() {
   const { t } = useTranslation();
@@ -452,6 +453,10 @@ export default function CustomPackagePage() {
         </main>
 
         <Footer />
+        <FloatingActionButton
+          message='Hi! I need help with luxury services'
+          position='bottom-right'
+        />
       </div>
     </BookingProvider>
   );

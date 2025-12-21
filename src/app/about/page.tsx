@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/UI/components/shared/Navbar';
 import Footer from '@/UI/components/shared/Footer';
@@ -10,6 +9,7 @@ import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import CTASection from '@/UI/components/shared/CTASection';
 import InstagramCTA from '@/UI/components/shared/InstagramCTA';
+import FloatingActionButton from '@/UI/components/shared/WhatsAppFloatingButton';
 
 const AboutPage = () => {
   const { t } = useTranslation();
@@ -331,7 +331,10 @@ const AboutPage = () => {
         </div>
         <CTASection />
       </main>
-
+      <FloatingActionButton
+        message='Hi! I need help with luxury services'
+        position='bottom-right'
+      />
       <Footer />
     </div>
   );

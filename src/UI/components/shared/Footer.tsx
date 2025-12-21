@@ -14,6 +14,32 @@ import { useTranslation } from '@/lib/i18n/client';
 
 const Footer = () => {
   const { t } = useTranslation();
+
+  const handleWhatsAppClick = () => {
+    const phoneNumber = '13027248080';
+    const message = 'Hello! I would like to know more about your services.';
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleEmailClick = () => {
+    const email = 'info@luxpuntacana.com';
+    const subject = 'Inquiry about your services';
+    const body = 'Hello! I would like to know more about your services.';
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+  };
+
+  const handleMapClick = () => {
+    const address = 'Av. Bambú, Punta Cana 23000, Dominican Republic';
+    const encodedAddress = encodeURIComponent(address);
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <footer className='footer text-white' id='contact'>
       <div className='container mx-auto px-6 py-12'>
@@ -98,19 +124,33 @@ const Footer = () => {
               {t('common.footer.contact')}
             </h3>
             <ul className='space-y-3'>
-              <li className='flex items-start'>
-                <MapPin className='h-5 w-5 mr-3 mt-0.5 text-gray-400' />
-                <span className='text-gray-400'>
+              <li
+                className='flex items-start cursor-pointer hover:text-blue-500 transition-colors group'
+                onClick={handleMapClick}
+              >
+                <MapPin className='h-5 w-5 mr-3 mt-0.5 text-gray-400 group-hover:text-blue-500 transition-colors' />
+                <span className='text-gray-400 group-hover:text-blue-500 transition-colors'>
                   VISTA CANA, Punta Cana 23000, Dominican Republic
                 </span>
               </li>
-              <li className='flex items-center'>
-                <Phone className='h-5 w-5 mr-3 text-gray-400' />
-                <span className='text-gray-400'>+1 302-724-8080</span>
+              <li
+                className='flex items-center cursor-pointer hover:text-green-500 transition-colors group'
+                onClick={handleWhatsAppClick}
+              >
+                <Phone className='h-5 w-5 mr-3 text-gray-400 group-hover:text-green-500 transition-colors' />
+                <span className='text-gray-400 group-hover:text-green-500 transition-colors'>
+                  +1 302-724-8080
+                </span>
               </li>
-              <li className='flex items-center'>
-                <Mail className='h-5 w-5 mr-3 text-gray-400' />
-                <span className='text-gray-400'>info@luxpuntacana.com</span>
+
+              <li
+                className='flex items-center cursor-pointer hover:text-amber-500 transition-colors group'
+                onClick={handleEmailClick}
+              >
+                <Mail className='h-5 w-5 mr-3 text-gray-400 group-hover:text-amber-500 transition-colors' />
+                <span className='text-gray-400 group-hover:text-amber-500 transition-colors'>
+                  info@luxpuntacana.com
+                </span>
               </li>
             </ul>
           </div>
