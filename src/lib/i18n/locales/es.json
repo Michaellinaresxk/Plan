@@ -431,66 +431,7 @@
         "disclaimer": "Por tu seguridad y tranquilidad, recomendamos consultar con tu médico antes de comenzar cualquier nueva actividad física, especialmente si estás embarazada, en proceso de recuperación o tienes alguna condición médica. La participación es bajo tu propia responsabilidad.",
         "finalMessage": "Escucha a tu cuerpo. Este es tu momento. Tu espacio. Tu ritmo."
       },
-      "yogaForm": {
-        "header": {
-          "title": "Yoga Session",
-          "subtitle": "Find your inner peace with a personalized yoga session"
-        },
-        "timeslot": {
-          "date": "Date",
-          "title": "Time Slot",
-          "morning": "Morning Session",
-          "evening": "Evening Session"
-        },
-        "yogaTypes": {
-          "title": "Yoga Type",
-          "fitness": {
-            "name": "Yoga | Pilates | Fitness",
-            "description": "Energizing session focused on strength and flexibility"
-          },
-          "relaxation": {
-            "name": "Relaxation | Meditation",
-            "description": "Calming session to reduce stress and anxiety"
-          },
-          "soundBath": {
-            "name": "Yoga w/Sound Bath",
-            "description": "Immersive experience with Tibetan singing bowls"
-          },
-          "aerial": {
-            "name": "Aerial Yoga or Pilates",
-            "description": "Suspended yoga or pilates practice in the air"
-          }
-        },
-        "participants": {
-          "title": "Participants",
-          "number": "Number of Participants",
-          "under18": "Participants under 18",
-          "warning": "Minors must be accompanied by an adult",
-          "additionalPerson": "+$30 per additional person"
-        },
-        "disability": {
-          "title": "Disability or mobility constraints",
-          "specify": "Please specify disability or mobility constraints *",
-          "describe": "Describe any disability or mobility constraints we should be aware of to tailor the session to your needs.",
-          "confirmation": "I confirm that I do not have any disability or mobility constraints that require special accommodations to participate in the yoga session."
-        },
-        "pricing": {
-          "basePrice": "Base price"
-        },
-        "footer": {
-          "total": "Total price",
-          "additionalInfo": "Additional Information",
-          "under18": "Under 18",
-          "experience": "Experience level, style preferences, specific goals for the session...",
-          "buttons": {
-            "cancel": "Cancel",
-            "bookNow": "Book now",
-            "booking": "Booking..."
-          }
-        }
-      }
-    },
-    "es": {
+
       "yogaForm": {
         "header": {
           "title": "Sesión de Yoga",
