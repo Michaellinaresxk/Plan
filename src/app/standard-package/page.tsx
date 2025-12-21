@@ -188,14 +188,14 @@ const StandardPackageContent = () => {
         <div className='absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl'></div>
 
         {/* Background image */}
-        <div className='absolute inset-0 z-0 opacity-20'>
+        {/* <div className='absolute inset-0 z-0 opacity-20'>
           <Image
-            src='/images/punta-cana-beach-sunset.jpg'
+            src='/img/punta-cana-beach-sunset.jpg'
             alt='Punta Cana Beach'
             fill
             className='object-cover'
           />
-        </div>
+        </div> */}
 
         <div className='container mx-auto px-6 relative z-20'>
           <div className='max-w-4xl mx-auto text-center'>
