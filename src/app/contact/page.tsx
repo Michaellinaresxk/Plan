@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/client';
 import CTASection from '@/UI/components/shared/CTASection';
 import InstagramCTA from '@/UI/components/shared/InstagramCTA';
+import FloatingActionButton from '@/UI/components/shared/WhatsAppFloatingButton';
 
 const ContactPage = () => {
   const { t } = useTranslation();
@@ -103,7 +104,10 @@ const ContactPage = () => {
   return (
     <div className='flex flex-col min-h-screen font-[family-name:var(--font-geist-sans)]'>
       <Navbar />
-
+      <FloatingActionButton
+        message='Hi! I need help with luxury services'
+        position='bottom-right'
+      />
       <main className='flex-grow'>
         {/* Hero Section */}
         <section className='relative pt-24 pb-32 overflow-hidden'>
@@ -159,9 +163,17 @@ const ContactPage = () => {
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5'>
               {/* Contact Card 1 */}
               <motion.div
-                className='bg-gray-50 rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow duration-300'
+                className='bg-gray-50 rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer'
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.3 }}
+                onClick={() => {
+                  const phoneNumber = '13027248080'; // Sin espacios ni guiones
+                  const message =
+                    'Hello! I would like to know more about your services.';
+                  const encodedMessage = encodeURIComponent(message);
+                  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+                  window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+                }}
               >
                 <div className='w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6'>
                   <Phone className='w-8 h-8 text-blue-600' />
@@ -177,9 +189,19 @@ const ContactPage = () => {
 
               {/* Contact Card 2 */}
               <motion.div
-                className='bg-gray-50 rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow duration-300'
+                className='bg-gray-50 rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer'
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.3 }}
+                onClick={() => {
+                  const email = 'info@luxpuntacana.com';
+                  const subject = 'Inquiry about your services';
+                  const body =
+                    'Hello! I would like to know more about your services.';
+                  const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
+                    subject
+                  )}&body=${encodeURIComponent(body)}`;
+                  window.location.href = mailtoUrl;
+                }}
               >
                 <div className='w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6'>
                   <Mail className='w-8 h-8 text-amber-600' />

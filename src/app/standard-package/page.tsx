@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { ChevronRight, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import ServiceList from '@/UI/components/service/ServiceList';
 import ServiceManager from '@/constants/services/ServiceManager';
+import FloatingActionButton from '@/UI/components/shared/WhatsAppFloatingButton';
 
 const StandardPackageContent = () => {
   const { packageType, setPackageType } = useBooking();
@@ -308,6 +309,10 @@ const StandardPackageContent = () => {
       </section>
 
       <CartSidebar />
+      <FloatingActionButton
+        message='Hi! I need help with luxury services'
+        position='bottom-right'
+      />
       <Footer />
     </div>
   );
