@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SquareCaller } from '@/infra/payment/SquareCaller';
 import { reservationService } from '@/primary/Reservation/useCases';
+import { emailService } from '@/services/Email';
 
 export async function POST(request: NextRequest) {
   console.log('🎯 Square Process Payment API called');
@@ -84,6 +85,39 @@ export async function POST(request: NextRequest) {
     });
 
     console.log('✅ Reservation created:', reservation.bookingId);
+
+    // Send payment confirmation email
+    console.log('📧 Sending payment confirmation email...');
+
+    try {
+      const emailResult = await emailService.sendPaymentConfirmation({
+        reservationId: reservation.bookingId,
+        bookingId: reservation.bookingId,
+        clientEmail: reservation.clientEmail,
+        clientName: reservation.clientName,
+        serviceName: reservation.serviceName,
+        totalPrice: reservation.totalPrice,
+        currency: currency,
+        metadata: {
+          paymentId: payment.paymentId,
+          receiptUrl: payment.receiptUrl,
+          receiptNumber: payment.receiptNumber,
+        },
+      });
+
+      if (emailResult.success) {
+        console.log('✅ Confirmation email sent successfully');
+        console.log('📬 Email Message ID:', emailResult.messageId);
+      } else {
+        // Log the error but don't fail the entire request
+        console.error('⚠️ Failed to send confirmation email:', emailResult.error);
+        console.log('✅ Reservation and payment completed successfully despite email failure');
+      }
+    } catch (emailError) {
+      // Catch any unexpected email errors but don't fail the request
+      console.error('⚠️ Unexpected error sending confirmation email:', emailError);
+      console.log('✅ Reservation and payment completed successfully despite email failure');
+    }
 
     return NextResponse.json({
       success: true,

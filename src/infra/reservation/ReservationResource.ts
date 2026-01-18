@@ -11,21 +11,11 @@ export class ReservationResource implements ReservationRepository {
 
   async createReservation(data: CreateReservationData): Promise<Reservation> {
     try {
-      console.log('🏗️ ReservationResource - Creating reservation:', data);
-
       const apiReservation = await this.reservationCaller.createReservation(
         data
       );
-      console.log(
-        '🏗️ ReservationResource - API reservation created:',
-        apiReservation
-      );
 
       const domainReservation = this.toDomainReservation(apiReservation);
-      console.log(
-        '✅ ReservationResource - Domain reservation created:',
-        domainReservation.bookingId
-      );
 
       return domainReservation;
     } catch (error) {
@@ -38,11 +28,6 @@ export class ReservationResource implements ReservationRepository {
   }
 
   private toDomainReservation(apiReservation: ApiReservation): Reservation {
-    console.log(
-      '🔄 Converting API reservation to domain reservation:',
-      apiReservation
-    );
-
     if (!apiReservation.bookingId) {
       throw new Error('API Reservation must have a bookingId');
     }
@@ -68,10 +53,6 @@ export class ReservationResource implements ReservationRepository {
         notes: apiReservation.notes,
       });
 
-      console.log(
-        '✅ Domain reservation created successfully:',
-        domainReservation.bookingId
-      );
       return domainReservation;
     } catch (conversionError) {
       console.error(

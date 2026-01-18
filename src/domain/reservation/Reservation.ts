@@ -75,17 +75,4 @@ export class Reservation {
       notes: this.notes,
     });
   }
-
-  // Business logic methods
-  canBeModified(): boolean {
-    return this.status === 'pending';
-  }
-
-  isConfirmed(): boolean {
-    return this.status === 'approved';
-  }
-
-  isPending(): boolean {
-    return this.status === 'pending';
-  }
 }
