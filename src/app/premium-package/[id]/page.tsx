@@ -1,65 +1,193 @@
-'use client';
-
-import React, { use } from 'react';
 import { notFound } from 'next/navigation';
-import { BookingProvider } from '@/context/BookingContext';
-import Navbar from '@/UI/components/shared/Navbar';
-import CartSidebar from '@/UI/components/shared/CartSidebar';
-import Footer from '@/UI/components/shared/Footer';
+import type { Metadata } from 'next';
+import Script from 'next/script';
 import ServiceManager from '@/constants/services/ServiceManager';
-import ServiceDetails from '@/UI/components/service/ServiceDetails';
+import ServiceDetailsWrapper from '@/UI/components/service/ServiceDetailsWrapper';
 
 interface ServicePageParams {
-  params: {
+  params: Promise<{
     id: string;
+  }>;
+}
+
+/**
+ * Generate metadata for premium service detail pages
+ */
+export async function generateMetadata({
+  params,
+}: ServicePageParams): Promise<Metadata> {
+  const { id } = await params;
+  const serviceData = ServiceManager.getData(id);
+
+  if (!serviceData) {
+    return {
+      title: 'Service Not Found | Lux Punta Cana',
+      description: 'The requested premium service could not be found.',
+    };
+  }
+
+  const serviceName =
+    typeof serviceData.titleKey === 'string'
+      ? serviceData.titleKey.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || 'Service'
+      : 'Service';
+
+  const description = `Exclusive ${serviceName} VIP service in Punta Cana. Starting from $${serviceData.basePrice} USD. Premium luxury experience with top-tier professionals and exceptional quality.`;
+
+  return {
+    title: `${serviceName} VIP - Premium Package | Lux Punta Cana`,
+    description,
+    keywords: [
+      `${serviceName} VIP Punta Cana`,
+      'exclusive luxury services Dominican Republic',
+      'premium resort services',
+      'VIP vacation activities',
+      `book premium ${serviceName}`,
+      'five-star experiences',
+    ],
+    openGraph: {
+      type: 'website',
+      locale: 'en_US',
+      url: `https://luxpuntacana.com/premium-package/${id}`,
+      siteName: 'Lux Punta Cana',
+      title: `${serviceName} VIP - Exclusive Luxury Service in Punta Cana`,
+      description,
+      images: [
+        {
+          url: serviceData.imageUrl || 'https://luxpuntacana.com/img/saona-island/saona-3.jpg',
+          width: 1200,
+          height: 630,
+          alt: `${serviceName} VIP - Lux Punta Cana Premium Package`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${serviceName} VIP - Exclusive Luxury Service`,
+      description,
+      images: [serviceData.imageUrl || 'https://luxpuntacana.com/img/saona-island/saona-3.jpg'],
+    },
+    alternates: {
+      canonical: `https://luxpuntacana.com/premium-package/${id}`,
+    },
   };
 }
 
 /**
- * Service Details Page
+ * Premium Service Details Page
  *
- * This component renders the details page for a specific service.
+ * This component renders the details page for a specific premium service.
  * It uses the ServiceManager to fetch the service data and the
  * ServiceDetailsEnhanced component to render the service details.
  */
-export default function SelectedServicePage({ params }: ServicePageParams) {
-  const { id } = use(params);
+export default async function SelectedServicePage({
+  params,
+}: ServicePageParams) {
+  const { id } = await params;
 
   // Get the service data using ServiceManager
   const serviceData = ServiceManager.getData(id);
-  console.log('Available IDs:', Object.keys(ServiceManager.IDs));
 
-  // Si no se encuentra el servicio, mostrar mensaje de depuración en vez de 404
+  // Si no se encuentra el servicio, mostrar 404
   if (!serviceData) {
-    console.error('Service not found:', id);
-    return (
-      <div className='min-h-screen flex items-center justify-center flex-col'>
-        <h1 className='text-2xl font-bold mb-4'>Servicio no encontrado</h1>
-        <p>ID solicitado: {id}</p>
-        <p>Revisa que este ID exista en ServiceManager</p>
-      </div>
-    );
-  }
-
-  if (!serviceData) {
+    console.error('Premium service not found:', id);
     return notFound();
   }
 
   const service = ServiceManager.get(id);
 
+  // Generate structured data for the premium service
+  const serviceName =
+    typeof serviceData.titleKey === 'string'
+      ? serviceData.titleKey.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || 'Service'
+      : 'Service';
+
+  const serviceStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: `${serviceName} VIP`,
+    description: `Exclusive VIP ${serviceName} service in Punta Cana, Dominican Republic`,
+    image: serviceData.imageUrl || 'https://luxpuntacana.com/img/saona-island/saona-3.jpg',
+    brand: {
+      '@type': 'Brand',
+      name: 'Lux Punta Cana',
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'USD',
+      price: serviceData.basePrice,
+      availability: 'https://schema.org/InStock',
+      url: `https://luxpuntacana.com/premium-package/${id}`,
+      priceValidUntil: '2026-12-31',
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'Lux Punta Cana',
+      url: 'https://luxpuntacana.com',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5',
+      bestRating: '5',
+      ratingCount: '67',
+    },
+    additionalProperty: [
+      {
+        '@type': 'PropertyValue',
+        name: 'Service Level',
+        value: 'VIP Premium',
+      },
+      {
+        '@type': 'PropertyValue',
+        name: 'Category',
+        value: serviceData.category,
+      },
+    ],
+  };
+
+  const breadcrumbStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://luxpuntacana.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Premium Package',
+        item: 'https://luxpuntacana.com/premium-package',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: `${serviceName} VIP`,
+        item: `https://luxpuntacana.com/premium-package/${id}`,
+      },
+    ],
+  };
+
   return (
-    <BookingProvider>
-      <div className='min-h-screen flex flex-col'>
-        <Navbar />
-
-        <main className='flex-grow'>
-          {/* Render the service details with the enhanced component */}
-          <ServiceDetails service={service} serviceData={serviceData} />
-        </main>
-
-        <CartSidebar />
-        <Footer />
-      </div>
-    </BookingProvider>
+    <>
+      <Script
+        id={`premium-service-${id}-structured-data`}
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(serviceStructuredData),
+        }}
+        strategy='beforeInteractive'
+      />
+      <Script
+        id={`premium-service-${id}-breadcrumb`}
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbStructuredData),
+        }}
+        strategy='beforeInteractive'
+      />
+      <ServiceDetailsWrapper service={service} serviceData={serviceData} />
+    </>
   );
 }

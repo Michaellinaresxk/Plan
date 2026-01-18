@@ -1,3 +1,4 @@
+import { EmailStatus, EmailType } from '@/domain/email/Email';
 import { PaymentMethod, PaymentStatus } from '@/domain/payment/Payment';
 
 export type ReservationProperties = {
@@ -26,5 +27,24 @@ export interface PaymentProperties {
   receiptNumber?: string; // Número de recibo de Square
   createdAt: Date;
   updatedAt: Date;
+  metadata?: Record<string, any>;
+}
+
+export interface EmailProperties {
+  emailId: string;
+  reservationId: string;
+  bookingId: string;
+  clientEmail: string;
+  clientName: string;
+  serviceName: string;
+  totalPrice: number;
+  currency: string;
+  emailType: EmailType;
+  status: EmailStatus;
+  messageId?: string;
+  receiptUrl?: string;
+  createdAt: Date;
+  sentAt?: Date;
+  deliveredAt?: Date;
   metadata?: Record<string, any>;
 }
