@@ -188,9 +188,8 @@
         }
       },
       "yoga": {
-        "main": {
-          "short": "Expert-led sessions tailored to your needs in the comfort of your space"
-        },
+        "short": "Expert-led sessions tailored to your needs in the comfort of your space",
+
         "yogaStyles": {
           "hatha": "Hatha",
           "vinyasa": "Vinyasa",
@@ -1177,8 +1176,10 @@
           "transport": "Transport",
           "locationSurcharge": "Location surcharge",
           "pickup": "Pickup",
-          "vehicles": "vehicle",
-          "vehiclesPlural": "vehicles"
+          "vehicle": "vehicle",
+          "vehiclesPlural": "vehicles",
+          "perVehicleNote": "${{price}} per vehicle · max {{max}} people",
+          "perPersonNote": "${{price}} per person"
         },
         "buttons": {
           "cancel": "Cancel",

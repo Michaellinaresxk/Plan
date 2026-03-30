@@ -185,9 +185,7 @@
         }
       },
       "yoga": {
-        "main": {
-          "short": "Sesiones dirigidas por expertos y adaptadas a sus necesidades en la comodidad de su espacio"
-        },
+        "short": "Sesiones dirigidas por expertos y adaptadas a sus necesidades en la comodidad de su espacio",
         "yogaStyles": {
           "hatha": "Hatha",
           "vinyasa": "Vinyasa",
@@ -2408,8 +2406,10 @@
           "transport": "Transporte",
           "locationSurcharge": "Recargo por ubicación",
           "pickup": "Recogida",
-          "vehicles": "vehículo",
-          "vehiclesPlural": "vehículos"
+          "vehicle": "vehículo",
+          "vehiclesPlural": "vehículos",
+          "perVehicleNote": "${{price}} por vehículo · max {{max}} personas",
+          "perPersonNote": "${{price}} por persona"
         },
         "buttons": {
           "cancel": "Cancelar",
