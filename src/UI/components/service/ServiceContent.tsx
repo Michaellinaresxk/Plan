@@ -38,7 +38,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
         const yogaExtendedData = {
           yogaStyles: service.options?.yogaStyle?.subOptions
             ? Object.values(service.options.yogaStyle.subOptions).map((opt) =>
-                t(opt.nameKey)
+                t(opt.nameKey),
               )
             : [],
           includes: service.includes?.map((key) => t(key)) || [],
@@ -53,7 +53,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
           yogaExtendedData,
           primaryColor,
           t,
-          `services.standard.yoga.short`
+          `services.standard.yoga.short`,
         );
       // Eventualmente podemos cambiarlo por el nuevo orquestador:
       // return <ServiceContentOrchestrator service={service} primaryColor={primaryColor} />;
@@ -63,7 +63,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
         const karaokeExtendedData = {
           timeSlots: service.options?.setupType?.subOptions
             ? Object.values(service.options.setupType.subOptions).map((opt) =>
-                t(opt.nameKey)
+                t(opt.nameKey),
               )
             : [],
           includes: service.includes?.map((key) => t(key)) || [],
@@ -78,7 +78,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
           karaokeExtendedData,
           primaryColor,
           t,
-          `services.standard.karaoke`
+          `services.standard.karaoke`,
         );
 
       case 'airport':
@@ -89,7 +89,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
           priceUnit: t(service.priceUnit),
           timeSlots: service.options?.vehicleType?.subOptions
             ? Object.values(service.options.vehicleType.subOptions).map((opt) =>
-                t(opt.nameKey)
+                t(opt.nameKey),
               )
             : [],
           travelTime: service.metaData?.travelTime?.toString() || '',
@@ -104,7 +104,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
           availability: service.metaData?.availability?.toString() || '',
           disclaimer: service.disclaimer ? t(service.disclaimer) : undefined,
           fullDescription: t(
-            service.fullDescriptionKey || service.descriptionKey
+            service.fullDescriptionKey || service.descriptionKey,
           ),
           tagline: t('services.airportTransfer.tagline'),
         };
@@ -136,7 +136,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
 function renderBabysitterService(
   service: ServiceData,
   primaryColor: string,
-  t: ReturnType<typeof useTranslation>['t']
+  t: ReturnType<typeof useTranslation>['t'],
 ) {
   // Crear adaptador de datos para mantener compatibilidad con el renderizador existente
   const extendedData = {
@@ -148,7 +148,7 @@ function renderBabysitterService(
       : [],
     timeSlots: service.options?.timeSlot?.subOptions
       ? Object.values(service.options.timeSlot.subOptions).map((opt) =>
-          t(opt.nameKey)
+          t(opt.nameKey),
         )
       : [],
     includes: service.includes?.map((key) => t(key)) || [],
@@ -381,7 +381,7 @@ function renderBabysitterService(
 // Función para renderizar el contenido estándar de un servicio
 function renderDefaultServiceContent(
   service: ServiceData,
-  t: ReturnType<typeof useTranslation>['t']
+  t: ReturnType<typeof useTranslation>['t'],
 ) {
   return (
     <div className='service-content standard-render'>
@@ -485,7 +485,7 @@ function renderDefaultServiceContent(
                             </p>
                           )}
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 )}
@@ -533,7 +533,7 @@ function renderDefaultServiceContent(
                   .map((v) =>
                     t(`services.metadata.values.${v.trim()}`, {
                       defaultValue: v.trim(),
-                    })
+                    }),
                   )
                   .join(', ');
               } else {
@@ -781,7 +781,7 @@ const ServiceOptionsBlock: React.FC<ServiceContentProps> = ({
                           </p>
                         )}
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               )}
@@ -931,7 +931,7 @@ const ServiceMetadataBlock: React.FC<ServiceContentProps> = ({
                 .map((v) =>
                   t(`services.metadata.values.${v.trim()}`, {
                     defaultValue: v.trim(),
-                  })
+                  }),
                 )
                 .join(', ');
             } else {
@@ -1119,9 +1119,9 @@ function renderYogaService(
   primaryColor: string,
   t: (
     key: string,
-    options?: { fallback?: string; [key: string]: any }
+    options?: { fallback?: string; [key: string]: any },
   ) => string,
-  arg3: string
+  arg3: string,
 ): React.ReactNode | Promise<React.ReactNode> {
   throw new Error('Function not implemented.');
 }
@@ -1139,9 +1139,9 @@ function renderKaraokeService(
   primaryColor: string,
   t: (
     key: string,
-    options?: { fallback?: string; [key: string]: any }
+    options?: { fallback?: string; [key: string]: any },
   ) => string,
-  arg3: string
+  arg3: string,
 ): React.ReactNode | Promise<React.ReactNode> {
   throw new Error('Function not implemented.');
 }
@@ -1162,7 +1162,7 @@ function renderAirportTransferDetails(
     fullDescription: string;
     tagline: string;
   },
-  primaryColor: string
+  primaryColor: string,
 ): React.ReactNode | Promise<React.ReactNode> {
   throw new Error('Function not implemented.');
 }

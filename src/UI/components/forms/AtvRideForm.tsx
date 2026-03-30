@@ -23,8 +23,6 @@ import { useLocationPricing } from '@/hooks/useLocationPricing';
 import { LocationSelector } from '../service/LocationSelector';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
-
-// ✅ NUEVAS IMPORTACIONES
 import { useScrollToError } from '@/hooks/useScrollToError';
 import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
@@ -50,52 +48,50 @@ interface FormErrors {
   [key: string]: string;
 }
 
-// Solo datos no traducibles
-const VEHICLE_TYPES = {
+// ✅ pricingMode distingue si el precio es por vehículo o por persona
+type PricingMode = 'per_person' | 'per_vehicle';
+
+const VEHICLE_TYPES: Record<
+  string,
+  { price: number; maxParticipants: number; pricingMode: PricingMode }
+> = {
   buggy: {
     price: 65,
     maxParticipants: 4,
+    pricingMode: 'per_person',
   },
   atv: {
     price: 75,
     maxParticipants: 2,
+    pricingMode: 'per_person',
   },
   polaris: {
     price: 150,
-    maxParticipants: 2,
+    maxParticipants: 2, // ✅ máx 2 personas por vehículo
+    pricingMode: 'per_vehicle', // ✅ $150 por vehículo, no por persona
   },
   polarisFamiliar: {
     price: 200,
-    maxParticipants: 4,
+    maxParticipants: 4, // ✅ incluye hasta 4 personas
+    pricingMode: 'per_vehicle', // ✅ $200 por vehículo, no por persona
   },
 };
 
-// Solo datos no traducibles
 const TIME_SLOTS = [
-  {
-    id: '8am',
-    icon: Sunrise,
-  },
-  {
-    id: '11am',
-    icon: Sun,
-  },
-  {
-    id: '2pm',
-    icon: Activity,
-  },
+  { id: '8am', icon: Sunrise },
+  { id: '11am', icon: Sun },
+  { id: '2pm', icon: Activity },
 ] as const;
 
-// ✅ TRANSPORTE POR GRUPO (no por persona)
-// ✅ TRANSPORTE POR GRUPO (no por persona)
+// Transporte por grupo (no por persona)
 const ATV_TRANSPORT_PRICING = {
-  small: 120, // 1-6 personas: $120
-  large: 140, // 7-12 personas: $140
-  maxCapacity: 6, // Punto de corte para cambiar a "large"
+  small: 120, // 1-6 personas
+  large: 140, // 7-12 personas
+  maxCapacity: 6,
 };
 
-// ✅ LÍMITE MÁXIMO DE PARTICIPANTES (según capacidad de transporte)
 const MAX_PARTICIPANTS = 100;
+const TAX_RATE = 5; // 5%
 
 const AtvRideForm: React.FC<AtvRideFormProps> = ({
   service,
@@ -122,52 +118,45 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ HOOK PARA SCROLL A ERRORES
   const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
 
-  // ✅ CONSTANTE DE TAX
-  const TAX_RATE = 5; // 5%
+  // ─── helpers ────────────────────────────────────────────────────────────────
 
   const updateFormField = useCallback((field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => {
-      if (prev[field]) {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      }
-      return prev;
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
     });
   }, []);
 
   const handleInputChange = useCallback(
     (e: { target: HTMLInputElement }) => {
       const { name, value, type, checked } = e.target as HTMLInputElement;
-
-      if (type === 'checkbox') {
-        updateFormField(name, checked);
-      } else {
-        updateFormField(name, value);
-      }
+      updateFormField(name, type === 'checkbox' ? checked : value);
     },
-    [updateFormField]
+    [updateFormField],
   );
 
   const handleLocationSelect = useCallback(
-    (locationId: string) => {
-      updateFormField('location', locationId);
-    },
-    [updateFormField]
+    (locationId: string) => updateFormField('location', locationId),
+    [updateFormField],
   );
 
+  // ─── vehicle data ────────────────────────────────────────────────────────────
+
   const currentVehicle = useMemo(
-    () => VEHICLE_TYPES[formData.vehicleType as keyof typeof VEHICLE_TYPES],
-    [formData.vehicleType]
+    () => VEHICLE_TYPES[formData.vehicleType],
+    [formData.vehicleType],
   );
+
+  const isPremium =
+    formData.vehicleType === 'polaris' ||
+    formData.vehicleType === 'polarisFamiliar';
+
+  // ─── pricing ─────────────────────────────────────────────────────────────────
 
   const {
     locationOptions,
@@ -181,40 +170,44 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     servicePricing: ATV_TRANSPORT_PRICING,
   });
 
-  // ✅ COBRO POR PERSONA (no por vehículo)
+  /**
+   * ✅ basePrice según el modo de precio del vehículo:
+   *   - per_person  → precio × participantes  (buggy, atv)
+   *   - per_vehicle → precio × vehículos      (polaris, polarisFamiliar)
+   */
   const basePrice = useMemo(() => {
     if (!currentVehicle?.price) return 0;
-    return currentVehicle.price * formData.totalParticipants;
-  }, [currentVehicle, formData.totalParticipants]);
+    return currentVehicle.pricingMode === 'per_vehicle'
+      ? currentVehicle.price * formData.vehicleCount
+      : currentVehicle.price * formData.totalParticipants;
+  }, [currentVehicle, formData.vehicleCount, formData.totalParticipants]);
 
-  // ✅ CÁLCULO DE PRECIO CON TAX
   const priceWithTax = useMemo(() => {
     if (!currentVehicle?.price) return { subtotal: 0, tax: 0, total: 0 };
     const subtotal = basePrice + totalLocationCost;
     return calculatePriceWithTax(subtotal, TAX_RATE);
   }, [basePrice, totalLocationCost, currentVehicle]);
 
-  // ✅ Mantener totalPrice para compatibilidad
   const totalPrice = priceWithTax.total;
 
+  // ─── auto-adjust vehicleCount ─────────────────────────────────────────────
+
   useEffect(() => {
-    if (currentVehicle) {
-      const vehiclesNeeded = Math.ceil(
-        formData.totalParticipants / currentVehicle.maxParticipants
-      );
-      if (vehiclesNeeded !== formData.vehicleCount) {
-        setFormData((prev) => ({
-          ...prev,
-          vehicleCount: vehiclesNeeded,
-        }));
-      }
+    if (!currentVehicle) return;
+    const needed = Math.ceil(
+      formData.totalParticipants / currentVehicle.maxParticipants,
+    );
+    if (needed !== formData.vehicleCount) {
+      setFormData((prev) => ({ ...prev, vehicleCount: needed }));
     }
   }, [formData.totalParticipants, formData.vehicleType, currentVehicle]);
+
+  // ─── counters ────────────────────────────────────────────────────────────────
 
   const createCounterHandler = (
     field: keyof FormData,
     min = 0,
-    max = MAX_PARTICIPANTS
+    max = MAX_PARTICIPANTS,
   ) => ({
     increment: () =>
       setFormData((prev) => ({
@@ -231,97 +224,80 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
   const participantCounter = createCounterHandler('totalParticipants', 1);
   const vehicleCounter = createCounterHandler('vehicleCount', 1, 25);
 
+  // ─── validation ──────────────────────────────────────────────────────────────
+
   const validateForm = (): FormErrors => {
     const newErrors: FormErrors = {};
     const maxCapacity =
       (currentVehicle?.maxParticipants || 1) * formData.vehicleCount;
 
-    if (!formData.date) {
+    if (!formData.date)
       newErrors.date = t(
-        'services.standard.atvExcurtionsForm.fields.date.required'
+        'services.standard.atvExcurtionsForm.fields.date.required',
       );
-    }
-
-    if (!formData.location) {
+    if (!formData.location)
       newErrors.location = t(
-        'services.standard.atvExcurtionsForm.fields.location.required'
+        'services.standard.atvExcurtionsForm.fields.location.required',
       );
-    }
-
-    if (!formData.timeSlot) {
+    if (!formData.timeSlot)
       newErrors.timeSlot = t(
-        'services.standard.atvExcurtionsForm.fields.timeSlot.required'
+        'services.standard.atvExcurtionsForm.fields.timeSlot.required',
       );
-    }
-
-    if (!formData.vehicleType) {
+    if (!formData.vehicleType)
       newErrors.vehicleType = t(
-        'services.standard.atvExcurtionsForm.fields.vehicleType.required'
+        'services.standard.atvExcurtionsForm.fields.vehicleType.required',
       );
-    }
-
-    if (formData.totalParticipants < 1) {
+    if (formData.totalParticipants < 1)
       newErrors.totalParticipants = t(
-        'services.standard.atvExcurtionsForm.fields.participants.min'
+        'services.standard.atvExcurtionsForm.fields.participants.min',
       );
-    }
-
-    if (formData.totalParticipants > MAX_PARTICIPANTS) {
+    if (formData.totalParticipants > MAX_PARTICIPANTS)
       newErrors.totalParticipants = t(
-        'services.standard.atvExcurtionsForm.fields.participants.max'
+        'services.standard.atvExcurtionsForm.fields.participants.max',
       );
-    }
-
-    if (formData.vehicleCount < 1) {
+    if (formData.vehicleCount < 1)
       newErrors.vehicleCount = t(
-        'services.standard.atvExcurtionsForm.fields.vehicles.min'
+        'services.standard.atvExcurtionsForm.fields.vehicles.min',
       );
-    }
-
-    if (formData.vehicleCount > 25) {
+    if (formData.vehicleCount > 25)
       newErrors.vehicleCount = t(
-        'services.standard.atvExcurtionsForm.fields.vehicles.max'
+        'services.standard.atvExcurtionsForm.fields.vehicles.max',
       );
-    }
 
     if (formData.totalParticipants > maxCapacity) {
+      const needed = Math.ceil(
+        formData.totalParticipants / (currentVehicle?.maxParticipants || 1),
+      );
       newErrors.totalParticipants = t(
         'services.standard.atvExcurtionsForm.errors.capacityExceeded',
         {
           participants: formData.totalParticipants,
           vehicles: formData.vehicleCount,
           max: maxCapacity,
-        }
+        },
       );
       newErrors.vehicleCount = t(
         'services.standard.atvExcurtionsForm.errors.needMoreVehicles',
-        {
-          needed: Math.ceil(
-            formData.totalParticipants / (currentVehicle?.maxParticipants || 1)
-          ),
-          participants: formData.totalParticipants,
-        }
+        { needed, participants: formData.totalParticipants },
       );
     }
 
     return newErrors;
   };
 
+  // ─── submit ───────────────────────────────────────────────────────────────────
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const validationErrors = validateForm();
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      console.log('❌ AtvForm - Validation errors:', validationErrors);
-      // ✅ SCROLL AL PRIMER ERROR
       scrollToFirstError();
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       const selectedDate = new Date(formData.date);
       const bookingStartDate = new Date(selectedDate);
@@ -343,7 +319,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
       }
 
       const reservationData = {
-        service: service,
+        service,
         formData: {
           ...formData,
           serviceType: 'atv-adventure',
@@ -351,13 +327,12 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
           basePrice,
           transportCost,
           locationSurcharge,
-          // ✅ AGREGAR info de tax
           subtotal: priceWithTax.subtotal,
           tax: priceWithTax.tax,
           taxRate: TAX_RATE,
           locationName: selectedLocation?.name || formData.location,
           pickupTime: t(
-            `services.standard.atvExcurtionsForm.timeSlots.${formData.timeSlot}.pickup`
+            `services.standard.atvExcurtionsForm.timeSlots.${formData.timeSlot}.pickup`,
           ),
         },
         totalPrice,
@@ -371,10 +346,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
         selectedItems: [
           {
             id: `atv-${formData.vehicleType}`,
-            name: `${t(
-              'services.standard.atvExcurtionsForm.header.title'
-            )} - ${t(
-              `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+            name: `${t('services.standard.atvExcurtionsForm.header.title')} - ${t(
+              `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`,
             )}`,
             quantity: formData.vehicleCount,
             price: totalPrice,
@@ -388,7 +361,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
         atvSpecifics: {
           timeSlot: formData.timeSlot,
           pickupTime: t(
-            `services.standard.atvExcurtionsForm.timeSlots.${formData.timeSlot}.pickup`
+            `services.standard.atvExcurtionsForm.timeSlots.${formData.timeSlot}.pickup`,
           ),
           location: formData.location,
           locationName: selectedLocation?.name || formData.location,
@@ -397,6 +370,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
           totalParticipants: formData.totalParticipants,
           hasExperience: formData.hasExperience,
           additionalNotes: formData.additionalNotes,
+          pricingMode: currentVehicle?.pricingMode,
           pricing: {
             basePrice,
             transportCost,
@@ -409,14 +383,8 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
         },
       };
 
-      console.log('🏍️ AtvForm - Reservation data created:', reservationData);
-
       setReservationData(reservationData);
-
-      if (onSubmit) {
-        await onSubmit(reservationData);
-      }
-
+      if (onSubmit) await onSubmit(reservationData);
       router.push('/reservation-confirmation');
     } catch (error) {
       console.error('❌ AtvForm - Error submitting form:', error);
@@ -428,9 +396,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     }
   };
 
-  const isPremium =
-    formData.vehicleType === 'polaris' ||
-    formData.vehicleType === 'polarisFamiliar';
+  // ─── Counter sub-component ───────────────────────────────────────────────────
 
   const Counter = ({
     label,
@@ -452,9 +418,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
     <div>
       <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
         <Icon
-          className={`w-4 h-4 mr-2 ${
-            isPremium ? 'text-purple-600' : 'text-green-600'
-          }`}
+          className={`w-4 h-4 mr-2 ${isPremium ? 'text-purple-600' : 'text-green-600'}`}
         />
         {label}
       </label>
@@ -484,12 +448,33 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             {
               max,
               label: label.toLowerCase(),
-            }
+            },
           )}
         </p>
       )}
     </div>
   );
+
+  // ─── helpers for price breakdown label ───────────────────────────────────────
+
+  /** Returns "2 vehículos × $150" or "3 personas × $65" depending on mode */
+  const basePriceLabel = useMemo(() => {
+    if (!currentVehicle) return '';
+    if (currentVehicle.pricingMode === 'per_vehicle') {
+      const vehicleWord =
+        formData.vehicleCount === 1
+          ? t('services.standard.atvExcurtionsForm.pricing.vehicle')
+          : t('services.standard.atvExcurtionsForm.pricing.vehicles');
+      return `${formData.vehicleCount} ${vehicleWord} × $${currentVehicle.price}`;
+    }
+    const personWord =
+      formData.totalParticipants === 1
+        ? t('services.standard.atvExcurtionsForm.capacity.perfect.person')
+        : t('services.standard.atvExcurtionsForm.capacity.perfect.people');
+    return `${formData.totalParticipants} ${personWord} × $${currentVehicle.price}`;
+  }, [currentVehicle, formData.vehicleCount, formData.totalParticipants, t]);
+
+  // ─── render ───────────────────────────────────────────────────────────────────
 
   return (
     <motion.div
@@ -512,19 +497,16 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
           />
 
           <div className='p-8 space-y-8'>
-            {/* Date and Time Section */}
+            {/* ── Date & Time ── */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
                 {t('services.standard.atvExcurtionsForm.sections.schedule')}
               </h3>
 
-              {/* ✅ Date Selection con REF */}
               <div ref={(el) => el && fieldRefs.current.set('date', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    }`}
+                    className={`w-4 h-4 mr-2 ${isPremium ? 'text-purple-600' : 'text-green-600'}`}
                   />
                   {t('services.standard.atvExcurtionsForm.fields.date.label')} *
                 </label>
@@ -534,11 +516,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                   value={formData.date}
                   onChange={handleInputChange}
                   onClick={(e) => e.currentTarget.showPicker()}
-                  className={`w-full p-3 border ${
-                    errors.date ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium ? 'focus:ring-purple-500' : 'focus:ring-green-500'
-                  } bg-gray-50`}
+                  className={`w-full p-3 border ${errors.date ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 ${isPremium ? 'focus:ring-purple-500' : 'focus:ring-green-500'} bg-gray-50`}
                   min={new Date().toISOString().split('T')[0]}
                 />
                 {errors.date && (
@@ -546,54 +524,36 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 )}
               </div>
 
-              {/* ✅ Time Slot Selection con REF */}
               <div ref={(el) => el && fieldRefs.current.set('timeSlot', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Clock
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    }`}
+                    className={`w-4 h-4 mr-2 ${isPremium ? 'text-purple-600' : 'text-green-600'}`}
                   />
                   {t(
-                    'services.standard.atvExcurtionsForm.fields.timeSlot.label'
+                    'services.standard.atvExcurtionsForm.fields.timeSlot.label',
                   )}{' '}
                   *
                 </label>
-
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                   {TIME_SLOTS.map((slot) => {
                     const IconComponent = slot.icon;
                     return (
                       <div
                         key={slot.id}
-                        className={`
-                          border rounded-lg p-4 cursor-pointer transition-all
-                          ${
-                            formData.timeSlot === slot.id
-                              ? `${
-                                  isPremium
-                                    ? 'bg-purple-50 border-purple-300'
-                                    : 'bg-green-50 border-green-300'
-                                } shadow-sm`
-                              : 'border-gray-200 hover:bg-gray-50'
-                          }
-                        `}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                          formData.timeSlot === slot.id
+                            ? `${isPremium ? 'bg-purple-50 border-purple-300' : 'bg-green-50 border-green-300'} shadow-sm`
+                            : 'border-gray-200 hover:bg-gray-50'
+                        }`}
                         onClick={() => updateFormField('timeSlot', slot.id)}
                       >
                         <div className='flex items-center'>
                           <div
-                            className={`
-                            w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                            ${
+                            className={`w-5 h-5 rounded-full border flex items-center justify-center mr-3 ${
                               formData.timeSlot === slot.id
-                                ? `${
-                                    isPremium
-                                      ? 'border-purple-500 bg-purple-500'
-                                      : 'border-green-500 bg-green-500'
-                                  }`
+                                ? `${isPremium ? 'border-purple-500 bg-purple-500' : 'border-green-500 bg-green-500'}`
                                 : 'border-gray-300'
-                            }
-                          `}
+                            }`}
                           >
                             {formData.timeSlot === slot.id && (
                               <CheckCircle className='w-4 h-4 text-white' />
@@ -601,44 +561,39 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                           </div>
                           <div className='flex items-center'>
                             <IconComponent
-                              className={`w-5 h-5 mr-2 ${
-                                isPremium ? 'text-purple-500' : 'text-green-500'
-                              }`}
+                              className={`w-5 h-5 mr-2 ${isPremium ? 'text-purple-500' : 'text-green-500'}`}
                             />
                             <span className='font-medium'>
                               {t(
-                                `services.standard.atvExcurtionsForm.timeSlots.${slot.id}.name`
+                                `services.standard.atvExcurtionsForm.timeSlots.${slot.id}.name`,
                               )}
                             </span>
                           </div>
                         </div>
-
                         <p className='text-gray-400 text-xs mt-1 ml-8'>
                           {t(
-                            'services.standard.atvExcurtionsForm.fields.timeSlot.pickup'
+                            'services.standard.atvExcurtionsForm.fields.timeSlot.pickup',
                           )}
                           :{' '}
                           {t(
-                            `services.standard.atvExcurtionsForm.timeSlots.${slot.id}.pickup`
+                            `services.standard.atvExcurtionsForm.timeSlots.${slot.id}.pickup`,
                           )}
                         </p>
                       </div>
                     );
                   })}
                 </div>
-
                 {errors.timeSlot && (
                   <p className='text-red-500 text-xs mt-1'>{errors.timeSlot}</p>
                 )}
               </div>
             </div>
 
-            {/* ✅ Location Selection con REF */}
+            {/* ── Location ── */}
             <div className='space-y-4'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
                 {t('services.standard.atvExcurtionsForm.sections.location')}
               </h3>
-
               <div ref={(el) => el && fieldRefs.current.set('location', el)}>
                 <LocationSelector
                   selectedLocationId={formData.location}
@@ -650,24 +605,21 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               </div>
             </div>
 
-            {/* Vehicle Selection */}
+            {/* ── Vehicle & Group ── */}
             <div className='space-y-6'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
                 {t(
-                  'services.standard.atvExcurtionsForm.sections.vehicleAndGroup'
+                  'services.standard.atvExcurtionsForm.sections.vehicleAndGroup',
                 )}
               </h3>
 
-              {/* ✅ Vehicle Type con REF */}
               <div ref={(el) => el && fieldRefs.current.set('vehicleType', el)}>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Car
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    }`}
+                    className={`w-4 h-4 mr-2 ${isPremium ? 'text-purple-600' : 'text-green-600'}`}
                   />
                   {t(
-                    'services.standard.atvExcurtionsForm.fields.vehicleType.label'
+                    'services.standard.atvExcurtionsForm.fields.vehicleType.label',
                   )}{' '}
                   *
                 </label>
@@ -675,21 +627,42 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                   name='vehicleType'
                   value={formData.vehicleType}
                   onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.vehicleType ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium ? 'focus:ring-purple-500' : 'focus:ring-green-500'
-                  } bg-gray-50`}
+                  className={`w-full p-3 border ${errors.vehicleType ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 ${isPremium ? 'focus:ring-purple-500' : 'focus:ring-green-500'} bg-gray-50`}
                 >
                   {Object.entries(VEHICLE_TYPES).map(([key, vehicle]) => (
                     <option key={key} value={key}>
                       {t(
-                        `services.standard.atvExcurtionsForm.vehicleTypes.${key}.name`
+                        `services.standard.atvExcurtionsForm.vehicleTypes.${key}.name`,
                       )}{' '}
-                      - ${vehicle.price}
+                      — ${vehicle.price}{' '}
+                      {vehicle.pricingMode === 'per_vehicle'
+                        ? `/ ${t('services.standard.atvExcurtionsForm.pricing.vehicle')}`
+                        : `/ ${t('services.standard.atvExcurtionsForm.capacity.perfect.person')}`}
                     </option>
                   ))}
                 </select>
+
+                {/* ✅ badge que aclara el modo de precio del vehículo seleccionado */}
+                {currentVehicle && (
+                  <p
+                    className={`text-xs mt-1 font-medium ${isPremium ? 'text-purple-600' : 'text-green-600'}`}
+                  >
+                    {currentVehicle.pricingMode === 'per_vehicle'
+                      ? `💡 ${t(
+                          'services.standard.atvExcurtionsForm.pricing.perVehicleNote',
+                          {
+                            price: currentVehicle.price,
+                            max: currentVehicle.maxParticipants,
+                          },
+                        )}`
+                      : `💡 ${t(
+                          'services.standard.atvExcurtionsForm.pricing.perPersonNote',
+                          {
+                            price: currentVehicle.price,
+                          },
+                        )}`}
+                  </p>
+                )}
 
                 {errors.vehicleType && (
                   <p className='text-red-500 text-xs mt-1'>
@@ -699,7 +672,6 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               </div>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                {/* ✅ Participants con REF */}
                 <div
                   ref={(el) =>
                     el && fieldRefs.current.set('totalParticipants', el)
@@ -707,7 +679,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 >
                   <Counter
                     label={t(
-                      'services.standard.atvExcurtionsForm.fields.participants.label'
+                      'services.standard.atvExcurtionsForm.fields.participants.label',
                     )}
                     value={formData.totalParticipants}
                     onIncrement={participantCounter.increment}
@@ -723,13 +695,12 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                   )}
                 </div>
 
-                {/* ✅ Vehicles con REF */}
                 <div
                   ref={(el) => el && fieldRefs.current.set('vehicleCount', el)}
                 >
                   <Counter
                     label={t(
-                      'services.standard.atvExcurtionsForm.fields.vehicles.label'
+                      'services.standard.atvExcurtionsForm.fields.vehicles.label',
                     )}
                     value={formData.vehicleCount}
                     onIncrement={vehicleCounter.increment}
@@ -746,7 +717,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                 </div>
               </div>
 
-              {/* Capacity Validation */}
+              {/* Capacity feedback */}
               <div>
                 {(() => {
                   const maxCapacity =
@@ -756,7 +727,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     formData.totalParticipants > maxCapacity;
                   const suggestedVehicles = Math.ceil(
                     formData.totalParticipants /
-                      (currentVehicle?.maxParticipants || 1)
+                      (currentVehicle?.maxParticipants || 1),
                   );
 
                   if (isOverCapacity) {
@@ -767,13 +738,13 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                           <div>
                             <h4 className='font-semibold text-red-800 mb-2'>
                               {t(
-                                'services.standard.atvExcurtionsForm.capacity.exceeded.title'
+                                'services.standard.atvExcurtionsForm.capacity.exceeded.title',
                               )}
                             </h4>
                             <p className='text-red-700 text-sm mb-3'>
                               <strong>{formData.totalParticipants}</strong>{' '}
                               {t(
-                                'services.standard.atvExcurtionsForm.capacity.people'
+                                'services.standard.atvExcurtionsForm.capacity.people',
                               )}{' '}
                               {t(
                                 'services.standard.atvExcurtionsForm.capacity.exceeded.message',
@@ -781,11 +752,11 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                                   participants: formData.totalParticipants,
                                   vehicles: formData.vehicleCount,
                                   vehicleName: t(
-                                    `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+                                    `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`,
                                   ),
                                   plural:
                                     formData.vehicleCount !== 1 ? 's' : '',
-                                }
+                                },
                               )
                                 .split(' ')
                                 .slice(2)
@@ -796,7 +767,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                                 {
                                   max: maxCapacity,
                                   perVehicle: currentVehicle?.maxParticipants,
-                                }
+                                },
                               )}
                             </p>
                             <button
@@ -813,7 +784,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                                 'services.standard.atvExcurtionsForm.capacity.exceeded.button',
                                 {
                                   suggested: suggestedVehicles,
-                                }
+                                },
                               )}
                             </button>
                           </div>
@@ -828,7 +799,7 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                         <CheckCircle className='w-4 h-4 text-green-600' />
                         <span className='text-sm font-medium text-green-800'>
                           {t(
-                            'services.standard.atvExcurtionsForm.capacity.perfect.title'
+                            'services.standard.atvExcurtionsForm.capacity.perfect.title',
                           )}
                         </span>
                       </div>
@@ -836,30 +807,30 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                         <div>
                           <strong>
                             {t(
-                              'services.standard.atvExcurtionsForm.capacity.perfect.capacity'
+                              'services.standard.atvExcurtionsForm.capacity.perfect.capacity',
                             )}
                           </strong>{' '}
-                          {formData.totalParticipants}/{maxCapacity}{' '}
+                          {formData.totalParticipants}/{maxCapacity}
                         </div>
                         <div>
                           <strong>
                             {t(
-                              'services.standard.atvExcurtionsForm.capacity.perfect.vehicles'
+                              'services.standard.atvExcurtionsForm.capacity.perfect.vehicles',
                             )}
                           </strong>{' '}
                           {formData.vehicleCount} ×{' '}
                           {t(
-                            `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+                            `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`,
                           )}
                         </div>
+                        {/* ✅ línea de costo adaptada al modo de precio */}
                         <div>
                           <strong>
                             {t(
-                              'services.standard.atvExcurtionsForm.capacity.perfect.cost'
+                              'services.standard.atvExcurtionsForm.capacity.perfect.cost',
                             )}
                           </strong>{' '}
-                          {formData.totalParticipants} × $
-                          {currentVehicle?.price || 0} = ${basePrice.toFixed(2)}
+                          {basePriceLabel} = ${basePrice.toFixed(2)}
                         </div>
                       </div>
                     </div>
@@ -868,20 +839,17 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               </div>
             </div>
 
-            {/* Additional Information */}
+            {/* ── Additional Info ── */}
             <div className='space-y-4'>
               <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
                 {t(
-                  'services.standard.atvExcurtionsForm.sections.additionalInfo'
+                  'services.standard.atvExcurtionsForm.sections.additionalInfo',
                 )}
               </h3>
-
               <div>
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Info
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-purple-600' : 'text-green-600'
-                    }`}
+                    className={`w-4 h-4 mr-2 ${isPremium ? 'text-purple-600' : 'text-green-600'}`}
                   />
                   {t('services.standard.atvExcurtionsForm.fields.notes.label')}
                 </label>
@@ -890,17 +858,15 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                   value={formData.additionalNotes}
                   onChange={handleInputChange}
                   rows={3}
-                  className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 ${
-                    isPremium ? 'focus:ring-purple-500' : 'focus:ring-green-500'
-                  } bg-gray-50`}
+                  className={`w-full p-3 border border-gray-300 rounded-lg focus:ring-2 ${isPremium ? 'focus:ring-purple-500' : 'focus:ring-green-500'} bg-gray-50`}
                   placeholder={t(
-                    'services.standard.atvExcurtionsForm.fields.notes.placeholder'
+                    'services.standard.atvExcurtionsForm.fields.notes.placeholder',
                   )}
                 />
               </div>
             </div>
 
-            {/* Safety Information */}
+            {/* ── Safety ── */}
             <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
               <div className='flex items-start'>
                 <AlertTriangle className='w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5' />
@@ -909,48 +875,19 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     {t('services.standard.atvExcurtionsForm.safety.title')}
                   </h4>
                   <ul className='text-sm text-red-700 space-y-1'>
-                    <li>
-                      •{' '}
-                      {t(
-                        'services.standard.atvExcurtionsForm.safety.requirement1'
-                      )}
-                    </li>
-                    <li>
-                      •{' '}
-                      {t(
-                        'services.standard.atvExcurtionsForm.safety.requirement2'
-                      )}
-                    </li>
-                    <li>
-                      •{' '}
-                      {t(
-                        'services.standard.atvExcurtionsForm.safety.requirement3'
-                      )}
-                    </li>
-                    <li>
-                      •{' '}
-                      {t(
-                        'services.standard.atvExcurtionsForm.safety.requirement4'
-                      )}
-                    </li>
-                    <li>
-                      •{' '}
-                      {t(
-                        'services.standard.atvExcurtionsForm.safety.requirement5'
-                      )}
-                    </li>
-                    <li>
-                      •{' '}
-                      {t(
-                        'services.standard.atvExcurtionsForm.safety.requirement6'
-                      )}
-                    </li>
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <li key={n}>
+                        •{' '}
+                        {t(
+                          `services.standard.atvExcurtionsForm.safety.requirement${n}`,
+                        )}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
             </div>
 
-            {/* Error Display */}
             {errors.submit && (
               <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
                 <p className='text-red-800 text-sm'>{errors.submit}</p>
@@ -958,56 +895,57 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
             )}
           </div>
 
-          {/* ✅ Form Footer - ACTUALIZADO con desglose de tax */}
-          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center  justify-between'>
+          {/* ── Footer ── */}
+          <div className='bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
             <div className='flex flex-col-2 items-center md:items-start mb-4 md:mb-0'>
               <div className='flex flex-col-2 gap-10'>
                 {currentVehicle?.price && (
                   <div className='text-xs text-gray-400 mt-2 space-y-1'>
-                    <div className='text-green-400 font-medium'>
+                    <div
+                      className={
+                        isPremium
+                          ? 'text-purple-400 font-medium'
+                          : 'text-green-400 font-medium'
+                      }
+                    >
                       {t(
-                        `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`
+                        `services.standard.atvExcurtionsForm.vehicleTypes.${formData.vehicleType}.name`,
                       )}
                     </div>
+
+                    {/* ✅ breakdown correcto según pricingMode */}
                     <div>
-                      {formData.totalParticipants}{' '}
-                      {formData.totalParticipants === 1
-                        ? t(
-                            'services.standard.atvExcurtionsForm.capacity.perfect.person'
-                          )
-                        : t(
-                            'services.standard.atvExcurtionsForm.capacity.perfect.people'
-                          )}{' '}
-                      × ${currentVehicle.price} = ${basePrice.toFixed(2)}
+                      {basePriceLabel} = ${basePrice.toFixed(2)}
                     </div>
+
                     <div>
                       {t(
-                        'services.standard.atvExcurtionsForm.pricing.transport'
+                        'services.standard.atvExcurtionsForm.pricing.transport',
                       )}
                       : ${transportCost.toFixed(2)}
                     </div>
                     {locationSurcharge > 0 && (
                       <div>
                         {t(
-                          'services.standard.atvExcurtionsForm.pricing.locationSurcharge'
+                          'services.standard.atvExcurtionsForm.pricing.locationSurcharge',
                         )}
-                        : +${locationSurcharge.toFixed(2)}
+                        : +$
+                        {locationSurcharge.toFixed(2)}
                       </div>
                     )}
 
-                    {/* ✅ DESGLOSE DE TAX */}
                     <div className='border-t border-gray-700 pt-1 mt-1'>
                       <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
                       <div className='text-yellow-400'>
-                        {t('common.fee.creditcard')}
-                        {''} ({TAX_RATE}%): $ {priceWithTax.tax.toFixed(2)}
+                        {t('common.fee.creditcard')} ({TAX_RATE}%): $
+                        {priceWithTax.tax.toFixed(2)}
                       </div>
                     </div>
 
                     {selectedLocation && (
                       <div className='text-green-400'>
                         {t(
-                          'services.standard.atvExcurtionsForm.pricing.pickup'
+                          'services.standard.atvExcurtionsForm.pricing.pickup',
                         )}
                         : {selectedLocation.name}
                       </div>
@@ -1025,17 +963,17 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
                     {currentVehicle?.price
                       ? `$${totalPrice.toFixed(2)}`
                       : t(
-                          'services.standard.atvExcurtionsForm.buttons.contact'
+                          'services.standard.atvExcurtionsForm.buttons.contact',
                         )}
                   </span>
                   <span className='ml-2 text-sm bg-green-800 px-2 py-1 rounded'>
                     {formData.totalParticipants}{' '}
                     {formData.totalParticipants === 1
                       ? t(
-                          'services.standard.atvExcurtionsForm.capacity.perfect.person'
+                          'services.standard.atvExcurtionsForm.capacity.perfect.person',
                         )
                       : t(
-                          'services.standard.atvExcurtionsForm.capacity.perfect.people'
+                          'services.standard.atvExcurtionsForm.capacity.perfect.people',
                         )}
                   </span>
                 </div>
@@ -1051,22 +989,17 @@ const AtvRideForm: React.FC<AtvRideFormProps> = ({
               >
                 {t('services.standard.atvExcurtionsForm.buttons.cancel')}
               </button>
-
               <button
                 type='submit'
                 disabled={isSubmitting || !currentVehicle?.price}
-                className={`px-8 py-3 ${
-                  isPremium
-                    ? 'bg-purple-600 hover:bg-purple-500'
-                    : 'bg-green-600 hover:bg-green-500'
-                } text-white rounded-lg transition flex items-center disabled:opacity-50`}
+                className={`px-8 py-3 ${isPremium ? 'bg-purple-600 hover:bg-purple-500' : 'bg-green-600 hover:bg-green-500'} text-white rounded-lg transition flex items-center disabled:opacity-50`}
               >
                 <CreditCard className='h-4 w-4 mr-2' />
                 {isSubmitting
                   ? t('services.standard.atvExcurtionsForm.buttons.booking')
                   : currentVehicle?.price
-                  ? t('services.standard.atvExcurtionsForm.buttons.book')
-                  : t('services.standard.atvExcurtionsForm.buttons.contact')}
+                    ? t('services.standard.atvExcurtionsForm.buttons.book')
+                    : t('services.standard.atvExcurtionsForm.buttons.contact')}
               </button>
             </div>
           </div>

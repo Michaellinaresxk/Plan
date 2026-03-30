@@ -2155,10 +2155,10 @@ export function getAllServiceData(): ServiceData[] {
  * @returns An array of service data for the specified category
  */
 export function getServiceDataByCategory(
-  category: ServiceCategory
+  category: ServiceCategory,
 ): ServiceData[] {
   return Object.values(SERVICES_DATA).filter(
-    (service) => service.category === category
+    (service) => service.category === category,
   );
 }
 
@@ -2168,10 +2168,10 @@ export function getServiceDataByCategory(
  * @returns An array of service data for the specified package type
  */
 export function getServiceDataByPackageType(
-  packageType: PackageType
+  packageType: PackageType,
 ): ServiceData[] {
   return Object.values(SERVICES_DATA).filter((service) =>
-    service.packageType.includes(packageType)
+    service.packageType.includes(packageType),
   );
 }
 
@@ -2191,7 +2191,7 @@ export function getPopularServiceData(): ServiceData[] {
  */
 export function getRelatedServiceData(
   serviceId: string,
-  limit?: number
+  limit?: number,
 ): ServiceData[] {
   const service = getServiceDataById(serviceId);
   if (
@@ -2223,7 +2223,7 @@ export function getRelatedServiceData(
 export function calculateServicePrice(
   serviceId: string,
   selectedOptions: Record<string, string>,
-  duration: number = 1
+  duration: number = 1,
 ): number {
   const service = getServiceDataById(serviceId);
   if (!service) return 0;
@@ -2240,7 +2240,7 @@ export function calculateServicePrice(
           totalPrice += option.price * duration;
         }
       }
-    }
+    },
   );
 
   return totalPrice;
