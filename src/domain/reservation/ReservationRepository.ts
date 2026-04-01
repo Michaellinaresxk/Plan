@@ -1,5 +1,4 @@
 import type { Reservation } from './Reservation';
-import type { ReservationStatus } from '@/types/reservation';
 
 export interface CreateReservationData {
   serviceId: string;
@@ -14,10 +13,4 @@ export interface CreateReservationData {
 
 export default interface ReservationRepository {
   createReservation(data: CreateReservationData): Promise<Reservation>;
-  // getReservation(bookingId: string): Promise<Reservation | null>;
-  // updateReservationStatus(
-  //   bookingId: string,
-  //   status: ReservationStatus,
-  //   notes?: string
-  // ): Promise<void>;
 }

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import ServiceManager from '@/constants/services/ServiceManager';
+import { getServiceMetadata } from '@/constants/services/Servicemetadata';
 import ServiceDetailsWrapper from '@/UI/components/service/ServiceDetailsWrapper';
 
 interface ServicePageParams {
@@ -18,56 +19,84 @@ export async function generateMetadata({
 }: ServicePageParams): Promise<Metadata> {
   const { id } = await params;
   const serviceData = ServiceManager.getData(id);
+  const meta = getServiceMetadata(id);
 
-  if (!serviceData) {
+  if (!serviceData && !meta) {
     return {
       title: 'Service Not Found | Lux Punta Cana',
       description: 'The requested premium service could not be found.',
     };
   }
 
-  const serviceName =
-    typeof serviceData.titleKey === 'string'
-      ? serviceData.titleKey.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || 'Service'
-      : 'Service';
+  const baseUrl = 'https://luxpuntacana.com';
+  const pageUrl = `${baseUrl}/premium-package/${id}`;
 
-  const description = `Exclusive ${serviceName} VIP service in Punta Cana. Starting from $${serviceData.basePrice} USD. Premium luxury experience with top-tier professionals and exceptional quality.`;
+  // Use SERVICE_METADATA when available — richer, human-crafted titles & images
+  if (meta) {
+    // For premium, upgrade the title to signal VIP tier
+    const premiumTitle = meta.title.replace('| Luxe Punta Cana', 'VIP | Luxe Punta Cana');
+    const premiumDescription = `Exclusive VIP experience — ${meta.description}`;
+
+    return {
+      title: premiumTitle,
+      description: premiumDescription,
+      keywords: [...meta.keywords, 'VIP', 'premium', 'exclusive luxury punta cana'],
+      openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: pageUrl,
+        siteName: 'Lux Punta Cana',
+        title: premiumTitle,
+        description: premiumDescription,
+        images: [
+          {
+            url: meta.image,
+            width: 1200,
+            height: 630,
+            alt: meta.imageAlt,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: premiumTitle,
+        description: premiumDescription,
+        images: [meta.image],
+        creator: '@lxpuntacana',
+      },
+      alternates: {
+        canonical: pageUrl,
+      },
+    };
+  }
+
+  // Fallback for services not yet in SERVICE_METADATA
+  const title = `${id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} VIP | Lux Punta Cana`;
+  const description = serviceData
+    ? `Exclusive VIP ${id.replace(/-/g, ' ')} in Punta Cana. Starting from $${serviceData.basePrice} USD. Premium luxury experience with top-tier professionals.`
+    : 'Exclusive VIP luxury service in Punta Cana, Dominican Republic.';
+  const image = serviceData?.imageUrl || `${baseUrl}/img/yacht.jpg`;
 
   return {
-    title: `${serviceName} VIP - Premium Package | Lux Punta Cana`,
+    title,
     description,
-    keywords: [
-      `${serviceName} VIP Punta Cana`,
-      'exclusive luxury services Dominican Republic',
-      'premium resort services',
-      'VIP vacation activities',
-      `book premium ${serviceName}`,
-      'five-star experiences',
-    ],
     openGraph: {
       type: 'website',
       locale: 'en_US',
-      url: `https://luxpuntacana.com/premium-package/${id}`,
+      url: pageUrl,
       siteName: 'Lux Punta Cana',
-      title: `${serviceName} VIP - Exclusive Luxury Service in Punta Cana`,
+      title,
       description,
-      images: [
-        {
-          url: serviceData.imageUrl || 'https://luxpuntacana.com/img/saona-island/saona-3.jpg',
-          width: 1200,
-          height: 630,
-          alt: `${serviceName} VIP - Lux Punta Cana Premium Package`,
-        },
-      ],
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${serviceName} VIP - Exclusive Luxury Service`,
+      title,
       description,
-      images: [serviceData.imageUrl || 'https://luxpuntacana.com/img/saona-island/saona-3.jpg'],
+      images: [image],
     },
     alternates: {
-      canonical: `https://luxpuntacana.com/premium-package/${id}`,
+      canonical: pageUrl,
     },
   };
 }

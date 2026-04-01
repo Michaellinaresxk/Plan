@@ -33,84 +33,6 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
   // pero eventualmente podemos reemplazarlos con el nuevo sistema
   if (service.specialRender) {
     switch (service.specialRender) {
-      case 'yoga':
-        // Preparar datos para el renderizador de yoga
-        const yogaExtendedData = {
-          yogaStyles: service.options?.yogaStyle?.subOptions
-            ? Object.values(service.options.yogaStyle.subOptions).map((opt) =>
-                t(opt.nameKey),
-              )
-            : [],
-          includes: service.includes?.map((key) => t(key)) || [],
-          notIncluded: service.notIncluded?.map((key) => t(key)) || [],
-          itinerary: service.itinerary?.map((key) => t(key)) || [],
-          tagline: t('services.yoga.tagline'),
-          slogan: t('services.yoga.slogan'),
-        };
-
-        // Por ahora seguimos usando el renderizador antiguo
-        return renderYogaService(
-          yogaExtendedData,
-          primaryColor,
-          t,
-          `services.standard.yoga.short`,
-        );
-      // Eventualmente podemos cambiarlo por el nuevo orquestador:
-      // return <ServiceContentOrchestrator service={service} primaryColor={primaryColor} />;
-
-      case 'karaoke':
-        // Obtener datos extendidos para que sean compatibles con el renderizador actual
-        const karaokeExtendedData = {
-          timeSlots: service.options?.setupType?.subOptions
-            ? Object.values(service.options.setupType.subOptions).map((opt) =>
-                t(opt.nameKey),
-              )
-            : [],
-          includes: service.includes?.map((key) => t(key)) || [],
-          notIncluded: service.notIncluded?.map((key) => t(key)) || [],
-          itinerary: service.itinerary?.map((key) => t(key)) || [],
-          disclaimer: service.disclaimer ? t(service.disclaimer) : undefined,
-          tagline: t('services.karaoke.tagline'),
-          slogan: t('services.karaoke.slogan'),
-        };
-
-        return renderKaraokeService(
-          karaokeExtendedData,
-          primaryColor,
-          t,
-          `services.standard.karaoke`,
-        );
-
-      case 'airport':
-        // Adaptador para datos de transferencia de aeropuerto
-        const airportData = {
-          title: t('services.airportTransfer.title'),
-          description: t(service.fullDescriptionKey || service.descriptionKey),
-          priceUnit: t(service.priceUnit),
-          timeSlots: service.options?.vehicleType?.subOptions
-            ? Object.values(service.options.vehicleType.subOptions).map((opt) =>
-                t(opt.nameKey),
-              )
-            : [],
-          travelTime: service.metaData?.travelTime?.toString() || '',
-          includes: service.includes?.map((key) => t(key)) || [],
-          notIncluded: service.notIncluded?.map((key) => t(key)) || [],
-          itinerary: service.itinerary?.map((key) => t(key)) || [],
-          safetyStandards: service.metaData?.safetyStandards
-            ? (service.metaData.safetyStandards as string)
-                .split(',')
-                .map((item) => item.trim())
-            : [],
-          availability: service.metaData?.availability?.toString() || '',
-          disclaimer: service.disclaimer ? t(service.disclaimer) : undefined,
-          fullDescription: t(
-            service.fullDescriptionKey || service.descriptionKey,
-          ),
-          tagline: t('services.airportTransfer.tagline'),
-        };
-
-        return renderAirportTransferDetails(airportData, primaryColor);
-
       case 'babysitter':
         return renderBabysitterService(service, primaryColor, t);
 
@@ -126,10 +48,7 @@ const ServiceContent: React.FC<ServiceContentProps> = ({
     }
   }
 
-  // Para servicios estándar, usamos el orquestador o el renderizador clásico
   return renderDefaultServiceContent(service, t);
-  // Alternativamente, para migrar completamente:
-  // return <ServiceContentOrchestrator service={service} primaryColor={primaryColor} />;
 };
 
 // Función de renderizado para el servicio de niñera
@@ -1102,67 +1021,4 @@ const ServiceDisclaimerBlock: React.FC<ServiceContentProps> = ({ service }) => {
   );
 };
 
-// Referencia a las funciones existentes para compatibilidad
-// Estas ya están definidas arriba
-
 export default ServiceContent;
-
-function renderYogaService(
-  yogaExtendedData: {
-    yogaStyles: string[];
-    includes: string[];
-    notIncluded: string[];
-    itinerary: string[];
-    tagline: string;
-    slogan: string;
-  },
-  primaryColor: string,
-  t: (
-    key: string,
-    options?: { fallback?: string; [key: string]: any },
-  ) => string,
-  arg3: string,
-): React.ReactNode | Promise<React.ReactNode> {
-  throw new Error('Function not implemented.');
-}
-
-function renderKaraokeService(
-  karaokeExtendedData: {
-    timeSlots: string[];
-    includes: string[];
-    notIncluded: string[];
-    itinerary: string[];
-    disclaimer: string | undefined;
-    tagline: string;
-    slogan: string;
-  },
-  primaryColor: string,
-  t: (
-    key: string,
-    options?: { fallback?: string; [key: string]: any },
-  ) => string,
-  arg3: string,
-): React.ReactNode | Promise<React.ReactNode> {
-  throw new Error('Function not implemented.');
-}
-
-function renderAirportTransferDetails(
-  airportData: {
-    title: string;
-    description: string;
-    priceUnit: string;
-    timeSlots: string[];
-    travelTime: string;
-    includes: string[];
-    notIncluded: string[];
-    itinerary: string[];
-    safetyStandards: string[];
-    availability: string;
-    disclaimer: string | undefined;
-    fullDescription: string;
-    tagline: string;
-  },
-  primaryColor: string,
-): React.ReactNode | Promise<React.ReactNode> {
-  throw new Error('Function not implemented.');
-}
