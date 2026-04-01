@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import ServiceManager from '@/constants/services/ServiceManager';
+import { getServiceMetadata } from '@/constants/services/Servicemetadata';
 import ServiceDetailsWrapper from '@/UI/components/service/ServiceDetailsWrapper';
 
 interface ServicePageParams {
@@ -18,55 +19,80 @@ export async function generateMetadata({
 }: ServicePageParams): Promise<Metadata> {
   const { id } = await params;
   const serviceData = ServiceManager.getData(id);
+  const meta = getServiceMetadata(id);
 
-  if (!serviceData) {
+  if (!serviceData && !meta) {
     return {
       title: 'Service Not Found | Lux Punta Cana',
       description: 'The requested service could not be found.',
     };
   }
 
-  const serviceName =
-    typeof serviceData.titleKey === 'string'
-      ? serviceData.titleKey.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || 'Service'
-      : 'Service';
+  const baseUrl = 'https://luxpuntacana.com';
+  const pageUrl = `${baseUrl}/standard-package/${id}`;
 
-  const description = `Book ${serviceName} in Punta Cana. Starting from $${serviceData.basePrice} USD. Premium luxury service with professional staff and exceptional quality.`;
+  // Use SERVICE_METADATA when available — richer, human-crafted titles & images
+  if (meta) {
+    return {
+      title: meta.title,
+      description: meta.description,
+      keywords: meta.keywords,
+      openGraph: {
+        type: 'website',
+        locale: 'en_US',
+        url: pageUrl,
+        siteName: 'Lux Punta Cana',
+        title: meta.title,
+        description: meta.description,
+        images: [
+          {
+            url: meta.image,
+            width: 1200,
+            height: 630,
+            alt: meta.imageAlt,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: meta.title,
+        description: meta.description,
+        images: [meta.image],
+        creator: '@lxpuntacana',
+      },
+      alternates: {
+        canonical: pageUrl,
+      },
+    };
+  }
+
+  // Fallback for services not yet in SERVICE_METADATA
+  const title = `${id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} | Lux Punta Cana`;
+  const description = serviceData
+    ? `Book ${id.replace(/-/g, ' ')} in Punta Cana. Starting from $${serviceData.basePrice} USD. Premium luxury service with professional staff and exceptional quality.`
+    : 'Premium luxury service in Punta Cana, Dominican Republic.';
+  const image = serviceData?.imageUrl || `${baseUrl}/img/beach.jpg`;
 
   return {
-    title: `${serviceName} - Standard Package | Lux Punta Cana`,
+    title,
     description,
-    keywords: [
-      `${serviceName} Punta Cana`,
-      'luxury services Dominican Republic',
-      'resort services',
-      'vacation activities',
-      `book ${serviceName}`,
-    ],
     openGraph: {
       type: 'website',
       locale: 'en_US',
-      url: `https://luxpuntacana.com/standard-package/${id}`,
+      url: pageUrl,
       siteName: 'Lux Punta Cana',
-      title: `${serviceName} - Luxury Service in Punta Cana`,
+      title,
       description,
-      images: [
-        {
-          url: serviceData.imageUrl || 'https://luxpuntacana.com/img/bike.jpg',
-          width: 1200,
-          height: 630,
-          alt: `${serviceName} - Lux Punta Cana`,
-        },
-      ],
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${serviceName} - Luxury Service in Punta Cana`,
+      title,
       description,
-      images: [serviceData.imageUrl || 'https://luxpuntacana.com/img/bike.jpg'],
+      images: [image],
     },
     alternates: {
-      canonical: `https://luxpuntacana.com/standard-package/${id}`,
+      canonical: pageUrl,
     },
   };
 }

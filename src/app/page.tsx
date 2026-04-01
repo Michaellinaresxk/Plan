@@ -1,11 +1,8 @@
 'use client';
 
-import React from 'react';
-
 import { BookingProvider } from '@/context/BookingContext';
 import Navbar from '@/UI/components/shared/Navbar';
 import Hero from '@/UI/components/layout/hero/Hero';
-// import CustomPackageCTA from '@/UI/components/layout/CustomPackageCTA';
 import ConsiergeSupport from '@/UI/components/layout/ConsiergeSupport';
 import Footer from '@/UI/components/shared/Footer';
 import LuxuryServices from '@/UI/components/layout/LuxuryServices';
