@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, CreditCard } from 'lucide-react';
-import SquarePaymentForm from '@/UI/components/payment/SquarePaymentForm';
+import PaymentForm from '@/UI/components/payment/PaymentForm';
 import type { ReservationData } from '@/context/BookingContext';
+import { PAYMENT_PROVIDER } from '@/config/paymentConfig';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -33,9 +34,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     'payment'
   );
 
-  // Validar configuración de Square
-  const squareApplicationId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID;
-  const squareLocationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
+  // Validate active payment provider configuration
+  const isConfigured =
+    PAYMENT_PROVIDER === 'stripe'
+      ? !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+      : !!(
+          process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID &&
+          process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
+        );
 
   const handlePaymentSuccess = (reservation: any) => {
     console.log('✅ Payment successful in modal:', reservation);
@@ -60,11 +66,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   // Configuration error content
-  if (!squareApplicationId || !squareLocationId) {
-    console.error('❌ Square configuration missing');
-    console.error(
-      '❌ Required: NEXT_PUBLIC_SQUARE_APPLICATION_ID and NEXT_PUBLIC_SQUARE_LOCATION_ID'
-    );
+  if (!isConfigured) {
+    console.error(`❌ ${PAYMENT_PROVIDER} payment configuration missing`);
 
     return (
       <AnimatePresence mode='wait'>
@@ -140,7 +143,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </h2>
                   <p className='text-blue-100 text-sm'>
                     {currentStep === 'payment'
-                      ? 'Secure checkout powered by Square'
+                      ? `Secure checkout powered by ${PAYMENT_PROVIDER === 'stripe' ? 'Stripe' : 'Square'}`
                       : 'Your reservation has been confirmed'}
                   </p>
                 </div>
@@ -190,11 +193,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </div>
                   </div>
 
-                  {/* 
-                    🔑 CRÍTICO: SquarePaymentForm se renderiza directamente
-                    sin AnimatePresence anidado adicional que pueda causar timing issues
-                  */}
-                  <SquarePaymentForm
+                  <PaymentForm
                     reservationData={reservationData}
                     onSuccess={handlePaymentSuccess}
                     onError={handlePaymentError}

@@ -1,20 +1,20 @@
 // src/app/api/payments/process/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { PAYMENT_PROVIDER } from '@/config/paymentConfig';
 import { SquareCaller } from '@/infra/payment/SquareCaller';
+import { StripeCaller } from '@/infra/payment/StripeCaller';
 import { reservationService } from '@/primary/Reservation/useCases';
 import { emailService } from '@/services/Email';
 
 export async function POST(request: NextRequest) {
-  console.log('🎯 Square Process Payment API called');
+  console.log(`🎯 Process Payment API called — provider: ${PAYMENT_PROVIDER.toUpperCase()}`);
 
   try {
     const body = await request.json();
-    console.log('📥 Processing payment with Square...');
 
-    const { sourceId, reservationData, amount, currency } = body;
+    const { reservationData, amount, currency } = body;
 
-    // Validación
-    if (!sourceId || !reservationData || !amount || !currency) {
+    if (!reservationData || !amount || !currency) {
       return NextResponse.json(
         { error: 'Missing required payment data' },
         { status: 400 }
@@ -28,45 +28,99 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
-    if (!locationId) {
-      return NextResponse.json(
-        { error: 'Square location not configured' },
-        { status: 500 }
-      );
+    // ─────────────────────────────────────────────────────────
+    // CHARGE THE CARD via the active provider
+    // ─────────────────────────────────────────────────────────
+    let payment: { paymentId: string; status: string; receiptUrl?: string; receiptNumber?: string };
+
+    if (PAYMENT_PROVIDER === 'stripe') {
+      // ── STRIPE ──────────────────────────────────────────────
+      const { paymentMethodId } = body;
+
+      if (!paymentMethodId) {
+        return NextResponse.json(
+          { error: 'Missing paymentMethodId for Stripe payment' },
+          { status: 400 }
+        );
+      }
+
+      console.log('💳 Creating payment with Stripe...');
+      const stripeCaller = new StripeCaller();
+
+      const stripeResult = await stripeCaller.createPayment({
+        paymentMethodId,
+        reservationId: `temp_${Date.now()}`,
+        amount,
+        currency,
+        metadata: {
+          serviceName: reservationData.service.name,
+          clientEmail: reservationData.clientInfo.email,
+          clientName: reservationData.clientInfo.name,
+          timestamp: new Date().toISOString(),
+        },
+      });
+
+      if (stripeResult.status !== 'succeeded') {
+        throw new Error(`Stripe payment failed with status: ${stripeResult.status}`);
+      }
+
+      console.log('✅ Stripe payment succeeded:', stripeResult.paymentId);
+
+      payment = {
+        paymentId: stripeResult.paymentId,
+        status: stripeResult.status,
+        receiptUrl: stripeResult.receiptUrl,
+      };
+    } else {
+      // ── SQUARE ──────────────────────────────────────────────
+      const { sourceId } = body;
+
+      if (!sourceId) {
+        return NextResponse.json(
+          { error: 'Missing sourceId for Square payment' },
+          { status: 400 }
+        );
+      }
+
+      const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
+      if (!locationId) {
+        return NextResponse.json(
+          { error: 'Square location not configured' },
+          { status: 500 }
+        );
+      }
+
+      console.log('💳 Creating payment with Square...');
+      const squareCaller = new SquareCaller();
+
+      const squareResult = await squareCaller.createPayment({
+        sourceId,
+        reservationId: `temp_${Date.now()}`,
+        amount,
+        currency,
+        locationId,
+        metadata: {
+          serviceName: reservationData.service.name,
+          clientEmail: reservationData.clientInfo.email,
+          clientName: reservationData.clientInfo.name,
+          timestamp: new Date().toISOString(),
+        },
+      });
+
+      if (squareResult.status !== 'COMPLETED') {
+        throw new Error(`Square payment failed with status: ${squareResult.status}`);
+      }
+
+      console.log('✅ Square payment completed:', squareResult.paymentId);
+
+      payment = squareResult;
     }
 
-    console.log('💳 Creating payment with Square...');
-
-    // Crear instancia de SquareCaller
-    const squareCaller = new SquareCaller();
-
-    // Crear el pago en Square
-    const payment = await squareCaller.createPayment({
-      sourceId: sourceId,
-      reservationId: `temp_${Date.now()}`,
-      amount: amount,
-      currency: currency,
-      locationId: locationId,
-      metadata: {
-        serviceName: reservationData.service.name,
-        clientEmail: reservationData.clientInfo.email,
-        clientName: reservationData.clientInfo.name,
-        timestamp: new Date().toISOString(),
-      },
-    });
-
-    console.log('✅ Square payment created:', payment.paymentId);
-    console.log('✅ Payment status:', payment.status);
-
-    // Verificar que el pago fue exitoso
-    if (payment.status !== 'COMPLETED') {
-      throw new Error(`Payment failed with status: ${payment.status}`);
-    }
-
+    // ─────────────────────────────────────────────────────────
+    // CREATE RESERVATION
+    // ─────────────────────────────────────────────────────────
     console.log('📄 Creating reservation...');
 
-    // Crear la reservación usando el servicio existente
     const reservation = await reservationService.createReservation({
       serviceId: reservationData.service.id,
       serviceName: reservationData.service.name,
@@ -76,17 +130,13 @@ export async function POST(request: NextRequest) {
       clientPhone: reservationData.clientInfo.phone,
       formData: reservationData.formData || {},
       notes: reservationData.notes,
-      paymentInfo: {
-        paymentId: payment.paymentId,
-        status: payment.status,
-        receiptUrl: payment.receiptUrl,
-        receiptNumber: payment.receiptNumber,
-      },
     });
 
     console.log('✅ Reservation created:', reservation.bookingId);
 
-    // Send payment confirmation email
+    // ─────────────────────────────────────────────────────────
+    // SEND CONFIRMATION EMAIL
+    // ─────────────────────────────────────────────────────────
     console.log('📧 Sending payment confirmation email...');
 
     try {
@@ -97,7 +147,7 @@ export async function POST(request: NextRequest) {
         clientName: reservation.clientName,
         serviceName: reservation.serviceName,
         totalPrice: reservation.totalPrice,
-        currency: currency,
+        currency,
         metadata: {
           paymentId: payment.paymentId,
           receiptUrl: payment.receiptUrl,
@@ -106,17 +156,12 @@ export async function POST(request: NextRequest) {
       });
 
       if (emailResult.success) {
-        console.log('✅ Confirmation email sent successfully');
-        console.log('📬 Email Message ID:', emailResult.messageId);
+        console.log('✅ Confirmation email sent — ID:', emailResult.messageId);
       } else {
-        // Log the error but don't fail the entire request
         console.error('⚠️ Failed to send confirmation email:', emailResult.error);
-        console.log('✅ Reservation and payment completed successfully despite email failure');
       }
     } catch (emailError) {
-      // Catch any unexpected email errors but don't fail the request
       console.error('⚠️ Unexpected error sending confirmation email:', emailError);
-      console.log('✅ Reservation and payment completed successfully despite email failure');
     }
 
     return NextResponse.json({
@@ -145,8 +190,7 @@ export async function POST(request: NextRequest) {
       {
         error: 'Failed to process payment',
         message: error.message,
-        details:
-          process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
       { status: 500 }
     );
