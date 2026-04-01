@@ -29,7 +29,8 @@
     "react-hook-form": "^7.56.3",
     "react-time-picker": "^7.0.0",
     "resend": "^6.0.3",
-    "square": "^39.0.0"
+    "square": "^39.0.0",
+    "stripe": "^21.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
