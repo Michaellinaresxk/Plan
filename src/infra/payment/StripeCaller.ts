@@ -16,18 +16,15 @@ export class StripeCaller {
       throw new Error('StripeCaller can only be used on the server side');
     }
 
-    const secretKey = process.env.NEXT_STRIPE_SECRET_KEY;
+    const secretKey = process.env.STRIPE_SECRET_KEY;
 
     if (!secretKey) {
-      console.error(
-        '❌ NEXT_STRIPE_SECRET_KEY not found in environment variables',
-      );
-      throw new Error(
-        'NEXT_STRIPE_SECRET_KEY environment variable is required',
-      );
+      console.error('❌ STRIPE_SECRET_KEY not found in environment variables');
+      throw new Error('STRIPE_SECRET_KEY environment variable is required');
     }
 
-    this.isProduction = secretKey.startsWith('sk_live_');
+    this.isProduction =
+      secretKey.startsWith('sk_live_') || secretKey.startsWith('rk_live_');
 
     console.log('🔧 StripeCaller Configuration:');
     console.log(`🔧 Mode: ${this.isProduction ? 'PRODUCTION' : 'TEST'}`);
@@ -48,7 +45,6 @@ export class StripeCaller {
   isProductionReady(): boolean {
     return this.isProduction && process.env.NODE_ENV === 'production';
   }
-
   /**
    * Create a payment with Stripe using a PaymentMethod ID from the frontend.
    */
@@ -227,19 +223,22 @@ export class StripeCaller {
       errors.push('StripeCaller should only be used on the server side');
     }
 
-    const secretKey = process.env.NEXT_STRIPE_SECRET_KEY;
-    const publishableKey = process.env.NEXT_STRIPE_PUBLISHABLE_KEY;
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
     if (!secretKey) {
-      errors.push('NEXT_STRIPE_SECRET_KEY environment variable is missing');
+      errors.push('STRIPE_SECRET_KEY environment variable is missing');
     }
     if (!publishableKey) {
       errors.push(
-        'NEXT_STRIPE_PUBLISHABLE_KEY environment variable is missing',
+        'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is missing',
       );
     }
 
-    const isProduction = secretKey?.startsWith('sk_live_') ?? false;
+    const isProduction =
+      secretKey?.startsWith('sk_live_') ||
+      secretKey?.startsWith('rk_live_') ||
+      false;
 
     if (process.env.NODE_ENV === 'production' && !isProduction) {
       errors.push(

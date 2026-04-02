@@ -52,7 +52,8 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   // ========================
   // CONFIGURATION
   // ========================
-  const publishableKey = process.env.NEXT_STRIPE_PUBLISHABLE_KEY;
+  // ✅ FIX: NEXT_PUBLIC_ prefix required for client-side access in Next.js
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
   const isProduction = publishableKey?.startsWith('pk_live_');
 
   // ========================

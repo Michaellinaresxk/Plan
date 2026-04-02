@@ -37,7 +37,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   // Validate active payment provider configuration
   const isConfigured =
     PAYMENT_PROVIDER === 'stripe'
-      ? !!process.env.NEXT_STRIPE_PUBLISHABLE_KEY
+      ? !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
       : !!(
           process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID &&
           process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
