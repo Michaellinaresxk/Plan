@@ -37,7 +37,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [sdkLoaded, setSdkLoaded] = useState(false);
   const [cardReady, setCardReady] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'ready' | 'processing' | 'success'>('ready');
+  const [currentStep, setCurrentStep] = useState<
+    'ready' | 'processing' | 'success'
+  >('ready');
 
   // ========================
   // REFS
@@ -50,7 +52,7 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   // ========================
   // CONFIGURATION
   // ========================
-  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  const publishableKey = process.env.NEXT_STRIPE_PUBLISHABLE_KEY;
   const isProduction = publishableKey?.startsWith('pk_live_');
 
   // ========================
@@ -93,7 +95,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
     }
 
     console.log('📥 Loading Stripe.js SDK...');
-    console.log(`🔧 Environment: ${isProduction ? 'PRODUCTION 🚨' : 'TEST 🧪'}`);
+    console.log(
+      `🔧 Environment: ${isProduction ? 'PRODUCTION 🚨' : 'TEST 🧪'}`,
+    );
 
     const script = document.createElement('script');
     script.src = 'https://js.stripe.com/v3/';
@@ -181,7 +185,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
 
       console.error('❌ Error initializing Stripe Elements:', error);
       setPaymentError(
-        error instanceof Error ? error.message : 'Failed to initialize payment form'
+        error instanceof Error
+          ? error.message
+          : 'Failed to initialize payment form',
       );
       initAttemptedRef.current = false;
     }
@@ -221,15 +227,16 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         console.log('🚨 PRODUCTION PAYMENT - Real money will be charged');
       }
 
-      const { paymentMethod, error } = await stripeRef.current.createPaymentMethod({
-        type: 'card',
-        card: cardElementRef.current,
-        billing_details: {
-          name: reservationData.clientInfo?.name,
-          email: reservationData.clientInfo?.email,
-          phone: reservationData.clientInfo?.phone,
-        },
-      });
+      const { paymentMethod, error } =
+        await stripeRef.current.createPaymentMethod({
+          type: 'card',
+          card: cardElementRef.current,
+          billing_details: {
+            name: reservationData.clientInfo?.name,
+            email: reservationData.clientInfo?.email,
+            phone: reservationData.clientInfo?.phone,
+          },
+        });
 
       if (error) {
         throw new Error(error.message);
@@ -258,7 +265,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         console.log('✅ Payment and reservation created successfully');
         if (isProduction) {
           console.log('💰 REAL PAYMENT COMPLETED');
-          console.log(`Amount charged: $${reservationData.totalPrice.toFixed(2)}`);
+          console.log(
+            `Amount charged: $${reservationData.totalPrice.toFixed(2)}`,
+          );
         }
 
         setCurrentStep('success');
@@ -295,7 +304,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
       <div className='flex items-center justify-center p-8'>
         <div className='text-center'>
           <AlertCircle className='w-12 h-12 text-red-600 mx-auto mb-4' />
-          <h3 className='text-xl font-bold text-red-900 mb-2'>Configuration Error</h3>
+          <h3 className='text-xl font-bold text-red-900 mb-2'>
+            Configuration Error
+          </h3>
           <p className='text-red-700 mb-4'>
             Stripe payment system is not properly configured.
           </p>
@@ -320,9 +331,12 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
           <div className='w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
             <CheckCircle className='w-10 h-10 text-green-600' />
           </div>
-          <h3 className='text-2xl font-bold text-green-900 mb-2'>Payment Successful!</h3>
+          <h3 className='text-2xl font-bold text-green-900 mb-2'>
+            Payment Successful!
+          </h3>
           <p className='text-green-700 mb-4'>
-            Your reservation has been created and payment processed successfully.
+            Your reservation has been created and payment processed
+            successfully.
           </p>
           {isProduction && (
             <div className='bg-green-50 border border-green-200 rounded-lg p-3 mb-4'>
@@ -337,7 +351,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         </div>
 
         <div className='bg-green-50 border border-green-200 rounded-lg p-4'>
-          <p className='text-sm text-green-700'>🎉 Redirecting to confirmation page...</p>
+          <p className='text-sm text-green-700'>
+            🎉 Redirecting to confirmation page...
+          </p>
         </div>
       </div>
     );
@@ -350,7 +366,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
     <div className='space-y-6'>
       {/* Header */}
       <div className='text-center'>
-        <h3 className='text-2xl font-bold text-gray-900 mb-2'>Enter Payment Details</h3>
+        <h3 className='text-2xl font-bold text-gray-900 mb-2'>
+          Enter Payment Details
+        </h3>
         <p className='text-gray-600'>
           Total:{' '}
           <span className='font-bold text-green-600'>
@@ -379,7 +397,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
               <div className='absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 rounded-lg'>
                 <div className='text-center'>
                   <Loader2 className='w-6 h-6 animate-spin text-blue-600 mx-auto mb-2' />
-                  <p className='text-xs text-gray-600'>Initializing payment form...</p>
+                  <p className='text-xs text-gray-600'>
+                    Initializing payment form...
+                  </p>
                 </div>
               </div>
             )}
@@ -389,7 +409,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
               <div className='absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 rounded-lg'>
                 <div className='text-center'>
                   <Loader2 className='w-6 h-6 animate-spin text-blue-600 mx-auto mb-2' />
-                  <p className='text-xs text-gray-600'>Loading payment system...</p>
+                  <p className='text-xs text-gray-600'>
+                    Loading payment system...
+                  </p>
                 </div>
               </div>
             )}
@@ -401,7 +423,9 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
               <div className='flex items-start'>
                 <AlertCircle className='w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0' />
                 <div className='flex-grow'>
-                  <h4 className='font-medium text-red-800 mb-1'>Payment Error</h4>
+                  <h4 className='font-medium text-red-800 mb-1'>
+                    Payment Error
+                  </h4>
                   <p className='text-sm text-red-700'>{paymentError}</p>
                   <button
                     type='button'
@@ -427,7 +451,8 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
             <div>
               <h4 className='font-medium text-blue-800 mb-1'>Secure Payment</h4>
               <p className='text-sm text-blue-700'>
-                Your payment is secured by PCI-compliant encryption and processed by Stripe.
+                Your payment is secured by PCI-compliant encryption and
+                processed by Stripe.
               </p>
             </div>
           </div>
@@ -449,11 +474,12 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
             disabled={!cardReady || isProcessing}
             className={`
               flex-1 px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium text-lg
-              ${!cardReady || isProcessing
-                ? 'bg-gray-400 cursor-not-allowed text-white'
-                : isProduction
-                ? 'bg-indigo-700 hover:bg-indigo-800 text-white'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+              ${
+                !cardReady || isProcessing
+                  ? 'bg-gray-400 cursor-not-allowed text-white'
+                  : isProduction
+                    ? 'bg-indigo-700 hover:bg-indigo-800 text-white'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
               }
             `}
           >
