@@ -16,11 +16,15 @@ export class StripeCaller {
       throw new Error('StripeCaller can only be used on the server side');
     }
 
-    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const secretKey = process.env.NEXT_STRIPE_SECRET_KEY;
 
     if (!secretKey) {
-      console.error('❌ STRIPE_SECRET_KEY not found in environment variables');
-      throw new Error('STRIPE_SECRET_KEY environment variable is required');
+      console.error(
+        '❌ NEXT_STRIPE_SECRET_KEY not found in environment variables',
+      );
+      throw new Error(
+        'NEXT_STRIPE_SECRET_KEY environment variable is required',
+      );
     }
 
     this.isProduction = secretKey.startsWith('sk_live_');
@@ -51,7 +55,7 @@ export class StripeCaller {
   async createPayment(data: {
     paymentMethodId: string; // from Stripe.js createPaymentMethod() on the frontend
     reservationId: string;
-    amount: number;          // in cents
+    amount: number; // in cents
     currency: string;
     metadata?: Record<string, string>;
   }): Promise<{
@@ -60,11 +64,15 @@ export class StripeCaller {
     receiptUrl?: string;
   }> {
     try {
-      console.log(`💳 Creating Stripe payment in ${this.getEnvironment().toUpperCase()} mode`);
+      console.log(
+        `💳 Creating Stripe payment in ${this.getEnvironment().toUpperCase()} mode`,
+      );
 
       if (this.isProduction) {
         console.log('🚨 PRODUCTION PAYMENT - Real money will be charged!');
-        console.log(`🚨 Amount: $${(data.amount / 100).toFixed(2)} ${data.currency.toUpperCase()}`);
+        console.log(
+          `🚨 Amount: $${(data.amount / 100).toFixed(2)} ${data.currency.toUpperCase()}`,
+        );
       }
 
       if (data.amount < 50) {
@@ -87,7 +95,7 @@ export class StripeCaller {
             ...(data.metadata ?? {}),
           },
         },
-        { idempotencyKey: randomUUID() }
+        { idempotencyKey: randomUUID() },
       );
 
       if (paymentIntent.status !== 'succeeded') {
@@ -101,7 +109,7 @@ export class StripeCaller {
       let receiptUrl: string | undefined;
       if (paymentIntent.latest_charge) {
         const charge = await this.stripe.charges.retrieve(
-          paymentIntent.latest_charge as string
+          paymentIntent.latest_charge as string,
         );
         receiptUrl = charge.receipt_url ?? undefined;
       }
@@ -119,27 +127,33 @@ export class StripeCaller {
       if (error instanceof Stripe.errors.StripeCardError) {
         switch (error.code) {
           case 'card_declined':
-            userFriendlyMessage = 'Your card was declined. Please try a different card.';
+            userFriendlyMessage =
+              'Your card was declined. Please try a different card.';
             break;
           case 'insufficient_funds':
-            userFriendlyMessage = 'Insufficient funds. Please try a different card.';
+            userFriendlyMessage =
+              'Insufficient funds. Please try a different card.';
             break;
           case 'incorrect_cvc':
-            userFriendlyMessage = 'Invalid CVV. Please check your card security code.';
+            userFriendlyMessage =
+              'Invalid CVV. Please check your card security code.';
             break;
           case 'expired_card':
-            userFriendlyMessage = 'Your card has expired. Please use a different card.';
+            userFriendlyMessage =
+              'Your card has expired. Please use a different card.';
             break;
           case 'incorrect_number':
-            userFriendlyMessage = 'Invalid card number. Please check your card details.';
+            userFriendlyMessage =
+              'Invalid card number. Please check your card details.';
             break;
           default:
-            userFriendlyMessage = error.message || 'Payment failed. Please try again.';
+            userFriendlyMessage =
+              error.message || 'Payment failed. Please try again.';
         }
       }
 
       throw new Error(
-        `${userFriendlyMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `${userFriendlyMessage}: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -150,13 +164,14 @@ export class StripeCaller {
   async getPayment(paymentId: string): Promise<Stripe.PaymentIntent> {
     try {
       console.log(`🔍 Getting Stripe payment: ${paymentId}`);
-      const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentId);
+      const paymentIntent =
+        await this.stripe.paymentIntents.retrieve(paymentId);
       console.log(`✅ Payment retrieved: ${paymentIntent.status}`);
       return paymentIntent;
     } catch (error) {
       console.error('❌ Error getting Stripe payment:', error);
       throw new Error(
-        `Failed to get payment: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to get payment: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -167,7 +182,7 @@ export class StripeCaller {
   async refundPayment(
     paymentId: string,
     amount?: number,
-    reason?: string
+    reason?: string,
   ): Promise<{
     refundId: string;
     status: string;
@@ -178,7 +193,9 @@ export class StripeCaller {
       const refund = await this.stripe.refunds.create({
         payment_intent: paymentId,
         ...(amount ? { amount } : {}),
-        reason: (reason as Stripe.RefundCreateParams.Reason) ?? 'requested_by_customer',
+        reason:
+          (reason as Stripe.RefundCreateParams.Reason) ??
+          'requested_by_customer',
       });
 
       console.log(`✅ Refund created: ${refund.id}`);
@@ -191,7 +208,7 @@ export class StripeCaller {
     } catch (error) {
       console.error('❌ Error refunding Stripe payment:', error);
       throw new Error(
-        `Failed to process refund: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to process refund: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -210,21 +227,23 @@ export class StripeCaller {
       errors.push('StripeCaller should only be used on the server side');
     }
 
-    const secretKey = process.env.STRIPE_SECRET_KEY;
-    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    const secretKey = process.env.NEXT_STRIPE_SECRET_KEY;
+    const publishableKey = process.env.NEXT_STRIPE_PUBLISHABLE_KEY;
 
     if (!secretKey) {
-      errors.push('STRIPE_SECRET_KEY environment variable is missing');
+      errors.push('NEXT_STRIPE_SECRET_KEY environment variable is missing');
     }
     if (!publishableKey) {
-      errors.push('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is missing');
+      errors.push(
+        'NEXT_STRIPE_PUBLISHABLE_KEY environment variable is missing',
+      );
     }
 
     const isProduction = secretKey?.startsWith('sk_live_') ?? false;
 
     if (process.env.NODE_ENV === 'production' && !isProduction) {
       errors.push(
-        'Using Stripe TEST keys in PRODUCTION environment - no real payments will be processed'
+        'Using Stripe TEST keys in PRODUCTION environment - no real payments will be processed',
       );
     }
 
