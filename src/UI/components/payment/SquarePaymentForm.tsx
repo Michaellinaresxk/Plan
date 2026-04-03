@@ -485,7 +485,8 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
               <h4 className='font-medium text-blue-800 mb-1'>Secure Payment</h4>
               <p className='text-sm text-blue-700'>
                 Your payment is secured by PCI-compliant encryption and
-                processed by Square.
+                processed. We do not store your card details. For more
+                information, see our{' '}
               </p>
             </div>
           </div>
