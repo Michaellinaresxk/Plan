@@ -129,7 +129,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
 
     console.log('📥 Loading Square SDK...');
     console.log(
-      `🔧 Environment: ${isProduction ? 'PRODUCTION 🚨' : 'SANDBOX 🧪'}`
+      `🔧 Environment: ${isProduction ? 'PRODUCTION 🚨' : 'SANDBOX 🧪'}`,
     );
 
     const script = document.createElement('script');
@@ -287,7 +287,7 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
           if (isProduction) {
             console.log('💰 REAL PAYMENT COMPLETED');
             console.log(
-              `Amount charged: $${reservationData.totalPrice.toFixed(2)}`
+              `Amount charged: $${reservationData.totalPrice.toFixed(2)}`,
             );
           }
 
@@ -511,8 +511,8 @@ const SquarePaymentForm: React.FC<SquarePaymentFormProps> = ({
                 !cardReady || isProcessing
                   ? 'bg-gray-400 cursor-not-allowed text-white'
                   : isProduction
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
-                  : 'bg-green-600 hover:bg-green-700 text-white'
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
               }
             `}
           >

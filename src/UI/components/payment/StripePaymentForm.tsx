@@ -9,7 +9,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import type { ReservationData } from '@/context/BookingContext';
-
+import { useStripeKey } from '@/hooks/useStripeKey';
 // Stripe.js global type
 declare global {
   interface Window {
@@ -52,8 +52,8 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   // ========================
   // CONFIGURATION
   // ========================
-  // ✅ FIX: NEXT_PUBLIC_ prefix required for client-side access in Next.js
-  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+  const publishableKey = useStripeKey();
   const isProduction = publishableKey?.startsWith('pk_live_');
 
   // ========================
@@ -303,21 +303,8 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   if (!publishableKey) {
     return (
       <div className='flex items-center justify-center p-8'>
-        <div className='text-center'>
-          <AlertCircle className='w-12 h-12 text-red-600 mx-auto mb-4' />
-          <h3 className='text-xl font-bold text-red-900 mb-2'>
-            Configuration Error
-          </h3>
-          <p className='text-red-700 mb-4'>
-            Stripe payment system is not properly configured.
-          </p>
-          <button
-            onClick={onClose}
-            className='px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700'
-          >
-            Close
-          </button>
-        </div>
+        <Loader2 className='w-8 h-8 animate-spin text-blue-600' />
+        <p className='ml-3 text-gray-600'>Loading payment system...</p>
       </div>
     );
   }
