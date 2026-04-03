@@ -1,5 +1,3 @@
-// UI/components/payment/PaymentForm.tsx
-//
 // This component automatically uses the active payment provider
 // configured in src/config/paymentConfig.ts.
 //
@@ -11,6 +9,7 @@ import { PAYMENT_PROVIDER } from '@/config/paymentConfig';
 import SquarePaymentForm from './SquarePaymentForm';
 import StripePaymentForm from './StripePaymentForm';
 
-const PaymentForm = PAYMENT_PROVIDER === 'stripe' ? StripePaymentForm : SquarePaymentForm;
+const PaymentForm =
+  PAYMENT_PROVIDER === 'stripe' ? StripePaymentForm : SquarePaymentForm;
 
 export default PaymentForm;

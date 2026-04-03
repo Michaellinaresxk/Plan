@@ -224,15 +224,13 @@ export class StripeCaller {
     }
 
     const secretKey = process.env.STRIPE_SECRET_KEY;
-    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
 
     if (!secretKey) {
       errors.push('STRIPE_SECRET_KEY environment variable is missing');
     }
     if (!publishableKey) {
-      errors.push(
-        'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is missing',
-      );
+      errors.push('STRIPE_PUBLISHABLE_KEY environment variable is missing');
     }
 
     const isProduction =

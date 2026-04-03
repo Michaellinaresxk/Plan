@@ -6,6 +6,7 @@ import { X, Check, CreditCard } from 'lucide-react';
 import PaymentForm from '@/UI/components/payment/PaymentForm';
 import type { ReservationData } from '@/context/BookingContext';
 import { PAYMENT_PROVIDER } from '@/config/paymentConfig';
+import { useStripeKey } from '@/hooks/useStripeKey';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -34,10 +35,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
     'payment',
   );
 
-  // Validate active payment provider configuration
+  const stripeKey = useStripeKey();
+
   const isConfigured =
     PAYMENT_PROVIDER === 'stripe'
-      ? !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+      ? !!stripeKey
       : !!(
           process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID &&
           process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
