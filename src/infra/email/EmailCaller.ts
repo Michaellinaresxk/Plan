@@ -17,6 +17,7 @@ export class EmailCaller {
   private client: Resend;
   private readonly fromEmail: string;
   private readonly fromName: string;
+  private readonly adminEmail: string;
 
   constructor() {
     // ðŸš¨ VERIFICAR QUE ESTAMOS EN EL SERVIDOR
@@ -35,6 +36,8 @@ export class EmailCaller {
     this.fromEmail =
       process.env.RESEND_FROM_EMAIL || 'noreply@luxpuntacana.com';
     this.fromName = process.env.RESEND_FROM_NAME || 'Luxe Punta Cana Concierge';
+    this.adminEmail =
+      process.env.RESEND_ADMIN_EMAIL || 'info@luxpuntacana.com';
 
     console.log('ðŸ"§ EmailCaller initialized');
   }
@@ -53,7 +56,7 @@ export class EmailCaller {
     try {
       console.log(
         'ðŸ"§ EmailCaller - Sending payment confirmation to:',
-        data.clientEmail
+        data.clientEmail,
       );
 
       // Validar datos requeridos
@@ -72,6 +75,7 @@ export class EmailCaller {
       const response = await this.client.emails.send({
         from: `${this.fromName} <${this.fromEmail}>`,
         to: data.clientEmail,
+        bcc: this.adminEmail,
         subject: `Booking Confirmed — ${data.serviceName} | Lux Punta Cana LLC`,
         html: emailHtml,
         replyTo: this.fromEmail,
@@ -111,12 +115,15 @@ export class EmailCaller {
    * Estilos inline para máxima compatibilidad con clientes de email
    */
   private buildPaymentConfirmationHTML(data: CreateEmailData): string {
-    const priceFormatted = `$${(data.totalPrice / 100).toFixed(2)} ${data.currency.toUpperCase()}`;
+    const priceFormatted = `$${data.totalPrice.toFixed(2)} ${data.currency.toUpperCase()}`;
 
     // Campos opcionales desde metadata
     const location = data.metadata?.location as string | undefined;
     const activityDate = data.metadata?.activityDate as string | undefined;
-    const numberOfPeople = data.metadata?.numberOfPeople as string | number | undefined;
+    const numberOfPeople = data.metadata?.numberOfPeople as
+      | string
+      | number
+      | undefined;
     const paymentMethod = data.metadata?.paymentMethod as string | undefined;
 
     const paymentLine = paymentMethod
@@ -130,212 +137,148 @@ export class EmailCaller {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Confirmation — Lux Punta Cana LLC</title>
   </head>
-  <body style="margin:0;padding:0;background-color:#f0ebe0;font-family:Georgia,'Times New Roman',serif;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0ebe0;">
-      <tr>
-        <td align="center" style="padding:40px 20px;">
+  <body style="margin:0;padding:0;background-color:#1a1714;font-family:'Montserrat','Helvetica Neue',Helvetica,Arial,sans-serif;line-height:1.6;-webkit-text-size-adjust:100%;">
 
-          <!-- Card -->
-          <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#faf7f0;border-radius:2px;">
+    <!-- Preheader -->
+    <div style="display:none;max-height:0;overflow:hidden;">
+      Your luxury experience is confirmed — Lux Punta Cana LLC
+    </div>
 
-            <!-- Logo -->
-            <tr>
-              <td align="center" style="padding:48px 40px 8px 40px;">
-                <table cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td style="font-family:Georgia,'Times New Roman',serif;font-size:52px;font-weight:normal;color:#b8971f;line-height:1;letter-spacing:-1px;">
-                      <span style="font-size:64px;vertical-align:bottom;line-height:0.8;">l</span>ux
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
+    <!-- Wrapper -->
+    <div style="display:flex;justify-content:center;padding:32px 16px;">
 
-            <!-- Main Headline -->
-            <tr>
-              <td align="center" style="padding:16px 40px 8px 40px;">
-                <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:normal;color:#8b6914;line-height:1.3;text-align:center;">
-                  Your luxury experience<br>is confirmed!
-                </h1>
-              </td>
-            </tr>
+      <!-- Card -->
+      <div style="width:100%;max-width:600px;background-color:#faf8f3;">
 
-            <!-- Subtitle -->
-            <tr>
-              <td align="center" style="padding:12px 60px 32px 60px;">
-                <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#6b5a2e;line-height:1.6;text-align:center;">
-                  Thank you for trusting Lux Punta Cana LLC to make<br>your stay an unforgettable memory.
-                </p>
-              </td>
-            </tr>
+        <!-- Top gold bar -->
+        <div style="height:3px;background:linear-gradient(90deg,#c9a84c,#e8d5a0,#c9a84c);"></div>
 
-            <!-- Thin gold divider -->
-            <tr>
-              <td align="center" style="padding:0 40px;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr><td style="height:1px;background-color:#d4b96a;"></td></tr>
-                </table>
-              </td>
-            </tr>
+        <!-- Logo -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:44px 40px 0;">
+          <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:48px;font-weight:300;color:#c9a84c;letter-spacing:8px;text-transform:uppercase;line-height:1;">LUX</div>
+          <div style="margin-top:6px;font-size:9px;font-weight:500;color:#b09a6a;letter-spacing:5px;text-transform:uppercase;">PUNTA CANA</div>
+        </div>
 
-            <!-- Body Content -->
-            <tr>
-              <td style="padding:36px 48px 16px 48px;">
+        <!-- Hero -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:40px 48px;">
+          <div style="width:40px;height:1px;background-color:#c9a84c;margin-bottom:24px;"></div>
+          <h1 style="margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:400;color:#2c2416;line-height:1.35;text-align:center;letter-spacing:0.5px;">
+            Your experience<br>has been confirmed
+          </h1>
+          <p style="margin:16px 0 0;font-size:13px;font-weight:300;color:#7a6e5a;line-height:1.7;text-align:center;letter-spacing:0.3px;">
+            Thank you for choosing Lux Punta Cana.<br>Every detail has been arranged for you.
+          </p>
+        </div>
 
-                <!-- Greeting -->
-                <p style="margin:0 0 6px 0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#2c2416;">
-                  Hello <strong>${this.escapeHTML(data.clientName)}</strong>.
-                </p>
-                <p style="margin:0 0 28px 0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4a3e28;line-height:1.6;">
-                  We are pleased to confirm your reservation:
-                </p>
+        <!-- Details card -->
+        <div style="margin:0 32px;padding:32px;background-color:#f3efe6;border-left:2px solid #c9a84c;">
 
-                <!-- Details list -->
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <div style="font-size:12px;font-weight:500;color:#b09a6a;text-transform:uppercase;letter-spacing:3px;">Reservation Details</div>
 
-                  <!-- Activity -->
-                  <tr>
-                    <td style="padding:8px 0;vertical-align:top;">
-                      <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                        <tr>
-                          <td width="28" style="font-size:18px;vertical-align:top;padding-top:1px;">&#128197;</td>
-                          <td style="font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2c2416;line-height:1.5;">
-                            <strong>Activity:</strong> ${this.escapeHTML(data.serviceName)}
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
+          <div style="margin-top:16px;font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:400;color:#2c2416;line-height:1.4;">
+            Hello <strong style="font-weight:600;">${this.escapeHTML(data.clientName)}</strong>
+          </div>
+          <div style="margin-top:4px;font-size:13px;font-weight:300;color:#7a6e5a;">
+            We are pleased to confirm the following:
+          </div>
 
-                  ${location ? `
-                  <!-- Location -->
-                  <tr>
-                    <td style="padding:8px 0;vertical-align:top;">
-                      <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                        <tr>
-                          <td width="28" style="font-size:18px;vertical-align:top;padding-top:1px;">&#128205;</td>
-                          <td style="font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2c2416;line-height:1.5;">
-                            <strong>Location / Meeting point:</strong> ${this.escapeHTML(location)}
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  ` : ''}
+          <div style="height:1px;background-color:#ddd5c3;margin:24px 0;"></div>
 
-                  ${activityDate ? `
-                  <!-- Date & Time -->
-                  <tr>
-                    <td style="padding:8px 0;vertical-align:top;">
-                      <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                        <tr>
-                          <td width="28" style="font-size:18px;vertical-align:top;padding-top:1px;">&#128336;</td>
-                          <td style="font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2c2416;line-height:1.5;">
-                            <strong>Date &amp; Time:</strong> ${this.escapeHTML(activityDate)}
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  ` : ''}
+          <!-- Activity -->
+          <div style="margin-bottom:18px;">
+            <div style="font-size:10px;font-weight:500;color:#b09a6a;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Activity</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:#2c2416;line-height:1.4;">${this.escapeHTML(data.serviceName)}</div>
+          </div>
 
-                  ${numberOfPeople ? `
-                  <!-- Number of People -->
-                  <tr>
-                    <td style="padding:8px 0;vertical-align:top;">
-                      <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                        <tr>
-                          <td width="28" style="font-size:18px;vertical-align:top;padding-top:1px;">&#128100;</td>
-                          <td style="font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2c2416;line-height:1.5;">
-                            <strong>Number of guests:</strong> ${this.escapeHTML(String(numberOfPeople))}
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                  ` : ''}
+          ${
+            location
+              ? `
+          <!-- Location -->
+          <div style="margin-bottom:18px;">
+            <div style="font-size:10px;font-weight:500;color:#b09a6a;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Meeting Point</div>
+            <div style="font-size:14px;font-weight:400;color:#2c2416;line-height:1.5;">${this.escapeHTML(location)}</div>
+          </div>
+          `
+              : ''
+          }
 
-                  <!-- Payment -->
-                  <tr>
-                    <td style="padding:8px 0;vertical-align:top;">
-                      <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                        <tr>
-                          <td width="28" style="font-size:18px;vertical-align:top;padding-top:1px;">&#128179;</td>
-                          <td style="font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#2c2416;line-height:1.5;">
-                            <strong>Payment received:</strong> ${this.escapeHTML(paymentLine)}
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
+          <!-- Date & Guests -->
+          <div style="display:flex;flex-wrap:wrap;gap:18px 32px;margin-bottom:18px;">
+            ${
+              activityDate
+                ? `
+            <div style="flex:1 1 180px;min-width:0;">
+              <div style="font-size:10px;font-weight:500;color:#b09a6a;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Date &amp; Time</div>
+              <div style="font-size:14px;font-weight:400;color:#2c2416;line-height:1.5;">${this.escapeHTML(activityDate)}</div>
+            </div>
+            `
+                : ''
+            }
+            ${
+              numberOfPeople
+                ? `
+            <div style="flex:1 1 80px;min-width:0;">
+              <div style="font-size:10px;font-weight:500;color:#b09a6a;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Guests</div>
+              <div style="font-size:14px;font-weight:400;color:#2c2416;line-height:1.5;">${this.escapeHTML(String(numberOfPeople))}</div>
+            </div>
+            `
+                : ''
+            }
+          </div>
 
-                </table>
+          <!-- Payment -->
+          <div>
+            <div style="font-size:10px;font-weight:500;color:#b09a6a;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Payment Received</div>
+            <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:600;color:#2c2416;line-height:1.4;">${this.escapeHTML(paymentLine)}</div>
+          </div>
 
-              </td>
-            </tr>
+        </div>
 
-            <!-- Coordinator note -->
-            <tr>
-              <td style="padding:8px 48px 24px 48px;">
-                <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4a3e28;line-height:1.7;">
-                  Your assigned coordinator will reach out to you before the activity to confirm the final details or any special requirements.
-                </p>
-              </td>
-            </tr>
+        <!-- Notes -->
+        <div style="padding:36px 32px 0;">
+          <div style="font-size:13px;font-weight:300;color:#5c5242;line-height:1.75;letter-spacing:0.2px;margin-bottom:20px;">
+            Your personal coordinator will contact you before the activity to confirm final details and accommodate any special requests.
+          </div>
 
-            <!-- Important note -->
-            <tr>
-              <td style="padding:0 48px 24px 48px;">
-                <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4a3e28;line-height:1.7;">
-                  <strong>Important note:</strong> Please make sure to be at the meeting point at least 15 minutes in advance.
-                </p>
-              </td>
-            </tr>
+          <div style="display:flex;align-items:flex-start;gap:12px;padding:16px 20px;background-color:#f3efe6;">
+            <span style="color:#c9a84c;font-size:8px;line-height:1;flex-shrink:0;margin-top:4px;">&#9679;</span>
+            <div style="font-size:12px;font-weight:400;color:#5c5242;line-height:1.6;">
+              Please arrive at the meeting point at least <strong style="font-weight:600;color:#2c2416;">15 minutes</strong> before the scheduled time.
+            </div>
+          </div>
+        </div>
 
-            <!-- Modify / Cancel -->
-            <tr>
-              <td style="padding:0 48px 40px 48px;">
-                <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;color:#4a3e28;line-height:1.7;">
-                  If you need to modify or cancel your reservation, contact us at
-                  <a href="tel:+13027248030" style="color:#b8971f;text-decoration:none;font-weight:bold;">+1 302-724-8030</a>
-                  (WhatsApp or iMessage).
-                </p>
-              </td>
-            </tr>
+        <!-- CTA -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:36px 32px 0;">
+          <div style="font-size:11px;font-weight:500;color:#b09a6a;text-transform:uppercase;letter-spacing:3px;margin-bottom:16px;">Need to make changes?</div>
+          <a href="https://wa.me/13027248030" target="_blank" style="display:inline-block;padding:14px 36px;border:1px solid #c9a84c;font-family:'Montserrat','Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:500;color:#c9a84c;text-decoration:none;letter-spacing:2px;text-transform:uppercase;">
+            Contact Us via WhatsApp
+          </a>
+          <div style="margin-top:12px;font-size:12px;font-weight:300;color:#9e8a5e;">
+            or call <a href="tel:+13027248030" style="color:#c9a84c;text-decoration:none;font-weight:400;">+1 302-724-8030</a>
+          </div>
+        </div>
 
-            <!-- Thin gold divider -->
-            <tr>
-              <td align="center" style="padding:0 40px;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr><td style="height:1px;background-color:#d4b96a;"></td></tr>
-                </table>
-              </td>
-            </tr>
+        <!-- Divider -->
+        <div style="height:1px;background-color:#ddd5c3;margin:40px 32px 0;"></div>
 
-            <!-- Footer -->
-            <tr>
-              <td align="center" style="padding:32px 40px 40px 40px;">
-                <p style="margin:0 0 6px 0;font-family:Georgia,'Times New Roman',serif;font-size:13px;font-weight:bold;color:#8b6914;letter-spacing:2px;text-transform:uppercase;">
-                  LUX PUNTA CANA LLC
-                </p>
-                <p style="margin:0 0 10px 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#9e8a5e;letter-spacing:1px;">
-                  Luxury Experiences&nbsp;&nbsp;|&nbsp;&nbsp;Private Services&nbsp;&nbsp;|&nbsp;&nbsp;Signature Moments
-                </p>
-                <p style="margin:0 0 4px 0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#9e8a5e;">
-                  info@luxpuntacana.com
-                </p>
-                <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:12px;color:#9e8a5e;">
-                  www.luxpuntacana.com
-                </p>
-              </td>
-            </tr>
+        <!-- Footer -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:32px 32px 44px;">
+          <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:300;color:#c9a84c;letter-spacing:6px;text-transform:uppercase;">LUX</div>
+          <div style="margin-top:12px;font-size:10px;font-weight:400;color:#b09a6a;letter-spacing:3px;text-transform:uppercase;">
+            Luxury Experiences
+          </div>
+          <div style="margin-top:16px;font-size:11px;font-weight:300;color:#9e8a5e;">
+            <a href="https://www.luxpuntacana.com" style="color:#9e8a5e;text-decoration:none;">luxpuntacana.com</a>
+          </div>
+        </div>
 
-          </table>
-          <!-- /Card -->
+        <!-- Bottom gold bar -->
+        <div style="height:3px;background:linear-gradient(90deg,#c9a84c,#e8d5a0,#c9a84c);"></div>
 
-        </td>
-      </tr>
-    </table>
+      </div>
+    </div>
+
   </body>
 </html>`;
   }

@@ -48,7 +48,7 @@ const ReservationSteps: React.FC<ReservationStepsProps> = ({
     phone: reservationData.clientInfo?.phone || '',
   });
   const [clientFormErrors, setClientFormErrors] = useState<Partial<ClientInfo>>(
-    {}
+    {},
   );
 
   // Validate client form
@@ -255,8 +255,9 @@ You will receive a confirmation email shortly.`;
                         Secure Payment
                       </h4>
                       <p className='text-sm text-green-700'>
-                        Next step will open a secure payment window powered by
-                        Square.
+                        Next step will open a secure payment window. We use
+                        industry-leading payment providers to ensure your data
+                        is safe and transactions are secure.
                       </p>
                     </div>
                   </div>
