@@ -7,6 +7,7 @@ import PaymentForm from '@/UI/components/payment/PaymentForm';
 import type { ReservationData } from '@/context/BookingContext';
 import { PAYMENT_PROVIDER } from '@/config/paymentConfig';
 import { useStripeKey } from '@/hooks/useStripeKey';
+import { Loader2 } from 'lucide-react';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -16,13 +17,6 @@ interface CheckoutModalProps {
   onPaymentError: (error: string) => void;
 }
 
-/**
- * 🔧 CORRECCIONES APLICADAS:
- *
- * 1. AnimatePresence con mode="wait" para mejor timing
- * 2. Removed early return que causaba conflicto con AnimatePresence
- * 3. SquarePaymentForm se monta correctamente con AnimatePresence
- */
 const CheckoutModal: React.FC<CheckoutModalProps> = ({
   isOpen,
   onClose,
@@ -36,6 +30,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
   );
 
   const stripeKey = useStripeKey();
+
+  const isLoading = PAYMENT_PROVIDER === 'stripe' && stripeKey === null;
 
   const isConfigured =
     PAYMENT_PROVIDER === 'stripe'
@@ -66,6 +62,32 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
       onClose();
     }
   };
+
+  if (isLoading) {
+    return (
+      <AnimatePresence mode='wait'>
+        {isOpen && (
+          <motion.div
+            key='loading'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50'
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              className='bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center'
+            >
+              <Loader2 className='w-8 h-8 animate-spin text-blue-600 mx-auto mb-3' />
+              <p className='text-gray-600'>Loading payment system...</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   // Configuration error content
   if (!isConfigured) {
