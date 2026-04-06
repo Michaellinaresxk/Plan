@@ -1,48 +1,106 @@
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 import ServicePackagesCTA from '../service/ServicePackagesCTA';
 import { useTranslation } from '@/lib/i18n/client';
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
 
 const LuxuryServices = () => {
   const { t } = useTranslation();
 
   return (
-    <section className='py-24 bg-white relative overflow-hidden'>
-      {/* Subtle Background Pattern */}
-      <div className='absolute inset-0 opacity-5'>
-        <div className='absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.3),transparent)] bg-[length:100px_100px]' />
-      </div>
-
-      <div className='container mx-auto px-6 relative z-10'>
+    <section className='bg-white'>
+      {/* ── Split layout: full bleed, edge to edge ───────────── */}
+      <div className='grid grid-cols-1 lg:grid-cols-2'>
+        {/* Left — Image (50% viewport on desktop) */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className='max-w-5xl mx-auto text-center'
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true, margin: '-60px' }}
+          variants={fadeIn}
+          className='relative aspect-[4/5] sm:aspect-[3/4] lg:aspect-auto lg:min-h-[500px]'
         >
-          <div className='flex items-center justify-center mb-8'>
-            <div className='w-24 h-px bg-gradient-to-r from-transparent to-slate-800' />
-            <Sparkles className='mx-4 w-8 h-8 text-slate-800' />
-            <div className='w-24 h-px bg-gradient-to-l from-transparent to-slate-800' />
-          </div>
+          <Image
+            src='/img/saona-island/saona-3.jpg'
+            alt='Luxury experience in Punta Cana'
+            fill
+            className='object-cover'
+          />
+          <div className='absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent' />
+        </motion.div>
 
-          <h2 className='text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 bg-clip-text text-transparent leading-tight'>
+        {/* Right — Content (50% viewport on desktop) */}
+        <motion.div
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true, margin: '-60px' }}
+          variants={{
+            hidden: { opacity: 0, y: 16 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: {
+                duration: 0.6,
+                delay: 0.15,
+                ease: [0.25, 0.1, 0.25, 1],
+              },
+            },
+          }}
+          className='bg-stone-950 flex flex-col justify-center px-8 sm:px-12 lg:px-16 xl:px-20 py-14 sm:py-16 lg:py-20'
+        >
+          <p className='text-amber-500 uppercase tracking-[0.3em] text-[11px] font-medium mb-5'>
+            {t('common.mainText.slogan')}
+          </p>
+
+          <h2 className='text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-light text-white tracking-tight leading-snug mb-5'>
             {t('common.mainText.title')}
           </h2>
 
-          <p className='text-xl md:text-2xl text-slate-700 leading-relaxed font-light'>
+          <p className='text-stone-400 text-sm sm:text-base leading-relaxed mb-10 max-w-lg'>
             {t('common.mainText.subtitle')}
-            <span className='text-blue-600 font-medium'>
-              {' '}
-              {t('common.mainText.slogan')}
-            </span>
           </p>
+
+          {/* Stats grid */}
+          <div className='grid grid-cols-2 gap-x-10 gap-y-5 mb-10'>
+            {[
+              { value: '20+', label: 'Curated Services' },
+              { value: '4', label: 'Languages' },
+              { value: '100%', label: 'Satisfaction' },
+              { value: '15 min', label: 'Setup Time' },
+            ].map((item) => (
+              <div key={item.label}>
+                <div className='text-white text-xl lg:text-2xl font-light'>
+                  {item.value}
+                </div>
+                <div className='text-stone-500 text-[11px] tracking-wide uppercase mt-0.5'>
+                  {item.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <a
+            href='#services-packages'
+            className='group inline-flex items-center gap-2 text-amber-400 text-xs font-medium tracking-wide uppercase hover:text-amber-300 transition-colors duration-300 w-fit'
+          >
+            Explore Experiences
+            <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+          </a>
         </motion.div>
       </div>
 
+      {/* ── Service Packages CTA ─────────────────────────────── */}
       <ServicePackagesCTA />
     </section>
   );
 };
+
 export default LuxuryServices;

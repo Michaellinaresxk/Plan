@@ -14,12 +14,15 @@ import {
   Car,
   Clock,
   AlertTriangle,
+  AlertCircle,
   Truck,
   Bus,
   Navigation,
-  Route,
   ArrowRight,
   Repeat,
+  User,
+  Mail,
+  Phone,
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
 import { useRouter } from 'next/navigation';
@@ -27,107 +30,12 @@ import FormHeader from '@/UI/components/forms/FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
 import { LOCATION_OPTIONS } from '@/constants/location/location';
 
-// Vehicle configuration
-const POINT_TO_POINT_VEHICLES = {
-  suv: {
-    name: 'SUV',
-    capacity: 6,
-    additionalCost: 25,
-    description: 'Spacious and comfortable for medium groups',
-    icon: <Truck className='w-5 h-5 text-gray-600' />,
-  },
-  van: {
-    name: 'Van',
-    capacity: 15,
-    additionalCost: 50,
-    description: 'Large capacity for big groups, keeps everyone together',
-    icon: <Bus className='w-5 h-5 text-gray-600' />,
-  },
-  two_suvs: {
-    name: 'Two SUVs',
-    capacity: 12,
-    additionalCost: 75,
-    description:
-      'Two separate SUVs for flexibility and comfort in large groups',
-    icon: (
-      <div className='flex items-center'>
-        <Truck className='w-4 h-4 text-gray-600' />
-        <span className='mx-1 text-xs text-gray-500'>+</span>
-        <Truck className='w-4 h-4 text-gray-600' />
-      </div>
-    ),
-  },
-};
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-// Destination zones with pricing
-const DESTINATION_ZONES = [
-  {
-    id: 'punta-cana-center',
-    name: 'Punta Cana Center',
-    description: 'Main tourist area with hotels and resorts',
-    landmarks: ['Hard Rock Hotel', 'Bavaro Beach', 'Downtown Punta Cana'],
-    basePrice: 30,
-    estimatedTime: '15-20 min',
-    isPopular: true,
-  },
-  {
-    id: 'bavaro',
-    name: 'Bavaro',
-    description: 'Beach area with luxury resorts',
-    landmarks: ['Bavaro Beach', 'Iberostar', 'Natura Park'],
-    basePrice: 35,
-    estimatedTime: '20-25 min',
-    isPopular: true,
-  },
-  {
-    id: 'cap-cana',
-    name: 'Cap Cana',
-    description: 'Exclusive luxury resort area',
-    landmarks: ['Marina Cap Cana', 'Eden Roc', 'Fishing Lodge'],
-    basePrice: 40,
-    estimatedTime: '25-30 min',
-    isPopular: true,
-  },
-  {
-    id: 'uvero-alto',
-    name: 'Uvero Alto',
-    description: 'Northern coast resort area',
-    landmarks: ['Secrets Royal Beach', 'Excellence Punta Cana'],
-    basePrice: 60,
-    estimatedTime: '35-45 min',
-    isPopular: false,
-  },
-  {
-    id: 'la-romana',
-    name: 'La Romana',
-    description: 'Historic town with cultural attractions',
-    landmarks: ['Casa de Campo', 'Altos de Chavón'],
-    basePrice: 90,
-    estimatedTime: '1.5-2 hours',
-    isPopular: true,
-  },
-  {
-    id: 'bayahibe',
-    name: 'Bayahíbe',
-    description: 'Port for Saona Island excursions',
-    landmarks: ['Bayahíbe Beach', 'Saona Ferry Terminal'],
-    basePrice: 100,
-    estimatedTime: '1.5-2 hours',
-    isPopular: true,
-  },
-  {
-    id: 'santo-domingo',
-    name: 'Santo Domingo',
-    description: 'Capital city - premium service',
-    landmarks: ['Colonial Zone', 'Malecón', 'Airport'],
-    basePrice: 150,
-    estimatedTime: '2.5-3 hours',
-    isPopular: false,
-  },
-];
-
-// Types
-interface PointToPointFormData {
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
   pickupDate: string;
   pickupTime: string;
   pickupLocationArea: string;
@@ -137,7 +45,6 @@ interface PointToPointFormData {
   returnTime: string;
   passengerCount: number;
   kidsCount: number;
-  kidsAges: number[];
   needsCarSeat: boolean;
   carSeatCount: number;
   vehicleType: string;
@@ -148,192 +55,160 @@ interface FormErrors {
   [key: string]: string;
 }
 
-interface PointToPointTransferFormProps {
+interface Props {
   service: Service;
-  onSubmit: (formData: PointToPointFormData & { totalPrice: number }) => void;
+  onSubmit: (formData: FormData & { totalPrice: number }) => void;
   onCancel: () => void;
 }
 
-// Destination Zone Selector Component
-const DestinationZoneSelector: React.FC<{
-  selectedDestination: string;
-  onDestinationSelect: (zoneId: string) => void;
-  error?: string;
-}> = ({ selectedDestination, onDestinationSelect, error }) => {
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const VEHICLES: Record<
+  string,
+  { name: string; capacity: number; cost: number; description: string }
+> = {
+  suv: {
+    name: 'SUV',
+    capacity: 6,
+    cost: 25,
+    description: 'Spacious for medium groups',
+  },
+  van: {
+    name: 'Van',
+    capacity: 15,
+    cost: 50,
+    description: 'Large capacity, everyone together',
+  },
+  two_suvs: {
+    name: 'Two SUVs',
+    capacity: 12,
+    cost: 75,
+    description: 'Flexibility for large groups',
+  },
+};
+
+const DESTINATIONS = [
+  {
+    id: 'punta-cana-center',
+    name: 'Punta Cana Center',
+    price: 30,
+    time: '15–20 min',
+    popular: true,
+  },
+  { id: 'bavaro', name: 'Bavaro', price: 35, time: '20–25 min', popular: true },
+  {
+    id: 'cap-cana',
+    name: 'Cap Cana',
+    price: 40,
+    time: '25–30 min',
+    popular: true,
+  },
+  {
+    id: 'uvero-alto',
+    name: 'Uvero Alto',
+    price: 60,
+    time: '35–45 min',
+    popular: false,
+  },
+  {
+    id: 'la-romana',
+    name: 'La Romana',
+    price: 90,
+    time: '1.5–2 hours',
+    popular: true,
+  },
+  {
+    id: 'bayahibe',
+    name: 'Bayahíbe',
+    price: 100,
+    time: '1.5–2 hours',
+    popular: true,
+  },
+  {
+    id: 'santo-domingo',
+    name: 'Santo Domingo',
+    price: 150,
+    time: '2.5–3 hours',
+    popular: false,
+  },
+] as const;
+
+const CAR_SEAT_PRICE = 25;
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function isSameDay(d: string): boolean {
+  return d ? new Date().toDateString() === new Date(d).toDateString() : false;
+}
+function has24h(d: string): boolean {
+  return d ? (new Date(d).getTime() - Date.now()) / 36e5 >= 24 : false;
+}
+function getLocationName(id: string): string {
+  return LOCATION_OPTIONS.find((l) => l.id === id)?.name ?? id;
+}
+function getDestName(id: string): string {
+  return DESTINATIONS.find((d) => d.id === id)?.name ?? id;
+}
+function getDestPrice(id: string): number {
+  return DESTINATIONS.find((d) => d.id === id)?.price ?? 0;
+}
+
+// ─── Subcomponents ────────────────────────────────────────────────────────────
+
+const SectionHeading: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <h3 className='text-sm font-semibold text-stone-900 uppercase tracking-[0.15em] border-b border-stone-200 pb-3'>
+    {children}
+  </h3>
+);
+
+const FieldLabel: React.FC<{
+  icon: React.ElementType;
+  children: React.ReactNode;
+  required?: boolean;
+}> = ({ icon: Icon, children, required }) => (
+  <label className='flex items-center text-sm font-medium text-stone-700 mb-2'>
+    <Icon className='w-4 h-4 mr-2 text-stone-400' />
+    {children}
+    {required && <span className='text-amber-600 ml-1'>*</span>}
+  </label>
+);
+
+const FieldError: React.FC<{ message?: string }> = ({ message }) => {
+  if (!message) return null;
   return (
-    <div className='bg-blue-50 p-6 rounded-xl border border-blue-100 shadow-sm'>
-      <label className='flex items-center text-sm font-medium text-blue-800 mb-4'>
-        <Navigation className='w-5 h-5 mr-2 text-blue-600' />
-        Select destination zone *
-      </label>
-
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-        {DESTINATION_ZONES.map((zone) => (
-          <div
-            key={zone.id}
-            className={`
-              border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
-              ${
-                selectedDestination === zone.id
-                  ? 'border-blue-500 bg-white shadow-lg ring-2 ring-blue-200'
-                  : 'border-blue-200 bg-white hover:border-blue-300 hover:bg-blue-25'
-              }
-            `}
-            onClick={() => onDestinationSelect(zone.id)}
-          >
-            <div className='flex items-start justify-between mb-3'>
-              <div className='flex items-start'>
-                <div
-                  className={`
-                    w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 mt-0.5 transition-all
-                    ${
-                      selectedDestination === zone.id
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-blue-300'
-                    }
-                  `}
-                >
-                  {selectedDestination === zone.id && (
-                    <CheckCircle className='w-4 h-4 text-white' />
-                  )}
-                </div>
-                <div className='flex-1'>
-                  <div className='flex items-center mb-1'>
-                    <MapPin className='w-4 h-4 mr-2 text-blue-500' />
-                    <span className='font-medium text-blue-900 text-sm'>
-                      {zone.name}
-                    </span>
-                  </div>
-                  {zone.isPopular && (
-                    <span className='inline-block mb-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded-full'>
-                      Popular
-                    </span>
-                  )}
-                  <p className='text-xs text-gray-600 mb-2'>
-                    {zone.description}
-                  </p>
-                </div>
-              </div>
-
-              <div className='text-right'>
-                <div className='text-sm font-semibold text-green-600'>
-                  ${zone.basePrice}
-                </div>
-                <div className='text-xs text-gray-500 flex items-center'>
-                  <Clock className='w-3 h-3 mr-1' />
-                  {zone.estimatedTime}
-                </div>
-              </div>
-            </div>
-
-            <div className='text-xs text-gray-500 border-t border-gray-100 pt-2'>
-              <span className='font-medium'>Landmarks: </span>
-              {zone.landmarks.slice(0, 2).join(', ')}
-              {zone.landmarks.length > 2 && '...'}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {error && (
-        <p className='text-red-500 text-xs mt-3 flex items-center'>
-          <AlertTriangle className='w-3 h-3 mr-1' />
-          {error}
-        </p>
-      )}
-    </div>
+    <p className='flex items-center gap-1 text-red-600 text-xs mt-1.5'>
+      <AlertCircle className='w-3 h-3' />
+      {message}
+    </p>
   );
 };
 
-// Custom Hooks
-const useFormValidation = () => {
-  const isSameDay = (dateString: string): boolean => {
-    if (!dateString) return false;
-    const today = new Date();
-    const selectedDate = new Date(dateString);
-    return today.toDateString() === selectedDate.toDateString();
-  };
-
-  const hasMinimum24Hours = (dateString: string): boolean => {
-    if (!dateString) return false;
-    const now = new Date();
-    const selectedDate = new Date(dateString);
-    const differenceMs = selectedDate.getTime() - now.getTime();
-    const hours = differenceMs / (1000 * 60 * 60);
-    return hours >= 24;
-  };
-
-  return { isSameDay, hasMinimum24Hours };
-};
-
-const usePriceCalculation = (
-  formData: PointToPointFormData,
-  servicePrice: number
-) => {
-  return useMemo(() => {
-    let basePrice = servicePrice;
-
-    // Add destination zone price
-    const selectedDestinationZone = DESTINATION_ZONES.find(
-      (z) => z.id === formData.destinationZone
-    );
-    if (selectedDestinationZone) {
-      basePrice += selectedDestinationZone.basePrice;
-    }
-
-    // Add vehicle cost
-    const selectedVehicle = POINT_TO_POINT_VEHICLES[formData.vehicleType];
-    if (selectedVehicle) {
-      basePrice += selectedVehicle.additionalCost;
-    }
-
-    // Round trip multiplier
-    if (formData.isRoundTrip) {
-      basePrice *= 1.8;
-    }
-
-    // Car seats
-    const CAR_SEAT_PRICE = 25;
-    basePrice += formData.carSeatCount * CAR_SEAT_PRICE;
-
-    return basePrice;
-  }, [
-    formData.destinationZone,
-    formData.vehicleType,
-    formData.isRoundTrip,
-    formData.carSeatCount,
-    servicePrice,
-  ]);
-};
-
-// Counter Component
 const Counter: React.FC<{
   label: string;
   value: number;
-  onIncrement: () => void;
-  onDecrement: () => void;
+  onInc: () => void;
+  onDec: () => void;
   icon: React.ElementType;
   min?: number;
-}> = ({ label, value, onIncrement, onDecrement, icon: Icon, min = 0 }) => (
+}> = ({ label, value, onInc, onDec, icon: Icon, min = 0 }) => (
   <div>
-    <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-      <Icon className='w-4 h-4 mr-2 text-emerald-700' />
-      {label}
-    </label>
-    <div className='flex border border-gray-300 rounded-lg overflow-hidden bg-white'>
+    <FieldLabel icon={Icon}>{label}</FieldLabel>
+    <div className='flex border border-stone-300 overflow-hidden bg-white'>
       <button
         type='button'
-        onClick={onDecrement}
+        onClick={onDec}
         disabled={value <= min}
-        className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition disabled:opacity-50'
+        className='px-4 py-2 bg-stone-50 hover:bg-stone-100 transition disabled:opacity-40 text-sm'
       >
-        -
+        −
       </button>
-      <div className='flex-1 py-2 text-center font-medium'>{value}</div>
+      <div className='flex-1 py-2 text-center text-sm font-medium'>{value}</div>
       <button
         type='button'
-        onClick={onIncrement}
-        className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
+        onClick={onInc}
+        className='px-4 py-2 bg-stone-50 hover:bg-stone-100 transition text-sm'
       >
         +
       </button>
@@ -341,27 +216,29 @@ const Counter: React.FC<{
   </div>
 );
 
-// Main Component
-const PointToPointTransferForm: React.FC<PointToPointTransferFormProps> = ({
+// ─── Component ────────────────────────────────────────────────────────────────
+
+const PointToPointTransferForm: React.FC<Props> = ({
   service,
   onSubmit,
   onCancel,
 }) => {
   const { t } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { setReservationData } = useReservation();
-  const { isSameDay, hasMinimum24Hours } = useFormValidation();
   const { handleClose, registerEscapeListener } = useFormModal({ onCancel });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  // Register escape key listener
   useEffect(() => {
-    const cleanup = registerEscapeListener();
-    return cleanup;
+    const c = registerEscapeListener();
+    return c;
   }, [registerEscapeListener]);
 
-  // Form state
-  const [formData, setFormData] = useState<PointToPointFormData>({
+  const [form, setForm] = useState<FormData>({
+    name: '',
+    email: '',
+    phone: '',
     pickupDate: '',
     pickupTime: '',
     pickupLocationArea: '',
@@ -371,785 +248,624 @@ const PointToPointTransferForm: React.FC<PointToPointTransferFormProps> = ({
     returnTime: '',
     passengerCount: 2,
     kidsCount: 0,
-    kidsAges: [],
     needsCarSeat: false,
     carSeatCount: 0,
     vehicleType: 'suv',
     specialRequests: '',
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
+  const inputBase =
+    'w-full p-3 border rounded-none bg-stone-50 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 transition-colors';
 
-  // Helper to update form fields
-  const updateFormField = useCallback((field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const totalPassengers = useMemo(
+    () => form.passengerCount + form.kidsCount,
+    [form.passengerCount, form.kidsCount],
+  );
 
-    // Clear error when field is updated
-    setErrors((prev) => {
-      if (prev[field]) {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      }
-      return prev;
+  const totalPrice = useMemo(() => {
+    let p = service.price + getDestPrice(form.destinationZone);
+    p += VEHICLES[form.vehicleType]?.cost ?? 0;
+    if (form.isRoundTrip) p *= 1.8;
+    p += form.carSeatCount * CAR_SEAT_PRICE;
+    return Math.round(p);
+  }, [
+    service.price,
+    form.destinationZone,
+    form.vehicleType,
+    form.isRoundTrip,
+    form.carSeatCount,
+  ]);
+
+  useEffect(() => {
+    if (totalPassengers <= 6 && form.vehicleType === 'van')
+      setForm((p) => ({ ...p, vehicleType: 'suv' }));
+  }, [totalPassengers, form.vehicleType]);
+
+  const clearError = useCallback((f: string) => {
+    setErrors((p) => {
+      if (!p[f]) return p;
+      const n = { ...p };
+      delete n[f];
+      return n;
     });
   }, []);
 
-  // Handle location area selection
-  const handlePickupLocationAreaSelect = useCallback(
-    (locationAreaId: string) => {
-      updateFormField('pickupLocationArea', locationAreaId);
+  const updateField = useCallback(
+    (field: string, value: unknown) => {
+      setForm((p) => ({ ...p, [field]: value }));
+      clearError(field);
     },
-    [updateFormField]
+    [clearError],
   );
 
-  const handleDestinationZoneSelect = useCallback(
-    (zoneId: string) => {
-      updateFormField('destinationZone', zoneId);
-    },
-    [updateFormField]
-  );
-
-  // Calculate total passengers
-  const totalPassengers = useMemo(
-    () => formData.passengerCount + formData.kidsCount,
-    [formData.passengerCount, formData.kidsCount]
-  );
-
-  // Calculate price using custom hook
-  const calculatePrice = usePriceCalculation(formData, service.price);
-
-  // Auto-adjust vehicle type when passengers change
-  useEffect(() => {
-    if (totalPassengers <= 6 && formData.vehicleType === 'van') {
-      setFormData((prev) => ({ ...prev, vehicleType: 'suv' }));
-    }
-  }, [totalPassengers, formData.vehicleType]);
-
-  // Validation
-  const validateForm = (): FormErrors => {
-    const newErrors: FormErrors = {};
-
-    // Required fields validation
-    const requiredFields = [
-      { field: 'pickupDate', message: 'Pickup date is required' },
-      { field: 'pickupTime', message: 'Pickup time is required' },
-      { field: 'pickupLocationArea', message: 'Please select pickup area' },
-      { field: 'destinationZone', message: 'Please select destination zone' },
-    ];
-
-    // Round trip validations
-    if (formData.isRoundTrip) {
-      requiredFields.push(
-        { field: 'returnDate', message: 'Return date is required' },
-        { field: 'returnTime', message: 'Return time is required' }
-      );
-    }
-
-    // Check required fields
-    requiredFields.forEach(({ field, message }) => {
-      if (!formData[field as keyof PointToPointFormData]) {
-        newErrors[field] = message;
-      }
-    });
-
-    // Date validations
-    if (
-      formData.pickupDate &&
-      !isSameDay(formData.pickupDate) &&
-      !hasMinimum24Hours(formData.pickupDate)
-    ) {
-      newErrors.pickupDate =
-        'Bookings must be made at least 24 hours in advance';
-    }
-
-    // Return date validation
-    if (formData.isRoundTrip && formData.pickupDate && formData.returnDate) {
-      if (new Date(formData.returnDate) < new Date(formData.pickupDate)) {
-        newErrors.returnDate = 'Return date must be after pickup date';
-      }
-    }
-
-    // Passenger validation
-    if (totalPassengers < 1) {
-      newErrors.passengerCount = 'At least one passenger is required';
-    }
-
-    // Vehicle capacity validation
-    const selectedVehicle = POINT_TO_POINT_VEHICLES[formData.vehicleType];
-    if (selectedVehicle && totalPassengers > selectedVehicle.capacity) {
-      newErrors.vehicleType = `Selected vehicle can only accommodate ${selectedVehicle.capacity} passengers`;
-    }
-
-    // Car seat validation
-    if (formData.needsCarSeat && formData.carSeatCount === 0) {
-      newErrors.carSeatCount = 'Please specify number of car seats needed';
-    }
-
-    return newErrors;
-  };
-
-  // Submit handler
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const totalPrice = calculatePrice;
-
-      // Get selected areas for display names
-      const selectedPickupArea = LOCATION_OPTIONS.find(
-        (loc) => loc.id === formData.pickupLocationArea
-      );
-      const selectedDestinationZone = DESTINATION_ZONES.find(
-        (zone) => zone.id === formData.destinationZone
-      );
-
-      const reservationData = {
-        service,
-        totalPrice,
-        formData: {
-          ...formData,
-          serviceType: 'point-to-point-transfer',
-          pickupLocationAreaName:
-            selectedPickupArea?.name || formData.pickupLocationArea,
-          destinationZoneName:
-            selectedDestinationZone?.name || formData.destinationZone,
-        },
-        bookingDate: new Date(`${formData.pickupDate}T${formData.pickupTime}`),
-        clientInfo: undefined,
-        pointToPointSpecifics: {
-          pickupLocationArea: formData.pickupLocationArea,
-          destinationZone: formData.destinationZone,
-          pickupLocationAreaName:
-            selectedPickupArea?.name || formData.pickupLocationArea,
-          destinationZoneName:
-            selectedDestinationZone?.name || formData.destinationZone,
-          vehicleType: formData.vehicleType,
-          totalPassengers,
-          carSeats: formData.carSeatCount,
-          isRoundTrip: formData.isRoundTrip,
-          destinationPricing: selectedDestinationZone?.basePrice || 0,
-        },
-      };
-
-      console.log(
-        '🚗 Point-to-Point transfer - Reservation data:',
-        reservationData
-      );
-      console.log('📍 Pickup area:', selectedPickupArea);
-      console.log('🎯 Destination zone:', selectedDestinationZone);
-      console.log('💰 Total Price:', totalPrice);
-
-      setReservationData(reservationData);
-      router.push('/reservation-confirmation');
-    } catch (error) {
-      console.error(
-        '❌ Point-to-Point transfer - Error submitting form:',
-        error
-      );
-      setErrors({
-        submit: 'Failed to submit reservation. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Input change handler
-  const handleInputChange = useCallback(
+  const handleInput = useCallback(
     (
       e: React.ChangeEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >
+      >,
     ) => {
       const { name, value, type } = e.target;
       const checked = 'checked' in e.target ? e.target.checked : false;
-
-      setFormData((prev) => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value,
-      }));
-
-      // Clear car seat count if checkbox is unchecked
-      if (name === 'needsCarSeat' && !checked) {
-        setFormData((prev) => ({ ...prev, carSeatCount: 0 }));
-      }
-
-      // Clear error when user starts typing
-      if (errors[name]) {
-        setErrors((prev) => ({ ...prev, [name]: '' }));
-      }
+      setForm((p) => ({ ...p, [name]: type === 'checkbox' ? checked : value }));
+      if (name === 'needsCarSeat' && !checked)
+        setForm((p) => ({ ...p, carSeatCount: 0 }));
+      clearError(name);
     },
-    [errors]
+    [clearError],
   );
 
-  // Counter handlers
-  const createCounterHandler = (
-    field: keyof PointToPointFormData,
+  const validate = useCallback((): boolean => {
+    const errs: FormErrors = {};
+    if (!form.name.trim()) errs.name = 'Required';
+    if (!form.email.trim()) errs.email = 'Required';
+    else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Invalid email';
+    if (!form.phone.trim()) errs.phone = 'Required';
+    if (!form.pickupDate) errs.pickupDate = 'Required';
+    if (!form.pickupTime) errs.pickupTime = 'Required';
+    if (!form.pickupLocationArea) errs.pickupLocationArea = 'Required';
+    if (!form.destinationZone) errs.destinationZone = 'Required';
+
+    if (form.isRoundTrip) {
+      if (!form.returnDate) errs.returnDate = 'Required';
+      if (!form.returnTime) errs.returnTime = 'Required';
+      if (
+        form.pickupDate &&
+        form.returnDate &&
+        new Date(form.returnDate) < new Date(form.pickupDate)
+      )
+        errs.returnDate = 'Must be after pickup';
+    }
+
+    if (
+      form.pickupDate &&
+      !isSameDay(form.pickupDate) &&
+      !has24h(form.pickupDate)
+    )
+      errs.pickupDate = '24h advance required';
+    if (totalPassengers < 1) errs.passengerCount = 'At least 1';
+    const v = VEHICLES[form.vehicleType];
+    if (v && totalPassengers > v.capacity)
+      errs.vehicleType = `Max ${v.capacity}`;
+    if (form.needsCarSeat && form.carSeatCount === 0)
+      errs.carSeatCount = 'Specify quantity';
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }, [form, totalPassengers]);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!validate()) return;
+      setIsSubmitting(true);
+
+      try {
+        const pickupName = getLocationName(form.pickupLocationArea);
+        const destName = getDestName(form.destinationZone);
+
+        // ── Inquiry ──
+        fetch('/api/services/inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            serviceName: 'Point-to-Point Transfer',
+            serviceType: 'point-to-point-transfer',
+            customerName: form.name,
+            customerEmail: form.email,
+            customerPhone: form.phone,
+            tourDate: form.pickupDate,
+            timeSlot: form.pickupTime,
+            totalGuests: totalPassengers,
+            totalPrice,
+            message: [
+              `Route: ${pickupName} → ${destName}`,
+              `Vehicle: ${VEHICLES[form.vehicleType]?.name}`,
+              form.isRoundTrip
+                ? `Round trip: ${form.returnDate} ${form.returnTime}`
+                : 'One way',
+              form.specialRequests ? `Notes: ${form.specialRequests}` : '',
+            ]
+              .filter(Boolean)
+              .join('\n'),
+          }),
+        }).catch((err) => console.error('Inquiry failed:', err));
+
+        // ── Reservation ──
+        setReservationData({
+          service,
+          totalPrice,
+          formData: {
+            ...form,
+            serviceType: 'point-to-point-transfer',
+            pickupLocationAreaName: pickupName,
+            destinationZoneName: destName,
+          },
+          bookingDate: new Date(`${form.pickupDate}T${form.pickupTime}`),
+          clientInfo: { name: form.name, email: form.email, phone: form.phone },
+          pointToPointSpecifics: {
+            pickupLocationArea: form.pickupLocationArea,
+            destinationZone: form.destinationZone,
+            pickupLocationAreaName: pickupName,
+            destinationZoneName: destName,
+            vehicleType: form.vehicleType,
+            totalPassengers,
+            carSeats: form.carSeatCount,
+            isRoundTrip: form.isRoundTrip,
+          },
+        });
+
+        router.push('/reservation-confirmation');
+      } catch (error) {
+        console.error('Submission error:', error);
+        setErrors({ submit: 'Unable to send inquiry. Please try again.' });
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      validate,
+      form,
+      totalPrice,
+      totalPassengers,
+      service,
+      setReservationData,
+      router,
+    ],
+  );
+
+  const counter = (
+    field: 'passengerCount' | 'kidsCount' | 'carSeatCount',
     min = 0,
-    max = 20
+    max = 20,
   ) => ({
-    increment: () =>
-      setFormData((prev) => ({
-        ...prev,
-        [field]: Math.min(max, (prev[field] as number) + 1),
+    onInc: () =>
+      setForm((p) => ({
+        ...p,
+        [field]: Math.min(max, (p[field] as number) + 1),
       })),
-    decrement: () =>
-      setFormData((prev) => ({
-        ...prev,
-        [field]: Math.max(min, (prev[field] as number) - 1),
+    onDec: () =>
+      setForm((p) => ({
+        ...p,
+        [field]: Math.max(min, (p[field] as number) - 1),
       })),
   });
 
-  const passengerCounter = createCounterHandler('passengerCount', 1);
-  const kidsCounter = createCounterHandler('kidsCount', 0);
-  const carSeatCounter = createCounterHandler('carSeatCount', 0);
-
   return (
-    <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
-      <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-        {/* Header */}
+    <form onSubmit={handleSubmit} className='w-full mx-auto'>
+      <div className='bg-white border border-stone-200'>
         <FormHeader
           title='Point-to-Point Transfer'
-          subtitle='Professional transportation between any two locations'
+          subtitle='Private transportation between any two locations'
           icon={Car}
           onCancel={handleClose}
-          showCloseButton={true}
-          gradientFrom='emerald-500'
-          gradientVia='emerald-700'
-          gradientTo='emerald-800'
+          showCloseButton
+          gradientFrom='stone-800'
+          gradientVia='stone-800'
+          gradientTo='stone-900'
         />
 
-        {/* Form Body */}
-        <div className='p-8 space-y-8'>
-          {/* Location Selection Section */}
+        <div className='p-6 sm:p-8 lg:p-10 space-y-10'>
+          {/* Contact */}
           <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Route Information
-            </h3>
+            <SectionHeading>Contact Information</SectionHeading>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
+              <div>
+                <FieldLabel icon={User} required>
+                  Full Name
+                </FieldLabel>
+                <input
+                  type='text'
+                  name='name'
+                  value={form.name}
+                  onChange={handleInput}
+                  placeholder='Your name'
+                  className={`${inputBase} ${errors.name ? 'border-red-400' : 'border-stone-300'}`}
+                />
+                <FieldError message={errors.name} />
+              </div>
+              <div>
+                <FieldLabel icon={Mail} required>
+                  Email
+                </FieldLabel>
+                <input
+                  type='email'
+                  name='email'
+                  value={form.email}
+                  onChange={handleInput}
+                  placeholder='you@email.com'
+                  className={`${inputBase} ${errors.email ? 'border-red-400' : 'border-stone-300'}`}
+                />
+                <FieldError message={errors.email} />
+              </div>
+              <div>
+                <FieldLabel icon={Phone} required>
+                  Phone
+                </FieldLabel>
+                <input
+                  type='tel'
+                  name='phone'
+                  value={form.phone}
+                  onChange={handleInput}
+                  placeholder='+1 (555) 000-0000'
+                  className={`${inputBase} ${errors.phone ? 'border-red-400' : 'border-stone-300'}`}
+                />
+                <FieldError message={errors.phone} />
+              </div>
+            </div>
+          </div>
 
-            {/* Pickup Location Area Selector - Tu componente existente */}
-            <div className='bg-emerald-50 p-6 rounded-xl border border-emerald-100 shadow-sm'>
-              <label className='flex items-center text-sm font-medium text-emerald-800 mb-4'>
-                <MapPin className='w-5 h-5 mr-2 text-emerald-600' />
-                Select pickup area *
-              </label>
+          {/* Route */}
+          <div className='space-y-6'>
+            <SectionHeading>Route</SectionHeading>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-                {LOCATION_OPTIONS.map((locationOption) => (
-                  <div
-                    key={locationOption.id}
-                    className={`
-                      border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
-                      ${
-                        formData.pickupLocationArea === locationOption.id
-                          ? 'border-emerald-500 bg-white shadow-lg ring-2 ring-emerald-200'
-                          : 'border-emerald-200 bg-white hover:border-emerald-300 hover:bg-emerald-25'
-                      }
-                    `}
-                    onClick={() =>
-                      handlePickupLocationAreaSelect(locationOption.id)
-                    }
-                  >
-                    <div className='flex items-center'>
+            {/* Pickup area */}
+            <div>
+              <FieldLabel icon={MapPin} required>
+                Pickup Area
+              </FieldLabel>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                {LOCATION_OPTIONS.map((loc) => {
+                  const sel = form.pickupLocationArea === loc.id;
+                  return (
+                    <button
+                      key={loc.id}
+                      type='button'
+                      onClick={() => updateField('pickupLocationArea', loc.id)}
+                      className={`flex items-center border p-3 text-left transition-colors ${
+                        sel
+                          ? 'border-stone-900 bg-stone-50'
+                          : 'border-stone-200 hover:border-stone-400'
+                      }`}
+                    >
                       <div
-                        className={`
-                          w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
-                          ${
-                            formData.pickupLocationArea === locationOption.id
-                              ? 'border-emerald-500 bg-emerald-500'
-                              : 'border-emerald-300'
-                          }
-                        `}
+                        className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center flex-shrink-0 ${
+                          sel
+                            ? 'border-stone-900 bg-stone-900'
+                            : 'border-stone-300'
+                        }`}
                       >
-                        {formData.pickupLocationArea === locationOption.id && (
-                          <CheckCircle className='w-4 h-4 text-white' />
+                        {sel && (
+                          <CheckCircle className='w-2.5 h-2.5 text-white' />
                         )}
                       </div>
-                      <div className='flex items-center'>
-                        <MapPin className='w-4 h-4 mr-2 text-emerald-500' />
-                        <span className='font-medium text-emerald-900 text-sm'>
-                          {locationOption.name}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                      <span className='text-xs font-medium text-stone-800'>
+                        {loc.name}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
-
-              {errors.pickupLocationArea && (
-                <p className='text-red-500 text-xs mt-3 flex items-center'>
-                  <AlertTriangle className='w-3 h-3 mr-1' />
-                  {errors.pickupLocationArea}
-                </p>
-              )}
+              <FieldError message={errors.pickupLocationArea} />
             </div>
 
-            {/* Destination Zone Selector - Nuevo componente */}
-            <DestinationZoneSelector
-              selectedDestination={formData.destinationZone}
-              onDestinationSelect={handleDestinationZoneSelect}
-              error={errors.destinationZone}
-            />
-
-            {/* Route Preview Simple */}
-            {formData.pickupLocationArea && formData.destinationZone && (
-              <div className='bg-gradient-to-r from-emerald-50 to-blue-50 border border-gray-200 rounded-xl p-6'>
-                <div className='flex items-center mb-4'>
-                  <Route className='w-5 h-5 text-gray-700 mr-2' />
-                  <h3 className='font-semibold text-gray-900'>Route Preview</h3>
-                </div>
-
-                <div className='space-y-4'>
-                  {/* Route */}
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center'>
-                      <div className='w-3 h-3 bg-emerald-600 rounded-full'></div>
-                      <span className='ml-3 font-medium text-gray-900'>
-                        {LOCATION_OPTIONS.find(
-                          (loc) => loc.id === formData.pickupLocationArea
-                        )?.name || 'Pickup Area'}
-                      </span>
-                    </div>
-                    <ArrowRight className='w-4 h-4 text-gray-500 mx-2' />
-                    <div className='flex items-center'>
-                      <div className='w-3 h-3 bg-blue-600 rounded-full'></div>
-                      <span className='ml-3 font-medium text-gray-900'>
-                        {DESTINATION_ZONES.find(
-                          (zone) => zone.id === formData.destinationZone
-                        )?.name || 'Destination Zone'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Price and Trip Info */}
-                  <div className='grid grid-cols-2 gap-4 pt-2 border-t border-gray-200'>
-                    <div className='text-center'>
-                      <div className='text-sm text-gray-600'>
-                        Estimated Price
+            {/* Destination */}
+            <div>
+              <FieldLabel icon={Navigation} required>
+                Destination Zone
+              </FieldLabel>
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
+                {DESTINATIONS.map((zone) => {
+                  const sel = form.destinationZone === zone.id;
+                  return (
+                    <button
+                      key={zone.id}
+                      type='button'
+                      onClick={() => updateField('destinationZone', zone.id)}
+                      className={`border p-4 text-left transition-colors ${
+                        sel
+                          ? 'border-stone-900 bg-stone-50'
+                          : 'border-stone-200 hover:border-stone-400'
+                      }`}
+                    >
+                      <div className='flex items-center justify-between mb-2'>
+                        <div className='flex items-center gap-2'>
+                          <div
+                            className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                              sel
+                                ? 'border-stone-900 bg-stone-900'
+                                : 'border-stone-300'
+                            }`}
+                          >
+                            {sel && (
+                              <CheckCircle className='w-2 h-2 text-white' />
+                            )}
+                          </div>
+                          <span className='text-xs font-medium text-stone-800'>
+                            {zone.name}
+                          </span>
+                          {zone.popular && (
+                            <span className='text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5'>
+                              Popular
+                            </span>
+                          )}
+                        </div>
+                        <span className='text-xs font-medium text-stone-500'>
+                          ${zone.price}
+                        </span>
                       </div>
-                      <div className='font-semibold text-green-600'>
-                        ${calculatePrice}
+                      <div className='flex items-center gap-1 text-[11px] text-stone-400 ml-5'>
+                        <Clock className='w-3 h-3' />
+                        {zone.time}
                       </div>
-                    </div>
-                    <div className='text-center'>
-                      <div className='text-sm text-gray-600'>Vehicle</div>
-                      <div className='font-semibold text-gray-900'>
-                        {POINT_TO_POINT_VEHICLES[formData.vehicleType]?.name}
-                      </div>
-                    </div>
-                  </div>
+                    </button>
+                  );
+                })}
+              </div>
+              <FieldError message={errors.destinationZone} />
+            </div>
 
-                  {/* Round Trip Indicator */}
-                  {formData.isRoundTrip && (
-                    <div className='flex items-center text-sm text-emerald-700 mt-3'>
-                      <Repeat className='w-4 h-4 mr-2' />
-                      Round trip service included
-                    </div>
-                  )}
+            {/* Route preview */}
+            {form.pickupLocationArea && form.destinationZone && (
+              <div className='bg-stone-50 border border-stone-200 p-4'>
+                <div className='flex items-center gap-3 text-sm'>
+                  <span className='text-stone-900 font-medium'>
+                    {getLocationName(form.pickupLocationArea)}
+                  </span>
+                  <ArrowRight className='w-3.5 h-3.5 text-stone-400' />
+                  <span className='text-stone-900 font-medium'>
+                    {getDestName(form.destinationZone)}
+                  </span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Date & Time Section */}
+          {/* Schedule */}
           <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Schedule Information
-            </h3>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              {/* Pickup Date */}
+            <SectionHeading>Schedule</SectionHeading>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Calendar className='w-4 h-4 mr-2 text-emerald-700' />
-                  Pickup Date *
-                </label>
+                <FieldLabel icon={Calendar} required>
+                  Pickup Date
+                </FieldLabel>
                 <input
                   type='date'
                   name='pickupDate'
-                  value={formData.pickupDate}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.pickupDate ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50`}
+                  value={form.pickupDate}
+                  onChange={handleInput}
                   min={new Date().toISOString().split('T')[0]}
+                  className={`${inputBase} ${errors.pickupDate ? 'border-red-400' : 'border-stone-300'}`}
                 />
-                {errors.pickupDate && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.pickupDate}
-                  </p>
-                )}
+                <FieldError message={errors.pickupDate} />
               </div>
-
-              {/* Pickup Time */}
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock className='w-4 h-4 mr-2 text-emerald-700' />
-                  Pickup Time *
-                </label>
+                <FieldLabel icon={Clock} required>
+                  Pickup Time
+                </FieldLabel>
                 <input
                   type='time'
                   name='pickupTime'
-                  value={formData.pickupTime}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.pickupTime ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50`}
+                  value={form.pickupTime}
+                  onChange={handleInput}
+                  className={`${inputBase} ${errors.pickupTime ? 'border-red-400' : 'border-stone-300'}`}
                 />
-                {errors.pickupTime && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.pickupTime}
-                  </p>
-                )}
+                <FieldError message={errors.pickupTime} />
               </div>
             </div>
 
-            {/* Booking timing warnings */}
-            {formData.pickupDate && (
-              <div className='mt-4'>
-                {isSameDay(formData.pickupDate) ? (
-                  <div className='p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start'>
-                    <Info className='w-4 h-4 text-amber-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-amber-800'>
-                      <strong>Same-day booking:</strong> Requires immediate
-                      confirmation from our team.
-                    </div>
-                  </div>
-                ) : !hasMinimum24Hours(formData.pickupDate) ? (
-                  <div className='p-3 bg-red-50 border border-red-200 rounded-lg flex items-start'>
-                    <AlertTriangle className='w-4 h-4 text-red-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-red-800'>
-                      <strong>Advance booking required:</strong> Please book at
-                      least 24 hours in advance.
-                    </div>
-                  </div>
-                ) : null}
+            {form.pickupDate && isSameDay(form.pickupDate) && (
+              <div className='flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 text-sm text-amber-800'>
+                <Info className='w-4 h-4 mt-0.5 flex-shrink-0' />
+                <span>
+                  <strong>Same-day booking</strong> — requires immediate
+                  confirmation.
+                </span>
               </div>
             )}
 
-            {/* Round Trip Toggle */}
-            <div className='mt-6'>
-              <div
-                className='flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition cursor-pointer'
-                onClick={() =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    isRoundTrip: !prev.isRoundTrip,
-                  }))
-                }
-              >
-                <div className='flex items-center'>
-                  <div
-                    className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                      formData.isRoundTrip
-                        ? 'border-emerald-700 bg-emerald-700'
-                        : 'border-gray-400'
-                    }`}
-                  >
-                    {formData.isRoundTrip && (
-                      <CheckCircle className='w-4 h-4 text-white' />
-                    )}
-                  </div>
-                  <span className='ml-3 font-medium text-gray-800'>
-                    Round Trip Service
-                  </span>
-                </div>
-                <span className='text-emerald-700'>
-                  {formData.isRoundTrip ? (
-                    <ChevronUp className='w-5 h-5' />
-                  ) : (
-                    <ChevronDown className='w-5 h-5' />
+            <button
+              type='button'
+              onClick={() =>
+                setForm((p) => ({ ...p, isRoundTrip: !p.isRoundTrip }))
+              }
+              className='flex items-center justify-between w-full p-4 border border-stone-200 bg-stone-50 hover:bg-stone-100 transition text-left'
+            >
+              <div className='flex items-center gap-3'>
+                <div
+                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                    form.isRoundTrip
+                      ? 'border-stone-900 bg-stone-900'
+                      : 'border-stone-300'
+                  }`}
+                >
+                  {form.isRoundTrip && (
+                    <CheckCircle className='w-2.5 h-2.5 text-white' />
                   )}
+                </div>
+                <span className='text-sm font-medium text-stone-800'>
+                  Round Trip
                 </span>
               </div>
-
-              {/* Return Trip Details */}
-              {formData.isRoundTrip && (
-                <div className='mt-4 pl-6 border-l-2 border-emerald-200 space-y-6'>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                    {/* Return Date */}
-                    <div>
-                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                        <Calendar className='w-4 h-4 mr-2 text-emerald-700' />
-                        Return Date *
-                      </label>
-                      <input
-                        type='date'
-                        name='returnDate'
-                        value={formData.returnDate}
-                        onChange={handleInputChange}
-                        className={`w-full p-3 border ${
-                          errors.returnDate
-                            ? 'border-red-500'
-                            : 'border-gray-300'
-                        } rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50`}
-                        min={
-                          formData.pickupDate ||
-                          new Date().toISOString().split('T')[0]
-                        }
-                      />
-                      {errors.returnDate && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.returnDate}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Return Time */}
-                    <div>
-                      <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                        <Clock className='w-4 h-4 mr-2 text-emerald-700' />
-                        Return Time *
-                      </label>
-                      <input
-                        type='time'
-                        name='returnTime'
-                        value={formData.returnTime}
-                        onChange={handleInputChange}
-                        className={`w-full p-3 border ${
-                          errors.returnTime
-                            ? 'border-red-500'
-                            : 'border-gray-300'
-                        } rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50`}
-                      />
-                      {errors.returnTime && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.returnTime}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+              {form.isRoundTrip ? (
+                <ChevronUp className='w-4 h-4 text-stone-400' />
+              ) : (
+                <ChevronDown className='w-4 h-4 text-stone-400' />
               )}
-            </div>
+            </button>
+
+            {form.isRoundTrip && (
+              <div className='ml-4 pl-4 border-l-2 border-stone-200 grid grid-cols-1 md:grid-cols-2 gap-5'>
+                <div>
+                  <FieldLabel icon={Calendar} required>
+                    Return Date
+                  </FieldLabel>
+                  <input
+                    type='date'
+                    name='returnDate'
+                    value={form.returnDate}
+                    onChange={handleInput}
+                    min={
+                      form.pickupDate || new Date().toISOString().split('T')[0]
+                    }
+                    className={`${inputBase} ${errors.returnDate ? 'border-red-400' : 'border-stone-300'}`}
+                  />
+                  <FieldError message={errors.returnDate} />
+                </div>
+                <div>
+                  <FieldLabel icon={Clock} required>
+                    Return Time
+                  </FieldLabel>
+                  <input
+                    type='time'
+                    name='returnTime'
+                    value={form.returnTime}
+                    onChange={handleInput}
+                    className={`${inputBase} ${errors.returnTime ? 'border-red-400' : 'border-stone-300'}`}
+                  />
+                  <FieldError message={errors.returnTime} />
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Passenger Information */}
+          {/* Passengers + Vehicle */}
           <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Passenger Information
-            </h3>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <SectionHeading>Passengers & Vehicle</SectionHeading>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
               <Counter
                 label='Adults'
-                value={formData.passengerCount}
-                onIncrement={passengerCounter.increment}
-                onDecrement={passengerCounter.decrement}
+                value={form.passengerCount}
                 icon={Users}
                 min={1}
+                {...counter('passengerCount', 1)}
               />
-
               <Counter
                 label='Children'
-                value={formData.kidsCount}
-                onIncrement={kidsCounter.increment}
-                onDecrement={kidsCounter.decrement}
+                value={form.kidsCount}
                 icon={Baby}
+                {...counter('kidsCount')}
               />
             </div>
 
-            {/* Total passengers display */}
-            <div className='p-3 bg-emerald-50 border border-emerald-200 rounded-lg'>
-              <p className='text-sm text-emerald-800'>
-                <strong>Total passengers:</strong> {totalPassengers}
-              </p>
-            </div>
-
-            {/* Vehicle Type Selection */}
-            <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                <Car className='w-4 h-4 mr-2 text-emerald-700' />
-                Vehicle Type
-              </label>
-
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                {Object.entries(POINT_TO_POINT_VEHICLES).map(
-                  ([key, vehicle]) => (
-                    <div
-                      key={key}
-                      className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                        formData.vehicleType === key
-                          ? 'border-emerald-500 bg-emerald-50'
-                          : 'border-gray-200 hover:border-emerald-300'
-                      }`}
-                      onClick={() => updateFormField('vehicleType', key)}
-                    >
-                      <div className='flex items-center justify-between mb-2'>
-                        <div className='flex items-center'>
-                          {vehicle.icon}
-                          <span className='font-medium ml-2'>
-                            {vehicle.name}
-                          </span>
-                        </div>
-                        <span className='text-sm text-gray-600'>
-                          +${vehicle.additionalCost}
-                        </span>
-                      </div>
-                      <p className='text-sm text-gray-600 mb-2'>
-                        {vehicle.description}
-                      </p>
-                      <div className='text-xs text-gray-500'>
-                        <span>Up to {vehicle.capacity} passengers</span>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-
-              {/* Show info for large groups */}
-              {totalPassengers > 10 && (
-                <div className='p-3 bg-amber-50 border border-amber-200 rounded-lg mt-4 flex items-start'>
-                  <Info className='w-4 h-4 text-amber-600 mr-2 mt-0.5' />
-                  <div className='text-sm text-amber-800'>
-                    <strong>Large group options:</strong> For {totalPassengers}{' '}
-                    passengers, choose between one Van (everyone together) or
-                    two SUVs (more flexibility).
-                  </div>
-                </div>
-              )}
-
-              {errors.vehicleType && (
-                <p className='text-red-500 text-xs mt-2'>
-                  {errors.vehicleType}
-                </p>
-              )}
-            </div>
-
-            {/* Car Seat Section */}
-            <div>
-              <div className='mb-4'>
-                <label className='flex items-center mb-2 text-sm font-medium text-gray-700'>
-                  <Baby className='w-4 h-4 mr-2 text-emerald-700' />
-                  Child Safety Seats
-                </label>
-
-                <div className='flex items-center bg-gray-50 p-3 border border-gray-300 rounded-lg'>
-                  <input
-                    type='checkbox'
-                    id='needsCarSeat'
-                    name='needsCarSeat'
-                    checked={formData.needsCarSeat}
-                    onChange={handleInputChange}
-                    className='h-4 w-4 text-emerald-700 focus:ring-emerald-500 border-gray-300 rounded'
-                  />
-                  <label
-                    htmlFor='needsCarSeat'
-                    className='ml-2 text-sm text-gray-700'
+            {/* Vehicle selection */}
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
+              {Object.entries(VEHICLES).map(([key, v]) => {
+                const sel = form.vehicleType === key;
+                return (
+                  <button
+                    key={key}
+                    type='button'
+                    onClick={() => updateField('vehicleType', key)}
+                    className={`border p-4 text-left transition-colors ${
+                      sel
+                        ? 'border-stone-900 bg-stone-50'
+                        : 'border-stone-200 hover:border-stone-400'
+                    }`}
                   >
-                    I need child safety seats
-                  </label>
-                </div>
-              </div>
-
-              {formData.needsCarSeat && (
-                <Counter
-                  label='Number of car seats needed'
-                  value={formData.carSeatCount}
-                  onIncrement={carSeatCounter.increment}
-                  onDecrement={carSeatCounter.decrement}
-                  icon={Baby}
-                />
-              )}
-
-              {errors.carSeatCount && (
-                <p className='text-red-500 text-xs mt-1'>
-                  {errors.carSeatCount}
-                </p>
-              )}
+                    <div className='flex items-center justify-between mb-1'>
+                      <span className='text-xs font-medium text-stone-800'>
+                        {v.name}
+                      </span>
+                      <span className='text-xs text-stone-500'>+${v.cost}</span>
+                    </div>
+                    <p className='text-[11px] text-stone-400'>
+                      {v.description}
+                    </p>
+                    <p className='text-[10px] text-stone-400 mt-1'>
+                      Up to {v.capacity} passengers
+                    </p>
+                  </button>
+                );
+              })}
             </div>
+            <FieldError message={errors.vehicleType} />
+
+            {/* Car seats */}
+            <label className='flex items-center gap-2 bg-stone-50 border border-stone-200 p-3 cursor-pointer'>
+              <input
+                type='checkbox'
+                name='needsCarSeat'
+                checked={form.needsCarSeat}
+                onChange={handleInput}
+                className='h-4 w-4 text-stone-900 focus:ring-stone-900 border-stone-300 rounded'
+              />
+              <span className='text-sm text-stone-700'>
+                I need child safety seats
+              </span>
+            </label>
+            {form.needsCarSeat && (
+              <Counter
+                label='Car seats needed'
+                value={form.carSeatCount}
+                icon={Baby}
+                {...counter('carSeatCount')}
+              />
+            )}
+            <FieldError message={errors.carSeatCount} />
           </div>
 
-          {/* Additional Information */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Additional Information
-            </h3>
-
-            {/* Special Requests */}
-            <div>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                <Info className='w-4 h-4 mr-2 text-emerald-700' />
-                Special Requests (optional)
-              </label>
-              <textarea
-                name='specialRequests'
-                value={formData.specialRequests}
-                onChange={handleInputChange}
-                rows={3}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50 resize-none'
-                placeholder='Any special requirements, accessibility needs, or additional stops...'
-              />
-            </div>
+          {/* Notes */}
+          <div className='space-y-4'>
+            <SectionHeading>Additional Notes</SectionHeading>
+            <textarea
+              name='specialRequests'
+              value={form.specialRequests}
+              onChange={handleInput}
+              rows={3}
+              className={`${inputBase} border-stone-300 resize-none`}
+              placeholder='Accessibility needs, additional stops, special requirements...'
+            />
           </div>
         </div>
 
-        {/* Footer with Actions */}
-        <div className='rounded-2xl bg-gray-900 text-white p-6 flex justify-between items-center'>
-          <div className='text-xl font-bold'>
-            Total: <span className='text-emerald-400'>${calculatePrice}</span>
-            {formData.pickupLocationArea && formData.destinationZone && (
-              <div className='text-sm text-gray-400 mt-1'>
-                {
-                  LOCATION_OPTIONS.find(
-                    (loc) => loc.id === formData.pickupLocationArea
-                  )?.name
-                }{' '}
-                →{' '}
-                {
-                  DESTINATION_ZONES.find(
-                    (zone) => zone.id === formData.destinationZone
-                  )?.name
-                }
-              </div>
+        {/* Footer */}
+        <div className='bg-stone-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6'>
+          <div className='text-center sm:text-left'>
+            <span className='text-stone-500 text-xs uppercase tracking-wider'>
+              Estimated
+            </span>
+            <div className='text-3xl font-light mt-1'>${totalPrice}</div>
+            {form.pickupLocationArea && form.destinationZone && (
+              <p className='text-stone-500 text-[11px] mt-1'>
+                {getLocationName(form.pickupLocationArea)} →{' '}
+                {getDestName(form.destinationZone)}
+              </p>
             )}
           </div>
-          <div className='flex space-x-4'>
+          <div className='flex gap-3'>
             <button
               type='button'
               onClick={handleClose}
               disabled={isSubmitting}
-              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
+              className='px-6 py-3 border border-stone-700 text-stone-400 hover:text-white hover:border-stone-500 text-sm transition-colors disabled:opacity-50'
             >
               Cancel
             </button>
-
             <button
               type='submit'
-              disabled={
-                isSubmitting ||
-                !formData.pickupLocationArea ||
-                !formData.destinationZone
-              }
-              className='px-8 py-3 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
+              disabled={isSubmitting}
+              className='px-8 py-3 bg-white text-stone-900 hover:bg-amber-50 text-sm font-medium tracking-wide flex items-center gap-2 transition-colors disabled:opacity-50'
             >
-              <CreditCard className='h-4 w-4 mr-2' />
-              {isSubmitting ? 'Processing...' : 'Book Transfer'}
+              <CreditCard className='w-4 h-4' />
+              {isSubmitting ? 'Sending...' : 'Send Inquiry'}
             </button>
           </div>
         </div>
 
-        {/* Submit Error */}
         {errors.submit && (
-          <div className='p-4 bg-red-50 border border-red-200 rounded-lg mt-4'>
-            <div className='flex items-start'>
-              <AlertTriangle className='w-4 h-4 text-red-600 mr-2 mt-0.5' />
-              <div className='text-sm text-red-800'>
-                <strong>Error:</strong> {errors.submit}
-              </div>
-            </div>
+          <div className='flex items-center gap-2 p-4 bg-red-50 border-t border-red-200 text-sm text-red-800'>
+            <AlertCircle className='w-4 h-4 flex-shrink-0' />
+            {errors.submit}
           </div>
         )}
       </div>

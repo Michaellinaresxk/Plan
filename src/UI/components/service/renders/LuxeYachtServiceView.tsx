@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-  useCallback,
-} from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import {
   Anchor,
   Users,
@@ -20,983 +14,167 @@ import {
   Sun,
   Shield,
   Award,
-  Sunset,
   Navigation,
   Info,
   Wind,
-  Eye,
-  Minus,
-  Plus,
-  Music,
   Play,
   Pause,
-  Diamond,
   Waves,
   Crown,
-  Heart,
-  Sparkles,
   ArrowRight,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import {
-  CTABannerProps,
   Yacht,
   YachtCardProps,
+  CTABannerProps,
 } from '@/constants/yacht/yachts';
 import YachtDetailsModal from '../yacht/YachtDetailsModal';
 import UnifiedBookingForm from '../yacht/UnifiedBookingForm';
 import CinematicHero from '../yacht/CinematicHero';
+import YachtVideoGallery from '../yacht/YachtVideoGallery';
 
-// Animated Background Component
-const AnimatedBackground = () => {
-  return (
-    <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-      <div className='absolute top-0 left-0 w-96 h-96 bg-cyan-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob' />
-      <div className='absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000' />
-      <div className='absolute bottom-0 left-1/2 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000' />
-    </div>
-  );
+// ─── Animation ────────────────────────────────────────────────────────────────
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+  },
 };
 
-// Feature Card Component
-const FeatureCard = ({ icon: Icon, label, description, index }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
-      className='bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden'
-    >
-      {/* Header - Clickable */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className='w-full p-4 flex items-center gap-3 hover:bg-gray-50/50 transition-colors'
-      >
-        <div className='w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0'>
-          <Icon className='w-5 h-5 text-white' />
-        </div>
-        <span className='text-gray-700 font-medium text-sm flex-1 text-left'>
-          {label}
-        </span>
-        <div className='w-6 h-6 flex items-center justify-center text-cyan-600'>
-          {isOpen ? (
-            <Minus className='w-5 h-5' />
-          ) : (
-            <Plus className='w-5 h-5' />
-          )}
-        </div>
-      </button>
-
-      {/* Accordion Content */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className='overflow-hidden'
-          >
-            <div className='px-4 pb-4 pt-2 border-t border-gray-100'>
-              <div className='prose prose-sm max-w-none text-gray-600'>
-                {description}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
-// Video Player Component
-const VideoPlayer = ({ isPlaying, onToggle }) => {
+// ─── Video Player ─────────────────────────────────────────────────────────────
+
+const VideoPlayer: React.FC<{ isPlaying: boolean; onToggle: () => void }> = ({
+  isPlaying,
+  onToggle,
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
+  React.useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
     if (isPlaying) {
-      const playPromise = video.play();
-
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.error('Error al reproducir:', error);
-          onToggle();
-        });
-      }
+      v.play().catch(() => onToggle());
     } else {
-      video.pause();
+      v.pause();
     }
   }, [isPlaying, onToggle]);
 
-  const handleClick = () => {
-    onToggle();
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 50 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className='relative group'
+    <div
+      className='relative overflow-hidden group cursor-pointer'
+      onClick={onToggle}
     >
-      <div className='absolute -inset-4 bg-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 rounded-3xl opacity-30 blur-xl group-hover:opacity-50 transition-opacity duration-300' />
-
-      <div className='relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100'>
-        <div className='relative aspect-video'>
-          <video
-            ref={videoRef}
-            className='w-full h-full object-cover'
-            poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
-            preload='metadata'
-            playsInline
-          >
-            <source
-              src='https://res.cloudinary.com/ddg92xar5/video/upload/v1759669338/yate_m7z3ve.mp4'
-              type='video/mp4'
-            />
-          </video>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isPlaying ? 0 : 1 }}
-            transition={{ duration: 0.2 }}
-            className='absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/30 to-black/50 backdrop-blur-sm cursor-pointer'
-            onClick={handleClick}
-            style={{ pointerEvents: isPlaying ? 'none' : 'auto' }}
-          >
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className='w-20 h-20 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl'
-            >
-              <Play className='w-10 h-10 text-cyan-600 ml-1' />
-            </motion.div>
-          </motion.div>
-
-          {isPlaying && (
-            <div
-              className='absolute inset-0 cursor-pointer group/video'
-              onClick={handleClick}
-            >
-              <div className='absolute inset-0 bg-black/0 group-hover/video:bg-black/10 transition-colors duration-200 flex items-center justify-center'>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileHover={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className='w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-xl'
-                >
-                  <Pause className='w-8 h-8 text-cyan-600' />
-                </motion.div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-// Promo Video Section
-const PromoVideoSection = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const { t } = useTranslation();
-  const features = [
-    {
-      icon: Diamond,
-      label: t(
-        'services.premium.luxYachtView.promoVideoSection.features.provisioning.title'
-      ),
-      description: t(
-        'services.premium.luxYachtView.promoVideoSection.features.provisioning.description'
-      ),
-    },
-    {
-      icon: Heart,
-      label: t(
-        'services.premium.luxYachtView.promoVideoSection.features.wellness.title'
-      ),
-      description: t(
-        'services.premium.luxYachtView.promoVideoSection.features.wellness.description'
-      ),
-    },
-    {
-      icon: Waves,
-      label: t(
-        'services.premium.luxYachtView.promoVideoSection.features.photography.title'
-      ),
-      description: t(
-        'services.premium.luxYachtView.promoVideoSection.features.photography.description'
-      ),
-    },
-    {
-      icon: Crown,
-      label: t(
-        'services.premium.luxYachtView.promoVideoSection.features.specialOccasion.title'
-      ),
-      description: t(
-        'services.premium.luxYachtView.promoVideoSection.features.specialOccasion.description'
-      ),
-    },
-    {
-      icon: Music,
-      label: t(
-        'services.premium.luxYachtView.promoVideoSection.features.liveEntertainment.title'
-      ),
-      description: t(
-        'services.premium.luxYachtView.promoVideoSection.features.liveEntertainment.description'
-      ),
-    },
-  ];
-
-  return (
-    <section className='relative py-20 bg-white overflow-hidden'>
-      <AnimatedBackground />
-
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-        <div className='grid lg:grid-cols-2 gap-12 lg:gap-16 items-center'>
-          <div className='space-y-8'>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className='inline-flex items-center gap-2 bg-gradient-to-r from-cyan-50 to-blue-50 px-5 py-2.5 rounded-full mb-6 border border-cyan-100'>
-                <Play className='w-4 h-4 text-cyan-600' />
-                <span className='text-cyan-800 text-sm font-semibold tracking-wide'>
-                  WATCH NOW
-                </span>
-              </div>
-
-              <h2 className='text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight'>
-                Experience{' '}
-                <span className='font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent'>
-                  Luxury
-                </span>
-              </h2>
-
-              <p className='text-lg text-gray-600 leading-relaxed'>
-                Discover our exclusive fleet of premium yachts. Immerse yourself
-                in an unparalleled experience of luxury and comfort on the open
-                seas.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className='grid grid-cols-2 gap-4'
-            >
-              {features.map((feature, index) => (
-                <FeatureCard
-                  key={index}
-                  icon={feature.icon}
-                  label={feature.label}
-                  description={feature.description}
-                  index={index}
-                />
-              ))}
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className='flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gradient-to-r from-gray-50 to-cyan-50 rounded-2xl p-6 border border-gray-100'
-            >
-              <div className='flex items-center gap-3 flex-1'>
-                <div className='w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0'>
-                  <Sparkles className='w-6 h-6 text-white' />
-                </div>
-                <div>
-                  <p className='text-gray-900 font-semibold'>Ready to sail?</p>
-                  <p className='text-gray-600 text-sm'>
-                    Explore our premium fleet
-                  </p>
-                </div>
-              </div>
-              <motion.a
-                href='#fleet'
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className='px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 w-full sm:w-auto justify-center'
-              >
-                View Fleet
-                <ArrowRight className='w-5 h-5' />
-              </motion.a>
-            </motion.div>
-          </div>
-
-          <div>
-            <VideoPlayer
-              isPlaying={isPlaying}
-              onToggle={() => setIsPlaying(!isPlaying)}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Yacht Card Component
-const PhotoOnlyYachtCard: React.FC<YachtCardProps> = ({ yacht, onSelect }) => {
-  const { t } = useTranslation();
-
-  return (
-    <div className='group relative h-64 lg:h-80 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500'>
-      <img
-        src={yacht.mainImage}
-        alt={yacht.name}
-        className='w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
-      />
-
-      <div className='absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/40 to-transparent' />
-
-      {yacht.isPremium && (
-        <div className='absolute top-4 right-4 bg-gradient-to-r from-coral-400 to-orange-400 text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg z-10'>
-          <Crown className='w-3 h-3' />
-          {t('services.premium.luxYachtView.yachtGrid.cardPremiumBadge')}
-        </div>
-      )}
-
-      <div className='absolute bottom-0 left-0 right-0 p-4 md:p-5 text-white'>
-        <div className='flex items-center justify-between mb-3'>
-          <h3 className='text-lg md:text-xl lg:text-2xl font-semibold group-hover:text-teal-300 transition-colors'>
-            {yacht.name}
-          </h3>
-          <div className='flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full'>
-            <Users className='w-4 h-4' />
-            <span className='text-sm font-medium'>
-              {yacht.specifications.maxGuests}
-            </span>
-          </div>
-        </div>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect(yacht);
-          }}
-          className='w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-2.5 md:py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] group/button'
+      <div className='relative aspect-video'>
+        <video
+          ref={videoRef}
+          className='w-full h-full object-cover'
+          poster='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
+          preload='metadata'
+          playsInline
         >
-          <Eye className='w-4 h-4 group-hover/button:scale-110 transition-transform' />
-          <span>View Details</span>
-          <ArrowRight className='w-4 h-4 group-hover/button:translate-x-1 transition-transform' />
-        </button>
+          <source
+            src='https://res.cloudinary.com/ddg92xar5/video/upload/v1759669338/yate_m7z3ve.mp4'
+            type='video/mp4'
+          />
+        </video>
+
+        {!isPlaying && (
+          <div className='absolute inset-0 bg-black/30 flex items-center justify-center'>
+            <div className='w-14 h-14 bg-white/90 flex items-center justify-center'>
+              <Play className='w-6 h-6 text-stone-900 ml-0.5' />
+            </div>
+          </div>
+        )}
+
+        {isPlaying && (
+          <div className='absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center'>
+            <div className='w-12 h-12 bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
+              <Pause className='w-5 h-5 text-stone-900' />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-// Sunset CTA Banner
-const SunsetCTABanner: React.FC<CTABannerProps> = ({ onOpenBooking }) => {
+// ─── Yacht Card ───────────────────────────────────────────────────────────────
+
+const YachtCard: React.FC<YachtCardProps> = ({ yacht, onSelect }) => {
   const { t } = useTranslation();
 
   return (
-    <section className='relative py-24 overflow-hidden'>
-      <div className='absolute inset-0'>
-        <img
-          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
-          alt='Sunset yacht'
-          className='w-full h-full object-cover'
-        />
-        <div className='absolute inset-0 bg-gradient-to-r from-orange-900/90 via-pink-900/80 to-purple-900/90' />
-      </div>
-
-      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className='absolute w-2 h-2 bg-white/30 rounded-full'
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -40, 0],
-              opacity: [0.3, 0.8, 0.3],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
-
-      <div className='relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className='inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-full px-6 py-3 mb-8'>
-            <Sunset className='w-5 h-5 text-orange-300' />
-            <span className='text-white text-sm font-semibold tracking-wide'>
-              {t('services.premium.luxYachtView.yachtCta.cta1Badge')}
-            </span>
-          </div>
-
-          <h2 className='text-4xl sm:text-5xl lg:text-6xl font-light text-white mb-6 leading-tight'>
-            {t('services.premium.luxYachtView.yachtCta.cta1Title')}{' '}
-            <span className='block font-bold bg-gradient-to-r from-orange-300 via-pink-300 to-purple-300 bg-clip-text text-transparent'>
-              {t('services.premium.luxYachtView.yachtCta.cta1TitleHighlight')}
-            </span>
-          </h2>
-
-          <p className='text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed'>
-            {t('services.premium.luxYachtView.yachtCta.cta1Description')}
-          </p>
-
-          <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
-            <motion.button
-              onClick={onOpenBooking}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className='px-8 py-4 bg-white text-orange-600 rounded-xl font-bold text-lg transition-all duration-300 shadow-2xl hover:shadow-orange-500/50 flex items-center gap-3 group'
-            >
-              <Calendar className='w-6 h-6 group-hover:rotate-12 transition-transform' />
-              {t('services.premium.luxYachtView.yachtCta.cta1Button')}
-              <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
-            </motion.button>
-
-            <motion.a
-              href='#fleet'
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              className='px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/50 text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:bg-white/20 flex items-center gap-2'
-            >
-              <Anchor className='w-5 h-5' />
-              {t('services.premium.luxYachtView.yachtCta.cta1SecondaryButton')}
-            </motion.a>
-          </div>
-
-          <div className='mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto'>
-            {[
-              {
-                icon: Users,
-                value: '500+',
-                label: t('services.premium.luxYachtView.yachtCta.stat1'),
-              },
-              {
-                icon: Star,
-                value: '5.0',
-                label: t('services.premium.luxYachtView.yachtCta.stat2'),
-              },
-              {
-                icon: Award,
-                value: '4',
-                label: t('services.premium.luxYachtView.yachtCta.stat3'),
-              },
-            ].map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 + index * 0.1 }}
-                  className='text-white'
-                >
-                  <IconComponent className='w-8 h-8 mx-auto mb-2 text-orange-300' />
-                  <div className='text-3xl font-bold mb-1'>{stat.value}</div>
-                  <div className='text-sm text-white/80'>{stat.label}</div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-const TropicalCTABanner: React.FC<{ onOpenBooking: () => void }> = ({
-  onOpenBooking,
-}) => {
-  const { t } = useTranslation();
-
-  return (
-    <section className='relative py-16 sm:py-20 bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 overflow-hidden'>
-      <div className='relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
-        <div className='inline-flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-4 sm:px-5 py-2 sm:py-2.5 mb-4 sm:mb-6'>
-          <Waves className='w-4 h-4 text-white' />
-          <span className='text-xs sm:text-sm font-semibold tracking-wide text-white'>
-            BOOK YOUR ADVENTURE
-          </span>
-        </div>
-
-        <h2 className='text-3xl sm:text-4xl lg:text-5xl font-light mb-4 sm:mb-6 leading-tight text-white'>
-          Ready for an{' '}
-          <span className='block font-bold text-yellow-300'>
-            Unforgettable Experience?
-          </span>
-        </h2>
-
-        <p className='text-base sm:text-lg text-white/90 mb-6 sm:mb-8 leading-relaxed max-w-2xl mx-auto'>
-          Create memories that last a lifetime aboard our luxury yachts
-        </p>
-
-        <button
-          onClick={onOpenBooking}
-          className='px-8 sm:px-12 py-4 sm:py-5 bg-white text-teal-600 rounded-2xl font-bold text-lg sm:text-xl transition-all duration-300 shadow-2xl hover:shadow-white/30 inline-flex items-center gap-3 group hover:scale-105'
-        >
-          <Sparkles className='w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-12 transition-transform' />
-          Get Started
-          <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform' />
-        </button>
-      </div>
-    </section>
-  );
-};
-
-// Yacht Grid Section
-const CaribbeanYachtGrid: React.FC<{
-  onYachtSelect: (yacht: Yacht) => void;
-  yachtData: Yacht[];
-}> = ({ onYachtSelect, yachtData }) => {
-  const { t } = useTranslation();
-  const [filter, setFilter] = useState('all');
-
-  const filteredYachts = useMemo(() => {
-    return filter === 'all'
-      ? yachtData
-      : yachtData.filter((yacht) => yacht.category === filter);
-  }, [filter, yachtData]);
-
-  return (
-    <section
-      id='fleet'
-      className='py-24 bg-gradient-to-br from-teal-50/30 to-blue-50/30'
+    <div
+      className='group relative overflow-hidden cursor-pointer'
+      onClick={() => onSelect(yacht)}
     >
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='text-center mb-16'>
-          <div className='inline-flex items-center gap-2 bg-teal-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-teal-200/50'>
-            <Anchor className='w-5 h-5 text-teal-700' />
-            <span className='text-teal-800 text-sm font-medium tracking-wide'>
-              {t('services.premium.luxYachtView.yachtGrid.badgeLabel')}
+      <div className='relative aspect-[4/3]'>
+        <Image
+          src={yacht.mainImage}
+          alt={yacht.name}
+          fill
+          className='object-cover transition-transform duration-700 group-hover:scale-105'
+        />
+        <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
+
+        {yacht.isPremium && (
+          <div className='absolute top-2 right-2'>
+            <span className='bg-black/50 backdrop-blur-sm text-amber-400 border border-amber-500/30 px-2 py-0.5 text-[9px] font-medium uppercase tracking-[0.1em]'>
+              {t('services.premium.luxYachtView.yachtGrid.cardPremiumBadge')}
+            </span>
+          </div>
+        )}
+
+        <div className='absolute bottom-0 left-0 right-0 p-3 sm:p-4'>
+          <div className='flex items-center justify-between mb-2'>
+            <h3 className='text-white text-sm sm:text-base font-medium group-hover:text-amber-200 transition-colors'>
+              {yacht.name}
+            </h3>
+            <span className='flex items-center gap-1 text-white/60 text-[11px]'>
+              <Users className='w-3 h-3' />
+              {yacht.specifications.maxGuests}
             </span>
           </div>
 
-          <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            {t('services.premium.luxYachtView.yachtGrid.titlePrefix')}{' '}
-            <span className='font-normal text-teal-600'>
-              {t('services.premium.luxYachtView.yachtGrid.titleSuffix')}
-            </span>
-          </h2>
-          <p className='text-lg text-gray-600 max-w-2xl mx-auto'>
-            {t('services.premium.luxYachtView.yachtGrid.description')}
-          </p>
-        </div>
-
-        <div className='flex justify-center mb-12'>
-          <div className='inline-flex bg-white/70 backdrop-blur-sm rounded-full p-1 shadow-sm border border-white/50'>
-            {[
-              {
-                id: 'all',
-                name: t('services.premium.luxYachtView.yachtGrid.filterAll'),
-              },
-              {
-                id: 'catamaran',
-                name: t(
-                  'services.premium.luxYachtView.yachtGrid.filterCatamaran'
-                ),
-              },
-              {
-                id: 'luxury',
-                name: t('services.premium.luxYachtView.yachtGrid.filterLuxury'),
-              },
-            ].map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setFilter(category.id)}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
-                  filter === category.id
-                    ? 'bg-teal-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 md:gap-6'>
-          {filteredYachts.map((yacht) => (
-            <PhotoOnlyYachtCard
-              key={yacht.id}
-              yacht={yacht}
-              onSelect={onYachtSelect}
-            />
-          ))}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(yacht);
+            }}
+            className='w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white py-2 text-xs font-medium tracking-wide uppercase hover:bg-white/20 transition-colors flex items-center justify-center gap-1.5'
+          >
+            View Details
+            <ArrowRight className='w-3 h-3' />
+          </button>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
-const CaribbeanWhatToBring: React.FC = () => {
-  const { t } = useTranslation();
+// ─── Main Component ───────────────────────────────────────────────────────────
 
-  const whatToBringItems = [
-    {
-      icon: Sun,
-      title: t('services.premium.luxYachtView.whatToBring.sunProtectionTitle'),
-      description: t(
-        'services.premium.luxYachtView.whatToBring.sunProtectionDesc'
-      ),
-    },
-    {
-      icon: Shirt,
-      title: t('services.premium.luxYachtView.whatToBring.clothingTitle'),
-      description: t('services.premium.luxYachtView.whatToBring.clothingDesc'),
-    },
-    {
-      icon: Camera,
-      title: t('services.premium.luxYachtView.whatToBring.cameraTitle'),
-      description: t('services.premium.luxYachtView.whatToBring.cameraDesc'),
-    },
-    {
-      icon: Wind,
-      title: t('services.premium.luxYachtView.whatToBring.jacketTitle'),
-      description: t('services.premium.luxYachtView.whatToBring.jacketDesc'),
-    },
-  ];
-
-  return (
-    <section className='py-24 bg-gradient-to-br from-teal-50/50 to-blue-50/50'>
-      <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='text-center mb-16'>
-          <div className='inline-flex items-center gap-2 bg-teal-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-teal-200/50'>
-            <Shirt className='w-5 h-5 text-teal-700' />
-            <span className='text-teal-800 text-sm font-medium tracking-wide'>
-              {t('services.premium.luxYachtView.whatToBring.badgeLabel')}
-            </span>
-          </div>
-
-          <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            {t('services.premium.luxYachtView.whatToBring.titlePrefix')}{' '}
-            <span className='font-normal text-teal-600'>
-              {t('services.premium.luxYachtView.whatToBring.titleSuffix')}
-            </span>
-          </h2>
-          <p className='text-lg text-gray-600'>
-            {t('services.premium.luxYachtView.whatToBring.description')}
-          </p>
-        </div>
-
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
-          {whatToBringItems.map((item, index) => {
-            const IconComponent = item.icon;
-            return (
-              <div
-                key={index}
-                className='text-center p-6 bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 border border-white/50'
-              >
-                <div className='w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                  <IconComponent className='w-8 h-8 text-teal-600' />
-                </div>
-                <h3 className='font-semibold text-gray-900 mb-2'>
-                  {item.title}
-                </h3>
-                <p className='text-gray-600 text-sm leading-relaxed'>
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className='mt-16 bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/50'>
-          <div className='flex items-start gap-4'>
-            <div className='w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0'>
-              <Check className='w-5 h-5 text-teal-600' />
-            </div>
-            <div>
-              <h4 className='font-semibold text-gray-900 mb-3'>
-                {t('services.premium.luxYachtView.whatToBring.weProvideTitle')}
-              </h4>
-              <p className='text-gray-700 leading-relaxed'>
-                {t('services.premium.luxYachtView.whatToBring.weProvideDesc')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Private Service Info Section
-const PrivateServiceInfo: React.FC = () => {
-  const { t } = useTranslation();
-
-  const serviceInfo = [
-    {
-      id: 1,
-      icon: Clock,
-      title: t('services.premium.luxYachtView.privateService.flexibleTitle'),
-      time: t('services.premium.luxYachtView.privateService.flexibleTime'),
-      description: t(
-        'services.premium.luxYachtView.privateService.flexibleDesc'
-      ),
-    },
-    {
-      id: 2,
-      icon: Users,
-      title: t('services.premium.luxYachtView.privateService.privateTitle'),
-      time: t('services.premium.luxYachtView.privateService.privateTime'),
-      description: t(
-        'services.premium.luxYachtView.privateService.privateDesc'
-      ),
-    },
-    {
-      id: 3,
-      icon: Navigation,
-      title: t('services.premium.luxYachtView.privateService.customTitle'),
-      time: t('services.premium.luxYachtView.privateService.customTime'),
-      description: t('services.premium.luxYachtView.privateService.customDesc'),
-    },
-    {
-      id: 4,
-      icon: Utensils,
-      title: t('services.premium.luxYachtView.privateService.gourmetTitle'),
-      time: t('services.premium.luxYachtView.privateService.gourmetTime'),
-      description: t(
-        'services.premium.luxYachtView.privateService.gourmetDesc'
-      ),
-    },
-    {
-      id: 5,
-      icon: Waves,
-      title: t('services.premium.luxYachtView.privateService.activitiesTitle'),
-      time: t('services.premium.luxYachtView.privateService.activitiesTime'),
-      description: t(
-        'services.premium.luxYachtView.privateService.activitiesDesc'
-      ),
-    },
-    {
-      id: 6,
-      icon: Calendar,
-      title: t('services.premium.luxYachtView.privateService.bookingTitle'),
-      time: t('services.premium.luxYachtView.privateService.bookingTime'),
-      description: t(
-        'services.premium.luxYachtView.privateService.bookingDesc'
-      ),
-    },
-  ];
-
-  return (
-    <section className='py-24 bg-white'>
-      <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='text-center mb-16'>
-          <div className='inline-flex items-center gap-2 bg-blue-100/50 backdrop-blur-sm px-6 py-3 rounded-full mb-8 border border-blue-200/50'>
-            <Users className='w-5 h-5 text-blue-700' />
-            <span className='text-blue-800 text-sm font-medium tracking-wide'>
-              {t('services.premium.luxYachtView.privateService.badgeLabel')}
-            </span>
-          </div>
-
-          <h2 className='text-3xl sm:text-5xl font-light text-gray-900 mb-6'>
-            {t('services.premium.luxYachtView.privateService.titlePrefix')}{' '}
-            <span className='font-normal text-blue-600'>
-              {t('services.premium.luxYachtView.privateService.titleSuffix')}
-            </span>
-          </h2>
-          <p className='text-lg text-gray-600 mb-4'>
-            {t('services.premium.luxYachtView.privateService.description')}
-          </p>
-          <p className='text-sm text-teal-600 font-medium'>
-            {t('services.premium.luxYachtView.privateService.subtitle')}
-          </p>
-        </div>
-
-        <div className='grid grid-cols-2 gap-4 md:gap-6'>
-          {serviceInfo.map((info) => {
-            const IconComponent = info.icon;
-            return (
-              <div
-                key={info.id}
-                className='bg-gradient-to-br from-white/80 to-teal-50/30 backdrop-blur-sm rounded-2xl p-4 md:p-6 border border-white/50 shadow-sm hover:shadow-md transition-all duration-300'
-              >
-                <div className='flex items-start gap-3 md:gap-4'>
-                  <div className='w-10 h-10 md:w-12 md:h-12 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0'>
-                    <IconComponent className='w-5 h-5 md:w-6 md:h-6 text-teal-600' />
-                  </div>
-
-                  <div className='flex-1 min-w-0'>
-                    <div className='flex flex-col md:flex-row md:items-center md:justify-between mb-2'>
-                      <h3 className='font-semibold text-gray-900 text-sm md:text-base'>
-                        {info.title}
-                      </h3>
-                      <span className='text-xs md:text-sm font-mono text-teal-600 bg-teal-100 px-2 py-1 rounded-full mt-1 md:mt-0 self-start'>
-                        {info.time}
-                      </span>
-                    </div>
-                    <p className='text-gray-600 text-xs md:text-sm leading-relaxed'>
-                      {info.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className='mt-16 text-center'>
-          <div className='inline-flex items-center gap-3 bg-gradient-to-r from-teal-50 to-blue-50 rounded-2xl px-8 py-4 border border-teal-100'>
-            <Sparkles className='w-5 h-5 text-teal-600' />
-            <span className='text-gray-700 font-medium'>
-              {t('services.premium.luxYachtView.privateService.noteText')}
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Important Info Section
-const YachtImportantInfo: React.FC = () => {
-  const { t } = useTranslation();
-
-  return (
-    <section className='py-24 bg-gradient-to-br from-blue-50/50 to-teal-50/50'>
-      <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='bg-white/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/50 shadow-lg'>
-          <div className='flex items-start gap-4 mb-8'>
-            <div className='w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0'>
-              <Info className='w-6 h-6 text-blue-600' />
-            </div>
-            <div>
-              <h3 className='text-2xl font-semibold text-gray-900 mb-2'>
-                {t('services.premium.luxYachtView.importantInfo.title')}
-              </h3>
-              <p className='text-gray-600'>
-                {t('services.premium.luxYachtView.importantInfo.subtitle')}
-              </p>
-            </div>
-          </div>
-
-          <div className='space-y-6'>
-            <div className='flex items-start gap-3'>
-              <Calendar className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
-              <div>
-                <h4 className='font-semibold text-gray-900 mb-1'>
-                  {t(
-                    'services.premium.luxYachtView.importantInfo.availabilityTitle'
-                  )}
-                </h4>
-                <p className='text-gray-700 leading-relaxed'>
-                  {t(
-                    'services.premium.luxYachtView.importantInfo.availabilityDesc'
-                  )}
-                </p>
-              </div>
-            </div>
-
-            <div className='flex items-start gap-3'>
-              <CheckCircle className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
-              <div>
-                <h4 className='font-semibold text-gray-900 mb-1'>
-                  {t(
-                    'services.premium.luxYachtView.importantInfo.confirmationTitle'
-                  )}
-                </h4>
-                <p className='text-gray-700 leading-relaxed'>
-                  {t(
-                    'services.premium.luxYachtView.importantInfo.confirmationDesc'
-                  )}
-                </p>
-              </div>
-            </div>
-
-            <div className='flex items-start gap-3'>
-              <Sparkles className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
-              <div>
-                <h4 className='font-semibold text-gray-900 mb-1'>
-                  {t(
-                    'services.premium.luxYachtView.importantInfo.servicesTitle'
-                  )}
-                </h4>
-                <p className='text-gray-700 leading-relaxed mb-3'>
-                  {t(
-                    'services.premium.luxYachtView.importantInfo.servicesDesc'
-                  )}
-                </p>
-                <div className='flex flex-wrap gap-2'>
-                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
-                    {t(
-                      'services.premium.luxYachtView.importantInfo.serviceFood'
-                    )}
-                  </span>
-                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
-                    {t(
-                      'services.premium.luxYachtView.importantInfo.serviceDecoration'
-                    )}
-                  </span>
-                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
-                    {t(
-                      'services.premium.luxYachtView.importantInfo.serviceEntertainment'
-                    )}
-                  </span>
-                  <span className='px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium'>
-                    {t(
-                      'services.premium.luxYachtView.importantInfo.serviceRefreshments'
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className='flex items-start gap-3'>
-              <Shield className='w-5 h-5 text-teal-600 mt-1 flex-shrink-0' />
-              <div>
-                <h4 className='font-semibold text-gray-900 mb-1'>
-                  {t(
-                    'services.premium.luxYachtView.importantInfo.paymentTitle'
-                  )}
-                </h4>
-                <p className='text-gray-700 leading-relaxed'>
-                  {t('services.premium.luxYachtView.importantInfo.paymentDesc')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// ============================================
-// MAIN COMPONENT
-// ============================================
 const LuxeYachtServiceView: React.FC = () => {
   const { t } = useTranslation();
-
   const [selectedYacht, setSelectedYacht] = useState<Yacht | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [yachtFilter, setYachtFilter] = useState('all');
   const fleetRef = useRef<HTMLDivElement>(null);
 
+  // ── Yacht Data (unchanged) ──────────────────────────────────────────
   const YACHT_DATA: Yacht[] = useMemo(
     () => [
       {
@@ -1004,7 +182,7 @@ const LuxeYachtServiceView: React.FC = () => {
         name: t('services.premium.luxYachtView.yachts.aiconfly.name'),
         category: 'luxury',
         shortDescription: t(
-          'services.premium.luxYachtView.yachts.aiconfly.shortDesc'
+          'services.premium.luxYachtView.yachts.aiconfly.shortDesc',
         ),
         mainImage:
           'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600019/1_nyrndv.jpg',
@@ -1029,28 +207,28 @@ const LuxeYachtServiceView: React.FC = () => {
           {
             icon: <Wifi className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.aiconfly.amenityWifiName'
+              'services.premium.luxYachtView.yachts.aiconfly.amenityWifiName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.aiconfly.amenityWifiDesc'
+              'services.premium.luxYachtView.yachts.aiconfly.amenityWifiDesc',
             ),
           },
           {
             icon: <Utensils className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.aiconfly.amenityChefName'
+              'services.premium.luxYachtView.yachts.aiconfly.amenityChefName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.aiconfly.amenityChefDesc'
+              'services.premium.luxYachtView.yachts.aiconfly.amenityChefDesc',
             ),
           },
           {
             icon: <Waves className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.aiconfly.amenitySportsName'
+              'services.premium.luxYachtView.yachts.aiconfly.amenitySportsName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.aiconfly.amenitySportsDesc'
+              'services.premium.luxYachtView.yachts.aiconfly.amenitySportsDesc',
             ),
           },
         ],
@@ -1076,7 +254,7 @@ const LuxeYachtServiceView: React.FC = () => {
         name: t('services.premium.luxYachtView.yachts.fairline.name'),
         category: 'luxury',
         shortDescription: t(
-          'services.premium.luxYachtView.yachts.fairline.shortDesc'
+          'services.premium.luxYachtView.yachts.fairline.shortDesc',
         ),
         mainImage:
           'https://res.cloudinary.com/ddg92xar5/image/upload/v1754600208/2_k72tfn.jpg',
@@ -1101,28 +279,28 @@ const LuxeYachtServiceView: React.FC = () => {
           {
             icon: <Wifi className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.fairline.amenityWifiName'
+              'services.premium.luxYachtView.yachts.fairline.amenityWifiName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.fairline.amenityWifiDesc'
+              'services.premium.luxYachtView.yachts.fairline.amenityWifiDesc',
             ),
           },
           {
             icon: <Utensils className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.fairline.amenityChefName'
+              'services.premium.luxYachtView.yachts.fairline.amenityChefName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.fairline.amenityChefDesc'
+              'services.premium.luxYachtView.yachts.fairline.amenityChefDesc',
             ),
           },
           {
             icon: <Waves className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.fairline.amenitySpaName'
+              'services.premium.luxYachtView.yachts.fairline.amenitySpaName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.fairline.amenitySpaDesc'
+              'services.premium.luxYachtView.yachts.fairline.amenitySpaDesc',
             ),
           },
         ],
@@ -1150,7 +328,7 @@ const LuxeYachtServiceView: React.FC = () => {
         name: t('services.premium.luxYachtView.yachts.lagoon.name'),
         category: 'catamaran',
         shortDescription: t(
-          'services.premium.luxYachtView.yachts.lagoon.shortDesc'
+          'services.premium.luxYachtView.yachts.lagoon.shortDesc',
         ),
         mainImage:
           'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956164/7030fcbb-7da3-4676-9abb-d22177efab14_qdk2ac.jpg',
@@ -1175,28 +353,28 @@ const LuxeYachtServiceView: React.FC = () => {
           {
             icon: <Wifi className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.lagoon.amenityWifiName'
+              'services.premium.luxYachtView.yachts.lagoon.amenityWifiName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.lagoon.amenityWifiDesc'
+              'services.premium.luxYachtView.yachts.lagoon.amenityWifiDesc',
             ),
           },
           {
             icon: <Utensils className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.lagoon.amenityChefName'
+              'services.premium.luxYachtView.yachts.lagoon.amenityChefName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.lagoon.amenityChefDesc'
+              'services.premium.luxYachtView.yachts.lagoon.amenityChefDesc',
             ),
           },
           {
             icon: <Waves className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.lagoon.amenityPoolName'
+              'services.premium.luxYachtView.yachts.lagoon.amenityPoolName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.lagoon.amenityPoolDesc'
+              'services.premium.luxYachtView.yachts.lagoon.amenityPoolDesc',
             ),
           },
         ],
@@ -1221,7 +399,7 @@ const LuxeYachtServiceView: React.FC = () => {
         name: t('services.premium.luxYachtView.yachts.tiara.name'),
         category: 'luxury',
         shortDescription: t(
-          'services.premium.luxYachtView.yachts.tiara.shortDesc'
+          'services.premium.luxYachtView.yachts.tiara.shortDesc',
         ),
         mainImage:
           'https://res.cloudinary.com/ddg92xar5/image/upload/v1755956761/ac955cf2-03ad-4c8c-87c6-36c0ec0cb3a9_ymvcuc.jpg',
@@ -1247,28 +425,28 @@ const LuxeYachtServiceView: React.FC = () => {
           {
             icon: <Wifi className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.tiara.amenityWifiName'
+              'services.premium.luxYachtView.yachts.tiara.amenityWifiName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.tiara.amenityWifiDesc'
+              'services.premium.luxYachtView.yachts.tiara.amenityWifiDesc',
             ),
           },
           {
             icon: <Utensils className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.tiara.amenityChefName'
+              'services.premium.luxYachtView.yachts.tiara.amenityChefName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.tiara.amenityChefDesc'
+              'services.premium.luxYachtView.yachts.tiara.amenityChefDesc',
             ),
           },
           {
             icon: <Waves className='w-5 h-5' />,
             name: t(
-              'services.premium.luxYachtView.yachts.tiara.amenitySportsName'
+              'services.premium.luxYachtView.yachts.tiara.amenitySportsName',
             ),
             description: t(
-              'services.premium.luxYachtView.yachts.tiara.amenitySportsDesc'
+              'services.premium.luxYachtView.yachts.tiara.amenitySportsDesc',
             ),
           },
         ],
@@ -1290,12 +468,117 @@ const LuxeYachtServiceView: React.FC = () => {
         ],
       },
     ],
-    [t]
+    [t],
   );
 
-  // ============================================
-  // EVENT HANDLERS
-  // ============================================
+  const filteredYachts = useMemo(
+    () =>
+      yachtFilter === 'all'
+        ? YACHT_DATA
+        : YACHT_DATA.filter((y) => y.category === yachtFilter),
+    [yachtFilter, YACHT_DATA],
+  );
+
+  // ── Promo features ──────────────────────────────────────────────────
+  const promoFeatures = useMemo(
+    () => [
+      {
+        icon: Utensils,
+        label: t(
+          'services.premium.luxYachtView.promoVideoSection.features.provisioning.title',
+        ),
+      },
+      {
+        icon: Waves,
+        label: t(
+          'services.premium.luxYachtView.promoVideoSection.features.photography.title',
+        ),
+      },
+      {
+        icon: Crown,
+        label: t(
+          'services.premium.luxYachtView.promoVideoSection.features.specialOccasion.title',
+        ),
+      },
+    ],
+    [t],
+  );
+
+  // ── What to bring ───────────────────────────────────────────────────
+  const whatToBring = useMemo(
+    () => [
+      {
+        icon: Sun,
+        title: t(
+          'services.premium.luxYachtView.whatToBring.sunProtectionTitle',
+        ),
+        desc: t('services.premium.luxYachtView.whatToBring.sunProtectionDesc'),
+      },
+      {
+        icon: Shirt,
+        title: t('services.premium.luxYachtView.whatToBring.clothingTitle'),
+        desc: t('services.premium.luxYachtView.whatToBring.clothingDesc'),
+      },
+      {
+        icon: Camera,
+        title: t('services.premium.luxYachtView.whatToBring.cameraTitle'),
+        desc: t('services.premium.luxYachtView.whatToBring.cameraDesc'),
+      },
+      {
+        icon: Wind,
+        title: t('services.premium.luxYachtView.whatToBring.jacketTitle'),
+        desc: t('services.premium.luxYachtView.whatToBring.jacketDesc'),
+      },
+    ],
+    [t],
+  );
+
+  // ── Service info ────────────────────────────────────────────────────
+  const serviceInfo = useMemo(
+    () => [
+      {
+        icon: Clock,
+        title: t('services.premium.luxYachtView.privateService.flexibleTitle'),
+        time: t('services.premium.luxYachtView.privateService.flexibleTime'),
+        desc: t('services.premium.luxYachtView.privateService.flexibleDesc'),
+      },
+      {
+        icon: Users,
+        title: t('services.premium.luxYachtView.privateService.privateTitle'),
+        time: t('services.premium.luxYachtView.privateService.privateTime'),
+        desc: t('services.premium.luxYachtView.privateService.privateDesc'),
+      },
+      {
+        icon: Navigation,
+        title: t('services.premium.luxYachtView.privateService.customTitle'),
+        time: t('services.premium.luxYachtView.privateService.customTime'),
+        desc: t('services.premium.luxYachtView.privateService.customDesc'),
+      },
+      {
+        icon: Utensils,
+        title: t('services.premium.luxYachtView.privateService.gourmetTitle'),
+        time: t('services.premium.luxYachtView.privateService.gourmetTime'),
+        desc: t('services.premium.luxYachtView.privateService.gourmetDesc'),
+      },
+      {
+        icon: Waves,
+        title: t(
+          'services.premium.luxYachtView.privateService.activitiesTitle',
+        ),
+        time: t('services.premium.luxYachtView.privateService.activitiesTime'),
+        desc: t('services.premium.luxYachtView.privateService.activitiesDesc'),
+      },
+      {
+        icon: Calendar,
+        title: t('services.premium.luxYachtView.privateService.bookingTitle'),
+        time: t('services.premium.luxYachtView.privateService.bookingTime'),
+        desc: t('services.premium.luxYachtView.privateService.bookingDesc'),
+      },
+    ],
+    [t],
+  );
+
+  // ── Handlers ────────────────────────────────────────────────────────
   const handleExploreFleet = useCallback(() => {
     fleetRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
@@ -1306,9 +589,7 @@ const LuxeYachtServiceView: React.FC = () => {
   }, []);
 
   const handleOpenBooking = useCallback((yacht?: Yacht) => {
-    if (yacht) {
-      setSelectedYacht(yacht);
-    }
+    if (yacht) setSelectedYacht(yacht);
     setShowDetailsModal(false);
     setShowBookingForm(true);
   }, []);
@@ -1319,48 +600,309 @@ const LuxeYachtServiceView: React.FC = () => {
     setShowDetailsModal(false);
   }, []);
 
-  // ============================================
-  // RENDER
-  // ============================================
+  if (showBookingForm) {
+    return (
+      <UnifiedBookingForm yacht={selectedYacht} onClose={handleCloseAll} />
+    );
+  }
+
   return (
-    <div className='min-h-screen bg-white'>
-      {!showBookingForm ? (
-        <>
-          <CinematicHero
-            onExploreFleet={handleExploreFleet}
-            onOpenBooking={() => handleOpenBooking()}
-          />
-          <div ref={fleetRef}>
-            <CaribbeanYachtGrid
-              onYachtSelect={handleYachtSelect}
-              yachtData={YACHT_DATA}
+    <div className='min-h-screen bg-stone-50'>
+      <CinematicHero
+        onExploreFleet={handleExploreFleet}
+        onOpenBooking={() => handleOpenBooking()}
+      />
+
+      {/* ── Fleet Grid ─────────────────────────────────────────── */}
+      <motion.section
+        ref={fleetRef}
+        id='fleet'
+        className='px-5 sm:px-8 lg:px-12 py-14 sm:py-18 lg:py-20'
+        initial='hidden'
+        whileInView='visible'
+        viewport={{ once: true, margin: '-60px' }}
+        variants={stagger}
+      >
+        <motion.div className='mb-10' variants={fadeIn}>
+          <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+            {t('services.premium.luxYachtView.yachtGrid.badgeLabel')}
+          </p>
+          <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight'>
+            {t('services.premium.luxYachtView.yachtGrid.titlePrefix')}{' '}
+            <span className='font-semibold'>
+              {t('services.premium.luxYachtView.yachtGrid.titleSuffix')}
+            </span>
+          </h2>
+        </motion.div>
+
+        {/* Filters */}
+        <div className='flex flex-wrap gap-2 mb-8'>
+          {[
+            {
+              id: 'all',
+              label: t('services.premium.luxYachtView.yachtGrid.filterAll'),
+            },
+            {
+              id: 'catamaran',
+              label: t(
+                'services.premium.luxYachtView.yachtGrid.filterCatamaran',
+              ),
+            },
+            {
+              id: 'luxury',
+              label: t('services.premium.luxYachtView.yachtGrid.filterLuxury'),
+            },
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setYachtFilter(cat.id)}
+              className={`px-3.5 py-2 border text-[11px] font-medium tracking-wide transition-colors duration-200 ${
+                yachtFilter === cat.id
+                  ? 'bg-stone-900 border-stone-900 text-white'
+                  : 'bg-white border-stone-200 text-stone-500 hover:text-stone-900 hover:border-stone-300'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Yacht grid */}
+        <div className='grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2'>
+          {filteredYachts.map((yacht) => (
+            <YachtCard
+              key={yacht.id}
+              yacht={yacht}
+              onSelect={handleYachtSelect}
             />
+          ))}
+        </div>
+      </motion.section>
+
+      <YachtVideoGallery />
+
+      {/* ── Service Details — consolidated ──────────────────────── */}
+      <motion.section
+        className='px-5 sm:px-8 lg:px-12 pb-14 sm:pb-18 lg:pb-20'
+        initial='hidden'
+        whileInView='visible'
+        viewport={{ once: true, margin: '-60px' }}
+        variants={stagger}
+      >
+        <motion.div className='mb-10' variants={fadeIn}>
+          <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+            {t('services.premium.luxYachtView.privateService.badgeLabel')}
+          </p>
+          <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight'>
+            {t('services.premium.luxYachtView.privateService.titlePrefix')}{' '}
+            <span className='font-semibold'>
+              {t('services.premium.luxYachtView.privateService.titleSuffix')}
+            </span>
+          </h2>
+        </motion.div>
+
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+          {serviceInfo.map(({ icon: Icon, title, time, desc }, i) => (
+            <motion.div
+              key={i}
+              className='border border-stone-200 bg-white p-5'
+              variants={fadeIn}
+            >
+              <div className='flex items-start gap-3'>
+                <Icon className='w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0' />
+                <div>
+                  <div className='flex items-center gap-2 mb-1'>
+                    <p className='text-stone-900 text-xs font-medium'>
+                      {title}
+                    </p>
+                    <span className='text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5'>
+                      {time}
+                    </span>
+                  </div>
+                  <p className='text-stone-400 text-[11px] leading-relaxed'>
+                    {desc}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ── What to Bring + Important Info — consolidated ───────── */}
+      <motion.section
+        className='px-5 sm:px-8 lg:px-12 pb-14 sm:pb-18 lg:pb-20'
+        initial='hidden'
+        whileInView='visible'
+        viewport={{ once: true, margin: '-60px' }}
+        variants={stagger}
+      >
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+          {/* What to bring */}
+          <motion.div
+            className='border border-stone-200 bg-white p-6'
+            variants={fadeIn}
+          >
+            <h3 className='text-xs font-semibold text-stone-900 uppercase tracking-[0.1em] mb-5'>
+              {t('services.premium.luxYachtView.whatToBring.titlePrefix')}{' '}
+              {t('services.premium.luxYachtView.whatToBring.titleSuffix')}
+            </h3>
+            <div className='space-y-4'>
+              {whatToBring.map(({ icon: Icon, title, desc }, i) => (
+                <div key={i} className='flex items-start gap-3'>
+                  <Icon className='w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0' />
+                  <div>
+                    <p className='text-stone-900 text-xs font-medium'>
+                      {title}
+                    </p>
+                    <p className='text-stone-400 text-[11px] leading-relaxed'>
+                      {desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className='border-t border-stone-100 mt-5 pt-4 flex items-start gap-2.5'>
+              <Check className='w-3.5 h-3.5 text-emerald-500 mt-0.5 flex-shrink-0' />
+              <p className='text-stone-500 text-xs'>
+                {t('services.premium.luxYachtView.whatToBring.weProvideDesc')}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Important info */}
+          <motion.div
+            className='border border-stone-200 bg-white p-6'
+            variants={fadeIn}
+          >
+            <h3 className='text-xs font-semibold text-stone-900 uppercase tracking-[0.1em] mb-5'>
+              {t('services.premium.luxYachtView.importantInfo.title')}
+            </h3>
+            <div className='space-y-4'>
+              {[
+                {
+                  icon: Calendar,
+                  title: t(
+                    'services.premium.luxYachtView.importantInfo.availabilityTitle',
+                  ),
+                  desc: t(
+                    'services.premium.luxYachtView.importantInfo.availabilityDesc',
+                  ),
+                },
+                {
+                  icon: CheckCircle,
+                  title: t(
+                    'services.premium.luxYachtView.importantInfo.confirmationTitle',
+                  ),
+                  desc: t(
+                    'services.premium.luxYachtView.importantInfo.confirmationDesc',
+                  ),
+                },
+                {
+                  icon: Shield,
+                  title: t(
+                    'services.premium.luxYachtView.importantInfo.paymentTitle',
+                  ),
+                  desc: t(
+                    'services.premium.luxYachtView.importantInfo.paymentDesc',
+                  ),
+                },
+              ].map(({ icon: Icon, title, desc }, i) => (
+                <div key={i} className='flex items-start gap-3'>
+                  <Icon className='w-4 h-4 text-stone-400 mt-0.5 flex-shrink-0' />
+                  <div>
+                    <p className='text-stone-900 text-xs font-medium'>
+                      {title}
+                    </p>
+                    <p className='text-stone-400 text-[11px] leading-relaxed'>
+                      {desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* ── CTA Banner — single ────────────────────────────────── */}
+      <motion.section
+        className='relative w-full'
+        initial='hidden'
+        whileInView='visible'
+        viewport={{ once: true, margin: '-60px' }}
+        variants={fadeIn}
+      >
+        <Image
+          src='https://res.cloudinary.com/ddg92xar5/image/upload/v1754600018/2_dc7fry.jpg'
+          alt='Sunset yacht'
+          fill
+          className='object-cover'
+        />
+        <div className='absolute inset-0 bg-stone-900/85' />
+        <div className='relative z-10 py-14 sm:py-18 lg:py-22 px-5 sm:px-8 lg:px-12 text-center'>
+          <p className='text-amber-400 uppercase tracking-[0.3em] text-[11px] font-medium mb-4'>
+            {t('services.premium.luxYachtView.yachtCta.cta1Badge')}
+          </p>
+          <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-white mb-4 tracking-tight'>
+            {t('services.premium.luxYachtView.yachtCta.cta1Title')}
+          </h2>
+          <p className='text-white/40 text-sm max-w-md mx-auto leading-relaxed mb-8'>
+            {t('services.premium.luxYachtView.yachtCta.cta1Description')}
+          </p>
+          <div className='flex flex-col sm:flex-row gap-3 justify-center'>
+            <button
+              onClick={() => handleOpenBooking()}
+              className='group inline-flex items-center justify-center gap-2.5 bg-white text-stone-900 px-8 py-3.5 text-xs font-medium tracking-wide uppercase hover:bg-amber-50 transition-colors duration-300'
+            >
+              <Calendar className='w-3.5 h-3.5' />
+              {t('services.premium.luxYachtView.yachtCta.cta1Button')}
+              <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+            </button>
+            <a
+              href='#fleet'
+              className='group inline-flex items-center justify-center gap-2 border border-stone-600 text-stone-300 px-6 py-3.5 text-xs font-medium tracking-wide uppercase hover:border-stone-400 hover:text-white transition-colors duration-300'
+            >
+              <Anchor className='w-3.5 h-3.5' />
+              {t('services.premium.luxYachtView.yachtCta.cta1SecondaryButton')}
+            </a>
           </div>
 
-          <PromoVideoSection />
+          <div className='mt-10 grid grid-cols-3 gap-6 max-w-sm mx-auto'>
+            {[
+              {
+                value: '500+',
+                label: t('services.premium.luxYachtView.yachtCta.stat1'),
+              },
+              {
+                value: '5.0',
+                label: t('services.premium.luxYachtView.yachtCta.stat2'),
+              },
+              {
+                value: '4',
+                label: t('services.premium.luxYachtView.yachtCta.stat3'),
+              },
+            ].map((stat, i) => (
+              <div key={i} className='text-center'>
+                <div className='text-white text-lg font-light'>
+                  {stat.value}
+                </div>
+                <div className='text-stone-500 text-[10px] uppercase tracking-wider'>
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
 
-          <TropicalCTABanner onOpenBooking={() => handleOpenBooking()} />
-
-          <CaribbeanWhatToBring />
-          <PrivateServiceInfo />
-
-          <SunsetCTABanner
-            onExploreFleet={handleExploreFleet}
-            onOpenBooking={() => handleOpenBooking()}
-          />
-
-          <YachtImportantInfo />
-
-          {selectedYacht && showDetailsModal && (
-            <YachtDetailsModal
-              yacht={selectedYacht}
-              onClose={handleCloseAll}
-              onBookYacht={handleOpenBooking}
-            />
-          )}
-        </>
-      ) : (
-        <UnifiedBookingForm yacht={selectedYacht} onClose={handleCloseAll} />
+      {/* ── Details Modal ──────────────────────────────────────── */}
+      {selectedYacht && showDetailsModal && (
+        <YachtDetailsModal
+          yacht={selectedYacht}
+          onClose={handleCloseAll}
+          onBookYacht={handleOpenBooking}
+        />
       )}
     </div>
   );

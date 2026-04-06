@@ -11,7 +11,6 @@ export const SERVICE_IDS = {
   YOGA: 'yoga-standard',
   PERSONAL_TRAINER: 'personal-training',
   KARAOKE: 'karaoke',
-  BIKE_RENTALS: 'bike-rentals',
   BABYSITTER: 'babysitter',
   CATAMARAN: 'catamaran-trips',
 
@@ -31,7 +30,6 @@ export const SERVICE_IDS = {
   LUXE_YOGA: 'luxe-yoga',
   LUX_CATAMARAN: 'private-catamaran',
   LUXE_FITNESS: 'luxe-fitness',
-  LUXE_EBIKES: 'luxe-e-bikes',
   LUXE_YACHT: 'luxe-yacht',
   PRIVATE_YACHT: 'private-yacht-experience',
   LUXE_CULINARY: 'luxe-culinary',

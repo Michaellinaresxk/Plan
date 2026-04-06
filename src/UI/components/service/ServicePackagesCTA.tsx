@@ -2,7 +2,7 @@ import { Anchor, Crown } from 'lucide-react';
 
 const ServicePackagesCTA: React.FC = () => {
   return (
-    <section className='py-16 md:py-24 bg-white'>
+    <section className=' bg-white'>
       <style jsx>{`
         @keyframes fade-in-up {
           from {

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import {
   Search,
   Grid,
@@ -11,6 +11,7 @@ import {
   Heart,
   Utensils,
   Music,
+  X,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/client';
 import { Service, BookingDate } from '@/types/type';
@@ -18,7 +19,9 @@ import ServiceCard from './ServiceCard';
 import { useBooking } from '@/context/BookingContext';
 import ServiceManager from '@/constants/services/ServiceManager';
 
-interface EnhancedServiceListProps {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface ServiceListProps {
   services: Service[];
   servicePath: string;
   variant?: 'light' | 'dark';
@@ -26,12 +29,68 @@ interface EnhancedServiceListProps {
   viewContext?: 'standard-view' | 'premium-view';
 }
 
-const ServiceList: React.FC<EnhancedServiceListProps> = ({
+// ─── Constants (outside component — never recreated) ──────────────────────────
+
+const CATEGORY_ICONS = {
+  all: Grid,
+  'water-activities': Anchor,
+  tours: Map,
+  transportation: Car,
+  wellness: Heart,
+  'food-drinks': Utensils,
+  leisure: Music,
+} as const;
+
+const CATEGORY_IDS = Object.keys(
+  CATEGORY_ICONS,
+) as (keyof typeof CATEGORY_ICONS)[];
+
+/*
+  Theme tokens — light for standard page (stone-50 bg),
+  dark for premium page (stone-950 bg).
+  Every visual difference is here, JSX stays shared.
+*/
+const THEME = {
+  light: {
+    section: 'bg-transparent',
+    pillDefault:
+      'bg-white border-stone-200 text-stone-500 hover:text-stone-900 hover:border-stone-300',
+    pillActive: 'bg-stone-900 border-stone-900 text-white',
+    count: 'text-stone-900',
+    countLabel: 'text-stone-400',
+    clear: 'text-stone-400 hover:text-stone-700',
+    emptyIcon: 'bg-stone-100',
+    emptyIconColor: 'text-stone-300',
+    emptyTitle: 'text-stone-900',
+    emptyDesc: 'text-stone-400',
+    emptyBtn: 'bg-stone-900 text-white hover:bg-stone-800',
+  },
+  dark: {
+    section: 'bg-transparent',
+    pillDefault:
+      'bg-stone-900 border-stone-800 text-stone-500 hover:text-white hover:border-stone-700',
+    pillActive: 'bg-amber-500/15 border-amber-500/30 text-amber-400',
+    count: 'text-white',
+    countLabel: 'text-stone-500',
+    clear: 'text-stone-500 hover:text-stone-300',
+    emptyIcon: 'bg-stone-800',
+    emptyIconColor: 'text-stone-600',
+    emptyTitle: 'text-white',
+    emptyDesc: 'text-stone-500',
+    emptyBtn:
+      'border border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20',
+  },
+} as const;
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+const ServiceList: React.FC<ServiceListProps> = ({
   services,
   servicePath,
   variant = 'light',
   viewContext,
 }) => {
+  const { t } = useTranslation();
   const {
     packageType,
     selectedServices,
@@ -39,258 +98,184 @@ const ServiceList: React.FC<EnhancedServiceListProps> = ({
     removeService,
     bookService,
   } = useBooking();
-  const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  const serviceCategories = [
-    {
-      id: 'all',
-      name: t('services.standard.serviceGallery.categories.all'),
-      icon: Grid,
-      color: 'slate',
-    },
-    {
-      id: 'water-activities',
-      name: t('services.standard.serviceGallery.categories.waterActivities'),
-      icon: Anchor,
-      color: 'blue',
-    },
-    {
-      id: 'tours',
-      name: t('services.standard.serviceGallery.categories.tours'),
-      icon: Map,
-      color: 'green',
-    },
-    {
-      id: 'transportation',
-      name: t('services.standard.serviceGallery.categories.transportation'),
-      icon: Car,
-      color: 'purple',
-    },
-    {
-      id: 'wellness',
-      name: t('services.standard.serviceGallery.categories.wellness'),
-      icon: Heart,
-      color: 'pink',
-    },
-    {
-      id: 'food-drinks',
-      name: t('services.standard.serviceGallery.categories.foodDrinks'),
-      icon: Utensils,
-      color: 'orange',
-    },
-    {
-      id: 'leisure',
-      name: t('services.standard.serviceGallery.categories.leisure'),
-      icon: Music,
-      color: 'indigo',
-    },
-  ];
+  const isDark = variant === 'dark' || viewContext === 'premium-view';
+  const theme = isDark ? THEME.dark : THEME.light;
+
+  // ── Category labels (depend on t, so inside component but memoized) ─────
+
+  const categories = useMemo(
+    () =>
+      CATEGORY_IDS.map((id) => ({
+        id,
+        icon: CATEGORY_ICONS[id],
+        name: t(
+          id === 'all'
+            ? 'services.standard.serviceGallery.categories.all'
+            : `services.standard.serviceGallery.categories.${
+                id === 'water-activities'
+                  ? 'waterActivities'
+                  : id === 'food-drinks'
+                    ? 'foodDrinks'
+                    : id
+              }`,
+        ),
+      })),
+    [t],
+  );
+
+  // ── Filtering ───────────────────────────────────────────────────────────
 
   const filteredServices = useMemo(() => {
     if (!packageType) return [];
 
-    let result = services.filter((service) =>
-      service.packageType.includes(packageType)
-    );
+    let result = services.filter((s) => s.packageType.includes(packageType));
 
-    if (selectedCategory !== 'all') {
+    if (activeCategory !== 'all') {
       result = result.filter(
-        (service) => ServiceManager.getCategory(service.id) === selectedCategory
+        (s) => ServiceManager.getCategory(s.id) === activeCategory,
       );
     }
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
-        (service) =>
-          service.name.toLowerCase().includes(term) ||
-          service.description.toLowerCase().includes(term)
+        (s) =>
+          s.name.toLowerCase().includes(term) ||
+          s.description.toLowerCase().includes(term),
       );
     }
 
     return result;
-  }, [services, packageType, selectedCategory, searchTerm]);
+  }, [services, packageType, activeCategory, searchTerm]);
 
-  const isServiceSelected = (serviceId: string) => {
-    return selectedServices.some((service) => service.id === serviceId);
-  };
+  // ── Handlers ────────────────────────────────────────────────────────────
 
-  const handleServiceToggle = (service: Service) => {
-    if (isServiceSelected(service.id)) {
-      removeService(service.id);
-    } else {
-      addService(service);
-    }
-  };
+  const isSelected = useCallback(
+    (id: string) => selectedServices.some((s) => s.id === id),
+    [selectedServices],
+  );
 
-  const handleBookService = (
-    service: Service,
-    dates: BookingDate,
-    guests: number
-  ) => {
-    bookService(service, dates, guests);
-  };
+  const handleToggle = useCallback(
+    (service: Service) => {
+      if (isSelected(service.id)) {
+        removeService(service.id);
+      } else {
+        addService(service);
+      }
+    },
+    [isSelected, addService, removeService],
+  );
 
-  const clearFilters = () => {
+  const handleBook = useCallback(
+    (service: Service, dates: BookingDate, guests: number) => {
+      bookService(service, dates, guests);
+    },
+    [bookService],
+  );
+
+  const clearFilters = useCallback(() => {
     setSearchTerm('');
-    setSelectedCategory('all');
-  };
+    setActiveCategory('all');
+  }, []);
 
-  if (!packageType) {
-    return null;
-  }
+  if (!packageType) return null;
 
-  const themeColors = {
-    standard: {
-      primary: 'blue',
-      primaryRgb: '59, 130, 246',
-    },
-    premium: {
-      primary: 'amber',
-      primaryRgb: '245, 158, 11',
-    },
-  };
-
-  const theme = themeColors[packageType] || themeColors.standard;
+  const hasActiveFilters = searchTerm || activeCategory !== 'all';
 
   return (
-    <section
-      id='services'
-      className={`py-16 ${
-        variant === 'light' ? 'bg-gray-50/50' : 'bg-transparent'
-      }`}
-    >
-      <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-        {/* Modern Category Pills */}
-        <div className='mb-8'>
-          <div className='flex flex-wrap justify-center gap-2 sm:gap-3'>
-            {serviceCategories.map((category) => {
-              const Icon = category.icon;
-              const isActive = selectedCategory === category.id;
-
-              return (
-                <motion.button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`
-                    group relative flex items-center space-x-2 px-4 py-2.5 rounded-xl
-                    font-medium text-sm transition-all duration-300
-                    ${
-                      isActive
-                        ? `bg-${theme.primary}-500 text-white shadow-lg shadow-${theme.primary}-500/25`
-                        : 'bg-white/70 text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-md'
-                    }
-                    backdrop-blur-sm border border-gray-200/50
-                  `}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{
-                    backgroundColor: isActive
-                      ? `rgb(${theme.primaryRgb})`
-                      : undefined,
-                    boxShadow: isActive
-                      ? `0 8px 25px -8px rgba(${theme.primaryRgb}, 0.3)`
-                      : undefined,
-                  }}
-                >
-                  <Icon size={16} />
-                  <span className='hidden sm:inline'>{category.name}</span>
-
-                  {isActive && (
-                    <motion.div
-                      className='absolute inset-0 rounded-xl border-2 border-white/30'
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                    />
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Results Summary */}
-        <div className='flex items-center justify-between mb-8'>
-          <motion.p
-            className='text-gray-600 text-sm'
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            key={filteredServices.length}
-          >
-            <span className='font-semibold text-gray-900'>
-              {filteredServices.length}
-            </span>{' '}
-            {filteredServices.length === 1 ? 'service' : 'services'} found
-          </motion.p>
-
-          {(searchTerm || selectedCategory !== 'all') && (
-            <motion.button
-              onClick={clearFilters}
-              className='text-sm text-gray-500 hover:text-gray-700 transition-colors'
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-            >
-              Clear filters
-            </motion.button>
-          )}
-        </div>
-
-        {/* Service Grid - SIMPLIFICADO SIN ANIMACIONES CONFLICTIVAS */}
-        {filteredServices.length > 0 ? (
-          <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
-            {filteredServices.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                servicePath={servicePath}
-                isSelected={isServiceSelected(service.id)}
-                packageType={packageType}
-                onToggle={handleServiceToggle}
-                onBookService={handleBookService}
-                viewContext={viewContext}
-              />
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className='text-center py-16'
-          >
-            <div className='max-w-sm mx-auto'>
-              <div className='w-16 h-16 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center'>
-                <Search className='w-6 h-6 text-gray-400' />
-              </div>
-              <h3 className='text-lg font-semibold text-gray-900 mb-2'>
-                No services found
-              </h3>
-              <p className='text-gray-600 mb-6'>
-                Try adjusting your search terms or filters to find what you're
-                looking for.
-              </p>
-              <motion.button
-                onClick={clearFilters}
+    <section id='services' className={theme.section}>
+      {/* ── Category filters ────────────────────────────────────── */}
+      <div className='mb-8'>
+        <div className='flex flex-wrap gap-2'>
+          {categories.map(({ id, icon: Icon, name }) => {
+            const isActive = activeCategory === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setActiveCategory(id)}
                 className={`
-                  px-6 py-3 rounded-xl text-white font-medium
-                  bg-${theme.primary}-500 hover:bg-${theme.primary}-600
-                  transition-colors shadow-lg
+                  inline-flex items-center gap-1.5 px-3.5 py-2 border
+                  text-xs font-medium tracking-wide transition-colors duration-200
+                  ${isActive ? theme.pillActive : theme.pillDefault}
                 `}
-                style={{
-                  backgroundColor: `rgb(${theme.primaryRgb})`,
-                }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
-                Clear all filters
-              </motion.button>
-            </div>
-          </motion.div>
+                <Icon className='w-3.5 h-3.5' />
+                <span className='hidden sm:inline'>{name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Results count ───────────────────────────────────────── */}
+      <div className='flex items-center justify-between mb-6'>
+        <p className={`text-xs ${theme.countLabel}`}>
+          <span className={`font-semibold ${theme.count}`}>
+            {filteredServices.length}
+          </span>{' '}
+          {filteredServices.length === 1 ? 'service' : 'services'}
+        </p>
+
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className={`inline-flex items-center gap-1 text-xs transition-colors ${theme.clear}`}
+          >
+            <X className='w-3 h-3' />
+            Clear filters
+          </button>
         )}
       </div>
+
+      {/* ── Grid ────────────────────────────────────────────────── */}
+      {filteredServices.length > 0 ? (
+        <div className='grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
+          {filteredServices.map((service) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              servicePath={servicePath}
+              isSelected={isSelected(service.id)}
+              packageType={packageType}
+              onToggle={handleToggle}
+              onBookService={handleBook}
+              viewContext={viewContext}
+            />
+          ))}
+        </div>
+      ) : (
+        /* ── Empty state ──────────────────────────────────────── */
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className='text-center py-16'
+        >
+          <div className='max-w-xs mx-auto'>
+            <div
+              className={`w-12 h-12 mx-auto mb-5 flex items-center justify-center ${theme.emptyIcon}`}
+            >
+              <Search className={`w-5 h-5 ${theme.emptyIconColor}`} />
+            </div>
+            <h3 className={`text-sm font-semibold mb-1.5 ${theme.emptyTitle}`}>
+              No services found
+            </h3>
+            <p className={`text-xs leading-relaxed mb-5 ${theme.emptyDesc}`}>
+              Try adjusting your filters to find what you're looking for.
+            </p>
+            <button
+              onClick={clearFilters}
+              className={`px-5 py-2.5 text-xs font-medium tracking-wide uppercase transition-colors duration-200 ${theme.emptyBtn}`}
+            >
+              Clear all filters
+            </button>
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 };

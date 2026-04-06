@@ -1135,109 +1135,6 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     },
   },
 
-  [SERVICE_IDS.BIKE_RENTALS]: {
-    id: SERVICE_IDS.BIKE_RENTALS,
-    titleKey: 'services.standard.bikeRental.name',
-    descriptionKey: 'services.standard.bikeRental.short',
-    fullDescriptionKey: 'services.standard.bikeRental.full',
-    basePrice: 25,
-    priceUnit: 'services.priceUnits.perDay',
-    category: 'adventure',
-    packageType: ['standard'],
-    imageUrl:
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: 1,
-    bookingDuration: {
-      min: 1,
-      max: 7,
-      unit: 'days',
-    },
-    options: {
-      bikeType: {
-        id: 'bikeType',
-        nameKey: 'services.bikeRental.options.bikeType.title',
-        subOptions: {
-          beachCruiser: {
-            id: 'beachCruiser',
-            nameKey:
-              'services.bikeRental.options.bikeType.options.beachCruiser',
-            price: 0,
-          },
-          cityBike: {
-            id: 'cityBike',
-            nameKey: 'services.bikeRental.options.bikeType.options.cityBike',
-            price: 5,
-          },
-          mountainBike: {
-            id: 'mountainBike',
-            nameKey:
-              'services.bikeRental.options.bikeType.options.mountainBike',
-            price: 10,
-          },
-          eBike: {
-            id: 'eBike',
-            nameKey: 'services.bikeRental.options.bikeType.options.eBike',
-            price: 20,
-          },
-        },
-      },
-      rentalDuration: {
-        id: 'rentalDuration',
-        nameKey: 'services.bikeRental.options.rentalDuration.title',
-        subOptions: {
-          halfDay: {
-            id: 'halfDay',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.halfDay',
-            price: -10,
-          },
-          fullDay: {
-            id: 'fullDay',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.fullDay',
-            price: 0,
-          },
-          twoDays: {
-            id: 'twoDays',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.twoDays',
-            price: 20,
-          },
-          weekly: {
-            id: 'weekly',
-            nameKey:
-              'services.bikeRental.options.rentalDuration.options.weekly',
-            price: 100,
-          },
-        },
-      },
-    },
-    additionalInfoKeys: [
-      'services.bikeRental.additionalInfo.1',
-      'services.bikeRental.additionalInfo.2',
-      'services.bikeRental.additionalInfo.3',
-    ],
-    specialRender: 'bikeRental',
-    relatedServices: [],
-    tags: ['adventure', 'exploration', 'outdoor', 'cycling'],
-    availability: {
-      daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
-      hoursOfDay: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-    },
-    metaData: {
-      deliveryIncluded: true,
-      pickupIncluded: true,
-      helmetIncluded: true,
-      lockIncluded: true,
-      support24h: true,
-      deliveryZone: 'Punta Cana area',
-      childrenBikesAvailable: true,
-      maintenanceStandard: 'highest',
-      languages: 'english,spanish',
-      disclaimer: 'services.bikeRental.disclaimer',
-    },
-  },
-
   [SERVICE_IDS.ATV_RIDE_EXCURSION]: {
     priceUnit: 'per group',
     gallery: {
@@ -1587,7 +1484,7 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
  * @returns The extended details object for the service, or an empty object if not found
  */
 export function getServiceExtendedDetails(
-  serviceId: string
+  serviceId: string,
 ): ServiceExtendedDetails {
   if (serviceId in SERVICE_EXTENDED_DETAILS) {
     return SERVICE_EXTENDED_DETAILS[serviceId as ServiceId];
@@ -1603,7 +1500,7 @@ export function getServiceExtendedDetails(
  */
 export function updateServiceExtendedDetails(
   serviceId: ServiceId,
-  details: ServiceExtendedDetails
+  details: ServiceExtendedDetails,
 ): void {
   SERVICE_EXTENDED_DETAILS[serviceId] = {
     ...(SERVICE_EXTENDED_DETAILS[serviceId] || {}),

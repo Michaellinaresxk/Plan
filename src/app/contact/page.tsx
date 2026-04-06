@@ -1,8 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Phone, Mail, Send, CheckCircle } from 'lucide-react';
+import {
+  Phone,
+  Mail,
+  Send,
+  CheckCircle,
+  ArrowRight,
+  AlertCircle,
+} from 'lucide-react';
 import Navbar from '@/UI/components/shared/Navbar';
 import Footer from '@/UI/components/shared/Footer';
 import Image from 'next/image';
@@ -11,8 +18,32 @@ import CTASection from '@/UI/components/shared/CTASection';
 import InstagramCTA from '@/UI/components/shared/InstagramCTA';
 import FloatingActionButton from '@/UI/components/shared/WhatsAppFloatingButton';
 
+// ─── Animation ────────────────────────────────────────────────────────────────
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const PHONE_NUMBER = '13027248080';
+const EMAIL_ADDRESS = 'info@luxpuntacana.com';
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 const ContactPage = () => {
   const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,399 +54,360 @@ const ContactPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const inputBase =
+    'w-full p-3 border rounded-none bg-stone-50 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 transition-colors';
 
-  // Función handleSubmit DEBUG para el componente
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError(null);
+  const handleInput = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >,
+    ) => {
+      setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+      if (formError) setFormError(null);
+    },
+    [formError],
+  );
 
-    console.log('🚀 Enviando formulario...');
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setFormError(null);
 
-    // Validación client-side
-    if (!formData.name || !formData.email || !formData.message) {
-      setFormError('Por favor complete todos los campos requeridos.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      console.log('📤 Datos a enviar:', {
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message.substring(0, 50) + '...',
-      });
-
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response ok:', response.ok);
-
-      const result = await response.json();
-      console.log('📡 Response data:', result);
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Error al enviar el mensaje');
+      if (!formData.name || !formData.email || !formData.message) {
+        setFormError(
+          t('contact.form.errorRequired', {
+            fallback: 'Please complete all required fields.',
+          }),
+        );
+        return;
       }
 
-      setIsSuccess(true);
-      console.log('✅ Formulario enviado exitosamente');
+      setIsSubmitting(true);
 
-      // Resetear formulario
-      setTimeout(() => {
-        setIsSuccess(false);
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
         });
-      }, 5000);
-    } catch (error) {
-      console.error('❌ Error en handleSubmit:', error);
-      setFormError(
-        error instanceof Error
-          ? error.message
-          : 'Ha ocurrido un error al enviar su mensaje. Por favor intente nuevamente.'
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Failed to send message');
+
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+          setFormData({ name: '', email: '', subject: '', message: '' });
+        }, 5000);
+      } catch (error) {
+        setFormError(
+          error instanceof Error
+            ? error.message
+            : 'Unable to send your message. Please try again.',
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [formData, t],
+  );
+
+  const openWhatsApp = useCallback(() => {
+    const msg = encodeURIComponent(
+      'Hello! I would like to know more about your services.',
+    );
+    window.open(
+      `https://wa.me/${PHONE_NUMBER}?text=${msg}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
+  }, []);
+
+  const openEmail = useCallback(() => {
+    const subject = encodeURIComponent('Inquiry about your services');
+    const body = encodeURIComponent(
+      'Hello! I would like to know more about your services.',
+    );
+    window.location.href = `mailto:${EMAIL_ADDRESS}?subject=${subject}&body=${body}`;
+  }, []);
 
   return (
-    <div className='flex flex-col min-h-screen font-[family-name:var(--font-geist-sans)]'>
+    <div className='flex flex-col min-h-screen bg-stone-50'>
       <Navbar />
       <FloatingActionButton
         message='Hi! I need help with luxury services'
         position='bottom-right'
       />
-      <main className='flex-grow'>
-        {/* Hero Section */}
-        <section className='relative pt-24 pb-32 overflow-hidden'>
-          {/* Background with Overlay */}
-          <div className='absolute inset-0 z-0'>
-            <Image
-              src='/img/bike.jpg'
-              alt='Contact Us'
-              fill
-              className='object-cover'
-              priority
-            />
-            <div className='absolute inset-0 bg-gradient-to-r from-black/80 to-black/40'></div>
-          </div>
 
-          {/* Content */}
-          <div className='container mx-auto px-6 relative z-10'>
-            <div className='max-w-3xl'>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-              >
-                <span className='inline-block px-4 py-1 bg-white/10 backdrop-blur-sm text-white rounded-full text-sm font-medium mb-6'>
+      <main className='flex-grow'>
+        {/* ── Hero — full bleed ──────────────────────────────── */}
+        <motion.section
+          className='relative w-full h-[45vh] sm:h-[50vh] lg:h-[55vh]'
+          initial='hidden'
+          animate='visible'
+          variants={fadeIn}
+        >
+          <Image
+            src='/img/bike.jpg'
+            alt='Contact Us'
+            fill
+            className='object-cover'
+            priority
+          />
+          <div className='absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent' />
+
+          <div className='relative z-10 h-full flex items-end'>
+            <div className='w-full px-5 sm:px-8 lg:px-12 pb-10 sm:pb-14 lg:pb-16'>
+              <div className='max-w-2xl'>
+                <p className='text-amber-300 uppercase tracking-[0.3em] text-[11px] sm:text-xs font-medium mb-3'>
                   {t('contact.headerChip')}
-                </span>
-                <h1 className='text-4xl md:text-6xl font-bold mb-6 text-white leading-tight'>
+                </p>
+                <h1 className='text-3xl sm:text-4xl lg:text-5xl font-light text-white leading-[1.1] tracking-tight mb-3'>
                   {t('contact.headerTitle')}
                 </h1>
-                <p className='text-xl text-white/90 max-w-2xl font-light leading-relaxed'>
+                <p className='text-white/55 text-sm sm:text-base max-w-md leading-relaxed font-light'>
                   {t('contact.headerSubTitle')}
                 </p>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Options Section */}
-        <section className='py-24 bg-white'>
-          <div className='container mx-auto px-6'>
-            <div className='max-w-3xl mx-auto text-center mb-16'>
-              <span className='inline-block px-4 py-1 bg-gray-200 text-gray-800 rounded-full text-sm font-medium mb-3'>
-                {t('contact.multipleChanelChip')}
-              </span>
-              <h2 className='text-3xl md:text-3xl font-bold text-gray-900 mb-3'>
-                {t('contact.multipleChanelTitle')}
-              </h2>
-              <p className='text-xl text-gray-600'>
-                {t('contact.multipleChanelSubTitle')}
-              </p>
-            </div>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5'>
-              {/* Contact Card 1 */}
-              <motion.div
-                className='bg-gray-50 rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer'
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => {
-                  const phoneNumber = '13027248080'; // Sin espacios ni guiones
-                  const message =
-                    'Hello! I would like to know more about your services.';
-                  const encodedMessage = encodeURIComponent(message);
-                  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-                  window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-                }}
-              >
-                <div className='w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6'>
-                  <Phone className='w-8 h-8 text-blue-600' />
-                </div>
-                <h3 className='text-xl font-semibold text-gray-900 mb-3'>
-                  {t('contact.channel1Title')}
-                </h3>
-                <p className='text-gray-600 mb-4'>
-                  {t('contact.channel1SubTitle')}
-                </p>
-                <p className='text-blue-600 font-medium'>+1 302-724-8080</p>
-              </motion.div>
-
-              {/* Contact Card 2 */}
-              <motion.div
-                className='bg-gray-50 rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer'
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => {
-                  const email = 'info@luxpuntacana.com';
-                  const subject = 'Inquiry about your services';
-                  const body =
-                    'Hello! I would like to know more about your services.';
-                  const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
-                    subject
-                  )}&body=${encodeURIComponent(body)}`;
-                  window.location.href = mailtoUrl;
-                }}
-              >
-                <div className='w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6'>
-                  <Mail className='w-8 h-8 text-amber-600' />
-                </div>
-                <h3 className='text-xl font-semibold text-gray-900 mb-3'>
-                  {t('contact.channel2Title')}
-                </h3>
-                <p className='text-gray-600 mb-4'>
-                  {t('contact.channel2SubTitle')}
-                </p>
-                <p className='text-amber-600 font-medium'>
-                  info@luxpuntacana.com
-                </p>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Form and Information Section */}
-        <section className='py-10 bg-gray-50'>
-          <div className='container mx-auto px-2'>
-            <div className='max-w-7xl mx-auto'>
-              <div className='grid md:grid-cols-1 gap-12'>
-                {/* Contact Form */}
-                <motion.div
-                  className='md:col-span-7 bg-white rounded-2xl shadow-xl overflow-hidden'
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.7 }}
-                >
-                  <div className='bg-gradient-to-r from-blue-600 to-indigo-700 py-8 px-10 text-white'>
-                    <h2 className='text-2xl font-bold'>
-                      {' '}
-                      {t('contact.form.title')}
-                    </h2>
-                    <p className='text-white/80 mt-2'>
-                      {t('contact.form.subTitle')}
-                    </p>
-                  </div>
-
-                  <div className='p-10'>
-                    {isSuccess ? (
-                      <div className='bg-green-50 border border-green-100 rounded-xl p-8 text-center'>
-                        <motion.div
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <CheckCircle className='w-16 h-16 text-green-500 mx-auto mb-4' />
-                          <h3 className='text-xl font-semibold text-gray-900 mb-2'>
-                            {t('contact.form.success')}
-                          </h3>
-                          <p className='text-gray-600'>
-                            {t('contact.form.successText')}
-                          </p>
-                        </motion.div>
-                      </div>
-                    ) : (
-                      <form onSubmit={handleSubmit} className='space-y-6'>
-                        <div className='grid md:grid-cols-2 gap-6'>
-                          <div>
-                            <label
-                              htmlFor='name'
-                              className='block text-gray-700 mb-2 font-medium'
-                            >
-                              {t('contact.form.name')}
-                            </label>
-                            <input
-                              type='text'
-                              id='name'
-                              name='name'
-                              value={formData.name}
-                              onChange={handleInputChange}
-                              required
-                              className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                              placeholder={t('contact.form.name')}
-                            />
-                          </div>
-
-                          <div>
-                            <label
-                              htmlFor='email'
-                              className='block text-gray-700 mb-2 font-medium'
-                            >
-                              {t('contact.form.email')}
-                            </label>
-                            <input
-                              type='email'
-                              id='email'
-                              name='email'
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              required
-                              className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                              placeholder={t('contact.form.email')}
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor='subject'
-                            className='block text-gray-700 mb-2 font-medium'
-                          >
-                            {t('contact.form.subject')}
-                          </label>
-                          <select
-                            id='subject'
-                            name='subject'
-                            value={formData.subject}
-                            onChange={handleInputChange}
-                            className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                          >
-                            <option value=''>
-                              {' '}
-                              {t('contact.form.selectSubject')}
-                            </option>
-                            <option value='reservations'>
-                              {' '}
-                              {t('contact.form.subject1')}
-                            </option>
-                            <option value='services'>
-                              {t('contact.form.subject2')}
-                            </option>
-                            <option value='support'>
-                              {' '}
-                              {t('contact.form.subject3')}
-                            </option>
-                            <option value='feedback'>
-                              {' '}
-                              {t('contact.form.subject4')}
-                            </option>
-                            <option value='other'>
-                              {' '}
-                              {t('contact.form.subject5')}
-                            </option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <textarea
-                            id='message'
-                            name='message'
-                            value={formData.message}
-                            onChange={handleInputChange}
-                            required
-                            rows={5}
-                            className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors'
-                            placeholder={t('contact.form.messagePlaceHolder')}
-                          ></textarea>
-
-                          {/* Campo honeypot - Anti-spam invisible */}
-                          <input
-                            type='text'
-                            name='_honeypot'
-                            style={{ display: 'none' }}
-                            tabIndex={-1}
-                            autoComplete='off'
-                          />
-                        </div>
-
-                        {formError && (
-                          <div className='p-4 bg-red-50 border border-red-200 rounded-lg text-red-700'>
-                            {formError}
-                          </div>
-                        )}
-
-                        <button
-                          type='submit'
-                          disabled={isSubmitting}
-                          className='w-full md:w-auto inline-flex items-center justify-center py-3 px-8 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg transform active:scale-[0.98]'
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <svg
-                                className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='none'
-                                viewBox='0 0 24 24'
-                              >
-                                <circle
-                                  className='opacity-25'
-                                  cx='12'
-                                  cy='12'
-                                  r='10'
-                                  stroke='currentColor'
-                                  strokeWidth='4'
-                                ></circle>
-                                <path
-                                  className='opacity-75'
-                                  fill='currentColor'
-                                  d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                                ></path>
-                              </svg>
-
-                              {t('contact.form.sending')}
-                            </>
-                          ) : (
-                            <>
-                              {t('contact.form.submitButton')}{' '}
-                              <Send className='ml-2 h-5 w-5' />
-                            </>
-                          )}
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                </motion.div>
               </div>
             </div>
           </div>
-        </section>
-        <div className='container mx-auto px-2 py-10 mb-12'>
+        </motion.section>
+
+        {/* ── Contact Channels ───────────────────────────────── */}
+        <motion.section
+          className='px-5 sm:px-8 lg:px-12 py-14 sm:py-18 lg:py-20'
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true, margin: '-60px' }}
+          variants={stagger}
+        >
+          <motion.div className='mb-10 text-center' variants={fadeIn}>
+            <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+              {t('contact.multipleChanelChip')}
+            </p>
+            <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight mb-3'>
+              {t('contact.multipleChanelTitle')}
+            </h2>
+            <p className='text-stone-400 text-sm sm:text-base max-w-md mx-auto'>
+              {t('contact.multipleChanelSubTitle')}
+            </p>
+          </motion.div>
+
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto'>
+            <motion.button
+              type='button'
+              onClick={openWhatsApp}
+              variants={fadeIn}
+              className='border border-stone-200 bg-white p-6 text-left hover:border-stone-400 transition-colors group'
+            >
+              <Phone className='w-4 h-4 text-stone-400 mb-4' />
+              <h3 className='text-stone-900 text-sm font-medium mb-1'>
+                {t('contact.channel1Title')}
+              </h3>
+              <p className='text-stone-400 text-xs mb-3'>
+                {t('contact.channel1SubTitle')}
+              </p>
+              <span className='text-amber-600 text-xs font-medium'>
+                +1 302-724-8080
+              </span>
+            </motion.button>
+
+            <motion.button
+              type='button'
+              onClick={openEmail}
+              variants={fadeIn}
+              className='border border-stone-200 bg-white p-6 text-left hover:border-stone-400 transition-colors group'
+            >
+              <Mail className='w-4 h-4 text-stone-400 mb-4' />
+              <h3 className='text-stone-900 text-sm font-medium mb-1'>
+                {t('contact.channel2Title')}
+              </h3>
+              <p className='text-stone-400 text-xs mb-3'>
+                {t('contact.channel2SubTitle')}
+              </p>
+              <span className='text-amber-600 text-xs font-medium'>
+                {EMAIL_ADDRESS}
+              </span>
+            </motion.button>
+          </div>
+        </motion.section>
+
+        {/* ── Contact Form ───────────────────────────────────── */}
+        <motion.section
+          className='px-5 sm:px-8 lg:px-12 pb-14 sm:pb-18 lg:pb-20'
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true, margin: '-60px' }}
+          variants={fadeIn}
+        >
+          <div className='max-w-2xl mx-auto'>
+            <div className='border border-stone-200 bg-white'>
+              {/* Form header */}
+              <div className='bg-stone-900 px-6 sm:px-8 py-6'>
+                <h2 className='text-white text-base font-medium'>
+                  {t('contact.form.title')}
+                </h2>
+                <p className='text-stone-400 text-xs mt-1'>
+                  {t('contact.form.subTitle')}
+                </p>
+              </div>
+
+              <div className='p-6 sm:p-8'>
+                {isSuccess ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className='text-center py-10'
+                  >
+                    <CheckCircle className='w-10 h-10 text-emerald-500 mx-auto mb-4' />
+                    <h3 className='text-stone-900 text-base font-medium mb-1'>
+                      {t('contact.form.success')}
+                    </h3>
+                    <p className='text-stone-400 text-sm'>
+                      {t('contact.form.successText')}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleSubmit} className='space-y-5'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-5'>
+                      <div>
+                        <label
+                          htmlFor='name'
+                          className='block text-xs font-medium text-stone-700 mb-2'
+                        >
+                          {t('contact.form.name')}{' '}
+                          <span className='text-amber-600'>*</span>
+                        </label>
+                        <input
+                          type='text'
+                          id='name'
+                          name='name'
+                          required
+                          value={formData.name}
+                          onChange={handleInput}
+                          placeholder={t('contact.form.name')}
+                          className={`${inputBase} border-stone-300`}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor='email'
+                          className='block text-xs font-medium text-stone-700 mb-2'
+                        >
+                          {t('contact.form.email')}{' '}
+                          <span className='text-amber-600'>*</span>
+                        </label>
+                        <input
+                          type='email'
+                          id='email'
+                          name='email'
+                          required
+                          value={formData.email}
+                          onChange={handleInput}
+                          placeholder={t('contact.form.email')}
+                          className={`${inputBase} border-stone-300`}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor='subject'
+                        className='block text-xs font-medium text-stone-700 mb-2'
+                      >
+                        {t('contact.form.subject')}
+                      </label>
+                      <select
+                        id='subject'
+                        name='subject'
+                        value={formData.subject}
+                        onChange={handleInput}
+                        className={`${inputBase} border-stone-300`}
+                      >
+                        <option value=''>
+                          {t('contact.form.selectSubject')}
+                        </option>
+                        <option value='reservations'>
+                          {t('contact.form.subject1')}
+                        </option>
+                        <option value='services'>
+                          {t('contact.form.subject2')}
+                        </option>
+                        <option value='support'>
+                          {t('contact.form.subject3')}
+                        </option>
+                        <option value='feedback'>
+                          {t('contact.form.subject4')}
+                        </option>
+                        <option value='other'>
+                          {t('contact.form.subject5')}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor='message'
+                        className='block text-xs font-medium text-stone-700 mb-2'
+                      >
+                        {t('contact.form.messagePlaceHolder')}{' '}
+                        <span className='text-amber-600'>*</span>
+                      </label>
+                      <textarea
+                        id='message'
+                        name='message'
+                        required
+                        rows={4}
+                        value={formData.message}
+                        onChange={handleInput}
+                        placeholder={t('contact.form.messagePlaceHolder')}
+                        className={`${inputBase} border-stone-300 resize-none`}
+                      />
+                    </div>
+
+                    {/* Honeypot */}
+                    <input
+                      type='text'
+                      name='_honeypot'
+                      style={{ display: 'none' }}
+                      tabIndex={-1}
+                      autoComplete='off'
+                    />
+
+                    {formError && (
+                      <div className='flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-sm text-red-800'>
+                        <AlertCircle className='w-4 h-4 flex-shrink-0' />
+                        {formError}
+                      </div>
+                    )}
+
+                    <button
+                      type='submit'
+                      disabled={isSubmitting}
+                      className='inline-flex items-center gap-2 bg-stone-900 text-white px-6 py-3 text-xs font-medium tracking-wide uppercase hover:bg-stone-800 transition-colors disabled:opacity-50'
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className='w-4 h-4 border-2 border-stone-600 border-t-white rounded-full animate-spin' />
+                          {t('contact.form.sending')}
+                        </>
+                      ) : (
+                        <>
+                          {t('contact.form.submitButton')}
+                          <Send className='w-3.5 h-3.5' />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* ── Instagram + CTA ────────────────────────────────── */}
+        <div className='px-5 sm:px-8 lg:px-12 pb-14'>
           <InstagramCTA />
         </div>
         <CTASection />

@@ -1,20 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from '@/lib/i18n/client';
 import {
   Mic,
   Calendar,
   Clock,
   MapPin,
-  Monitor,
   Youtube,
-  MessageSquare,
   CreditCard,
   AlertCircle,
   Check,
   X,
   Plus,
   Info,
-  CheckCircle,
   Volume2,
 } from 'lucide-react';
 import { useReservation } from '@/context/BookingContext';
@@ -30,22 +27,93 @@ import { LOCATION_OPTIONS } from '@/constants/location/location';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
 
-// Enhanced FormData interface
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface EnhancedFormData extends Omit<FormData, 'location'> {
   location: string;
   endTime: string;
   confirmOutdoorPolicy: boolean;
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const EXTRA_HOUR_RATE = 50;
+const INCLUDED_HOURS = 4;
+
+function getEventDuration(startTime: string, endTime: string): number {
+  if (!startTime || !endTime) return 0;
+  const start = new Date(`2000-01-01T${startTime}`);
+  const end = new Date(`2000-01-01T${endTime}`);
+  if (end <= start) return 0;
+  return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+}
+
+function isSameDay(dateString: string): boolean {
+  if (!dateString) return false;
+  return new Date().toDateString() === new Date(dateString).toDateString();
+}
+
+function hasMinimum24Hours(dateString: string): boolean {
+  if (!dateString) return false;
+  const diff = new Date(dateString).getTime() - Date.now();
+  return diff / (1000 * 60 * 60) >= 24;
+}
+
+function getLocationName(locationId: string): string {
+  return (
+    LOCATION_OPTIONS.find((loc) => loc.id === locationId)?.name ?? locationId
+  );
+}
+
+// ─── Subcomponents ────────────────────────────────────────────────────────────
+
+interface SectionHeadingProps {
+  children: React.ReactNode;
+}
+
+const SectionHeading: React.FC<SectionHeadingProps> = ({ children }) => (
+  <h3 className='text-sm font-semibold text-stone-900 uppercase tracking-[0.15em] border-b border-stone-200 pb-3'>
+    {children}
+  </h3>
+);
+
+interface FieldLabelProps {
+  icon: React.ElementType;
+  children: React.ReactNode;
+  required?: boolean;
+}
+
+const FieldLabel: React.FC<FieldLabelProps> = ({
+  icon: Icon,
+  children,
+  required,
+}) => (
+  <label className='flex items-center text-sm font-medium text-stone-700 mb-2'>
+    <Icon className='w-4 h-4 mr-2 text-stone-400' />
+    {children}
+    {required && <span className='text-amber-600 ml-1'>*</span>}
+  </label>
+);
+
+interface FieldErrorProps {
+  message?: string;
+}
+
+const FieldError: React.FC<FieldErrorProps> = ({ message }) => {
+  if (!message) return null;
+  return <p className='text-red-600 text-xs mt-1.5'>{message}</p>;
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
 const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
   const { t } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { setReservationData } = useReservation();
-
   const { handleClose } = useFormModal({ onCancel });
 
-  // Enhanced form state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [formData, setFormData] = useState<EnhancedFormData>({
     date: '',
     startTime: '',
@@ -59,568 +127,464 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
     confirmOutdoorPolicy: false,
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
+  // ── Derived values ──────────────────────────────────────────────────────────
 
-  // Calculate event duration in hours
-  const eventDuration = useMemo(() => {
-    if (!formData.startTime || !formData.endTime) return 0;
+  const eventDuration = useMemo(
+    () => getEventDuration(formData.startTime, formData.endTime),
+    [formData.startTime, formData.endTime],
+  );
 
-    const start = new Date(`2000-01-01T${formData.startTime}`);
-    const end = new Date(`2000-01-01T${formData.endTime}`);
-
-    if (end <= start) return 0;
-
-    return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-  }, [formData.startTime, formData.endTime]);
-
-  // Enhanced price calculation with duration logic
-  const calculatePrice = useMemo(() => {
+  const totalPrice = useMemo(() => {
     let total = PRICING.BASE_PRICE;
-
-    // Add screen rental if needed
-    if (formData.needsScreen) {
-      total += PRICING.SCREEN_RENTAL;
+    if (formData.needsScreen) total += PRICING.SCREEN_RENTAL;
+    if (formData.setupType === 'outdoor') total += PRICING.OUTDOOR_SETUP;
+    if (eventDuration > INCLUDED_HOURS) {
+      total += (eventDuration - INCLUDED_HOURS) * EXTRA_HOUR_RATE;
     }
-
-    // Add outdoor setup fee if selected
-    if (formData.setupType === 'outdoor') {
-      total += PRICING.OUTDOOR_SETUP;
-    }
-
-    // Apply duration-based pricing (over 4 hours)
-    if (eventDuration > 4) {
-      const extraHours = eventDuration - 4;
-      total += extraHours * 50; // $50 per extra hour
-    }
-
     return total;
   }, [formData.needsScreen, formData.setupType, eventDuration]);
 
-  // Date validation helpers
-  const isSameDay = (dateString: string): boolean => {
-    if (!dateString) return false;
-    const today = new Date();
-    const selectedDate = new Date(dateString);
-    return today.toDateString() === selectedDate.toDateString();
-  };
+  const todayISO = useMemo(() => new Date().toISOString().split('T')[0], []);
 
-  const hasMinimum24Hours = (dateString: string): boolean => {
-    if (!dateString) return false;
-    const now = new Date();
-    const selectedDate = new Date(dateString);
-    const differenceMs = selectedDate.getTime() - now.getTime();
-    const hours = differenceMs / (1000 * 60 * 60);
-    return hours >= 24;
-  };
+  // ── Validation ──────────────────────────────────────────────────────────────
 
-  // Enhanced form validation
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  const validate = useCallback((): boolean => {
+    const errs: FormErrors = {};
 
-    // Required fields
-    if (!formData.date) {
-      newErrors.date = 'Event date is required';
-    }
+    if (!formData.date) errs.date = 'Required';
+    if (!formData.startTime) errs.startTime = 'Required';
+    if (!formData.endTime) errs.endTime = 'Required';
+    if (!formData.location) errs.location = 'Required';
+    if (!formData.setupType) errs.setupType = 'Please select a setup type';
 
-    if (!formData.startTime) {
-      newErrors.startTime = 'Start time is required';
-    }
-
-    if (!formData.endTime) {
-      newErrors.endTime = 'End time is required';
-    }
-
-    if (!formData.location) {
-      newErrors.location = 'Event location is required';
-    }
-
-    if (!formData.setupType) {
-      newErrors.setupType = 'Please select indoor or outdoor setup';
-    }
-
-    // Time validation
     if (formData.startTime && formData.endTime && eventDuration <= 0) {
-      newErrors.endTime = 'End time must be after start time';
+      errs.endTime = 'End time must be after start time';
     }
 
-    // Date validations
     if (
       formData.date &&
       !isSameDay(formData.date) &&
       !hasMinimum24Hours(formData.date)
     ) {
-      newErrors.date = 'Bookings must be made at least 24 hours in advance';
+      errs.date = 'Bookings require at least 24 hours advance notice';
     }
 
-    // Outdoor policy confirmation
     if (formData.setupType === 'outdoor' && !formData.confirmOutdoorPolicy) {
-      newErrors.confirmOutdoorPolicy =
-        'Please confirm you understand the outdoor sound policy';
+      errs.confirmOutdoorPolicy = 'Please confirm the outdoor sound policy';
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }, [formData, eventDuration]);
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // ── Handlers ────────────────────────────────────────────────────────────────
 
-    if (!validateForm()) {
-      return;
-    }
+  const clearError = useCallback((field: string) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }, []);
 
-    setIsSubmitting(true);
+  const updateField = useCallback(
+    <K extends keyof EnhancedFormData>(
+      field: K,
+      value: EnhancedFormData[K],
+    ) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      clearError(field);
+    },
+    [clearError],
+  );
 
-    try {
-      const totalPrice = calculatePrice;
-      const selectedLocation =
-        LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
-        formData.location;
+  const handleInputChange = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >,
+    ) => {
+      const { name, value, type } = e.target;
+      const checked = 'checked' in e.target ? e.target.checked : false;
+      updateField(
+        name as keyof EnhancedFormData,
+        type === 'checkbox' ? checked : value,
+      );
+    },
+    [updateField],
+  );
 
-      // Enhanced reservation data structure
-      const reservationData = {
-        service,
-        totalPrice,
-        formData: {
-          ...formData,
-          serviceType: 'karaoke',
-          calculatedPrice: totalPrice,
-          locationName: selectedLocation,
-          eventDuration,
-        },
-        bookingDate: new Date(`${formData.date}T${formData.startTime}`),
-        endDate: new Date(`${formData.date}T${formData.endTime}`),
-        clientInfo: undefined,
-        karaokeSpecifics: {
-          setupType: formData.setupType,
-          location: formData.location,
-          locationName: selectedLocation,
-          hasProjectionSpace: formData.hasProjectionSpace,
-          needsScreen: formData.needsScreen,
-          musicReferences: formData.musicReferences.filter((ref) => ref.trim()),
-          specialRequests: formData.specialRequests,
-          eventDuration,
-          isExtendedSession: eventDuration > 4,
-        },
-      };
-
-      console.log('🎤 Karaoke - Enhanced reservation data:', reservationData);
-      console.log('💰 Total Price included:', totalPrice);
-      console.log('⏱️ Event duration:', eventDuration, 'hours');
-
-      // Store in context
-      setReservationData(reservationData);
-
-      // Navigate to confirmation page
-      router.push('/reservation-confirmation');
-    } catch (error) {
-      console.error('❌ KaraokeForm - Error submitting form:', error);
-      setErrors({
-        submit: t('form.errors.submitError', {
-          fallback: 'Failed to submit reservation. Please try again.',
-        }),
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Generic input handler
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    const checked = 'checked' in e.target ? e.target.checked : false;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
+  const handleSetupType = useCallback(
+    (type: 'indoor' | 'outdoor') => {
+      setFormData((prev) => ({
         ...prev,
-        [name]: '',
+        setupType: type,
+        confirmOutdoorPolicy:
+          type === 'indoor' ? false : prev.confirmOutdoorPolicy,
       }));
-    }
-  };
+      clearError('setupType');
+    },
+    [clearError],
+  );
 
-  // Handle location selection
-  const handleLocationSelect = (locationId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      location: locationId,
-    }));
-
-    // Clear location error if exists
-    if (errors.location) {
-      setErrors((prev) => ({
-        ...prev,
-        location: '',
-      }));
-    }
-  };
-
-  // Handle projection space selection
-  const handleProjectionSpaceChange = (hasSpace: boolean) => {
+  const handleProjectionSpace = useCallback((hasSpace: boolean) => {
     setFormData((prev) => ({
       ...prev,
       hasProjectionSpace: hasSpace,
-      needsScreen: hasSpace ? false : true, // Auto-select screen if no space
+      needsScreen: !hasSpace,
     }));
-  };
+  }, []);
 
-  // Handle setup type selection with outdoor policy logic
-  const handleSetupTypeChange = (setupType: 'indoor' | 'outdoor') => {
-    setFormData((prev) => ({
-      ...prev,
-      setupType,
-      confirmOutdoorPolicy:
-        setupType === 'indoor' ? false : prev.confirmOutdoorPolicy,
-    }));
+  // Music references
+  const addMusicRef = useCallback(() => {
+    setFormData((prev) => {
+      if (prev.musicReferences.length >= 10) return prev;
+      return { ...prev, musicReferences: [...prev.musicReferences, ''] };
+    });
+  }, []);
 
-    // Clear error when user selects
-    if (errors.setupType) {
-      setErrors((prev) => ({
-        ...prev,
-        setupType: '',
-      }));
-    }
-  };
-
-  // Music reference handlers
-  const addMusicReference = () => {
-    if (formData.musicReferences.length < 10) {
-      setFormData((prev) => ({
-        ...prev,
-        musicReferences: [...prev.musicReferences, ''],
-      }));
-    }
-  };
-
-  const removeMusicReference = (index: number) => {
-    if (formData.musicReferences.length > 1) {
-      setFormData((prev) => ({
+  const removeMusicRef = useCallback((index: number) => {
+    setFormData((prev) => {
+      if (prev.musicReferences.length <= 1) return prev;
+      return {
         ...prev,
         musicReferences: prev.musicReferences.filter((_, i) => i !== index),
-      }));
-    }
-  };
+      };
+    });
+  }, []);
 
-  const updateMusicReference = (index: number, value: string) => {
+  const updateMusicRef = useCallback((index: number, value: string) => {
     setFormData((prev) => ({
       ...prev,
       musicReferences: prev.musicReferences.map((ref, i) =>
-        i === index ? value : ref
+        i === index ? value : ref,
       ),
     }));
-  };
+  }, []);
+
+  // Submit
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!validate()) return;
+
+      setIsSubmitting(true);
+
+      try {
+        const locationName = getLocationName(formData.location);
+
+        const reservationData = {
+          service,
+          totalPrice,
+          formData: {
+            ...formData,
+            serviceType: 'karaoke' as const,
+            calculatedPrice: totalPrice,
+            locationName,
+            eventDuration,
+          },
+          bookingDate: new Date(`${formData.date}T${formData.startTime}`),
+          endDate: new Date(`${formData.date}T${formData.endTime}`),
+          clientInfo: undefined,
+          karaokeSpecifics: {
+            setupType: formData.setupType,
+            location: formData.location,
+            locationName,
+            hasProjectionSpace: formData.hasProjectionSpace,
+            needsScreen: formData.needsScreen,
+            musicReferences: formData.musicReferences.filter((r) => r.trim()),
+            specialRequests: formData.specialRequests,
+            eventDuration,
+            isExtendedSession: eventDuration > INCLUDED_HOURS,
+          },
+        };
+
+        setReservationData(reservationData);
+        router.push('/reservation-confirmation');
+      } catch (error) {
+        console.error('KaraokeForm submission error:', error);
+        setErrors({
+          submit: t('form.errors.submitError', {
+            fallback: 'Unable to process your reservation. Please try again.',
+          }),
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      validate,
+      formData,
+      service,
+      totalPrice,
+      eventDuration,
+      setReservationData,
+      router,
+      t,
+    ],
+  );
+
+  // ── Shared input classes ────────────────────────────────────────────────────
+
+  const inputBase =
+    'w-full p-3 border rounded-none bg-stone-50 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 transition-colors';
+
+  const inputError = (field: string) =>
+    errors[field] ? 'border-red-400' : 'border-stone-300';
+
+  // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
-      <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-        {/* Form Header */}
+    <form onSubmit={handleSubmit} className='w-full mx-auto'>
+      <div className='bg-white border border-stone-200'>
+        {/* Header */}
         <FormHeader
           title='Karaoke'
-          subtitle='Experience the magic of riding along pristine Macao Beach'
+          subtitle='Private entertainment, professionally delivered'
           icon={Mic}
           onCancel={handleClose}
-          showCloseButton={true}
-          gradientFrom='purple-500'
-          gradientVia='purple-500'
-          gradientTo='purple-600'
+          showCloseButton
+          gradientFrom='stone-800'
+          gradientVia='stone-800'
+          gradientTo='stone-900'
         />
 
-        {/* Form Body */}
-        <div className='p-8 space-y-8'>
-          {/* Event Details Section */}
+        {/* Body */}
+        <div className='p-6 sm:p-8 lg:p-10 space-y-10'>
+          {/* ─ Event Details ─ */}
           <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Event Details
-            </h3>
+            <SectionHeading>Event Details</SectionHeading>
 
             <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-              {/* Date */}
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Calendar className='w-4 h-4 mr-2 text-purple-700' />
-                  Event Date *
-                </label>
+                <FieldLabel icon={Calendar} required>
+                  Date
+                </FieldLabel>
                 <input
                   type='date'
                   name='date'
                   value={formData.date}
                   onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.date ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-gray-50`}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={todayISO}
+                  className={`${inputBase} ${inputError('date')}`}
                 />
-                {errors.date && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.date}</p>
-                )}
+                <FieldError message={errors.date} />
               </div>
 
-              {/* Start Time */}
               <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock className='w-4 h-4 mr-2 text-purple-700' />
-                  Start Time *
-                </label>
+                <FieldLabel icon={Clock} required>
+                  Start Time
+                </FieldLabel>
                 <input
                   type='time'
                   name='startTime'
                   value={formData.startTime}
                   onChange={handleInputChange}
-                  className={`w-full p-3 border ${
-                    errors.startTime ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-gray-50`}
+                  className={`${inputBase} ${inputError('startTime')}`}
                 />
-                {errors.startTime && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.startTime}
-                  </p>
-                )}
+                <FieldError message={errors.startTime} />
+              </div>
+
+              <div>
+                <FieldLabel icon={Clock} required>
+                  End Time
+                </FieldLabel>
+                <input
+                  type='time'
+                  name='endTime'
+                  value={formData.endTime}
+                  onChange={handleInputChange}
+                  className={`${inputBase} ${inputError('endTime')}`}
+                />
+                <FieldError message={errors.endTime} />
               </div>
             </div>
 
-            {/* Location Selection */}
-            <div className='space-y-4'>
-              <label className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                <MapPin className='w-4 h-4 mr-2 text-purple-700' />
-                Event Location *
-              </label>
+            {/* Location */}
+            <div>
+              <FieldLabel icon={MapPin} required>
+                Event Location
+              </FieldLabel>
 
               <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-                {LOCATION_OPTIONS.map((location) => (
-                  <div
-                    key={location.id}
-                    className={`
-                      border rounded-lg p-4 cursor-pointer transition-all
-                      ${
-                        formData.location === location.id
-                          ? 'bg-purple-50 border-purple-300 shadow-sm'
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }
-                    `}
-                    onClick={() => handleLocationSelect(location.id)}
-                  >
-                    <div className='flex items-center'>
+                {LOCATION_OPTIONS.map((loc) => {
+                  const isSelected = formData.location === loc.id;
+                  return (
+                    <button
+                      key={loc.id}
+                      type='button'
+                      onClick={() => updateField('location', loc.id)}
+                      className={`flex items-center border p-4 text-left transition-colors ${
+                        isSelected
+                          ? 'border-stone-900 bg-stone-50'
+                          : 'border-stone-200 hover:border-stone-400'
+                      }`}
+                    >
                       <div
-                        className={`
-                        w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                        ${
-                          formData.location === location.id
-                            ? 'border-purple-500 bg-purple-500'
-                            : 'border-gray-300'
-                        }
-                      `}
+                        className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center flex-shrink-0 ${
+                          isSelected
+                            ? 'border-stone-900 bg-stone-900'
+                            : 'border-stone-300'
+                        }`}
                       >
-                        {formData.location === location.id && (
-                          <CheckCircle className='w-4 h-4 text-white' />
+                        {isSelected && (
+                          <Check className='w-2.5 h-2.5 text-white' />
                         )}
                       </div>
-                      <span className='font-medium text-gray-800'>
-                        {location.name}
+                      <span className='text-sm font-medium text-stone-800'>
+                        {loc.name}
                       </span>
-                    </div>
-                  </div>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
-
-              {errors.location && (
-                <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
-              )}
+              <FieldError message={errors.location} />
             </div>
 
-            {/* Booking timing warnings */}
-            {formData.date && (
-              <div className='mt-4'>
-                {isSameDay(formData.date) ? (
-                  <div className='p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start'>
-                    <Info className='w-4 h-4 text-amber-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-amber-800'>
-                      <strong>Same-day booking:</strong> Requires immediate
-                      confirmation from our team.
-                    </div>
-                  </div>
-                ) : !hasMinimum24Hours(formData.date) ? (
-                  <div className='p-3 bg-red-50 border border-red-200 rounded-lg flex items-start'>
-                    <AlertCircle className='w-4 h-4 text-red-600 mr-2 mt-0.5' />
-                    <div className='text-sm text-red-800'>
-                      <strong>Advance booking required:</strong> Please book at
-                      least 24 hours in advance.
-                    </div>
-                  </div>
-                ) : null}
+            {/* Date warnings */}
+            {formData.date && isSameDay(formData.date) && (
+              <div className='flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 text-sm text-amber-800'>
+                <Info className='w-4 h-4 mt-0.5 flex-shrink-0' />
+                <span>
+                  <strong>Same-day booking</strong> — requires immediate
+                  confirmation from our team.
+                </span>
               </div>
             )}
+
+            {formData.date &&
+              !isSameDay(formData.date) &&
+              !hasMinimum24Hours(formData.date) && (
+                <div className='flex items-start gap-2 p-3 bg-red-50 border border-red-200 text-sm text-red-800'>
+                  <AlertCircle className='w-4 h-4 mt-0.5 flex-shrink-0' />
+                  <span>Please book at least 24 hours in advance.</span>
+                </div>
+              )}
           </div>
 
-          {/* Setup Type Section */}
+          {/* ─ Setup Type ─ */}
           <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Setup Environment
-            </h3>
+            <SectionHeading>Setup Environment</SectionHeading>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               {SETUP_TYPES.map((setup) => {
                 const Icon = setup.icon;
                 const isSelected = formData.setupType === setup.id;
 
                 return (
-                  <div
+                  <button
                     key={setup.id}
-                    className={`border rounded-lg p-6 cursor-pointer transition-all ${
-                      isSelected
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
+                    type='button'
                     onClick={() =>
-                      handleSetupTypeChange(setup.id as 'indoor' | 'outdoor')
+                      handleSetupType(setup.id as 'indoor' | 'outdoor')
                     }
+                    className={`border p-6 text-left transition-colors ${
+                      isSelected
+                        ? 'border-stone-900 bg-stone-50'
+                        : 'border-stone-200 hover:border-stone-400'
+                    }`}
                   >
-                    <div className='flex items-start justify-between mb-3'>
-                      <div className='flex items-center'>
+                    <div className='flex items-center justify-between mb-3'>
+                      <div className='flex items-center gap-3'>
                         <Icon
-                          className={`w-6 h-6 mr-3 ${
-                            isSelected ? 'text-purple-600' : 'text-gray-600'
-                          }`}
+                          className={`w-5 h-5 ${isSelected ? 'text-stone-900' : 'text-stone-400'}`}
                         />
-                        <div>
-                          <h4 className='font-medium text-gray-900'>
-                            {setup.name}
-                          </h4>
-                        </div>
+                        <span className='font-medium text-stone-900 text-sm'>
+                          {setup.name}
+                        </span>
                       </div>
                       {isSelected && (
-                        <Check className='w-5 h-5 text-purple-600' />
+                        <Check className='w-4 h-4 text-stone-900' />
                       )}
                     </div>
 
-                    <p className='text-sm text-gray-600 mb-3'>
+                    <p className='text-xs text-stone-500 mb-3'>
                       {setup.description}
                     </p>
 
                     <div className='space-y-1'>
-                      {setup.benefits.map((benefit, index) => (
+                      {setup.benefits.map((benefit, i) => (
                         <div
-                          key={index}
-                          className='flex items-center text-xs text-gray-500'
+                          key={i}
+                          className='flex items-center gap-2 text-xs text-stone-400'
                         >
-                          <div className='w-1 h-1 bg-gray-400 rounded-full mr-2'></div>
+                          <div className='w-1 h-1 bg-stone-300 rounded-full' />
                           {benefit}
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
 
-            {errors.setupType && (
-              <p className='text-red-500 text-xs'>{errors.setupType}</p>
-            )}
+            <FieldError message={errors.setupType} />
 
-            {/* Outdoor Sound Policy Warning */}
+            {/* Outdoor policy */}
             {formData.setupType === 'outdoor' && (
-              <div className='mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg'>
-                <div className='flex items-start'>
-                  <Volume2 className='w-5 h-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5' />
-                  <div className='flex-1'>
-                    <h4 className='font-medium text-yellow-800 mb-2'>
+              <div className='p-5 bg-amber-50/50 border border-amber-200'>
+                <div className='flex items-start gap-3'>
+                  <Volume2 className='w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5' />
+                  <div className='flex-1 space-y-3'>
+                    <h4 className='text-sm font-medium text-amber-900'>
                       Outdoor Sound Policy
                     </h4>
-                    <p className='text-sm text-yellow-700 mb-3'>
-                      For outdoor setups, please note:
+                    <p className='text-xs text-amber-700 leading-relaxed'>
+                      Sound levels must comply with local ordinances. Events
+                      typically conclude by 10:00 PM. Volume may be adjusted per
+                      venue requirements. Additional permits may apply for
+                      certain locations.
                     </p>
-                    <ul className='text-sm text-yellow-700 space-y-1 mb-4'>
-                      <li>
-                        • Sound levels must comply with local noise ordinances
-                      </li>
-                      <li>• Events typically must end by 10:00 PM</li>
-                      <li>
-                        • We may need to adjust volume based on venue
-                        requirements
-                      </li>
-                      <li>
-                        • Additional sound permits may be required for some
-                        locations
-                      </li>
-                    </ul>
 
-                    <div className='flex items-start'>
+                    <label className='flex items-start gap-2 cursor-pointer'>
                       <input
                         type='checkbox'
-                        id='confirmOutdoorPolicy'
                         name='confirmOutdoorPolicy'
                         checked={formData.confirmOutdoorPolicy}
                         onChange={handleInputChange}
-                        className='h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mt-0.5'
+                        className='h-4 w-4 text-stone-900 focus:ring-stone-900 border-stone-300 rounded mt-0.5'
                       />
-                      <label
-                        htmlFor='confirmOutdoorPolicy'
-                        className='ml-2 text-sm text-yellow-800'
-                      >
+                      <span className='text-xs text-amber-800'>
                         I understand and agree to comply with the outdoor sound
                         policy
-                      </label>
-                    </div>
-                    {errors.confirmOutdoorPolicy && (
-                      <p className='text-red-500 text-xs mt-1'>
-                        {errors.confirmOutdoorPolicy}
-                      </p>
-                    )}
+                      </span>
+                    </label>
+                    <FieldError message={errors.confirmOutdoorPolicy} />
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Music Preferences Section */}
+          {/* ─ Music Preferences ─ */}
           <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Music Preferences
-            </h3>
+            <SectionHeading>Music Preferences</SectionHeading>
 
             <div className='space-y-4'>
-              <div className='flex items-center text-sm font-medium text-gray-700 mb-3'>
-                <Youtube className='w-4 h-4 mr-2 text-purple-700' />
-                Song Requests (Optional)
-              </div>
-
-              <p className='text-sm text-gray-600'>
-                Share YouTube or Spotify links of songs you'd like to include in
-                your karaoke session
+              <FieldLabel icon={Youtube}>Song Requests (Optional)</FieldLabel>
+              <p className='text-xs text-stone-500'>
+                Share YouTube or Spotify links, or simply the song name and
+                artist.
               </p>
 
-              {formData.musicReferences.map((reference, index) => (
-                <div key={index} className='flex gap-3'>
-                  <div className='flex-1'>
-                    <input
-                      type='text'
-                      value={reference}
-                      onChange={(e) =>
-                        updateMusicReference(index, e.target.value)
-                      }
-                      placeholder={`Song request ${
-                        index + 1
-                      } (YouTube, Spotify, or just song name)`}
-                      className='w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500'
-                    />
-                  </div>
+              {formData.musicReferences.map((ref, index) => (
+                <div key={index} className='flex gap-2'>
+                  <input
+                    type='text'
+                    value={ref}
+                    onChange={(e) => updateMusicRef(index, e.target.value)}
+                    placeholder={`Song request ${index + 1}`}
+                    className={`${inputBase} border-stone-300`}
+                  />
                   {formData.musicReferences.length > 1 && (
                     <button
                       type='button'
-                      onClick={() => removeMusicReference(index)}
-                      className='px-3 py-3 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors'
-                      title='Remove this song'
+                      onClick={() => removeMusicRef(index)}
+                      className='px-3 text-stone-400 hover:text-red-600 transition-colors'
+                      aria-label='Remove song'
                     >
-                      <X className='w-5 h-5' />
+                      <X className='w-4 h-4' />
                     </button>
                   )}
                 </div>
@@ -629,110 +593,100 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
               {formData.musicReferences.length < 10 && (
                 <button
                   type='button'
-                  onClick={addMusicReference}
-                  className='flex items-center text-purple-600 hover:text-purple-800 transition-colors'
+                  onClick={addMusicRef}
+                  className='flex items-center gap-2 text-stone-500 hover:text-stone-900 text-sm transition-colors'
                 >
-                  <div className='w-8 h-8 rounded-full border-2 border-dashed border-purple-300 flex items-center justify-center mr-2 hover:border-purple-400'>
-                    <Plus className='w-4 h-4' />
-                  </div>
-                  Add another song request
+                  <Plus className='w-4 h-4' />
+                  Add another song
                 </button>
               )}
             </div>
           </div>
 
-          {/* Special Requests Section */}
-          <div className='space-y-6'>
-            <h3 className='text-lg font-medium text-gray-800 border-b border-gray-200 pb-2'>
-              Special Requests
-            </h3>
-
-            <div>
-              <textarea
-                name='specialRequests'
-                value={formData.specialRequests}
-                onChange={handleInputChange}
-                rows={4}
-                className='w-full p-3 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500'
-                placeholder='Any special requests, specific setup requirements, themes, or other details for your karaoke event...'
-              />
-            </div>
+          {/* ─ Special Requests ─ */}
+          <div className='space-y-4'>
+            <SectionHeading>Additional Notes</SectionHeading>
+            <textarea
+              name='specialRequests'
+              value={formData.specialRequests}
+              onChange={handleInputChange}
+              rows={3}
+              className={`${inputBase} border-stone-300 resize-none`}
+              placeholder='Setup requirements, themes, or any other details...'
+            />
           </div>
 
-          {/* Equipment Information */}
-          <div className='bg-purple-50 border border-purple-200 rounded-lg p-4'>
-            <div className='flex items-start'>
-              <Mic className='w-5 h-5 text-purple-600 mr-3 flex-shrink-0 mt-0.5' />
+          {/* ─ What's Included ─ */}
+          <div className='bg-stone-50 border border-stone-200 p-5'>
+            <div className='flex items-start gap-3'>
+              <Mic className='w-4 h-4 text-stone-400 mt-0.5 flex-shrink-0' />
               <div>
-                <h4 className='font-medium text-purple-800 mb-2'>
-                  What's Included
+                <h4 className='text-sm font-medium text-stone-900 mb-3'>
+                  Included
                 </h4>
-                <ul className='text-sm text-purple-700 space-y-1'>
-                  <li>
-                    • Professional karaoke system with wireless microphones
-                  </li>
-                  <li>• High-quality sound system and speakers</li>
-                  <li>• Extensive music library with latest hits</li>
-                  <li>• Professional setup and technical support</li>
-                  <li>• Lighting effects for enhanced ambiance</li>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-y-1.5 gap-x-6 text-xs text-stone-600'>
+                  <span>Professional karaoke system</span>
+                  <span>Wireless microphones</span>
+                  <span>High-quality speakers</span>
+                  <span>Curated music library</span>
+                  <span>Setup & technical support</span>
+                  <span>Ambient lighting effects</span>
                   {formData.needsScreen && (
-                    <li>• Professional projection screen rental</li>
+                    <span className='text-amber-700'>
+                      Projection screen rental
+                    </span>
                   )}
-                  {eventDuration > 4 && (
-                    <li>
-                      • Extended session support ({eventDuration.toFixed(1)}{' '}
-                      hours)
-                    </li>
+                  {eventDuration > INCLUDED_HOURS && (
+                    <span className='text-amber-700'>
+                      Extended session ({eventDuration.toFixed(1)} hours)
+                    </span>
                   )}
-                </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer with Price and Actions */}
-        <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
-          <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-            <span className='text-gray-400 text-sm uppercase tracking-wide'>
-              Total Price
+        {/* ─ Footer ─ */}
+        <div className='bg-stone-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6'>
+          <div className='text-center sm:text-left'>
+            <span className='text-stone-500 text-xs uppercase tracking-wider'>
+              Total
             </span>
-            <div className='flex items-center mt-1'>
-              <span className='text-3xl font-light'>
-                ${calculatePrice.toFixed(2)}
-              </span>
+            <div className='text-3xl font-light mt-1'>
+              ${totalPrice.toFixed(2)}
             </div>
 
-            {/* Enhanced price breakdown */}
-            <div className='text-xs text-gray-400 mt-2 space-y-1'>
-              <div>Base karaoke setup: ${PRICING.BASE_PRICE}</div>
+            <div className='text-xs text-stone-500 mt-2 space-y-0.5'>
+              <div>Base: ${PRICING.BASE_PRICE}</div>
               {formData.needsScreen && (
-                <div>Screen rental: +${PRICING.SCREEN_RENTAL}</div>
+                <div>Screen: +${PRICING.SCREEN_RENTAL}</div>
               )}
-              {formData.setupType === 'outdoor' && <div>Outdoor setup</div>}
-              {eventDuration > 4 && (
-                <div className='text-orange-400'>
-                  Extended session ({(eventDuration - 4).toFixed(1)}h): +$
-                  {((eventDuration - 4) * 50).toFixed(0)}
+              {formData.setupType === 'outdoor' && (
+                <div>Outdoor: +${PRICING.OUTDOOR_SETUP}</div>
+              )}
+              {eventDuration > INCLUDED_HOURS && (
+                <div className='text-amber-400'>
+                  Extended ({(eventDuration - INCLUDED_HOURS).toFixed(1)}h): +$
+                  {((eventDuration - INCLUDED_HOURS) * EXTRA_HOUR_RATE).toFixed(
+                    0,
+                  )}
                 </div>
               )}
               {formData.location && (
-                <div className='text-purple-400'>
-                  Location:{' '}
-                  {
-                    LOCATION_OPTIONS.find((loc) => loc.id === formData.location)
-                      ?.name
-                  }
+                <div className='text-stone-400'>
+                  {getLocationName(formData.location)}
                 </div>
               )}
             </div>
           </div>
 
-          <div className='flex space-x-4'>
+          <div className='flex gap-3'>
             <button
               type='button'
               onClick={onCancel}
               disabled={isSubmitting}
-              className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
+              className='px-6 py-3 border border-stone-700 text-stone-400 hover:text-white hover:border-stone-500 text-sm transition-colors disabled:opacity-50'
             >
               Cancel
             </button>
@@ -740,23 +694,19 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
             <button
               type='submit'
               disabled={isSubmitting}
-              className='px-8 py-3 bg-purple-700 hover:bg-purple-600 text-white rounded-lg transition flex items-center disabled:opacity-50'
+              className='px-8 py-3 bg-white text-stone-900 hover:bg-amber-50 text-sm font-medium tracking-wide flex items-center gap-2 transition-colors disabled:opacity-50'
             >
-              <CreditCard className='h-4 w-4 mr-2' />
-              {isSubmitting ? 'Processing...' : 'Book Karaoke'}
+              <CreditCard className='w-4 h-4' />
+              {isSubmitting ? 'Processing...' : 'Confirm Reservation'}
             </button>
           </div>
         </div>
 
-        {/* Submit Error */}
+        {/* Submit error */}
         {errors.submit && (
-          <div className='p-4 bg-red-50 border border-red-200 rounded-lg mt-4'>
-            <div className='flex items-start'>
-              <AlertCircle className='w-4 h-4 text-red-600 mr-2 mt-0.5' />
-              <div className='text-sm text-red-800'>
-                <strong>Error:</strong> {errors.submit}
-              </div>
-            </div>
+          <div className='flex items-start gap-2 p-4 bg-red-50 border-t border-red-200 text-sm text-red-800'>
+            <AlertCircle className='w-4 h-4 mt-0.5 flex-shrink-0' />
+            <span>{errors.submit}</span>
           </div>
         )}
       </div>

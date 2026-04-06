@@ -32,7 +32,6 @@ const SERVICE_CATEGORY_MAP: Record<ServiceId, ServiceCategory> = {
   [SERVICE_IDS.AIRPORT_TRANSFER]: 'transportation',
   [SERVICE_IDS.POINT_TO_POINT_TRANSFER]: 'transportation',
   [SERVICE_IDS.GOLF_CART]: 'transportation',
-  [SERVICE_IDS.BIKE_RENTALS]: 'transportation',
   [SERVICE_IDS.LUXE_GOLF_CART]: 'transportation',
   [SERVICE_IDS.LUXE_EBIKES]: 'transportation',
   [SERVICE_IDS.LUXE_ARRIVAL]: 'transportation',
@@ -75,7 +74,7 @@ export function getServiceCategory(serviceId: string): ServiceCategory {
  * @returns An array of service IDs in the specified category
  */
 export function getServiceIdsByCategory(
-  category: ServiceCategory
+  category: ServiceCategory,
 ): ServiceId[] {
   if (category === 'all') {
     return Object.values(SERVICE_IDS);
@@ -93,7 +92,7 @@ export function getServiceIdsByCategory(
 export function getAllCategories(): ServiceCategory[] {
   // Create a set to get unique categories
   const categoriesSet = new Set<ServiceCategory>(
-    Object.values(SERVICE_CATEGORY_MAP)
+    Object.values(SERVICE_CATEGORY_MAP),
   );
 
   // Convert to array and ensure 'all' is first
@@ -108,7 +107,7 @@ export function getAllCategories(): ServiceCategory[] {
  */
 export function categoryHasServicesForPackage(
   category: ServiceCategory,
-  packageType: string
+  packageType: string,
 ): boolean {
   const serviceIds = getServiceIdsByCategory(category);
   // This function requires serviceDataById which should be imported from serviceData

@@ -90,201 +90,185 @@ const PremiumPackageContent = () => {
     },
   };
 
+  const PREMIUM_DETAILS = [
+    {
+      icon: Clock,
+      titleKey: 'premiumPage.overview.details.duration.title',
+      valueKey: 'premiumPage.overview.details.duration.value',
+    },
+    {
+      icon: Users,
+      titleKey: 'premiumPage.overview.details.groupSize.title',
+      valueKey: 'premiumPage.overview.details.groupSize.value',
+    },
+    {
+      icon: MapPin,
+      titleKey: 'premiumPage.overview.details.location.title',
+      valueKey: 'premiumPage.overview.details.location.value',
+    },
+    {
+      icon: Wine,
+      titleKey: 'premiumPage.overview.details.services.title',
+      valueKey: 'premiumPage.overview.details.services.value',
+    },
+  ] as const;
+
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900'>
+    <div className='min-h-screen bg-stone-950'>
       <Navbar />
 
-      {/* Enhanced Premium Hero Section */}
-      <section className='relative min-h-[90vh] flex items-center justify-center overflow-hidden'>
-        {/* Enhanced background with multiple layers */}
-        <div className='absolute inset-0 z-0'>
-          <Image
-            src='/img/saona-island/saona-3.jpg'
-            alt={t('premiumPage.hero.imageAlt')}
-            fill
-            className='object-cover scale-105'
-            quality={100}
-            priority
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/40'></div>
-          <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50'></div>
-        </div>
+      {/* ══════════════════════════════════════════════════════════════
+      HERO — full bleed, dark luxury
+  ══════════════════════════════════════════════════════════════ */}
+      <section className='relative w-full h-[60vh] sm:h-[65vh] lg:h-[75vh]'>
+        <Image
+          src='/img/saona-island/saona-3.jpg'
+          alt={t('premiumPage.hero.imageAlt')}
+          fill
+          className='object-cover'
+          priority
+        />
+        <div className='absolute inset-0 bg-gradient-to-t from-stone-950 via-black/40 to-black/20' />
 
-        {/* Luxury floating elements */}
-        <div className='absolute top-20 right-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl animate-pulse'></div>
-        <div className='absolute bottom-20 left-20 w-48 h-48 bg-yellow-500/10 rounded-full blur-3xl animate-pulse delay-1000'></div>
-        <div className='absolute top-1/2 left-1/2 w-32 h-32 bg-amber-400/5 rounded-full blur-2xl animate-pulse delay-500'></div>
-
-        <div className='container mx-auto px-6 relative z-20 py-24'>
-          <motion.div
-            initial='hidden'
-            animate='visible'
-            variants={staggerContainer}
-            className='max-w-4xl mx-auto text-center'
-          >
+        <div className='relative z-10 h-full flex items-end'>
+          <div className='w-full px-5 sm:px-8 lg:px-12 pb-10 sm:pb-14 lg:pb-16'>
             <motion.div
-              variants={fadeInUp}
-              className='inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 mb-8 border border-amber-400/30 backdrop-blur-sm'
+              initial='hidden'
+              animate='visible'
+              variants={staggerContainer}
+              className='max-w-3xl'
             >
-              <Crown className='w-5 h-5 mr-2' />
-              {t('premiumPage.hero.badge')}
-            </motion.div>
+              <motion.p
+                variants={fadeInUp}
+                className='text-amber-400 uppercase tracking-[0.3em] text-[11px] sm:text-xs font-medium mb-4'
+              >
+                {t('premiumPage.hero.badge')}
+              </motion.p>
 
-            <motion.h1
-              variants={fadeInUp}
-              className='text-5xl md:text-8xl font-extrabold text-white mb-6 leading-tight'
-            >
-              {t('premiumPage.hero.titlePrefix')}
-              <span className='bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent'>
-                {t('premiumPage.hero.titleHighlight')}
-              </span>
-            </motion.h1>
+              <motion.h1
+                variants={fadeInUp}
+                className='text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white leading-[1.1] tracking-tight mb-2'
+              >
+                {t('premiumPage.hero.titlePrefix')}
+                <span className='text-amber-400'>
+                  {t('premiumPage.hero.titleHighlight')}
+                </span>
+              </motion.h1>
 
-            <motion.div
-              variants={fadeInUp}
-              className='flex items-center justify-center mb-8'
-            >
-              <div className='flex mr-4'>
-                {[1, 2, 3, 4, 5].map((i) => (
+              <motion.div
+                variants={fadeInUp}
+                className='flex items-center gap-1.5 mb-5 mt-4'
+              >
+                {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className='h-7 w-7 text-amber-400 fill-amber-400 drop-shadow-lg'
+                    className='w-3.5 h-3.5 text-amber-500 fill-amber-500'
                   />
                 ))}
-              </div>
-              <span className='text-gray-200 text-lg font-medium'>
-                {t('premiumPage.hero.rating')}
-              </span>
-            </motion.div>
+                <span className='text-stone-500 text-xs ml-1.5'>
+                  {t('premiumPage.hero.rating')}
+                </span>
+              </motion.div>
 
-            <motion.p
-              variants={fadeInUp}
-              className='text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-3xl mx-auto'
-            >
-              {t('premiumPage.hero.description')}
-            </motion.p>
+              <motion.p
+                variants={fadeInUp}
+                className='text-white/50 text-sm sm:text-base max-w-lg leading-relaxed font-light mb-7'
+              >
+                {t('premiumPage.hero.description')}
+              </motion.p>
 
-            <motion.div
-              variants={fadeInUp}
-              className='flex flex-col sm:flex-row gap-6 justify-center'
-            >
-              <Link href='/standard-package'>
-                <button className='group px-10 py-5 bg-white/10 backdrop-blur-sm border-2 border-amber-400/30 hover:border-amber-400/50 hover:bg-amber-400/10 text-amber-300 font-bold rounded-2xl transition-all duration-300 flex items-center text-lg'>
+              <motion.div variants={fadeInUp}>
+                <Link
+                  href='/standard-package'
+                  className='group inline-flex items-center gap-2 border border-stone-700 text-stone-300 px-6 py-3 text-xs font-medium tracking-wide uppercase hover:border-stone-500 hover:text-white transition-colors duration-300'
+                >
                   {t('premiumPage.hero.exploreStandardButton')}
-                  <ArrowRight className='ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform' />
-                </button>
-              </Link>
+                  <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+                </Link>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Main Content Area - Overview Section */}
-      <motion.section
-        initial='hidden'
-        animate='visible'
-        variants={fadeIn}
-        className='py-20 bg-gradient-to-b from-gray-900 via-black to-gray-800 text-white'
-      >
+      {/* ══════════════════════════════════════════════════════════════
+      OVERVIEW + SERVICES
+  ══════════════════════════════════════════════════════════════ */}
+      <section className='px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24'>
         {isLoading ? (
-          <div className='container mx-auto px-6'>
-            <div className='flex items-center justify-center py-20'>
-              <div className='text-center'>
-                <Loader2 className='w-12 h-12 animate-spin text-amber-400 mx-auto mb-4' />
-                <p className='text-gray-300 text-lg'>
-                  {t('premiumPage.overview.loading')}
-                </p>
-              </div>
+          <div className='flex items-center justify-center py-20'>
+            <div className='text-center'>
+              <Loader2 className='w-8 h-8 animate-spin text-amber-500 mx-auto mb-3' />
+              <p className='text-stone-500 text-sm'>
+                {t('premiumPage.overview.loading')}
+              </p>
             </div>
           </div>
         ) : (
-          <div className='container mx-auto px-6'>
+          <>
+            {/* Section heading */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className='text-center mb-16'
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6 }}
+              className='mb-14 sm:mb-18'
             >
-              <h2 className='text-4xl md:text-6xl font-bold text-white mb-6'>
+              <p className='text-amber-500 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+                Premium Collection
+              </p>
+              <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-white tracking-tight mb-3'>
                 {t('premiumPage.overview.title')}
               </h2>
-              <p className='text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed'>
+              <p className='text-stone-500 text-sm sm:text-base max-w-xl leading-relaxed'>
                 {t('premiumPage.overview.subtitle')}
               </p>
             </motion.div>
 
-            <div className='max-w-6xl mx-auto mb-16'>
-              <div className='grid md:grid-cols-2 gap-12'>
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <h3 className='text-2xl font-bold text-amber-400 mb-6 flex items-center'>
-                    <Gem className='w-6 h-6 mr-2' />
+            {/* Overview grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className='max-w-5xl mx-auto mb-20'
+            >
+              <div className='grid md:grid-cols-2 gap-10 lg:gap-14'>
+                {/* Left — description */}
+                <div>
+                  <h3 className='text-white font-medium text-base mb-4 flex items-center gap-2'>
                     {t('premiumPage.overview.experienceTitle')}
                   </h3>
-                  <p className='text-gray-300 mb-6 leading-relaxed text-lg'>
+                  <p className='text-stone-400 text-sm leading-relaxed mb-4'>
                     {t('premiumPage.overview.experienceDescription1')}
                   </p>
-                  <p className='text-gray-300 mb-8 leading-relaxed text-lg'>
+                  <p className='text-stone-400 text-sm leading-relaxed mb-6'>
                     {t('premiumPage.overview.experienceDescription2')}
                   </p>
+                  <p className='text-amber-500 text-xs font-medium uppercase tracking-wider'>
+                    {t('premiumPage.overview.availabilityNote')}
+                  </p>
+                </div>
 
-                  <div className='flex items-center space-x-2 text-amber-400 font-bold text-lg'>
-                    <Sparkles className='h-6 w-6' />
-                    <span>{t('premiumPage.overview.availabilityNote')}</span>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className='grid grid-cols-2 gap-6'
-                >
-                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                      <Clock className='h-5 w-5 mr-2' />
-                      {t('premiumPage.overview.details.duration.title')}
-                    </h4>
-                    <p className='text-gray-200 font-medium'>
-                      {t('premiumPage.overview.details.duration.value')}
-                    </p>
-                  </div>
-
-                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                      <Users className='h-5 w-5 mr-2' />
-                      {t('premiumPage.overview.details.groupSize.title')}
-                    </h4>
-                    <p className='text-gray-200 font-medium'>
-                      {t('premiumPage.overview.details.groupSize.value')}
-                    </p>
-                  </div>
-
-                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                      <MapPin className='h-5 w-5 mr-2' />
-                      {t('premiumPage.overview.details.location.title')}
-                    </h4>
-                    <p className='text-gray-200 font-medium'>
-                      {t('premiumPage.overview.details.location.value')}
-                    </p>
-                  </div>
-
-                  <div className='bg-gradient-to-br from-amber-500/20 to-yellow-500/20 p-6 rounded-2xl border border-amber-400/30 backdrop-blur-sm'>
-                    <h4 className='font-bold text-amber-400 mb-3 flex items-center text-lg'>
-                      <Wine className='h-5 w-5 mr-2' />
-                      {t('premiumPage.overview.details.services.title')}
-                    </h4>
-                    <p className='text-gray-200 font-medium'>
-                      {t('premiumPage.overview.details.services.value')}
-                    </p>
-                  </div>
-                </motion.div>
+                {/* Right — detail cards (deduplicated) */}
+                <div className='grid grid-cols-2 gap-3'>
+                  {PREMIUM_DETAILS.map(({ icon: Icon, titleKey, valueKey }) => (
+                    <div
+                      key={titleKey}
+                      className='border border-stone-800 bg-stone-900/50 p-5'
+                    >
+                      <Icon className='w-4 h-4 text-amber-500 mb-3' />
+                      <h4 className='text-white text-xs font-medium mb-1'>
+                        {t(titleKey)}
+                      </h4>
+                      <p className='text-stone-500 text-xs'>{t(valueKey)}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </motion.div>
 
+            {/* Service cards */}
             <ServiceList
               services={services}
               servicePath='premium-package'
@@ -292,53 +276,48 @@ const PremiumPackageContent = () => {
               textColor='white'
               viewContext='premium-view'
             />
-          </div>
+          </>
         )}
-      </motion.section>
+      </section>
 
-      {/* Enhanced Premium CTA Section */}
-      <section className='py-20 bg-gradient-to-br from-black via-amber-900/20 to-black relative overflow-hidden'>
-        {/* Enhanced background effects */}
-        <div className='absolute inset-0 bg-gradient-to-br from-amber-900/30 to-black/90 z-10'></div>
-        <div className='absolute top-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl'></div>
-        <div className='absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl'></div>
-        <div className='absolute top-1/2 left-1/2 w-64 h-64 bg-amber-400/5 rounded-full blur-2xl'></div>
+      {/* ══════════════════════════════════════════════════════════════
+      CTA — full bleed with background image
+  ══════════════════════════════════════════════════════════════ */}
+      <section className='relative w-full'>
+        <Image
+          src='/img/beach.jpg'
+          alt={t('premiumPage.cta.backgroundImageAlt')}
+          fill
+          className='object-cover'
+        />
+        <div className='absolute inset-0 bg-stone-950/90' />
 
-        {/* Background image */}
-        <div className='absolute inset-0 z-0 opacity-20'>
-          <Image
-            src='/img/beach.jpg'
-            alt={t('premiumPage.cta.backgroundImageAlt')}
-            fill
-            className='object-cover'
-          />
-        </div>
+        <div className='relative z-10 py-16 sm:py-20 lg:py-24 px-5 sm:px-8 lg:px-12'>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6 }}
+            className='max-w-2xl mx-auto text-center'
+          >
+            <p className='text-amber-400 uppercase tracking-[0.3em] text-[11px] font-medium mb-5'>
+              Begin Your Journey
+            </p>
+            <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-white mb-5 tracking-tight'>
+              {t('premiumPage.cta.title')}
+            </h2>
+            <p className='text-white/40 text-sm sm:text-base leading-relaxed mb-10 max-w-lg mx-auto'>
+              {t('premiumPage.cta.description')}
+            </p>
 
-        <div className='container mx-auto px-6 relative z-20'>
-          <div className='max-w-4xl mx-auto text-center'>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+            <Link
+              href='/contact'
+              className='group inline-flex items-center gap-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-8 py-3.5 text-xs font-medium tracking-wide uppercase hover:bg-amber-500/20 hover:border-amber-500/50 transition-colors duration-300'
             >
-              <h2 className='text-4xl md:text-7xl font-bold text-white mb-8 leading-tight'>
-                {t('premiumPage.cta.title')}
-              </h2>
-              <p className='text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed'>
-                {t('premiumPage.cta.description')}
-              </p>
-
-              <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                <Link href='/contact'>
-                  <button className='group px-10 py-5 bg-gradient-to-r from-amber-400/20 to-yellow-400/20 backdrop-blur-sm border-2 border-amber-400 hover:border-amber-300 hover:bg-amber-400/30 text-amber-300 font-bold rounded-2xl transition-all duration-300 text-lg transform hover:scale-105'>
-                    {t('premiumPage.cta.contactButton')}
-                    <Crown className='ml-2 h-6 w-6 inline group-hover:rotate-12 transition-transform' />
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
-          </div>
+              {t('premiumPage.cta.contactButton')}
+              <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+            </Link>
+          </motion.div>
         </div>
       </section>
 
