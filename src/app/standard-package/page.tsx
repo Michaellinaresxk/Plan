@@ -67,244 +67,238 @@ const StandardPackageContent = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-50 to-white'>
+    <div className='min-h-screen bg-stone-50'>
       <Navbar />
 
-      {/* Modern Hero Section */}
-      <section className='relative min-h-[90vh] flex items-center justify-center overflow-hidden'>
-        {/* Background with improved gradients */}
-        <div className='absolute inset-0 z-0'>
-          <Image
-            src='/img/bike.jpg'
-            alt='Luxury experience'
-            fill
-            className='object-cover scale-105'
-            priority
-          />
-          <div className='absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20'></div>
-          <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30'></div>
-        </div>
+      {/* ══════════════════════════════════════════════════════════════
+      HERO — full bleed, editorial layout
+  ══════════════════════════════════════════════════════════════ */}
+      <section className='relative w-full h-[60vh] sm:h-[65vh] lg:h-[70vh]'>
+        <Image
+          src='/img/bike.jpg'
+          alt='Luxury experience in Punta Cana'
+          fill
+          className='object-cover'
+          priority
+        />
+        <div className='absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent' />
 
-        {/* Floating elements for modern look */}
-        <div className='absolute top-20 right-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse'></div>
-        <div className='absolute bottom-20 left-20 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000'></div>
-
-        <div className='container mx-auto px-6 relative z-20 py-24'>
-          <motion.div
-            initial='hidden'
-            animate='visible'
-            variants={staggerContainer}
-            className='max-w-4xl mx-auto'
-          >
+        <div className='relative z-10 h-full flex items-end'>
+          <div className='w-full px-5 sm:px-8 lg:px-12 pb-10 sm:pb-14 lg:pb-16'>
             <motion.div
-              variants={fadeInUp}
-              className='inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 mb-8 border border-blue-400/30 backdrop-blur-sm'
+              initial='hidden'
+              animate='visible'
+              variants={staggerContainer}
+              className='max-w-3xl'
             >
-              <Sparkles className='w-4 h-4 mr-2' />
-              {t('standardPage.chip')}
-            </motion.div>
+              <motion.p
+                variants={fadeInUp}
+                className='text-amber-300 uppercase tracking-[0.3em] text-[11px] sm:text-xs font-medium mb-4'
+              >
+                {t('standardPage.chip')}
+              </motion.p>
 
-            <motion.h1
-              variants={fadeInUp}
-              className='text-5xl md:text-7xl font-extrabold leading-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent'
-            >
-              Lux
-            </motion.h1>
-            <motion.h1
-              variants={fadeInUp}
-              className='text-5xl md:text-7xl font-extrabold mb-6 leading-tight bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent'
-            >
-              Punta Cana
-              <span className='block text-3xl md:text-5xl font-normal text-blue-300 mt-2'>
-                Standard Experience
-              </span>
-            </motion.h1>
+              <motion.h1
+                variants={fadeInUp}
+                className='text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white leading-[1.1] tracking-tight mb-3'
+              >
+                Lux Punta Cana
+                <span className='block text-lg sm:text-xl lg:text-2xl font-light text-white/50 mt-2'>
+                  Standard Experience
+                </span>
+              </motion.h1>
 
-            <motion.p
-              variants={fadeInUp}
-              className='text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-3xl'
-            >
-              {t('standardPage.subTitle')}
-            </motion.p>
+              <motion.p
+                variants={fadeInUp}
+                className='text-white/55 text-sm sm:text-base max-w-lg leading-relaxed font-light mb-7'
+              >
+                {t('standardPage.subTitle')}
+              </motion.p>
 
-            <motion.div
-              variants={fadeInUp}
-              className='flex flex-col sm:flex-row gap-6'
-            >
-              <Link href='/premium-package'>
-                <button className='group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center shadow-2xl shadow-blue-500/25 transform hover:scale-105 hover:shadow-blue-500/40'>
+              <motion.div variants={fadeInUp}>
+                <Link
+                  href='/premium-package'
+                  className='group inline-flex items-center gap-2 bg-white text-stone-900 px-6 py-3 text-xs font-medium tracking-wide uppercase hover:bg-amber-50 transition-colors duration-300'
+                >
                   {t('standardPage.btn1')}
-                  <ChevronRight className='ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform' />
-                </button>
-              </Link>
+                  <ChevronRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+                </Link>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className='py-20 bg-gradient-to-b from-white to-gray-50'>
+      {/* ══════════════════════════════════════════════════════════════
+      SERVICES
+  ══════════════════════════════════════════════════════════════ */}
+      <section className='px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24'>
         {isLoading ? (
-          <div className='container mx-auto px-6'>
-            <div className='flex items-center justify-center py-20'>
-              <div className='text-center'>
-                <Loader2 className='w-12 h-12 animate-spin text-blue-600 mx-auto mb-4' />
-                <p className='text-gray-600 text-lg'>
-                  Loading your perfect experiences...
-                </p>
-              </div>
+          <div className='flex items-center justify-center py-20'>
+            <div className='text-center'>
+              <Loader2 className='w-8 h-8 animate-spin text-stone-400 mx-auto mb-3' />
+              <p className='text-stone-400 text-sm'>Loading experiences...</p>
             </div>
           </div>
         ) : (
-          <div className='container mx-auto px-6'>
+          <>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.6 }}
-              className='text-center mb-16'
+              className='mb-12 sm:mb-16'
             >
-              <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
+              <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+                Our Services
+              </p>
+              <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight mb-3'>
                 {t('services.standard.standardPage.title')}
               </h2>
-              <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
+              <p className='text-stone-400 text-sm sm:text-base max-w-xl leading-relaxed'>
                 {t('services.standard.standardPage.subtitle')}
               </p>
             </motion.div>
+
             <ServiceList
               services={services}
               servicePath='standard-package'
               viewContext='standard-view'
             />
-          </div>
+          </>
         )}
       </section>
 
-      {/* Modern Booking CTA Section */}
-      <section className='py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-black relative overflow-hidden'>
-        {/* Background effects */}
-        <div className='absolute inset-0 bg-gradient-to-br from-blue-900/40 to-black/80 z-10'></div>
-        <div className='absolute top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl'></div>
-        <div className='absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl'></div>
+      {/* ══════════════════════════════════════════════════════════════
+      CTA BANNER — full bleed
+  ══════════════════════════════════════════════════════════════ */}
+      <section className='relative w-full'>
+        <div className='absolute inset-0 bg-stone-900' />
 
-        {/* Background image */}
-        {/* <div className='absolute inset-0 z-0 opacity-20'>
-          <Image
-            src='/img/punta-cana-beach-sunset.jpg'
-            alt='Punta Cana Beach'
-            fill
-            className='object-cover'
-          />
-        </div> */}
+        <div className='relative z-10 py-16 sm:py-20 lg:py-24 px-5 sm:px-8 lg:px-12'>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6 }}
+            className='max-w-2xl mx-auto text-center'
+          >
+            <p className='text-amber-400 uppercase tracking-[0.3em] text-[11px] font-medium mb-5'>
+              Elevate Your Stay
+            </p>
+            <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-white mb-5 tracking-tight'>
+              {t('standardPage.standardPageCTA.title')}
+            </h2>
+            <p className='text-white/40 text-sm sm:text-base leading-relaxed mb-10'>
+              {t('standardPage.standardPageCTA.subtitle')}
+            </p>
 
-        <div className='container mx-auto px-6 relative z-20'>
-          <div className='max-w-4xl mx-auto text-center'>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+            <Link
+              href='/premium-package'
+              className='group inline-flex items-center gap-2.5 bg-white text-stone-900 px-8 py-3.5 text-xs font-medium tracking-wide uppercase hover:bg-amber-50 transition-colors duration-300'
             >
-              <h2 className='text-4xl md:text-6xl font-bold text-white mb-8 leading-tight'>
-                {t('standardPage.standardPageCTA.title')}
-              </h2>
-              <p className='text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed'>
-                {t('standardPage.standardPageCTA.subtitle')}
-              </p>
-
-              <div className='flex flex-col sm:flex-row gap-6 justify-center'>
-                <Link href='/premium-package'>
-                  <button className='group px-10 py-5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-2xl shadow-amber-500/25 text-lg transform hover:scale-105'>
-                    {t('standardPage.standardPageCTA.btn2')}
-                    <Sparkles className='ml-2 h-6 w-6 inline group-hover:rotate-12 transition-transform' />
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
-          </div>
+              {t('standardPage.standardPageCTA.btn2')}
+              <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+            </Link>
+          </motion.div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className='py-20 bg-gradient-to-b from-gray-50 to-white'>
-        <div className='container mx-auto px-6'>
-          <div className='max-w-4xl mx-auto'>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className='text-center mb-16'
-            >
-              <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
-                {t('common.faqs.title')}
-              </h2>
-              <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
-                {t('common.faqs.subtitle')}
-              </p>
-            </motion.div>
+      {/* ══════════════════════════════════════════════════════════════
+      FAQ
+  ══════════════════════════════════════════════════════════════ */}
+      <section className='px-5 sm:px-8 lg:px-12 py-16 sm:py-20 lg:py-24'>
+        <div className='max-w-3xl mx-auto'>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6 }}
+            className='mb-12'
+          >
+            <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+              Information
+            </p>
+            <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight mb-3'>
+              {t('common.faqs.title')}
+            </h2>
+            <p className='text-stone-400 text-sm sm:text-base max-w-lg leading-relaxed'>
+              {t('common.faqs.subtitle')}
+            </p>
+          </motion.div>
 
-            <div className='space-y-6'>
-              {[
-                {
-                  question: t('common.faqs.question1'),
-                  answer: t('common.faqs.answer1'),
-                },
-                {
-                  question: t('common.faqs.question2'),
-                  answer: t('common.faqs.answer2'),
-                },
-                {
-                  question: t('common.faqs.question3'),
-                  answer: t('common.faqs.answer3'),
-                },
-                {
-                  question: t('common.faqs.question4'),
-                  answer: t('common.faqs.answer4'),
-                },
-                {
-                  question: t('common.faqs.question5'),
-                  answer: t('common.faqs.answer5'),
-                },
-              ].map((faq, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.6 }}
-                  className='bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100'
-                >
-                  <h3 className='text-xl font-bold text-gray-900 mb-4'>
-                    {faq.question}
-                  </h3>
-                  <p className='text-gray-700 leading-relaxed'>{faq.answer}</p>
-                </motion.div>
-              ))}
-            </div>
+          <motion.div
+            initial='hidden'
+            whileInView='visible'
+            viewport={{ once: true, margin: '-60px' }}
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.08 } },
+            }}
+            className='space-y-0 divide-y divide-stone-200'
+          >
+            {[
+              {
+                question: t('common.faqs.question1'),
+                answer: t('common.faqs.answer1'),
+              },
+              {
+                question: t('common.faqs.question2'),
+                answer: t('common.faqs.answer2'),
+              },
+              {
+                question: t('common.faqs.question3'),
+                answer: t('common.faqs.answer3'),
+              },
+              {
+                question: t('common.faqs.question4'),
+                answer: t('common.faqs.answer4'),
+              },
+              {
+                question: t('common.faqs.question5'),
+                answer: t('common.faqs.answer5'),
+              },
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: { opacity: 0, y: 12 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+                }}
+                className='py-6'
+              >
+                <h4 className='text-stone-900 font-medium text-sm mb-2'>
+                  {faq.question}
+                </h4>
+                <p className='text-stone-400 text-sm leading-relaxed'>
+                  {faq.answer}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
 
-            {/* Contact for More Questions */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className='mt-16 text-center p-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl border border-blue-200'
+          {/* Contact prompt */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className='mt-14 border border-stone-200 bg-white p-8 text-center'
+          >
+            <h3 className='text-stone-900 font-medium text-base mb-2'>
+              {t('common.faqs.stillHaveQuestions')}
+            </h3>
+            <p className='text-stone-400 text-sm mb-6 max-w-md mx-auto leading-relaxed'>
+              {t('common.faqs.stillHaveQuestionsText')}
+            </p>
+            <Link
+              href='/contact'
+              className='group inline-flex items-center gap-2 bg-stone-900 text-white px-6 py-3 text-xs font-medium tracking-wide uppercase hover:bg-stone-800 transition-colors duration-300'
             >
-              <h3 className='text-2xl font-bold text-gray-900 mb-4'>
-                {t('common.faqs.stillHaveQuestions')}
-              </h3>
-              <p className='text-gray-700 mb-8 text-lg'>
-                {t('common.faqs.stillHaveQuestionsText')}
-              </p>
-              <Link href='/contact'>
-                <button className='inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg transform hover:scale-105'>
-                  {t('common.faqs.contactUs')}
-                  <ArrowRight className='ml-2 h-5 w-5' />
-                </button>
-              </Link>
-            </motion.div>
-          </div>
+              {t('common.faqs.contactUs')}
+              <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+            </Link>
+          </motion.div>
         </div>
       </section>
 

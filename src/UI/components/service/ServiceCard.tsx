@@ -1,78 +1,14 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Clock, CalendarDays, Check, Crown } from 'lucide-react';
+import { ArrowUpRight, Clock, CalendarDays, Check } from 'lucide-react';
 import Image from 'next/image';
 import BookingModal from '../modal/BookingModal';
 import { useTranslation } from '@/lib/i18n/client';
 
-// Custom hook simplificado (sin useInView ni ref)
-const useServiceCard = (service: ServiceCardProps['service']) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'decimal',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(service.price);
-
-  return {
-    isModalOpen,
-    setIsModalOpen,
-    isHovered,
-    setIsHovered,
-    imageLoaded,
-    setImageLoaded,
-    formattedPrice,
-  };
-};
-
-// Animaciones simplificadas (solo hover e imagen)
-const ANIMATIONS = {
-  hover: {
-    y: -8,
-    scale: 1.01,
-    transition: { duration: 0.3, ease: 'easeOut' },
-  },
-  image: {
-    hover: { scale: 1.05, transition: { duration: 0.6 } },
-    normal: { scale: 1, transition: { duration: 0.6 } },
-  },
-  glow: {
-    animate: (isActive: boolean) => ({
-      opacity: isActive ? 1 : 0,
-      scale: isActive ? 1 : 0.9,
-      transition: { duration: 0.4 },
-    }),
-  },
-};
-
-const SIZES = {
-  compact: {
-    imageHeight: 'h-48',
-    padding: 'p-6',
-    title: 'text-xl',
-    description: 'text-sm',
-    button: 'py-2.5 px-4 text-sm',
-  },
-  standard: {
-    imageHeight: 'h-56',
-    padding: 'p-6',
-    title: 'text-xl',
-    description: 'text-base',
-    button: 'py-3 px-5',
-  },
-  large: {
-    imageHeight: 'h-64',
-    padding: 'p-8',
-    title: 'text-2xl',
-    description: 'text-base',
-    button: 'py-4 px-6',
-  },
-};
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ServiceCardProps {
   service: {
@@ -86,11 +22,66 @@ interface ServiceCardProps {
   servicePath: string;
   isSelected: boolean;
   packageType: 'standard' | 'premium';
-  onToggle: (service: any) => void;
-  onBookService: (service: any, dates: any, guests: number) => void;
+  onToggle: (service: ServiceCardProps['service']) => void;
+  onBookService: (
+    service: ServiceCardProps['service'],
+    dates: unknown,
+    guests: number,
+  ) => void;
   viewContext?: 'standard-view' | 'premium-view';
   size?: 'compact' | 'standard' | 'large';
 }
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const SIZE_CONFIG = {
+  compact: {
+    imageHeight: 'h-48',
+    padding: 'p-5',
+    title: 'text-lg',
+    description: 'text-sm',
+    button: 'py-2.5 px-4 text-xs',
+  },
+  standard: {
+    imageHeight: 'h-52',
+    padding: 'p-6',
+    title: 'text-lg',
+    description: 'text-sm',
+    button: 'py-3 px-5 text-xs',
+  },
+  large: {
+    imageHeight: 'h-60',
+    padding: 'p-7',
+    title: 'text-xl',
+    description: 'text-sm',
+    button: 'py-3.5 px-6 text-xs',
+  },
+} as const;
+
+const PLACEHOLDER_IMAGE = '/images/placeholder-service.jpg';
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getTranslationPath(serviceId: string): string {
+  const specialMappings: Record<string, string> = {
+    'yoga-standard': 'yoga',
+    'luxe-yoga': 'luxeYoga',
+  };
+
+  if (specialMappings[serviceId]) {
+    const mappedKey = specialMappings[serviceId];
+    const type = serviceId.startsWith('luxe') ? 'premium' : 'standard';
+    return `services.${type}.${mappedKey}`;
+  }
+
+  const camelCaseKey = serviceId.replace(/-([a-z])/g, (_, letter: string) =>
+    letter.toUpperCase(),
+  );
+  const type = camelCaseKey.startsWith('luxe') ? 'premium' : 'standard';
+  return `services.${type}.${camelCaseKey}`;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
@@ -102,340 +93,203 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   size = 'standard',
 }) => {
   const { t } = useTranslation();
-  const {
-    isModalOpen,
-    setIsModalOpen,
-    isHovered,
-    setIsHovered,
-    imageLoaded,
-    setImageLoaded,
-  } = useServiceCard(service);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-  const sizeConfig = SIZES[size];
-  const isPremiumStyle =
-    viewContext === 'premium-view' || packageType === 'premium';
-
-  const getTranslationPath = (serviceId: string) => {
-    // Mapeo especial para servicios con sufijos
-    const specialMappings: Record<string, string> = {
-      'yoga-standard': 'yoga',
-      'luxe-yoga': 'luxeYoga',
-      // Agrega otros casos especiales aquí
-    };
-
-    // Si existe un mapeo especial, úsalo
-    if (specialMappings[serviceId]) {
-      const mappedKey = specialMappings[serviceId];
-      const type = serviceId.startsWith('luxe') ? 'premium' : 'standard';
-      return `services.${type}.${mappedKey}`;
-    }
-
-    // Lógica original para otros servicios
-    const camelCaseKey = serviceId.replace(/-([a-z])/g, (_, letter) =>
-      letter.toUpperCase()
-    );
-    const type = camelCaseKey.startsWith('luxe') ? 'premium' : 'standard';
-    return `services.${type}.${camelCaseKey}`;
-  };
-
+  const config = SIZE_CONFIG[size];
+  const isPremium = viewContext === 'premium-view' || packageType === 'premium';
   const translationPath = getTranslationPath(service.id);
 
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
-    e.currentTarget.src = '/images/placeholder-service.jpg';
-  };
+  const handleImageError = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      e.currentTarget.src = PLACEHOLDER_IMAGE;
+    },
+    [],
+  );
 
-  const handleBookingConfirm = (service: any, dates: any, guests: number) => {
-    onBookService(service, dates, guests);
-    setIsModalOpen(false);
-  };
+  const handleBookingConfirm = useCallback(
+    (svc: ServiceCardProps['service'], dates: unknown, guests: number) => {
+      onBookService(svc, dates, guests);
+      setIsModalOpen(false);
+    },
+    [onBookService],
+  );
 
-  if (isPremiumStyle) {
-    return (
-      <>
-        <motion.div
-          whileHover={ANIMATIONS.hover}
-          className='relative group overflow-hidden cursor-pointer'
-          onHoverStart={() => setIsHovered(true)}
-          onHoverEnd={() => setIsHovered(false)}
-        >
-          <motion.div
-            animate={ANIMATIONS.glow.animate(isSelected || isHovered)}
-            className='absolute -inset-3 bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-amber-500/20 rounded-2xl blur-lg'
-          />
+  const serviceName = t(`${translationPath}.name`, { fallback: service.name });
+  const serviceDescription = t(`${translationPath}.short`, {
+    fallback: service.description,
+  });
 
-          <Link href={`/${servicePath}/${service.id}`}>
-            <div className='relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-2xl overflow-hidden border border-amber-500/20 shadow-xl'>
-              <div
-                className={`relative ${sizeConfig.imageHeight} overflow-hidden`}
-              >
-                <motion.div
-                  initial={{ scale: 0, rotate: -90 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.2, type: 'spring', damping: 15 }}
-                  className='absolute top-4 right-4 z-30'
-                >
-                  <div className='flex items-center px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40'>
-                    <Crown className='text-amber-400 mr-1.5 h-3 w-3' />
-                    <span className='text-xs font-bold uppercase tracking-wider text-amber-300'>
-                      {t('common.mainText.xclusive')}
-                    </span>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  animate={{ opacity: imageLoaded ? 0 : 1 }}
-                  className='absolute inset-0 bg-gradient-to-br from-gray-800 to-black z-10 flex items-center justify-center'
-                >
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: 'linear',
-                    }}
-                    className='w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full'
-                  />
-                </motion.div>
-
-                <motion.div
-                  animate={
-                    isHovered ? ANIMATIONS.image.hover : ANIMATIONS.image.normal
-                  }
-                  className='relative w-full h-full'
-                >
-                  <Image
-                    src={service.img || `/images/services/${service.id}.jpg`}
-                    alt={t(`${translationPath}.name`, {
-                      fallback: service.name,
-                    })}
-                    fill
-                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                    className='object-cover z-20'
-                    onLoad={() => setImageLoaded(true)}
-                    onError={handleImageError}
-                    priority={true}
-                  />
-                </motion.div>
-
-                <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-25' />
-
-                <motion.div
-                  animate={{ opacity: isHovered ? 0.15 : 0 }}
-                  transition={{ duration: 0.4 }}
-                  className='absolute inset-0 bg-gradient-to-br from-amber-500/30 to-orange-500/20 z-24'
-                />
-              </div>
-
-              <div className={sizeConfig.padding}>
-                <AnimatePresence>
-                  {isSelected && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0 }}
-                      transition={{ type: 'spring', damping: 15 }}
-                      className='absolute -top-10 right-6 z-40'
-                    >
-                      <div className='w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg'>
-                        <Check className='text-black h-4 w-4 font-bold' />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <h3
-                  className={`${sizeConfig.title} font-bold mb-3 text-white tracking-tight group-hover:text-amber-100 transition-colors duration-300`}
-                >
-                  {t(`${translationPath}.name`, { fallback: service.name })}
-                </h3>
-
-                <div className='flex items-center text-gray-400 mb-4 space-x-3'>
-                  <div className='flex items-center bg-amber-500/10 rounded-full px-3 py-1.5 border border-amber-500/20'>
-                    <Clock className='h-3 w-3 mr-1.5 text-amber-400' />
-                    <span className='text-xs font-semibold text-amber-300'>
-                      {service.duration}
-                    </span>
-                  </div>
-                  <div className='flex items-center bg-amber-500/10 rounded-full px-3 py-1.5 border border-amber-500/20'>
-                    <CalendarDays className='h-3 w-3 mr-1.5 text-amber-400' />
-                    <span className='text-xs font-semibold text-amber-300'>
-                      Flexible
-                    </span>
-                  </div>
-                </div>
-
-                <p
-                  className={`mb-5 text-gray-300 leading-relaxed line-clamp-2 ${sizeConfig.description}`}
-                >
-                  {t(`${translationPath}.short`, {
-                    fallback: service.description,
-                  })}
-                </p>
-
-                <div className='grid grid-cols-1 gap-3'>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`${
-                      sizeConfig.button
-                    } flex items-center justify-center font-semibold rounded-xl transition-all duration-300 shadow-lg ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-black'
-                        : 'bg-gradient-to-r from-amber-500 to-orange-500 text-black'
-                    }`}
-                  >
-                    <span className='flex items-center'>
-                      {t(`common.button.details`)}
-                      <ArrowUpRight size={14} className='ml-1.5' />
-                    </span>
-                  </motion.div>
-                </div>
-              </div>
-
-              <div className='absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent' />
-            </div>
-          </Link>
-        </motion.div>
-
-        <AnimatePresence>
-          {isModalOpen && (
-            <BookingModal
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              onConfirm={handleBookingConfirm}
-              service={service}
-            />
-          )}
-        </AnimatePresence>
-      </>
-    );
-  }
-
-  // Standard card design
   return (
     <>
-      <motion.div
-        whileHover={ANIMATIONS.hover}
-        className='relative group overflow-hidden cursor-pointer'
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-      >
-        <motion.div
-          animate={ANIMATIONS.glow.animate(isSelected || isHovered)}
-          className='absolute -inset-3 bg-gradient-to-r from-blue-500/15 via-cyan-500/20 to-blue-500/15 rounded-2xl blur-lg'
-        />
-
-        <Link href={`/${servicePath}/${service.id}`}>
-          <div className='relative bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-400'>
+      <Link href={`/${servicePath}/${service.id}`} className='block group'>
+        <motion.article
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className={`
+            relative overflow-hidden
+            ${
+              isPremium
+                ? 'bg-stone-900 border border-stone-800'
+                : 'bg-white border border-stone-200'
+            }
+          `}
+        >
+          {/* ── Image ──────────────────────────────────────────────── */}
+          <div className={`relative ${config.imageHeight} overflow-hidden`}>
+            {/* Loading skeleton */}
             <div
-              className={`relative ${sizeConfig.imageHeight} overflow-hidden`}
+              className={`
+                absolute inset-0 z-10 flex items-center justify-center transition-opacity duration-500
+                ${imageLoaded ? 'opacity-0 pointer-events-none' : 'opacity-100'}
+                ${isPremium ? 'bg-stone-800' : 'bg-stone-100'}
+              `}
             >
-              <motion.div
-                animate={{ opacity: imageLoaded ? 0 : 1 }}
-                className='absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-100 z-10 flex items-center justify-center'
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
-                  className='w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full'
-                />
-              </motion.div>
-
-              <motion.div
-                animate={
-                  isHovered ? ANIMATIONS.image.hover : ANIMATIONS.image.normal
-                }
-                className='relative w-full h-full'
-              >
-                <Image
-                  src={service.img || `/images/services/${service.id}.jpg`}
-                  alt={t(`${translationPath}.name`, { fallback: service.name })}
-                  fill
-                  sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                  className='object-cover z-20'
-                  onLoad={() => setImageLoaded(true)}
-                  onError={handleImageError}
-                  priority={true}
-                />
-              </motion.div>
-
-              <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent z-25' />
+              <div
+                className={`
+                  w-5 h-5 border-2 rounded-full animate-spin
+                  ${
+                    isPremium
+                      ? 'border-stone-600 border-t-amber-500'
+                      : 'border-stone-300 border-t-stone-600'
+                  }
+                `}
+              />
             </div>
 
-            <div className={sizeConfig.padding}>
-              <AnimatePresence>
-                {isSelected && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0 }}
-                    className='absolute -top-8 right-6 z-40'
-                  >
-                    <div className='w-7 h-7 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center shadow-md'>
-                      <Check className='text-white h-3 w-3' />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            <motion.div
+              className='relative w-full h-full'
+              whileHover={{ scale: 1.04 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              <Image
+                src={service.img || `/images/services/${service.id}.jpg`}
+                alt={serviceName}
+                fill
+                sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                className='object-cover'
+                onLoad={() => setImageLoaded(true)}
+                onError={handleImageError}
+              />
+            </motion.div>
 
-              <h3
-                className={`${sizeConfig.title} font-bold mb-3 text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors duration-300`}
-              >
-                {t(`${translationPath}.name`, { fallback: service.name })}
-              </h3>
+            {/* Gradient overlay */}
+            <div
+              className={`
+                absolute inset-0 z-20
+                ${
+                  isPremium
+                    ? 'bg-gradient-to-t from-stone-900 via-stone-900/20 to-transparent'
+                    : 'bg-gradient-to-t from-white via-transparent to-transparent'
+                }
+              `}
+            />
 
-              <div className='flex items-center text-gray-500 mb-4 space-x-3'>
-                <div className='flex items-center bg-blue-50 rounded-full px-3 py-1.5 border border-blue-100'>
-                  <Clock className='h-3 w-3 mr-1.5 text-blue-500' />
-                  <span className='text-xs font-semibold text-blue-600'>
-                    {service.duration}h
-                  </span>
-                </div>
-                <div className='flex items-center bg-blue-50 rounded-full px-3 py-1.5 border border-blue-100'>
-                  <CalendarDays className='h-3 w-3 mr-1.5 text-blue-500' />
-                  <span className='text-xs font-semibold text-blue-600'>
-                    Flexible
-                  </span>
-                </div>
+            {/* Premium badge */}
+            {isPremium && (
+              <div className='absolute top-3 right-3 z-30'>
+                <span className='px-2.5 py-1 bg-black/50 backdrop-blur-sm border border-amber-500/30 text-amber-400 text-[10px] font-medium uppercase tracking-[0.15em]'>
+                  {t('common.mainText.xclusive')}
+                </span>
               </div>
+            )}
 
-              <p
-                className={`mb-5 text-gray-600 leading-relaxed line-clamp-2 ${sizeConfig.description}`}
-              >
-                {t(`${translationPath}.short`, {
-                  fallback: service.description,
-                })}
-              </p>
-
-              <div className='grid grid-cols-1 gap-3'>
+            {/* Selected indicator */}
+            <AnimatePresence>
+              {isSelected && (
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`${
-                    sizeConfig.button
-                  } flex items-center justify-center font-semibold rounded-xl transition-all duration-300 shadow-md ${
-                    isSelected
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
-                  }`}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.5 }}
+                  transition={{ duration: 0.2 }}
+                  className='absolute top-3 left-3 z-30'
                 >
-                  <span className='flex items-center'>
-                    {t(`common.button.details`)}
-                    <ArrowUpRight size={14} className='ml-1.5' />
-                  </span>
+                  <div
+                    className={`
+                      w-6 h-6 flex items-center justify-center
+                      ${isPremium ? 'bg-amber-500 text-stone-900' : 'bg-stone-900 text-white'}
+                    `}
+                  >
+                    <Check className='w-3.5 h-3.5' strokeWidth={2.5} />
+                  </div>
                 </motion.div>
-              </div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* ── Content ────────────────────────────────────────────── */}
+          <div className={config.padding}>
+            <h3
+              className={`
+                ${config.title} font-semibold tracking-tight mb-2
+                transition-colors duration-300
+                ${
+                  isPremium
+                    ? 'text-white group-hover:text-amber-200'
+                    : 'text-stone-900 group-hover:text-stone-600'
+                }
+              `}
+            >
+              {serviceName}
+            </h3>
+
+            {/* Meta */}
+            <div className='flex items-center gap-3 mb-3'>
+              <span
+                className={`
+                  inline-flex items-center gap-1 text-[11px] tracking-wide
+                  ${isPremium ? 'text-stone-500' : 'text-stone-400'}
+                `}
+              >
+                <Clock className='w-3 h-3' />
+                {service.duration}h
+              </span>
+              <span
+                className={`
+                  inline-flex items-center gap-1 text-[11px] tracking-wide
+                  ${isPremium ? 'text-stone-500' : 'text-stone-400'}
+                `}
+              >
+                <CalendarDays className='w-3 h-3' />
+                Flexible
+              </span>
+            </div>
+
+            <p
+              className={`
+                ${config.description} leading-relaxed line-clamp-2 mb-5
+                ${isPremium ? 'text-stone-400' : 'text-stone-500'}
+              `}
+            >
+              {serviceDescription}
+            </p>
+
+            {/* CTA */}
+            <div
+              className={`
+                ${config.button}
+                inline-flex items-center gap-1.5 font-medium uppercase tracking-[0.1em]
+                transition-colors duration-300
+                ${
+                  isPremium
+                    ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 group-hover:bg-amber-500/20'
+                    : 'bg-stone-900 text-white group-hover:bg-stone-800'
+                }
+              `}
+            >
+              {t('common.button.details')}
+              <ArrowUpRight className='w-3.5 h-3.5' />
             </div>
           </div>
-        </Link>
-      </motion.div>
 
+          {/* Bottom accent line (premium only) */}
+          {isPremium && (
+            <div className='h-px w-full bg-gradient-to-r from-transparent via-amber-500/40 to-transparent' />
+          )}
+        </motion.article>
+      </Link>
+
+      {/* ── Booking Modal ────────────────────────────────────────── */}
       <AnimatePresence>
         {isModalOpen && (
           <BookingModal
