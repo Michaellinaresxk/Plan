@@ -9,7 +9,6 @@ import {
   AlertCircle,
   CheckCircle,
   Sunrise,
-  Sunset,
   MessageSquare,
   Info,
   MapPin,
@@ -17,19 +16,114 @@ import {
   Target,
   Dumbbell,
   Baby,
+  Flame,
+  Zap,
+  Heart,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n/client';
-import { useEffect, useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { LOCATION_OPTIONS } from '@/constants/location/location';
 import { useFormModal } from '@/hooks/useFormModal';
+import { useScrollToError } from '@/hooks/useScrollToError';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
 import FormHeader from './FormHeader';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface PersonalTrainerFormProps {
   service: Service;
   onSubmit?: (formData: any) => void;
   onCancel: () => void;
 }
+
+interface FormData {
+  date: string;
+  timeSlot: string;
+  location: string;
+  participantCount: number;
+  minorsCount: number;
+  workoutType: string;
+  fitnessLevel: string;
+  hasSpecialNeeds: boolean;
+  specialNeedsDetails: string;
+  confirmSpecialNeeds: boolean;
+  additionalNotes: string;
+}
+
+interface FormErrors {
+  [key: string]: string;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const BASE_PRICE = 40;
+const SPECIAL_NEEDS_FEE = 20;
+const GROUP_DISCOUNT = 0.85; // 15% off per person in group
+const TAX_RATE = 5; // 5% processing fee
+
+const WORKOUT_TYPES = [
+  { id: 'cardio', label: 'Cardio', icon: Heart, multiplier: 1.0 },
+  { id: 'strength', label: 'Strength', icon: Dumbbell, multiplier: 1.1 },
+  { id: 'functional', label: 'Functional', icon: Target, multiplier: 1.15 },
+  { id: 'hiit', label: 'HIIT', icon: Flame, multiplier: 1.15 },
+  { id: 'mixed', label: 'Mixed', icon: Zap, multiplier: 1.0 },
+] as const;
+
+const FITNESS_LEVELS = [
+  { id: 'beginner', label: 'Beginner' },
+  { id: 'intermediate', label: 'Intermediate' },
+  { id: 'advanced', label: 'Advanced' },
+] as const;
+
+const TIME_SLOTS = [
+  {
+    id: 'morning',
+    label: 'Morning',
+    time: '7:00 AM – 11:00 AM',
+    icon: Sunrise,
+  },
+  {
+    id: 'afternoon',
+    label: 'Afternoon',
+    time: '1:00 PM – 6:00 PM',
+    icon: Activity,
+  },
+] as const;
+
+// ─── Subcomponents ────────────────────────────────────────────────────────────
+
+const SectionHeading: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <h3 className='text-sm font-semibold text-stone-900 uppercase tracking-[0.15em] border-b border-stone-200 pb-3'>
+    {children}
+  </h3>
+);
+
+const FieldLabel: React.FC<{
+  icon: React.ElementType;
+  children: React.ReactNode;
+  required?: boolean;
+}> = ({ icon: Icon, children, required }) => (
+  <label className='flex items-center text-sm font-medium text-stone-700 mb-2'>
+    <Icon className='w-4 h-4 mr-2 text-stone-400' />
+    {children}
+    {required && <span className='text-blue-600 ml-1'>*</span>}
+  </label>
+);
+
+const FieldError: React.FC<{ message?: string }> = ({ message }) => {
+  if (!message) return null;
+  return (
+    <p className='flex items-center gap-1 text-red-600 text-xs mt-1.5'>
+      <AlertCircle className='w-3 h-3' />
+      {message}
+    </p>
+  );
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
   service,
@@ -41,305 +135,272 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
   const { setReservationData } = useReservation();
   const { handleClose } = useFormModal({ onCancel });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     date: '',
-    timeSlot: '', // 'morning', 'afternoon'
+    timeSlot: '',
     location: '',
     participantCount: 1,
-    minorsCount: 0, // Simple count of participants under 18
-    workoutType: '', // 'strength', 'cardio', 'functional', 'hiit', 'mixed'
-    fitnessLevel: '', // 'beginner', 'intermediate', 'advanced'
+    minorsCount: 0,
+    workoutType: '',
+    fitnessLevel: '',
     hasSpecialNeeds: false,
     specialNeedsDetails: '',
     confirmSpecialNeeds: false,
     additionalNotes: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentPrice, setCurrentPrice] = useState(service.price);
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Calculate price based on participant count and workout type
-  useEffect(() => {
-    const basePrice = service.price;
+  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
 
-    // Price adjustment based on workout type
-    let typeMultiplier = 1;
-    switch (formData.workoutType) {
-      case 'hiit':
-      case 'functional':
-        typeMultiplier = 1.15; // 15% increase for specialized training
-        break;
-      case 'strength':
-        typeMultiplier = 1.1; // 10% increase for strength training
-        break;
-      default:
-        typeMultiplier = 1;
-    }
+  // ── Derived pricing (useMemo, not useEffect) ───────────────────────
 
-    const adjustedBasePrice = basePrice * typeMultiplier;
+  const workoutMultiplier = useMemo(() => {
+    const found = WORKOUT_TYPES.find((w) => w.id === formData.workoutType);
+    return found?.multiplier ?? 1;
+  }, [formData.workoutType]);
 
-    // Group discount calculation
+  const basePrice = useMemo(() => {
+    const adjustedBase = BASE_PRICE * workoutMultiplier;
+
     const pricePerPerson =
       formData.participantCount > 1
-        ? adjustedBasePrice * 0.85 // 15% discount per additional person
-        : adjustedBasePrice;
+        ? adjustedBase * GROUP_DISCOUNT
+        : adjustedBase;
 
-    const totalPrice = pricePerPerson * formData.participantCount;
+    const subtotal = pricePerPerson * formData.participantCount;
+    const specialFee = formData.hasSpecialNeeds ? SPECIAL_NEEDS_FEE : 0;
 
-    // Additional fee for special needs accommodations
-    const specialNeedsFee = formData.hasSpecialNeeds ? 20 : 0;
+    return subtotal + specialFee;
+  }, [formData.participantCount, formData.hasSpecialNeeds, workoutMultiplier]);
 
-    setCurrentPrice(totalPrice + specialNeedsFee);
-  }, [
-    formData.participantCount,
-    formData.workoutType,
-    formData.hasSpecialNeeds,
-    service.price,
-  ]);
+  // ✅ Tax calculation — same pattern as YogaServiceForm
+  const priceWithTax = useMemo(
+    () => calculatePriceWithTax(basePrice, TAX_RATE),
+    [basePrice],
+  );
 
-  // Handle input changes
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
+  const totalPrice = priceWithTax.total;
 
-    if (type === 'checkbox') {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: checked,
-      }));
+  // ── Field helpers ───────────────────────────────────────────────────
 
-      if (name === 'hasSpecialNeeds' && !checked) {
-        setFormData((prev) => ({
-          ...prev,
-          hasSpecialNeeds: false,
-          specialNeedsDetails: '',
-          confirmSpecialNeeds: false,
-        }));
+  const clearError = useCallback((field: string) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }, []);
+
+  const updateField = useCallback(
+    <K extends keyof FormData>(field: K, value: FormData[K]) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      clearError(field);
+    },
+    [clearError],
+  );
+
+  const handleChange = useCallback(
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >,
+    ) => {
+      const { name, value, type, checked } = e.target as HTMLInputElement;
+
+      if (type === 'checkbox') {
+        updateField(name as keyof FormData, checked as any);
+
+        if (name === 'hasSpecialNeeds' && !checked) {
+          setFormData((prev) => ({
+            ...prev,
+            hasSpecialNeeds: false,
+            specialNeedsDetails: '',
+            confirmSpecialNeeds: false,
+          }));
+        }
+      } else {
+        updateField(name as keyof FormData, value as any);
       }
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    },
+    [updateField],
+  );
 
-    // Clear errors for this field
-    if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
-
-  // Handle location selection
-  const handleLocationSelect = (locationId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      location: locationId,
-    }));
-
-    // Clear location error if exists
-    if (errors.location) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.location;
-        return newErrors;
-      });
-    }
-  };
-
-  // Handle participant count changes
-  const updateParticipantCount = (increment: boolean) => {
+  const updateParticipantCount = useCallback((increment: boolean) => {
     setFormData((prev) => {
       const newCount = increment
-        ? Math.min(6, prev.participantCount + 1) // Max 6 people for safety
+        ? Math.min(6, prev.participantCount + 1)
         : Math.max(1, prev.participantCount - 1);
-
-      // If decreasing participants, ensure minors count doesn't exceed total
-      const adjustedMinorsCount = Math.min(prev.minorsCount, newCount);
 
       return {
         ...prev,
         participantCount: newCount,
-        minorsCount: adjustedMinorsCount,
+        minorsCount: Math.min(prev.minorsCount, newCount),
       };
     });
-  };
+  }, []);
 
-  // Validate form before submission
-  const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
+  // ── Validation ──────────────────────────────────────────────────────
 
-    // Required fields
-    if (!formData.date) {
-      newErrors.date = t('form.errors.required', {
-        fallback: 'Date is required',
-      });
-    }
+  const validateForm = useCallback((): boolean => {
+    const errs: FormErrors = {};
 
-    if (!formData.location) {
-      newErrors.location = t('form.errors.required', {
-        fallback: 'Please select a location',
-      });
-    }
+    if (!formData.date) errs.date = 'Date is required';
+    if (!formData.location) errs.location = 'Please select a location';
+    if (!formData.timeSlot) errs.timeSlot = 'Please select a time slot';
+    if (!formData.workoutType) errs.workoutType = 'Please select workout type';
+    if (!formData.fitnessLevel)
+      errs.fitnessLevel = 'Please select fitness level';
 
-    if (!formData.timeSlot) {
-      newErrors.timeSlot = t('form.errors.required', {
-        fallback: 'Please select a time slot',
-      });
-    }
-
-    if (!formData.workoutType) {
-      newErrors.workoutType = t('form.errors.required', {
-        fallback: 'Please select workout type',
-      });
-    }
-
-    if (!formData.fitnessLevel) {
-      newErrors.fitnessLevel = t('form.errors.required', {
-        fallback: 'Please select fitness level',
-      });
-    }
-
-    // Validate minors count
     if (formData.minorsCount > formData.participantCount) {
-      newErrors.minorsCount =
-        'Number of minors cannot exceed total participants';
+      errs.minorsCount = 'Cannot exceed total participants';
     }
-
     if (formData.minorsCount < 0) {
-      newErrors.minorsCount = 'Number of minors cannot be negative';
+      errs.minorsCount = 'Cannot be negative';
     }
 
-    // Validate special needs
     if (formData.hasSpecialNeeds) {
       if (!formData.specialNeedsDetails.trim()) {
-        newErrors.specialNeedsDetails = t('form.errors.required', {
-          fallback: 'Please provide details about special needs',
-        });
+        errs.specialNeedsDetails = 'Please provide details';
       }
-
       if (!formData.confirmSpecialNeeds) {
-        newErrors.confirmSpecialNeeds = t('form.errors.confirmation', {
-          fallback: 'Please confirm special needs accommodation',
-        });
+        errs.confirmSpecialNeeds = 'Please confirm';
       }
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }, [formData]);
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // ── Submit ──────────────────────────────────────────────────────────
 
-    if (!validateForm()) {
-      console.log('❌ PersonalTrainerForm - Validation errors:', errors);
-      return;
-    }
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    setIsSubmitting(true);
+      if (!validateForm()) {
+        scrollToFirstError();
+        return;
+      }
 
-    try {
-      const selectedDate = new Date(formData.date);
-      const bookingStartDate = new Date(selectedDate);
-      const bookingEndDate = new Date(selectedDate);
+      setIsSubmitting(true);
 
-      switch (formData.timeSlot) {
-        case 'morning':
+      try {
+        const selectedDate = new Date(formData.date);
+        const bookingStartDate = new Date(selectedDate);
+        const bookingEndDate = new Date(selectedDate);
+
+        if (formData.timeSlot === 'morning') {
           bookingStartDate.setHours(7, 0, 0, 0);
           bookingEndDate.setHours(11, 0, 0, 0);
-          break;
-        case 'afternoon':
+        } else {
           bookingStartDate.setHours(13, 0, 0, 0);
           bookingEndDate.setHours(18, 0, 0, 0);
-          break;
-      }
+        }
 
-      // Get selected location name
-      const selectedLocation =
-        LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
-        formData.location;
+        const selectedLocation =
+          LOCATION_OPTIONS.find((loc) => loc.id === formData.location)?.name ||
+          formData.location;
 
-      const reservationData = {
-        service: service,
-        formData: {
-          ...formData,
-          serviceType: 'personal-trainer',
-          totalPrice: currentPrice,
-          calculatedPrice: currentPrice,
-          locationName: selectedLocation,
-        },
-        totalPrice: currentPrice,
-        bookingDate: bookingStartDate,
-        endDate: bookingEndDate,
-        participants: {
-          adults: formData.participantCount - formData.minorsCount,
-          children: formData.minorsCount,
-          total: formData.participantCount,
-        },
-        selectedItems: [
-          {
-            id: 'personal-training-session',
-            name: `${
-              formData.timeSlot.charAt(0).toUpperCase() +
-              formData.timeSlot.slice(1)
-            } Personal Training Session - ${formData.workoutType.toUpperCase()}`,
-            quantity: 1,
-            price: currentPrice,
-            totalPrice: currentPrice,
+        const slotLabel =
+          formData.timeSlot.charAt(0).toUpperCase() +
+          formData.timeSlot.slice(1);
+
+        const reservationData = {
+          service,
+          formData: {
+            ...formData,
+            serviceType: 'personal-trainer',
+            totalPrice,
+            basePrice,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
+            calculatedPrice: totalPrice,
+            locationName: selectedLocation,
+          },
+          totalPrice,
+          bookingDate: bookingStartDate,
+          endDate: bookingEndDate,
+          participants: {
+            adults: formData.participantCount - formData.minorsCount,
+            children: formData.minorsCount,
+            total: formData.participantCount,
+          },
+          selectedItems: [
+            {
+              id: 'personal-training-session',
+              name: `${slotLabel} Personal Training – ${formData.workoutType.toUpperCase()}`,
+              quantity: 1,
+              price: totalPrice,
+              totalPrice,
+              timeSlot: formData.timeSlot,
+              workoutType: formData.workoutType,
+              fitnessLevel: formData.fitnessLevel,
+              specialNeeds: formData.hasSpecialNeeds,
+              location: selectedLocation,
+            },
+          ],
+          clientInfo: undefined,
+          personalTrainerSpecifics: {
             timeSlot: formData.timeSlot,
+            location: formData.location,
+            locationName: selectedLocation,
             workoutType: formData.workoutType,
             fitnessLevel: formData.fitnessLevel,
-            specialNeeds: formData.hasSpecialNeeds,
-            location: selectedLocation,
+            hasSpecialNeeds: formData.hasSpecialNeeds,
+            specialNeedsDetails: formData.specialNeedsDetails,
+            participantCount: formData.participantCount,
+            minorsCount: formData.minorsCount,
+            additionalNotes: formData.additionalNotes,
+            pricing: {
+              basePrice,
+              subtotal: priceWithTax.subtotal,
+              tax: priceWithTax.tax,
+              taxRate: TAX_RATE,
+              totalPrice,
+            },
           },
-        ],
-        clientInfo: undefined,
-        personalTrainerSpecifics: {
-          timeSlot: formData.timeSlot,
-          location: formData.location,
-          locationName: selectedLocation,
-          workoutType: formData.workoutType,
-          fitnessLevel: formData.fitnessLevel,
-          hasSpecialNeeds: formData.hasSpecialNeeds,
-          specialNeedsDetails: formData.specialNeedsDetails,
-          participantCount: formData.participantCount,
-          minorsCount: formData.minorsCount,
-          additionalNotes: formData.additionalNotes,
-        },
-      };
+        };
 
-      console.log(
-        '💪 PersonalTrainerForm - Reservation data created:',
-        reservationData
-      );
+        setReservationData(reservationData);
 
-      setReservationData(reservationData);
+        if (onSubmit) {
+          await onSubmit(reservationData);
+        }
 
-      if (onSubmit) {
-        await onSubmit(reservationData);
+        router.push('/reservation-confirmation');
+      } catch (error) {
+        console.error('❌ PersonalTrainerForm - Error:', error);
+        setErrors({
+          submit: 'Failed to submit reservation. Please try again.',
+        });
+      } finally {
+        setIsSubmitting(false);
       }
-
-      router.push('/reservation-confirmation');
-    } catch (error) {
-      console.error('❌ PersonalTrainerForm - Error submitting form:', error);
-      setErrors({
-        submit: 'Failed to submit reservation. Please try again.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    },
+    [
+      validateForm,
+      scrollToFirstError,
+      formData,
+      service,
+      totalPrice,
+      basePrice,
+      priceWithTax,
+      setReservationData,
+      onSubmit,
+      router,
+    ],
+  );
 
   const isPremium = service.packageType?.includes('premium');
+
+  const inputBase =
+    'w-full p-3 border rounded-none bg-stone-50 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 transition-colors';
+
+  // ── Render ──────────────────────────────────────────────────────────
 
   return (
     <motion.div
@@ -347,390 +408,280 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
     >
-      <form onSubmit={handleSubmit} className='w-full mx-auto overflow-hidden'>
-        <div className='bg-white rounded-xl shadow-lg border border-gray-100'>
-          {/* Form Header */}
-
+      <form onSubmit={handleSubmit} className='w-full mx-auto'>
+        <div className='bg-white border border-stone-200'>
           <FormHeader
             title='Personal Training Session'
             subtitle='Transform your fitness journey with a certified personal trainer'
             icon={Dumbbell}
             isPremium={isPremium}
             onCancel={handleClose}
-            showCloseButton={true}
-            gradientFrom='blue-500'
-            gradientVia='blue-700'
-            gradientTo='blue-800'
+            showCloseButton
+            gradientFrom='stone-800'
+            gradientVia='stone-800'
+            gradientTo='stone-900'
           />
 
-          {/* Form Body */}
-          <div className='p-8 space-y-8'>
-            {/* Date and Time Section */}
+          <div className='p-6 sm:p-8 lg:p-10 space-y-10'>
+            {/* ─ Schedule ─ */}
             <div className='space-y-6'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Calendar
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-blue-600'
-                  }`}
-                />
-                {t('services.personalTrainer.scheduling', {
-                  fallback: 'Training Schedule',
-                })}
-              </h3>
+              <SectionHeading>Training Schedule</SectionHeading>
 
-              {/* Date Selection */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Calendar
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-blue-600'
-                    }`}
-                  />
+              {/* Date */}
+              <div ref={(el) => el && fieldRefs.current.set('date', el)}>
+                <FieldLabel icon={Calendar} required>
                   {t('services.personalTrainer.date', {
                     fallback: 'Select Date',
-                  })}{' '}
-                  *
-                </label>
+                  })}
+                </FieldLabel>
                 <input
                   type='date'
                   name='date'
                   value={formData.date}
                   onChange={handleChange}
+                  onClick={(e) => e.currentTarget.showPicker()}
                   min={new Date().toISOString().split('T')[0]}
-                  className={`w-full p-3 border ${
-                    errors.date ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium
-                      ? 'focus:ring-orange-500 focus:border-orange-500'
-                      : 'focus:ring-blue-500 focus:border-blue-500'
-                  } bg-gray-50`}
+                  className={`${inputBase} ${errors.date ? 'border-red-400' : 'border-stone-300'}`}
                 />
-                {errors.date && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.date}</p>
-                )}
+                <FieldError message={errors.date} />
               </div>
 
-              {/* Time Slot Selection */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Clock
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-blue-600'
-                    }`}
-                  />
-                  {t('services.personalTrainer.timeSlot', {
-                    fallback: 'Time Slot',
-                  })}{' '}
-                  *
-                </label>
-
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {/* Morning Option */}
-                  <div
-                    className={`
-                      border rounded-lg p-4 cursor-pointer transition-all
-                      ${
-                        formData.timeSlot === 'morning'
-                          ? `${
-                              isPremium
-                                ? 'bg-orange-50 border-orange-300'
-                                : 'bg-blue-50 border-blue-300'
-                            } shadow-sm`
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }
-                    `}
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, timeSlot: 'morning' }))
-                    }
-                  >
-                    <div className='flex items-center'>
-                      <div
-                        className={`
-                        w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                        ${
-                          formData.timeSlot === 'morning'
-                            ? `${
-                                isPremium
-                                  ? 'border-orange-500 bg-orange-500'
-                                  : 'border-blue-500 bg-blue-500'
-                              }`
-                            : 'border-gray-300'
-                        }
-                      `}
-                      >
-                        {formData.timeSlot === 'morning' && (
-                          <CheckCircle className='w-4 h-4 text-white' />
-                        )}
-                      </div>
-                      <div className='flex items-center'>
-                        <Sunrise
-                          className={`w-5 h-5 mr-2 ${
-                            isPremium ? 'text-orange-500' : 'text-blue-500'
-                          }`}
-                        />
-                        <span className='font-medium'>
-                          {t('services.personalTrainer.morning', {
-                            fallback: 'Morning',
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <p className='text-gray-500 text-sm mt-2 ml-8'>
-                      {t('services.personalTrainer.morningTime', {
-                        fallback: '7:00 AM - 11:00 AM',
-                      })}
-                    </p>
-                  </div>
-
-                  {/* Afternoon Option */}
-                  <div
-                    className={`
-                      border rounded-lg p-4 cursor-pointer transition-all
-                      ${
-                        formData.timeSlot === 'afternoon'
-                          ? `${
-                              isPremium
-                                ? 'bg-orange-50 border-orange-300'
-                                : 'bg-blue-50 border-blue-300'
-                            } shadow-sm`
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }
-                    `}
-                    onClick={() =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        timeSlot: 'afternoon',
-                      }))
-                    }
-                  >
-                    <div className='flex items-center'>
-                      <div
-                        className={`
-                        w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                        ${
-                          formData.timeSlot === 'afternoon'
-                            ? `${
-                                isPremium
-                                  ? 'border-orange-500 bg-orange-500'
-                                  : 'border-blue-500 bg-blue-500'
-                              }`
-                            : 'border-gray-300'
-                        }
-                      `}
-                      >
-                        {formData.timeSlot === 'afternoon' && (
-                          <CheckCircle className='w-4 h-4 text-white' />
-                        )}
-                      </div>
-                      <div className='flex items-center'>
-                        <Activity
-                          className={`w-5 h-5 mr-2 ${
-                            isPremium ? 'text-orange-500' : 'text-blue-500'
-                          }`}
-                        />
-                        <span className='font-medium'>
-                          {t('services.personalTrainer.afternoon', {
-                            fallback: 'Afternoon',
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <p className='text-gray-500 text-sm mt-2 ml-8'>
-                      {t('services.personalTrainer.afternoonTime', {
-                        fallback: '1:00 PM - 6:00 PM',
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                {errors.timeSlot && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.timeSlot}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Location Selection */}
-            <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <MapPin
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-blue-600'
-                  }`}
-                />
-                {t('services.personalTrainer.location', {
-                  fallback: 'Location',
-                })}
-              </h3>
-
-              <div>
+              {/* Time Slot */}
+              <div ref={(el) => el && fieldRefs.current.set('timeSlot', el)}>
+                <FieldLabel icon={Clock} required>
+                  Time Slot
+                </FieldLabel>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-                  {LOCATION_OPTIONS.map((location) => (
-                    <div
-                      key={location.id}
-                      className={`
-                        border rounded-lg p-4 cursor-pointer transition-all
-                        ${
-                          formData.location === location.id
-                            ? `${
-                                isPremium
-                                  ? 'bg-orange-50 border-orange-300'
-                                  : 'bg-blue-50 border-blue-300'
-                              } shadow-sm`
-                            : 'border-gray-200 hover:bg-gray-50'
-                        }
-                      `}
-                      onClick={() => handleLocationSelect(location.id)}
-                    >
-                      <div className='flex items-center'>
+                  {TIME_SLOTS.map(({ id, label, time, icon: Icon }) => {
+                    const selected = formData.timeSlot === id;
+                    return (
+                      <button
+                        key={id}
+                        type='button'
+                        onClick={() => updateField('timeSlot', id)}
+                        className={`flex items-center gap-3 border p-4 text-left transition-colors ${
+                          selected
+                            ? 'border-stone-900 bg-stone-50'
+                            : 'border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
                         <div
-                          className={`
-                          w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                          ${
-                            formData.location === location.id
-                              ? `${
-                                  isPremium
-                                    ? 'border-orange-500 bg-orange-500'
-                                    : 'border-blue-500 bg-blue-500'
-                                }`
-                              : 'border-gray-300'
-                          }
-                        `}
+                          className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                            selected
+                              ? 'border-stone-900 bg-stone-900'
+                              : 'border-stone-300'
+                          }`}
                         >
-                          {formData.location === location.id && (
-                            <CheckCircle className='w-4 h-4 text-white' />
+                          {selected && (
+                            <CheckCircle className='w-2.5 h-2.5 text-white' />
                           )}
                         </div>
-                        <span className='font-medium text-gray-800'>
-                          {location.name}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                        <Icon
+                          className={`w-4 h-4 ${selected ? 'text-stone-900' : 'text-stone-400'}`}
+                        />
+                        <div>
+                          <span className='text-sm font-medium text-stone-800'>
+                            {label}
+                          </span>
+                          <p className='text-xs text-stone-400'>{time}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-
-                {errors.location && (
-                  <p className='text-red-500 text-xs mt-1'>{errors.location}</p>
-                )}
+                <FieldError message={errors.timeSlot} />
               </div>
             </div>
 
-            {/* Participants Section */}
+            {/* ─ Location ─ */}
             <div className='space-y-6'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <Users
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-blue-600'
-                  }`}
-                />
-                {t('services.personalTrainer.participants', {
-                  fallback: 'Participants',
-                })}
-              </h3>
-
-              {/* Participant Count */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Users
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-blue-600'
-                    }`}
-                  />
-                  {t('services.personalTrainer.participantCount', {
-                    fallback: 'Number of Participants',
+              <SectionHeading>Location</SectionHeading>
+              <div ref={(el) => el && fieldRefs.current.set('location', el)}>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                  {LOCATION_OPTIONS.map((loc) => {
+                    const selected = formData.location === loc.id;
+                    return (
+                      <button
+                        key={loc.id}
+                        type='button'
+                        onClick={() => updateField('location', loc.id)}
+                        className={`flex items-center border p-3 text-left transition-colors text-sm ${
+                          selected
+                            ? 'border-stone-900 bg-stone-50'
+                            : 'border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
+                        <div
+                          className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center flex-shrink-0 ${
+                            selected
+                              ? 'border-stone-900 bg-stone-900'
+                              : 'border-stone-300'
+                          }`}
+                        >
+                          {selected && (
+                            <CheckCircle className='w-2.5 h-2.5 text-white' />
+                          )}
+                        </div>
+                        <span className='text-stone-800 font-medium text-xs'>
+                          {loc.name}
+                        </span>
+                      </button>
+                    );
                   })}
-                </label>
-                <div className='flex border border-gray-300 rounded-lg overflow-hidden max-w-xs bg-white'>
-                  <button
-                    type='button'
-                    onClick={() => updateParticipantCount(false)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                  >
-                    -
-                  </button>
-                  <div className='flex-1 py-2 text-center'>
-                    {formData.participantCount}
-                  </div>
-                  <button
-                    type='button'
-                    onClick={() => updateParticipantCount(true)}
-                    className='px-4 py-2 bg-gray-100 hover:bg-gray-200 transition'
-                  >
-                    +
-                  </button>
                 </div>
-                {formData.participantCount > 1 && (
-                  <p className='text-sm text-gray-500 mt-1'>
-                    {t('services.personalTrainer.groupDiscount', {
-                      fallback:
-                        '15% discount per additional person (max 6 people)',
-                    })}
-                  </p>
-                )}
-                {formData.participantCount >= 6 && (
-                  <p className='text-sm text-amber-600 mt-1'>
-                    Maximum group size reached
-                  </p>
-                )}
+                <FieldError message={errors.location} />
               </div>
+            </div>
 
-              {/* Minors Count */}
-              <div>
-                <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
-                  <Baby
-                    className={`w-4 h-4 mr-2 ${
-                      isPremium ? 'text-orange-600' : 'text-blue-600'
-                    }`}
-                  />
-                  Number of participants under 18
-                </label>
-                <input
-                  type='number'
-                  name='minorsCount'
-                  min='0'
-                  max={formData.participantCount}
-                  value={formData.minorsCount}
-                  onChange={handleChange}
-                  className={`w-full max-w-xs p-3 border ${
-                    errors.minorsCount ? 'border-red-500' : 'border-gray-300'
-                  } rounded-lg focus:ring-2 ${
-                    isPremium
-                      ? 'focus:ring-orange-500 focus:border-orange-500'
-                      : 'focus:ring-blue-500 focus:border-blue-500'
-                  } bg-gray-50`}
-                  placeholder='0'
-                />
-                {errors.minorsCount && (
-                  <p className='text-red-500 text-xs mt-1'>
-                    {errors.minorsCount}
-                  </p>
-                )}
-
-                {formData.minorsCount > 0 && (
-                  <div className='flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200 mt-3'>
-                    <Info className='h-4 w-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0' />
-                    <p className='text-xs text-blue-700'>
-                      {formData.minorsCount} participant(s) under 18 detected.
-                      Adult supervision is required during the training session.
-                    </p>
-                  </div>
-                )}
+            {/* ─ Workout Type ─ */}
+            <div className='space-y-6'>
+              <SectionHeading>Workout Type</SectionHeading>
+              <div ref={(el) => el && fieldRefs.current.set('workoutType', el)}>
+                <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3'>
+                  {WORKOUT_TYPES.map(
+                    ({ id, label, icon: Icon, multiplier }) => {
+                      const selected = formData.workoutType === id;
+                      const surcharge =
+                        multiplier > 1
+                          ? `+${Math.round((multiplier - 1) * 100)}%`
+                          : null;
+                      return (
+                        <button
+                          key={id}
+                          type='button'
+                          onClick={() => updateField('workoutType', id)}
+                          className={`relative flex flex-col items-center gap-2 border p-4 transition-colors ${
+                            selected
+                              ? 'border-stone-900 bg-stone-50'
+                              : 'border-stone-200 hover:border-stone-400'
+                          }`}
+                        >
+                          <Icon
+                            className={`w-5 h-5 ${selected ? 'text-stone-900' : 'text-stone-400'}`}
+                          />
+                          <span className='text-xs font-medium text-stone-800'>
+                            {label}
+                          </span>
+                          {surcharge && (
+                            <span className='text-[10px] text-amber-600 font-medium'>
+                              {surcharge}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    },
+                  )}
+                </div>
+                <FieldError message={errors.workoutType} />
               </div>
+            </div>
 
-              {/* Special Needs Toggle */}
-              <div className='mt-4'>
+            {/* ─ Fitness Level ─ */}
+            <div className='space-y-6'>
+              <SectionHeading>Fitness Level</SectionHeading>
+              <div
+                ref={(el) => el && fieldRefs.current.set('fitnessLevel', el)}
+              >
+                <div className='grid grid-cols-3 gap-3'>
+                  {FITNESS_LEVELS.map(({ id, label }) => {
+                    const selected = formData.fitnessLevel === id;
+                    return (
+                      <button
+                        key={id}
+                        type='button'
+                        onClick={() => updateField('fitnessLevel', id)}
+                        className={`border p-3 text-sm font-medium transition-colors ${
+                          selected
+                            ? 'border-stone-900 bg-stone-50 text-stone-900'
+                            : 'border-stone-200 hover:border-stone-400 text-stone-500'
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <FieldError message={errors.fitnessLevel} />
+              </div>
+            </div>
+
+            {/* ─ Participants ─ */}
+            <div className='space-y-6'>
+              <SectionHeading>Participants</SectionHeading>
+
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {/* Count */}
                 <div
-                  className={`
-                    flex items-center justify-between p-4 border rounded-lg cursor-pointer
-                    ${
-                      formData.hasSpecialNeeds
-                        ? `${
-                            isPremium
-                              ? 'border-orange-300 bg-orange-50'
-                              : 'border-blue-300 bg-blue-50'
-                          }`
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }
-                  `}
+                  ref={(el) =>
+                    el && fieldRefs.current.set('participantCount', el)
+                  }
+                >
+                  <FieldLabel icon={Users}>Number of Participants</FieldLabel>
+                  <div className='flex border border-stone-300 overflow-hidden max-w-xs bg-white'>
+                    <button
+                      type='button'
+                      onClick={() => updateParticipantCount(false)}
+                      className='px-4 py-2 bg-stone-100 hover:bg-stone-200 transition text-stone-700'
+                    >
+                      −
+                    </button>
+                    <div className='flex-1 py-2 text-center text-sm font-medium text-stone-900'>
+                      {formData.participantCount}
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => updateParticipantCount(true)}
+                      className='px-4 py-2 bg-stone-100 hover:bg-stone-200 transition text-stone-700'
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {formData.participantCount > 1 && (
+                    <p className='text-xs text-stone-400 mt-2'>
+                      15% group discount applied per person (max 6)
+                    </p>
+                  )}
+                  {formData.participantCount >= 6 && (
+                    <p className='text-xs text-amber-600 mt-1'>
+                      Maximum group size reached
+                    </p>
+                  )}
+                </div>
+
+                {/* Minors */}
+                <div
+                  ref={(el) => el && fieldRefs.current.set('minorsCount', el)}
+                >
+                  <FieldLabel icon={Baby}>Participants under 18</FieldLabel>
+                  <input
+                    type='number'
+                    name='minorsCount'
+                    min='0'
+                    max={formData.participantCount}
+                    value={formData.minorsCount}
+                    onChange={handleChange}
+                    className={`${inputBase} max-w-xs ${
+                      errors.minorsCount ? 'border-red-400' : 'border-stone-300'
+                    }`}
+                    placeholder='0'
+                  />
+                  <FieldError message={errors.minorsCount} />
+
+                  {formData.minorsCount > 0 && (
+                    <p className='flex items-center gap-2 text-xs text-stone-400 bg-stone-50 border border-stone-200 p-3 mt-3'>
+                      <Info className='w-3.5 h-3.5 flex-shrink-0' />
+                      {formData.minorsCount} participant(s) under 18 — adult
+                      supervision required.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Special Needs */}
+              <div>
+                <button
+                  type='button'
                   onClick={() =>
                     setFormData((prev) => ({
                       ...prev,
@@ -743,257 +694,185 @@ const PersonalTrainerForm: React.FC<PersonalTrainerFormProps> = ({
                         : false,
                     }))
                   }
+                  className={`w-full flex items-center justify-between border p-4 text-left transition-colors ${
+                    formData.hasSpecialNeeds
+                      ? 'border-stone-900 bg-stone-50'
+                      : 'border-stone-200 hover:border-stone-400'
+                  }`}
                 >
-                  <div className='flex items-center'>
+                  <div className='flex items-center gap-3'>
                     <div
-                      className={`
-                      w-5 h-5 rounded-full border flex items-center justify-center mr-3
-                      ${
+                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                         formData.hasSpecialNeeds
-                          ? `${
-                              isPremium
-                                ? 'border-orange-500 bg-orange-500'
-                                : 'border-blue-500 bg-blue-500'
-                            }`
-                          : 'border-gray-300'
-                      }
-                    `}
+                          ? 'border-stone-900 bg-stone-900'
+                          : 'border-stone-300'
+                      }`}
                     >
                       {formData.hasSpecialNeeds && (
-                        <CheckCircle className='w-4 h-4 text-white' />
+                        <CheckCircle className='w-2.5 h-2.5 text-white' />
                       )}
                     </div>
-                    <span className='font-medium text-gray-800'>
-                      {t('services.personalTrainer.specialNeeds', {
-                        fallback: 'Physical limitations or injuries',
-                      })}
+                    <span className='text-sm font-medium text-stone-800'>
+                      Physical limitations or injuries
                     </span>
                   </div>
-                  <AlertCircle
-                    className={`w-5 h-5 ${
-                      isPremium ? 'text-orange-500' : 'text-blue-500'
-                    }`}
-                  />
-                </div>
+                  <AlertCircle className='w-4 h-4 text-stone-400' />
+                </button>
 
-                {/* Special Needs Details */}
-                {formData.hasSpecialNeeds && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className={`mt-4 p-4 border rounded-lg ${
-                      isPremium ? 'border-orange-200' : 'border-blue-200'
-                    }`}
-                  >
-                    <label className='block text-sm font-medium text-gray-700 mb-2'>
-                      {t('services.personalTrainer.specialNeedsDetails', {
-                        fallback:
-                          'Please specify any injuries, physical limitations, or medical conditions',
-                      })}{' '}
-                      *
-                    </label>
-                    <textarea
-                      name='specialNeedsDetails'
-                      value={formData.specialNeedsDetails}
-                      onChange={handleChange}
-                      placeholder={t(
-                        'services.personalTrainer.specialNeedsPlaceholder',
-                        {
-                          fallback:
-                            'Describe any injuries, surgeries, or conditions that would affect your training...',
-                        }
-                      )}
-                      className={`w-full p-3 border ${
-                        errors.specialNeedsDetails
-                          ? 'border-red-500'
-                          : 'border-gray-300'
-                      } rounded-lg ${
-                        isPremium
-                          ? 'focus:ring-orange-500 focus:border-orange-500'
-                          : 'focus:ring-blue-500 focus:border-blue-500'
-                      } bg-white resize-none h-24`}
-                    />
-                    {errors.specialNeedsDetails && (
-                      <p className='text-red-500 text-xs mt-1'>
-                        {errors.specialNeedsDetails}
-                      </p>
-                    )}
+                <AnimatePresence>
+                  {formData.hasSpecialNeeds && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className='mt-4 p-5 border border-stone-200 space-y-4'
+                    >
+                      <div>
+                        <FieldLabel icon={AlertCircle} required>
+                          Describe injuries, limitations, or conditions
+                        </FieldLabel>
+                        <textarea
+                          name='specialNeedsDetails'
+                          value={formData.specialNeedsDetails}
+                          onChange={handleChange}
+                          placeholder='Describe any injuries, surgeries, or conditions that would affect your training...'
+                          className={`${inputBase} resize-none h-24 ${
+                            errors.specialNeedsDetails
+                              ? 'border-red-400'
+                              : 'border-stone-300'
+                          }`}
+                        />
+                        <FieldError message={errors.specialNeedsDetails} />
+                      </div>
 
-                    {/* Confirmation checkbox */}
-                    <div className='mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200'>
-                      <div className='flex items-start'>
-                        <div className='flex items-center h-5'>
+                      <div className='p-3 bg-stone-50 border border-stone-200'>
+                        <div className='flex items-start'>
                           <input
                             id='confirmSpecialNeeds'
                             name='confirmSpecialNeeds'
                             type='checkbox'
                             checked={formData.confirmSpecialNeeds}
                             onChange={handleChange}
-                            className={`h-4 w-4 ${
-                              isPremium ? 'text-orange-600' : 'text-blue-600'
-                            } focus:ring-2 border-gray-300 rounded`}
+                            className='h-4 w-4 text-stone-900 border-stone-300 rounded mt-0.5'
                           />
+                          <label
+                            htmlFor='confirmSpecialNeeds'
+                            className='ml-3 text-xs text-stone-600'
+                          >
+                            I confirm this information is accurate and
+                            understand that specialized training may be required
+                          </label>
                         </div>
-                        <label
-                          htmlFor='confirmSpecialNeeds'
-                          className='ml-3 text-sm text-gray-700'
-                        >
-                          {t('services.personalTrainer.confirmSpecialNeeds', {
-                            fallback:
-                              'I confirm that the information provided is accurate and understand that specialized training may be required',
-                          })}
-                        </label>
+                        <FieldError message={errors.confirmSpecialNeeds} />
                       </div>
-                      {errors.confirmSpecialNeeds && (
-                        <p className='text-red-500 text-xs mt-1'>
-                          {errors.confirmSpecialNeeds}
-                        </p>
-                      )}
-                    </div>
 
-                    <div className='mt-3 flex items-start'>
-                      <Info className='h-5 w-5 text-gray-400 mt-0.5 mr-2 flex-shrink-0' />
-                      <p className='text-xs text-gray-500'>
-                        {t('services.personalTrainer.specialNeedsNotice', {
-                          fallback:
-                            'Additional fee for specialized training programs. Our certified trainer will customize the workout to accommodate your specific needs safely.',
-                        })}
+                      <p className='flex items-center gap-2 text-xs text-stone-400'>
+                        <Info className='w-3.5 h-3.5 flex-shrink-0' />
+                        Additional $20 fee for specialized training programs.
                       </p>
-                    </div>
-                  </motion.div>
-                )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
-            {/* Additional Notes Section */}
+            {/* ─ Additional Notes ─ */}
             <div className='space-y-4'>
-              <h3 className='text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2 flex items-center'>
-                <MessageSquare
-                  className={`w-5 h-5 mr-2 ${
-                    isPremium ? 'text-orange-600' : 'text-blue-600'
-                  }`}
-                />
-                {t('services.personalTrainer.additionalInfo', {
-                  fallback: 'Additional Information',
-                })}
-              </h3>
-
-              <div>
-                <textarea
-                  name='additionalNotes'
-                  value={formData.additionalNotes}
-                  onChange={handleChange}
-                  placeholder={t('services.personalTrainer.notesPlaceholder', {
-                    fallback:
-                      'Fitness goals, preferred exercises, equipment availability, specific areas to focus on...',
-                  })}
-                  className={`w-full p-3 border border-gray-300 rounded-lg ${
-                    isPremium
-                      ? 'focus:ring-orange-500 focus:border-orange-500'
-                      : 'focus:ring-blue-500 focus:border-blue-500'
-                  } bg-gray-50 resize-none h-24`}
-                />
-              </div>
+              <SectionHeading>Additional Information</SectionHeading>
+              <textarea
+                name='additionalNotes'
+                value={formData.additionalNotes}
+                onChange={handleChange}
+                placeholder='Fitness goals, preferred exercises, equipment availability, specific areas to focus on...'
+                className={`${inputBase} border-stone-300 resize-none h-24`}
+              />
             </div>
 
             {/* Error Display */}
             {errors.submit && (
-              <div className='p-3 bg-red-50 border border-red-200 rounded-lg'>
-                <p className='text-red-800 text-sm'>{errors.submit}</p>
+              <div className='flex items-center gap-2 p-4 bg-red-50 border border-red-200 text-sm text-red-800'>
+                <AlertCircle className='w-4 h-4 flex-shrink-0' />
+                {errors.submit}
               </div>
             )}
           </div>
 
-          {/* Form Footer */}
-          <div className='rounded-2xl bg-gray-900 text-white p-6 flex flex-col md:flex-row items-center justify-between'>
-            <div className='flex flex-col items-center md:items-start mb-4 md:mb-0'>
-              <span className='text-gray-400 text-sm uppercase tracking-wide'>
-                {t('services.personalTrainer.totalPrice', {
-                  fallback: 'Total Price',
-                })}
+          {/* ─ Footer ─ */}
+          <div className='bg-stone-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6'>
+            <div className='text-center sm:text-left'>
+              <span className='text-stone-500 text-xs uppercase tracking-wider'>
+                Total Price
               </span>
-              <div className='flex items-center mt-1'>
+              <div className='flex items-center gap-3 mt-1'>
                 <span className='text-3xl font-light'>
-                  ${currentPrice.toFixed(2)}
+                  ${totalPrice.toFixed(2)}
                 </span>
                 {formData.participantCount > 1 && (
-                  <span className='ml-2 text-sm bg-blue-800 px-2 py-1 rounded'>
-                    {formData.participantCount}{' '}
-                    {t('services.personalTrainer.people', {
-                      fallback: 'people',
-                    })}
+                  <span className='text-xs bg-stone-800 px-2 py-1'>
+                    {formData.participantCount} people
                   </span>
                 )}
               </div>
 
-              {/* Price breakdown */}
-              <div className='text-xs text-gray-400 mt-2 space-y-1'>
+              {/* ✅ Price breakdown with tax */}
+              <div className='text-[11px] text-stone-500 mt-2 space-y-0.5'>
+                {formData.workoutType && formData.timeSlot && (
+                  <div className='text-stone-400'>
+                    {formData.timeSlot.charAt(0).toUpperCase() +
+                      formData.timeSlot.slice(1)}{' '}
+                    {formData.workoutType.toUpperCase()} Training
+                    {formData.location &&
+                      ` at ${
+                        LOCATION_OPTIONS.find((l) => l.id === formData.location)
+                          ?.name ?? 'Selected Location'
+                      }`}
+                  </div>
+                )}
+
                 <div>
-                  {formData.timeSlot &&
-                    formData.workoutType &&
-                    `${
-                      formData.timeSlot.charAt(0).toUpperCase() +
-                      formData.timeSlot.slice(1)
-                    } ${formData.workoutType.toUpperCase()} Training at ${
-                      LOCATION_OPTIONS.find(
-                        (loc) => loc.id === formData.location
-                      )?.name || 'Selected Location'
-                    }`}
+                  Base: ${BASE_PRICE}
+                  {workoutMultiplier > 1 &&
+                    ` × ${workoutMultiplier} (+${Math.round((workoutMultiplier - 1) * 100)}%)`}
+                  {formData.participantCount > 1 &&
+                    ` × ${formData.participantCount} (15% off ea.)`}
                 </div>
-                {formData.participantCount > 1 && (
-                  <div className='text-blue-400'>
-                    Group discount applied (15% off per additional person)
-                  </div>
-                )}
-                {(formData.workoutType === 'hiit' ||
-                  formData.workoutType === 'functional') && (
-                  <div className='text-yellow-400'>
-                    Specialized training surcharge (+15%)
-                  </div>
-                )}
-                {formData.workoutType === 'strength' && (
-                  <div className='text-yellow-400'>
-                    Strength training surcharge (+10%)
-                  </div>
-                )}
+
                 {formData.hasSpecialNeeds && (
-                  <div>Specialized training program: +$20</div>
+                  <div>Specialized program: +$20</div>
                 )}
+
+                <div className='border-t border-stone-700 pt-1 mt-1'>
+                  <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                  <div className='text-amber-400'>
+                    {t('common.fee.creditcard', { fallback: 'Processing fee' })}{' '}
+                    ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                  </div>
+                </div>
+
                 {formData.minorsCount > 0 && (
-                  <div className='text-yellow-400'>
+                  <div className='text-amber-400'>
                     {formData.minorsCount} participant(s) under 18
                   </div>
                 )}
               </div>
             </div>
 
-            <div className='flex space-x-4'>
+            <div className='flex gap-3'>
               <button
                 type='button'
                 onClick={onCancel}
                 disabled={isSubmitting}
-                className='px-5 py-3 border border-gray-700 rounded-lg text-gray-300 hover:text-white hover:border-gray-600 transition disabled:opacity-50'
+                className='px-6 py-3 border border-stone-700 text-stone-400 hover:text-white hover:border-stone-500 text-sm transition-colors disabled:opacity-50'
               >
-                {t('common.cancel', { fallback: 'Cancel' })}
+                Cancel
               </button>
-
               <button
                 type='submit'
                 disabled={isSubmitting}
-                className={`px-8 py-3 ${
-                  isPremium
-                    ? 'bg-orange-600 hover:bg-orange-500'
-                    : 'bg-blue-600 hover:bg-blue-500'
-                } text-white rounded-lg transition flex items-center disabled:opacity-50`}
+                className='px-8 py-3 bg-white text-stone-900 hover:bg-stone-100 text-sm font-medium tracking-wide flex items-center gap-2 transition-colors disabled:opacity-50'
               >
-                <CreditCard className='h-4 w-4 mr-2' />
-                {isSubmitting
-                  ? t('services.personalTrainer.booking', {
-                      fallback: 'Booking...',
-                    })
-                  : t('services.personalTrainer.book', {
-                      fallback: 'Book Training',
-                    })}
+                <CreditCard className='w-4 h-4' />
+                {isSubmitting ? 'Booking...' : 'Book Training'}
               </button>
             </div>
           </div>

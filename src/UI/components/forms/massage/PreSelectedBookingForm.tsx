@@ -11,7 +11,8 @@ import {
   Timer,
   Users,
 } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
 const TIME_SLOTS = [
   '09:00',
@@ -25,8 +26,9 @@ const TIME_SLOTS = [
   '18:00',
 ];
 
+const TAX_RATE = 5; // 5% processing fee
+
 const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
-  // ✅ Estado unificado para evitar inconsistencias
   const [formData, setFormData] = useState({
     duration: service.durations[0].duration,
     date: '',
@@ -39,7 +41,6 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Helper para actualizar campos del formulario
   const updateFormField = useCallback(
     (field, value) => {
       setFormData((prev) => ({
@@ -47,7 +48,6 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
         [field]: value,
       }));
 
-      // Limpiar error cuando el usuario corrige
       if (errors[field]) {
         setErrors((prev) => {
           const newErrors = { ...prev };
@@ -56,10 +56,9 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
         });
       }
     },
-    [errors]
+    [errors],
   );
 
-  // ✅ Validación mejorada
   const validateForm = useCallback(() => {
     const newErrors = {};
 
@@ -79,20 +78,30 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
     return Object.keys(newErrors).length === 0;
   }, [formData]);
 
-  // ✅ Cálculos derivados
+  // ✅ Pricing with tax
   const currentPrice =
     service.durations.find((d) => d.duration === formData.duration)?.price || 0;
-  const totalPrice = currentPrice * formData.persons;
+
+  const basePrice = useMemo(
+    () => currentPrice * formData.persons,
+    [currentPrice, formData.persons],
+  );
+
+  const priceWithTax = useMemo(
+    () => calculatePriceWithTax(basePrice, TAX_RATE),
+    [basePrice],
+  );
+
+  const totalPrice = priceWithTax.total;
+
   const isFormValid =
     formData.date && formData.time && formData.location.trim();
 
-  // ✅ Submit handler corregido - estructura completa para reserva
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     try {
-      // Estructura completa que espera MassageForm y ReservationConfirmationPage
       const bookingData = {
         serviceId: service.id,
         serviceName: service.name,
@@ -102,8 +111,13 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
         location: formData.location,
         persons: formData.persons,
         specialNeeds: formData.specialNeeds,
-        calculatedPrice: totalPrice, // Este es el precio que se usa
-        price: totalPrice, // Agregamos también 'price' por compatibilidad
+        calculatedPrice: totalPrice,
+        price: totalPrice,
+        // ✅ Tax info
+        basePrice,
+        subtotal: priceWithTax.subtotal,
+        tax: priceWithTax.tax,
+        taxRate: TAX_RATE,
       };
 
       console.log('PreSelectedBookingForm sending bookingData:', bookingData);
@@ -114,7 +128,15 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [validateForm, service, formData, totalPrice, onConfirm]);
+  }, [
+    validateForm,
+    service,
+    formData,
+    totalPrice,
+    basePrice,
+    priceWithTax,
+    onConfirm,
+  ]);
 
   return (
     <div className='max-w-4xl mx-auto space-y-8'>
@@ -130,8 +152,8 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
             service.durations.length === 1
               ? 'grid-cols-1 max-w-md'
               : service.durations.length === 2
-              ? 'grid-cols-1 md:grid-cols-2'
-              : 'grid-cols-1 md:grid-cols-3'
+                ? 'grid-cols-1 md:grid-cols-2'
+                : 'grid-cols-1 md:grid-cols-3'
           }`}
         >
           {service.durations.map((option, index) => (
@@ -224,7 +246,7 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
           </div>
         </div>
 
-        {/* Location - ✅ CORREGIDO */}
+        {/* Location */}
         <div className='mt-6'>
           <label className='flex items-center text-lg font-medium text-stone-800 mb-3'>
             <MapPin className='mr-2 w-6 h-6 text-stone-600' />
@@ -248,7 +270,7 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
         </div>
       </div>
 
-      {/* Persons Selection - ✅ CORREGIDO */}
+      {/* Persons Selection */}
       <div className='bg-white rounded-2xl shadow-lg p-8'>
         <h3 className='text-2xl font-semibold text-stone-800 mb-6 flex items-center gap-3'>
           <Users className='w-6 h-6 text-stone-600' />
@@ -275,7 +297,7 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
               onClick={() =>
                 updateFormField(
                   'persons',
-                  Math.min(service.maxPersons, formData.persons + 1)
+                  Math.min(service.maxPersons, formData.persons + 1),
                 )
               }
               className='w-12 h-12 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed'
@@ -315,7 +337,7 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
         </div>
       </div>
 
-      {/* Price Summary */}
+      {/* ✅ Price Summary — with tax breakdown */}
       <div className='bg-gradient-to-r from-stone-800 to-stone-900 text-white rounded-2xl p-8'>
         <div className='flex justify-between items-start mb-6'>
           <div>
@@ -360,8 +382,22 @@ const PreSelectedBookingForm = ({ service, onConfirm, onCancel }) => {
             </div>
           </div>
           <div className='text-right'>
-            <div className='text-4xl font-bold'>${totalPrice}</div>
+            <div className='text-4xl font-bold'>${totalPrice.toFixed(2)}</div>
             <div className='text-stone-300'>Total Price</div>
+
+            {/* ✅ Tax breakdown */}
+            <div className='text-xs text-stone-400 mt-3 space-y-0.5 text-right'>
+              <div>
+                ${currentPrice} × {formData.persons}{' '}
+                {formData.persons === 1 ? 'person' : 'people'}
+              </div>
+              <div className='border-t border-stone-700 pt-1 mt-1'>
+                <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                <div className='text-amber-400'>
+                  Processing fee ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
