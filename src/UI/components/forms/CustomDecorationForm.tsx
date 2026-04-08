@@ -653,12 +653,10 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
         {/* ─ Footer ─ */}
         <div className='bg-stone-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6'>
           <div className='text-center sm:text-left'>
-            <span className='text-stone-500 text-xs uppercase tracking-wider'>
-              Estimated
-            </span>
-            <div className='text-3xl font-light mt-1'>${estimatedPrice}</div>
+            <span className='text-stone-500 text-xs uppercase tracking-wider'></span>
+            <div className='text-3xl font-light mt-1'></div>
             <p className='text-stone-500 text-[11px] mt-1'>
-              Final price confirmed after consultation
+              Price confirmed after consultation
             </p>
           </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useReservation } from '@/context/BookingContext';
 import { motion } from 'framer-motion';
@@ -17,6 +17,7 @@ import {
   MapPin,
   CheckCircle,
 } from 'lucide-react';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
 // ✅ Location options configuration - consistent with other forms
 const LOCATION_OPTIONS = [
@@ -27,6 +28,8 @@ const LOCATION_OPTIONS = [
   { id: 'uvero-alto', name: 'Uvero Alto' },
   { id: 'macao', name: 'Macao' },
 ] as const;
+
+const TAX_RATE = 5; // 5% processing fee
 
 interface MassageFormProps {
   selectedMassageData: any; // The pre-selected massage service
@@ -107,7 +110,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
         });
       }
     },
-    [errors]
+    [errors],
   );
 
   // ✅ Identical location selection handler
@@ -115,7 +118,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
     (locationId) => {
       updateFormField('location', locationId);
     },
-    [updateFormField]
+    [updateFormField],
   );
 
   // ✅ Identical validation logic
@@ -138,11 +141,22 @@ const MassageForm: React.FC<MassageFormProps> = ({
     return Object.keys(newErrors).length === 0;
   }, [formData.date, formData.time, formData.location]);
 
-  // ✅ Identical derived calculations
-  const totalPrice = formData.selectedDuration.price * formData.persons;
+  // ✅ Pricing with tax — same pattern as Yoga/PersonalTrainer/Karaoke
+  const basePrice = useMemo(
+    () => formData.selectedDuration.price * formData.persons,
+    [formData.selectedDuration.price, formData.persons],
+  );
+
+  const priceWithTax = useMemo(
+    () => calculatePriceWithTax(basePrice, TAX_RATE),
+    [basePrice],
+  );
+
+  const totalPrice = priceWithTax.total;
+
   const isFormValid = formData.date && formData.time && formData.location;
 
-  // ✅ Identical submit handler
+  // ✅ Submit handler with tax data
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
 
@@ -151,7 +165,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
     try {
       // Get selected location name
       const selectedLocation = LOCATION_OPTIONS.find(
-        (loc) => loc.id === formData.location
+        (loc) => loc.id === formData.location,
       );
 
       // Structure exactly as expected by confirmation page
@@ -164,15 +178,19 @@ const MassageForm: React.FC<MassageFormProps> = ({
           duration: formData.selectedDuration.duration,
           date: formData.date,
           time: formData.time,
-          location: formData.location, // Location ID
-          locationName: selectedLocation?.name || formData.location, // Location name for display
+          location: formData.location,
+          locationName: selectedLocation?.name || formData.location,
           persons: formData.persons,
           specialNeeds: formData.specialNeeds,
           calculatedPrice: totalPrice,
+          // ✅ Tax info
+          basePrice,
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: TAX_RATE,
         },
-        totalPrice: totalPrice,
+        totalPrice,
         bookingDate: new Date(),
-        // ✅ Add massage specific data similar to other forms
         massageSpecifics: {
           duration: formData.selectedDuration.duration,
           location: formData.location,
@@ -181,19 +199,21 @@ const MassageForm: React.FC<MassageFormProps> = ({
           specialNeeds: formData.specialNeeds,
           massageType: selectedMassageData.name,
           intensity: selectedMassageData.intensity,
+          pricing: {
+            basePrice,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
+            totalPrice,
+          },
         },
       };
 
       console.log('MassageForm sending reservationData:', reservationData);
-      console.log('📍 Selected location:', selectedLocation);
 
-      // Set reservation data in context
       setReservationData(reservationData);
-
-      // Navigate to confirmation
       router.push('/reservation-confirmation');
 
-      // Also call onSubmit if provided for compatibility
       if (onSubmit) {
         onSubmit(reservationData);
       }
@@ -208,6 +228,8 @@ const MassageForm: React.FC<MassageFormProps> = ({
     selectedMassageData,
     formData,
     totalPrice,
+    basePrice,
+    priceWithTax,
     setReservationData,
     router,
     onSubmit,
@@ -221,7 +243,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
           animate={{ opacity: 1, y: 0 }}
           className='bg-white rounded-3xl shadow-2xl p-8 border border-stone-200'
         >
-          {/* Header - Identical to InlineBookingForm */}
+          {/* Header */}
           <div className='flex items-center justify-between mb-8 pb-6 border-b border-stone-200'>
             <div className='flex items-center gap-4'>
               <div className='w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center text-2xl'>
@@ -246,7 +268,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
           </div>
 
           <div className='space-y-8'>
-            {/* Duration Selection - Identical */}
+            {/* Duration Selection */}
             <div>
               <h4 className='text-lg font-semibold text-stone-800 mb-4 flex items-center gap-2'>
                 <Timer className='w-5 h-5 text-green-800' />
@@ -257,8 +279,8 @@ const MassageForm: React.FC<MassageFormProps> = ({
                   selectedMassageData.durations.length === 1
                     ? 'grid-cols-1 max-w-sm'
                     : selectedMassageData.durations.length === 2
-                    ? 'grid-cols-2'
-                    : 'grid-cols-3'
+                      ? 'grid-cols-2'
+                      : 'grid-cols-3'
                 }`}
               >
                 {selectedMassageData.durations.map((option, index) => (
@@ -266,34 +288,35 @@ const MassageForm: React.FC<MassageFormProps> = ({
                     key={option.duration}
                     type='button'
                     onClick={() => updateFormField('selectedDuration', option)}
-                    className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    className={`relative p-5 rounded-xl border-2 transition-all text-left ${
                       formData.selectedDuration.duration === option.duration
-                        ? 'border-stone-800 bg-stone-50'
+                        ? 'border-stone-800 bg-stone-50 shadow-md'
                         : 'border-stone-200 hover:border-stone-300'
                     }`}
                   >
-                    <div className='font-semibold text-stone-800'>
-                      {option.duration} minutes
+                    {index === 0 &&
+                      selectedMassageData.durations.length > 1 && (
+                        <div className='absolute -top-3 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-3 py-0.5 rounded-full text-xs'>
+                          Popular
+                        </div>
+                      )}
+                    <div className='font-semibold text-stone-800 text-lg'>
+                      {option.duration} min
                     </div>
-                    <div className='text-xl font-bold text-stone-800 mt-1'>
+                    <div className='text-2xl font-bold text-stone-800 mt-1'>
                       ${option.price}
                     </div>
-                    {formData.persons > 1 && (
-                      <div className='text-sm text-stone-500 mt-1'>
-                        ${option.price * formData.persons} total
-                      </div>
-                    )}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Date & Time - Identical */}
+            {/* Date & Time Selection */}
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               <div>
                 <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
                   <Calendar className='w-5 h-5 text-green-800' />
-                  Date
+                  Select Date
                 </label>
                 <input
                   type='date'
@@ -302,7 +325,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
                   min={new Date().toISOString().split('T')[0]}
                   className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
                     errors.date
-                      ? 'border-red-300 bg-red-50 focus:border-red-400'
+                      ? 'border-red-300 bg-red-50'
                       : 'border-stone-300'
                   }`}
                 />
@@ -314,14 +337,14 @@ const MassageForm: React.FC<MassageFormProps> = ({
               <div>
                 <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
                   <Clock className='w-5 h-5 text-green-800' />
-                  Time
+                  Select Time
                 </label>
                 <select
                   value={formData.time}
                   onChange={(e) => updateFormField('time', e.target.value)}
                   className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
                     errors.time
-                      ? 'border-red-300 bg-red-50 focus:border-red-400'
+                      ? 'border-red-300 bg-red-50'
                       : 'border-stone-300'
                   }`}
                 >
@@ -338,12 +361,12 @@ const MassageForm: React.FC<MassageFormProps> = ({
               </div>
             </div>
 
-            {/* Location Selection - Identical */}
+            {/* Location Selection */}
             <div>
-              <label className='flex items-center text-lg font-semibold text-stone-800 mb-4'>
-                <MapPin className='w-5 h-5 mr-2 text-green-800' />
-                Select your location *
-              </label>
+              <h4 className='text-lg font-semibold text-stone-800 mb-4 flex items-center gap-2'>
+                <MapPin className='w-5 h-5 text-green-800' />
+                Select your location
+              </h4>
 
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                 {LOCATION_OPTIONS.map((location) => (
@@ -401,7 +424,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
                     <span className='font-medium ml-1'>
                       {
                         LOCATION_OPTIONS.find(
-                          (loc) => loc.id === formData.location
+                          (loc) => loc.id === formData.location,
                         )?.name
                       }
                     </span>
@@ -410,7 +433,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
               )}
             </div>
 
-            {/* Number of People - Identical */}
+            {/* Number of People */}
             <div>
               <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
                 <Users className='w-5 h-5 text-green-800' />
@@ -423,7 +446,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
                     onClick={() =>
                       updateFormField(
                         'persons',
-                        Math.max(1, formData.persons - 1)
+                        Math.max(1, formData.persons - 1),
                       )
                     }
                     className='w-10 h-10 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
@@ -441,8 +464,8 @@ const MassageForm: React.FC<MassageFormProps> = ({
                         'persons',
                         Math.min(
                           selectedMassageData?.maxPersons || 4,
-                          formData.persons + 1
-                        )
+                          formData.persons + 1,
+                        ),
                       )
                     }
                     className='w-10 h-10 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
@@ -459,7 +482,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
               </div>
             </div>
 
-            {/* Special Needs & Disability - Identical */}
+            {/* Special Needs & Disability */}
             <div>
               <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
                 <Accessibility className='w-5 h-5 text-green-800' />
@@ -483,9 +506,9 @@ const MassageForm: React.FC<MassageFormProps> = ({
               </div>
             </div>
 
-            {/* Price Summary - Identical */}
+            {/* ✅ Price Summary — with tax breakdown */}
             <div className='bg-gradient-to-r from-stone-800 to-stone-900 text-white rounded-2xl p-6'>
-              <div className='flex justify-between items-center'>
+              <div className='flex justify-between items-start'>
                 <div>
                   <h4 className='text-xl font-semibold mb-2'>
                     Booking Summary
@@ -513,7 +536,7 @@ const MassageForm: React.FC<MassageFormProps> = ({
                         <MapPin className='w-3 h-3 mr-1' />
                         {
                           LOCATION_OPTIONS.find(
-                            (loc) => loc.id === formData.location
+                            (loc) => loc.id === formData.location,
                           )?.name
                         }
                       </div>
@@ -521,13 +544,30 @@ const MassageForm: React.FC<MassageFormProps> = ({
                   </div>
                 </div>
                 <div className='text-right'>
-                  <div className='text-3xl font-bold'>${totalPrice}</div>
-                  <div className='text-stone-300'>Total Price</div>
+                  <div className='text-3xl font-bold'>
+                    ${totalPrice.toFixed(2)}
+                  </div>
+                  <div className='text-stone-300 text-sm'>Total Price</div>
+
+                  {/* ✅ Tax breakdown */}
+                  <div className='text-xs text-stone-400 mt-2 space-y-0.5 text-right'>
+                    <div>
+                      ${formData.selectedDuration.price} × {formData.persons}{' '}
+                      {formData.persons === 1 ? 'person' : 'people'}
+                    </div>
+                    <div className='border-t border-stone-700 pt-1 mt-1'>
+                      <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                      <div className='text-amber-400'>
+                        Processing fee ({TAX_RATE}%): $
+                        {priceWithTax.tax.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons - Identical */}
+            {/* Action Buttons */}
             <div className='flex gap-4'>
               <button
                 type='button'

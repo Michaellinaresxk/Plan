@@ -26,6 +26,7 @@ import {
 import { LOCATION_OPTIONS } from '@/constants/location/location';
 import FormHeader from './FormHeader';
 import { useFormModal } from '@/hooks/useFormModal';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,10 +36,13 @@ interface EnhancedFormData extends Omit<FormData, 'location'> {
   confirmOutdoorPolicy: boolean;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const EXTRA_HOUR_RATE = 50;
 const INCLUDED_HOURS = 4;
+const TAX_RATE = 5; // 5% processing fee
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getEventDuration(startTime: string, endTime: string): number {
   if (!startTime || !endTime) return 0;
@@ -67,27 +71,19 @@ function getLocationName(locationId: string): string {
 
 // ─── Subcomponents ────────────────────────────────────────────────────────────
 
-interface SectionHeadingProps {
-  children: React.ReactNode;
-}
-
-const SectionHeading: React.FC<SectionHeadingProps> = ({ children }) => (
+const SectionHeading: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
   <h3 className='text-sm font-semibold text-stone-900 uppercase tracking-[0.15em] border-b border-stone-200 pb-3'>
     {children}
   </h3>
 );
 
-interface FieldLabelProps {
+const FieldLabel: React.FC<{
   icon: React.ElementType;
   children: React.ReactNode;
   required?: boolean;
-}
-
-const FieldLabel: React.FC<FieldLabelProps> = ({
-  icon: Icon,
-  children,
-  required,
-}) => (
+}> = ({ icon: Icon, children, required }) => (
   <label className='flex items-center text-sm font-medium text-stone-700 mb-2'>
     <Icon className='w-4 h-4 mr-2 text-stone-400' />
     {children}
@@ -95,11 +91,7 @@ const FieldLabel: React.FC<FieldLabelProps> = ({
   </label>
 );
 
-interface FieldErrorProps {
-  message?: string;
-}
-
-const FieldError: React.FC<FieldErrorProps> = ({ message }) => {
+const FieldError: React.FC<{ message?: string }> = ({ message }) => {
   if (!message) return null;
   return <p className='text-red-600 text-xs mt-1.5'>{message}</p>;
 };
@@ -134,7 +126,8 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
     [formData.startTime, formData.endTime],
   );
 
-  const totalPrice = useMemo(() => {
+  // ✅ Base price (subtotal before tax)
+  const basePrice = useMemo(() => {
     let total = PRICING.BASE_PRICE;
     if (formData.needsScreen) total += PRICING.SCREEN_RENTAL;
     if (formData.setupType === 'outdoor') total += PRICING.OUTDOOR_SETUP;
@@ -143,6 +136,14 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
     }
     return total;
   }, [formData.needsScreen, formData.setupType, eventDuration]);
+
+  // ✅ Tax calculation — same pattern as YogaServiceForm / PersonalTrainerForm
+  const priceWithTax = useMemo(
+    () => calculatePriceWithTax(basePrice, TAX_RATE),
+    [basePrice],
+  );
+
+  const totalPrice = priceWithTax.total;
 
   const todayISO = useMemo(() => new Date().toISOString().split('T')[0], []);
 
@@ -280,6 +281,11 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
           formData: {
             ...formData,
             serviceType: 'karaoke' as const,
+            totalPrice,
+            basePrice,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
             calculatedPrice: totalPrice,
             locationName,
             eventDuration,
@@ -297,6 +303,13 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
             specialRequests: formData.specialRequests,
             eventDuration,
             isExtendedSession: eventDuration > INCLUDED_HOURS,
+            pricing: {
+              basePrice,
+              subtotal: priceWithTax.subtotal,
+              tax: priceWithTax.tax,
+              taxRate: TAX_RATE,
+              totalPrice,
+            },
           },
         };
 
@@ -318,6 +331,8 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
       formData,
       service,
       totalPrice,
+      basePrice,
+      priceWithTax,
       eventDuration,
       setReservationData,
       router,
@@ -657,7 +672,8 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
               ${totalPrice.toFixed(2)}
             </div>
 
-            <div className='text-xs text-stone-500 mt-2 space-y-0.5'>
+            {/* ✅ Price breakdown with tax */}
+            <div className='text-[11px] text-stone-500 mt-2 space-y-0.5'>
               <div>Base: ${PRICING.BASE_PRICE}</div>
               {formData.needsScreen && (
                 <div>Screen: +${PRICING.SCREEN_RENTAL}</div>
@@ -666,13 +682,23 @@ const KaraokeForm: React.FC<KaraokeFormProps> = ({ service, onCancel }) => {
                 <div>Outdoor: +${PRICING.OUTDOOR_SETUP}</div>
               )}
               {eventDuration > INCLUDED_HOURS && (
-                <div className='text-amber-400'>
+                <div>
                   Extended ({(eventDuration - INCLUDED_HOURS).toFixed(1)}h): +$
                   {((eventDuration - INCLUDED_HOURS) * EXTRA_HOUR_RATE).toFixed(
                     0,
                   )}
                 </div>
               )}
+
+              {/* ✅ Tax breakdown */}
+              <div className='border-t border-stone-700 pt-1 mt-1'>
+                <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                <div className='text-amber-400'>
+                  {t('common.fee.creditcard', { fallback: 'Processing fee' })} (
+                  {TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                </div>
+              </div>
+
               {formData.location && (
                 <div className='text-stone-400'>
                   {getLocationName(formData.location)}

@@ -1,23 +1,24 @@
 import { motion } from 'framer-motion';
-import IntensityBadge from './IntensityBadge';
 import {
   ArrowRight,
   Calendar,
   Clock,
-  Heart,
   Info,
   MapPin,
   Minus,
   Plus,
-  Sparkles,
   Timer,
   Users,
   X,
   CheckCircle,
+  CreditCard,
+  AlertCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
-// ✅ Location options configuration - consistent with other forms
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 const LOCATION_OPTIONS = [
   { id: 'punta-cana-resorts', name: 'Puntacana Resorts' },
   { id: 'cap-cana', name: 'Cap Cana' },
@@ -27,6 +28,54 @@ const LOCATION_OPTIONS = [
   { id: 'macao', name: 'Macao' },
 ] as const;
 
+const TAX_RATE = 5;
+
+const TIME_SLOTS = [
+  '09:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+];
+
+// ─── Subcomponents ────────────────────────────────────────────────────────────
+
+const SectionHeading: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <h3 className='text-sm font-semibold text-stone-900 uppercase tracking-[0.15em] border-b border-stone-200 pb-3'>
+    {children}
+  </h3>
+);
+
+const FieldLabel: React.FC<{
+  icon: React.ElementType;
+  children: React.ReactNode;
+  required?: boolean;
+}> = ({ icon: Icon, children, required }) => (
+  <label className='flex items-center text-sm font-medium text-stone-700 mb-2'>
+    <Icon className='w-4 h-4 mr-2 text-stone-400' />
+    {children}
+    {required && <span className='text-amber-600 ml-1'>*</span>}
+  </label>
+);
+
+const FieldError: React.FC<{ message?: string }> = ({ message }) => {
+  if (!message) return null;
+  return (
+    <p className='flex items-center gap-1 text-red-600 text-xs mt-1.5'>
+      <AlertCircle className='w-3 h-3' />
+      {message}
+    </p>
+  );
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
   const [formData, setFormData] = useState({
     massageId: massage.id,
@@ -35,7 +84,7 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
     persons: 1,
     date: '',
     time: '',
-    location: '', // Now stores location ID instead of free text
+    location: '',
     specialNeeds: '',
     serviceType: 'massage-therapy',
   });
@@ -43,42 +92,53 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const updateField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
-  };
+  const inputBase =
+    'w-full p-3 border rounded-none bg-stone-50 text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-900 focus:border-stone-900 transition-colors';
 
-  // ✅ Handle location selection - similar to other forms
-  const handleLocationSelect = (locationId) => {
-    updateField('location', locationId);
-  };
+  const updateField = useCallback(
+    (field, value) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      if (errors[field]) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[field];
+          return newErrors;
+        });
+      }
+    },
+    [errors],
+  );
 
-  // ✅ Updated validation for location ID
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors = {};
     if (!formData.date) newErrors.date = 'Date is required';
     if (!formData.time) newErrors.time = 'Time is required';
     if (!formData.location) newErrors.location = 'Please select a location';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData.date, formData.time, formData.location]);
 
-  const handleSubmit = async () => {
+  // ✅ Pricing with tax
+  const basePrice = useMemo(
+    () => formData.selectedDuration.price * formData.persons,
+    [formData.selectedDuration.price, formData.persons],
+  );
+
+  const priceWithTax = useMemo(
+    () => calculatePriceWithTax(basePrice, TAX_RATE),
+    [basePrice],
+  );
+
+  const totalPrice = priceWithTax.total;
+  const isValid = formData.date && formData.time && formData.location;
+
+  const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
     setIsSubmitting(true);
 
     try {
-      const totalPrice = formData.selectedDuration.price * formData.persons;
-
-      // ✅ Get selected location name
       const selectedLocation = LOCATION_OPTIONS.find(
-        (loc) => loc.id === formData.location
+        (loc) => loc.id === formData.location,
       );
 
       const reservationData = {
@@ -92,7 +152,7 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
         formData: {
           ...formData,
           serviceType: 'massage',
-          locationName: selectedLocation?.name || formData.location, // Add location name for display
+          locationName: selectedLocation?.name || formData.location,
           massageDetails: {
             id: massage.id,
             name: massage.name,
@@ -104,10 +164,13 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
             maxPersons: massage.maxPersons,
           },
           calculatedPrice: totalPrice,
+          basePrice,
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: TAX_RATE,
         },
         bookingDate: new Date(`${formData.date}T${formData.time}`),
         clientInfo: undefined,
-        // ✅ Add massage specific data similar to other forms
         massageSpecifics: {
           duration: formData.selectedDuration.duration,
           location: formData.location,
@@ -116,6 +179,13 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
           specialNeeds: formData.specialNeeds,
           massageType: massage.name,
           intensity: massage.intensity,
+          pricing: {
+            basePrice,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
+            totalPrice,
+          },
         },
       };
 
@@ -126,24 +196,17 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const totalPrice = formData.selectedDuration.price * formData.persons;
-  const isValid = formData.date && formData.time && formData.location;
+  }, [
+    validateForm,
+    formData,
+    massage,
+    totalPrice,
+    basePrice,
+    priceWithTax,
+    onConfirm,
+  ]);
 
   if (!isOpen) return null;
-
-  const TIME_SLOTS = [
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-  ];
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
@@ -156,375 +219,282 @@ const MassageConfigModal = ({ massage, isOpen, onClose, onConfirm }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className='relative bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto'
+        className='relative bg-white border border-stone-200 max-w-4xl w-full max-h-[90vh] overflow-y-auto'
       >
-        <div className='sticky top-0 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white p-8'>
+        {/* ─ Header ─ */}
+        <div className='sticky top-0 z-10 bg-stone-900 text-white p-6 sm:p-8'>
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-6'>
-              <div className='w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl shadow-lg'>
-                {massage.emoji}
-              </div>
-              <div>
-                <h3 className='text-2xl font-bold mb-1'>{massage.name}</h3>
-                <p className='text-emerald-100 text-lg'>
-                  {massage.description}
-                </p>
-                <div className='flex items-center gap-4 mt-2'>
-                  <IntensityBadge intensity={massage.intensity} />
-                  {massage.isPremium && (
-                    <span className='bg-amber-400 text-amber-900 px-3 py-1 rounded-full text-xs font-semibold'>
-                      Premium Experience
-                    </span>
-                  )}
-                </div>
-              </div>
+            <div>
+              <p className='text-amber-400 uppercase tracking-[0.25em] text-[10px] font-medium mb-1'>
+                {massage.category} • {massage.intensity}
+              </p>
+              <h3 className='text-xl sm:text-2xl font-light tracking-tight'>
+                {massage.name}
+              </h3>
+              <p className='text-stone-400 text-sm mt-1 max-w-md'>
+                {massage.description}
+              </p>
             </div>
             <button
               onClick={onClose}
-              className='p-3 hover:bg-white/10 rounded-full transition-colors'
+              className='p-2 hover:bg-white/10 transition-colors flex-shrink-0'
             >
-              <X className='w-6 h-6' />
+              <X className='w-5 h-5' />
             </button>
           </div>
         </div>
 
-        <div className='p-8 space-y-8'>
-          <div className='bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-100'>
-            <h4 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-              <Sparkles className='w-5 h-5 text-emerald-600' />
-              Treatment Benefits
-            </h4>
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
-              {massage.benefits.map((benefit, idx) => (
-                <div
-                  key={idx}
-                  className='bg-white/70 backdrop-blur-sm text-emerald-700 px-3 py-2 rounded-lg text-sm font-medium text-center border border-emerald-200'
-                >
-                  {benefit}
-                </div>
-              ))}
+        {/* ─ Body ─ */}
+        <div className='p-6 sm:p-8 lg:p-10 space-y-10'>
+          {/* Benefits — compact tags */}
+          <div className='flex flex-wrap gap-2'>
+            {massage.benefits.map((benefit, idx) => (
+              <span
+                key={idx}
+                className='text-[11px] text-stone-600 border border-stone-200 px-2.5 py-1'
+              >
+                {benefit}
+              </span>
+            ))}
+          </div>
+
+          {/* Duration */}
+          <div className='space-y-4'>
+            <SectionHeading>Duration</SectionHeading>
+            <div
+              className={`grid gap-3 ${
+                massage.durations.length === 1
+                  ? 'grid-cols-1 max-w-xs'
+                  : 'grid-cols-2'
+              }`}
+            >
+              {massage.durations.map((option) => {
+                const selected =
+                  formData.selectedDuration.duration === option.duration;
+                return (
+                  <button
+                    key={option.duration}
+                    type='button'
+                    onClick={() => updateField('selectedDuration', option)}
+                    className={`border p-4 text-left transition-colors ${
+                      selected
+                        ? 'border-stone-900 bg-stone-50'
+                        : 'border-stone-200 hover:border-stone-400'
+                    }`}
+                  >
+                    <div className='flex justify-between items-baseline'>
+                      <span className='text-sm font-medium text-stone-900'>
+                        {option.duration} min
+                      </span>
+                      <span className='text-lg font-light text-stone-900'>
+                        ${option.price}
+                      </span>
+                    </div>
+                    <p className='text-[11px] text-stone-400 mt-1'>
+                      per person
+                    </p>
+                    {option.popular && (
+                      <span className='inline-block mt-2 text-[10px] text-amber-600 font-medium uppercase tracking-wider'>
+                        Recommended
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
-            <p className='text-gray-700 mt-4 leading-relaxed'>
-              {massage.longDescription}
+          </div>
+
+          {/* Group Size */}
+          <div className='space-y-4'>
+            <SectionHeading>Group Size</SectionHeading>
+            <div className='flex border border-stone-300 overflow-hidden max-w-xs bg-white'>
+              <button
+                type='button'
+                onClick={() =>
+                  updateField('persons', Math.max(1, formData.persons - 1))
+                }
+                disabled={formData.persons <= 1}
+                className='px-4 py-2 bg-stone-100 hover:bg-stone-200 transition text-stone-700 disabled:opacity-50'
+              >
+                <Minus className='w-4 h-4' />
+              </button>
+              <div className='flex-1 py-2 text-center text-sm font-medium text-stone-900'>
+                {formData.persons}
+              </div>
+              <button
+                type='button'
+                onClick={() =>
+                  updateField(
+                    'persons',
+                    Math.min(massage.maxPersons, formData.persons + 1),
+                  )
+                }
+                disabled={formData.persons >= massage.maxPersons}
+                className='px-4 py-2 bg-stone-100 hover:bg-stone-200 transition text-stone-700 disabled:opacity-50'
+              >
+                <Plus className='w-4 h-4' />
+              </button>
+            </div>
+            <p className='text-[11px] text-stone-400'>
+              Maximum {massage.maxPersons}{' '}
+              {massage.maxPersons === 1 ? 'person' : 'people'}
             </p>
           </div>
 
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-            <div>
-              <label className='block text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-                <Timer className='w-5 h-5 text-emerald-600' />
-                Choose Your Experience
-              </label>
-              <div className='space-y-4'>
-                {massage.durations.map((option) => (
+          {/* Date & Time */}
+          <div className='space-y-4'>
+            <SectionHeading>Schedule</SectionHeading>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div>
+                <FieldLabel icon={Calendar} required>
+                  Date
+                </FieldLabel>
+                <input
+                  type='date'
+                  value={formData.date}
+                  onClick={(e) => e.currentTarget.showPicker()}
+                  onChange={(e) => updateField('date', e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`${inputBase} ${errors.date ? 'border-red-400' : 'border-stone-300'}`}
+                />
+                <FieldError message={errors.date} />
+              </div>
+              <div>
+                <FieldLabel icon={Clock} required>
+                  Time
+                </FieldLabel>
+                <select
+                  value={formData.time}
+                  onChange={(e) => updateField('time', e.target.value)}
+                  className={`${inputBase} ${errors.time ? 'border-red-400' : 'border-stone-300'}`}
+                >
+                  <option value=''>Select time</option>
+                  {TIME_SLOTS.map((slot) => (
+                    <option key={slot} value={slot}>
+                      {slot}
+                    </option>
+                  ))}
+                </select>
+                <FieldError message={errors.time} />
+              </div>
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className='space-y-4'>
+            <SectionHeading>Location</SectionHeading>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+              {LOCATION_OPTIONS.map((location) => {
+                const selected = formData.location === location.id;
+                return (
                   <button
-                    key={option.duration}
-                    onClick={() => updateField('selectedDuration', option)}
-                    className={`w-full p-5 rounded-2xl border-2 text-left transition-all ${
-                      formData.selectedDuration.duration === option.duration
-                        ? 'border-emerald-500 bg-emerald-50 shadow-lg'
-                        : 'border-gray-200 hover:border-emerald-300 bg-white'
+                    key={location.id}
+                    type='button'
+                    onClick={() => updateField('location', location.id)}
+                    className={`flex items-center border p-3 text-left transition-colors text-sm ${
+                      selected
+                        ? 'border-stone-900 bg-stone-50'
+                        : 'border-stone-200 hover:border-stone-400'
                     }`}
                   >
-                    <div className='flex justify-between items-center'>
-                      <div>
-                        <div className='font-bold text-gray-900 text-lg mb-1'>
-                          {option.duration} minutes
-                        </div>
-                        <div className='text-sm text-gray-600'>
-                          {option.popular
-                            ? 'Most Popular Choice'
-                            : 'Perfect for focused treatment'}
-                        </div>
-                        {option.popular && (
-                          <div className='mt-2'>
-                            <span className='bg-emerald-500 text-white px-2 py-1 rounded-full text-xs font-semibold'>
-                              Recommended
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className='text-right'>
-                        <div className='text-2xl font-bold text-emerald-600'>
-                          ${option.price}
-                        </div>
-                        <div className='text-sm text-gray-500'>per person</div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className='block text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-                <Users className='w-5 h-5 text-emerald-600' />
-                Group Size
-              </label>
-              <div className='bg-gray-50 rounded-2xl p-6'>
-                <div className='flex items-center justify-center gap-6 mb-4'>
-                  <button
-                    onClick={() =>
-                      updateField('persons', Math.max(1, formData.persons - 1))
-                    }
-                    disabled={formData.persons <= 1}
-                    className='w-12 h-12 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-50 transition-all shadow-sm'
-                  >
-                    <Minus className='w-5 h-5 text-gray-600' />
-                  </button>
-                  <div className='text-center'>
-                    <div className='text-3xl font-bold text-gray-900 mb-1'>
-                      {formData.persons}
-                    </div>
-                    <div className='text-sm text-gray-600'>
-                      {formData.persons === 1 ? 'person' : 'people'}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() =>
-                      updateField(
-                        'persons',
-                        Math.min(massage.maxPersons, formData.persons + 1)
-                      )
-                    }
-                    disabled={formData.persons >= massage.maxPersons}
-                    className='w-12 h-12 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-300 disabled:opacity-50 transition-all shadow-sm'
-                  >
-                    <Plus className='w-5 h-5 text-gray-600' />
-                  </button>
-                </div>
-                <div className='text-center text-sm text-gray-600'>
-                  Maximum capacity: {massage.maxPersons}{' '}
-                  {massage.maxPersons === 1 ? 'person' : 'people'}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            <div>
-              <label className='block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2'>
-                <Calendar className='w-5 h-5 text-emerald-600' />
-                Preferred Date *
-              </label>
-              <input
-                type='date'
-                value={formData.date}
-                onClick={(e) => e.currentTarget.showPicker()}
-                onChange={(e) => updateField('date', e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className={`w-full p-4 border-2 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all text-lg ${
-                  errors.date ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                }`}
-              />
-              {errors.date && (
-                <p className='text-red-500 text-sm mt-2'>{errors.date}</p>
-              )}
-            </div>
-
-            <div>
-              <label className='block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2'>
-                <Clock className='w-5 h-5 text-emerald-600' />
-                Preferred Time *
-              </label>
-              <select
-                value={formData.time}
-                onChange={(e) => updateField('time', e.target.value)}
-                className={`w-full p-4 border-2 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all text-lg ${
-                  errors.time ? 'border-red-300 bg-red-50' : 'border-gray-200'
-                }`}
-              >
-                <option value=''>Select your preferred time</option>
-                {TIME_SLOTS.map((slot) => (
-                  <option key={slot} value={slot}>
-                    {slot}
-                  </option>
-                ))}
-              </select>
-              {errors.time && (
-                <p className='text-red-500 text-sm mt-2'>{errors.time}</p>
-              )}
-            </div>
-          </div>
-
-          {/* ✅ Updated Location Selection with Cards */}
-          <div>
-            <label className='block text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-              <MapPin className='w-5 h-5 text-emerald-600' />
-              Select your location *
-            </label>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-              {LOCATION_OPTIONS.map((location) => (
-                <div
-                  key={location.id}
-                  className={`
-                    border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md
-                    ${
-                      formData.location === location.id
-                        ? 'border-emerald-500 bg-emerald-50 shadow-lg ring-2 ring-emerald-200'
-                        : 'border-gray-200 bg-white hover:border-emerald-300'
-                    }
-                  `}
-                  onClick={() => handleLocationSelect(location.id)}
-                >
-                  <div className='flex items-center'>
                     <div
-                      className={`
-                        w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 transition-all
-                        ${
-                          formData.location === location.id
-                            ? 'border-emerald-500 bg-emerald-500'
-                            : 'border-gray-300'
-                        }
-                      `}
+                      className={`w-4 h-4 rounded-full border-2 mr-3 flex items-center justify-center flex-shrink-0 ${
+                        selected
+                          ? 'border-stone-900 bg-stone-900'
+                          : 'border-stone-300'
+                      }`}
                     >
-                      {formData.location === location.id && (
-                        <CheckCircle className='w-4 h-4 text-white' />
+                      {selected && (
+                        <CheckCircle className='w-2.5 h-2.5 text-white' />
                       )}
                     </div>
-                    <div className='flex items-center'>
-                      <MapPin className='w-4 h-4 mr-2 text-emerald-600' />
-                      <span className='font-medium text-gray-800 text-sm'>
-                        {location.name}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                    <span className='text-stone-800 font-medium text-xs'>
+                      {location.name}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-
-            {errors.location && (
-              <p className='text-red-500 text-sm mt-3 flex items-center'>
-                <Info className='w-3 h-3 mr-1' />
-                {errors.location}
-              </p>
-            )}
+            <FieldError message={errors.location} />
           </div>
 
-          <div>
-            <label className='block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2'>
-              <Heart className='w-5 h-5 text-emerald-600' />
-              Special Requests & Health Information
-            </label>
+          {/* Special Needs */}
+          <div className='space-y-4'>
+            <SectionHeading>Health Information</SectionHeading>
             <textarea
               value={formData.specialNeeds}
               onChange={(e) => updateField('specialNeeds', e.target.value)}
-              placeholder='Please share any health conditions, injuries, allergies, or special preferences to help us customize your perfect massage experience...'
-              className='w-full p-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 resize-none h-24 transition-all'
+              placeholder='Medical conditions, injuries, allergies, or special preferences...'
+              className={`${inputBase} border-stone-300 resize-none h-24`}
             />
-            <div className='flex items-start gap-3 mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200'>
-              <Info className='w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0' />
-              <p className='text-sm text-blue-800'>
-                Your comfort and safety are our priority. All information helps
-                our licensed therapists provide the most beneficial and relaxing
-                experience possible.
-              </p>
-            </div>
+            <p className='flex items-center gap-2 text-xs text-stone-400'>
+              <Info className='w-3.5 h-3.5 flex-shrink-0' />
+              Confidential — helps our therapists customize your session safely.
+            </p>
           </div>
 
-          <div className='bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 text-white rounded-2xl p-8 shadow-xl'>
-            <div className='flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6'>
-              <div className='flex-1'>
-                <h4 className='text-2xl font-bold mb-4 flex items-center gap-2'>
-                  <Sparkles className='w-6 h-6' />
-                  Your Wellness Experience
-                </h4>
-                <div className='space-y-2 text-emerald-100'>
-                  <div className='flex items-center gap-3 text-lg'>
-                    <span className='text-2xl'>{massage.emoji}</span>
-                    <span className='font-semibold'>{massage.name}</span>
-                  </div>
-                  <div className='flex items-center gap-2 text-sm'>
-                    <Timer className='w-4 h-4' />
-                    <span>
-                      {formData.selectedDuration.duration} minutes of pure bliss
-                    </span>
-                  </div>
-                  <div className='flex items-center gap-2 text-sm'>
-                    <Users className='w-4 h-4' />
-                    <span>
-                      {formData.persons}{' '}
-                      {formData.persons === 1 ? 'person' : 'people'}
-                    </span>
-                  </div>
-                  {formData.date && formData.time && (
-                    <div className='flex items-center gap-2 text-sm'>
-                      <Calendar className='w-4 h-4' />
-                      <span>
-                        {new Date(formData.date).toLocaleDateString()} at{' '}
-                        {formData.time}
-                      </span>
-                    </div>
-                  )}
-                  {formData.location && (
-                    <div className='flex items-center gap-2 text-sm'>
-                      <MapPin className='w-4 h-4' />
-                      <span>
-                        {
-                          LOCATION_OPTIONS.find(
-                            (loc) => loc.id === formData.location
-                          )?.name
-                        }
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className='text-right lg:text-center'>
-                <div className='text-4xl lg:text-5xl font-bold mb-2'>
-                  ${totalPrice}
-                </div>
-                <div className='text-emerald-200 text-lg'>Total Investment</div>
-                <div className='text-emerald-200 text-sm mt-1'>
-                  in your wellness
-                </div>
-              </div>
-            </div>
-          </div>
-
+          {/* Error */}
           {errors.submit && (
-            <div className='p-4 bg-red-50 border border-red-200 rounded-xl'>
-              <p className='text-red-800'>{errors.submit}</p>
+            <div className='flex items-center gap-2 p-4 bg-red-50 border border-red-200 text-sm text-red-800'>
+              <AlertCircle className='w-4 h-4 flex-shrink-0' />
+              {errors.submit}
             </div>
           )}
         </div>
 
-        <div className='sticky bottom-0 bg-white border-t border-gray-200 p-6'>
-          <div className='flex gap-4'>
+        {/* ─ Footer ─ */}
+        <div className='sticky bottom-0 bg-stone-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6'>
+          <div className='text-center sm:text-left'>
+            <span className='text-stone-500 text-xs uppercase tracking-wider'>
+              Total
+            </span>
+            <div className='flex items-center gap-3 mt-1'>
+              <span className='text-3xl font-light'>
+                ${totalPrice.toFixed(2)}
+              </span>
+              {formData.persons > 1 && (
+                <span className='text-xs bg-stone-800 px-2 py-1'>
+                  {formData.persons} people
+                </span>
+              )}
+            </div>
+
+            <div className='text-[11px] text-stone-500 mt-2 space-y-0.5'>
+              <div className='text-stone-400'>
+                {massage.name} — {formData.selectedDuration.duration} min
+              </div>
+              <div>
+                ${formData.selectedDuration.price} × {formData.persons}{' '}
+                {formData.persons === 1 ? 'person' : 'people'}
+              </div>
+              <div className='border-t border-stone-700 pt-1 mt-1'>
+                <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                <div className='text-amber-400'>
+                  Processing fee ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className='flex gap-3'>
             <button
+              type='button'
               onClick={onClose}
               disabled={isSubmitting}
-              className='flex-1 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold text-lg'
+              className='px-6 py-3 border border-stone-700 text-stone-400 hover:text-white hover:border-stone-500 text-sm transition-colors disabled:opacity-50'
             >
               Cancel
             </button>
             <button
+              type='button'
               onClick={handleSubmit}
               disabled={!isValid || isSubmitting}
-              className={`flex-1 py-4 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-3 ${
-                isValid && !isSubmitting
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 shadow-lg'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+              className='px-8 py-3 bg-white text-stone-900 hover:bg-amber-50 text-sm font-medium tracking-wide flex items-center gap-2 transition-colors disabled:opacity-50 disabled:bg-stone-700 disabled:text-stone-500'
             >
-              {isSubmitting ? (
-                <>
-                  <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white' />
-                  Processing your booking...
-                </>
-              ) : (
-                <>
-                  <Heart className='w-5 h-5' />
-                  Confirm My Wellness Experience
-                  <ArrowRight className='w-5 h-5' />
-                </>
-              )}
+              <CreditCard className='w-4 h-4' />
+              {isSubmitting ? 'Processing...' : 'Confirm Booking'}
             </button>
           </div>
-          <p className='text-center text-sm text-gray-500 mt-3'>
-            Secure booking • Flexible rescheduling • Licensed therapists
-          </p>
         </div>
       </motion.div>
     </div>

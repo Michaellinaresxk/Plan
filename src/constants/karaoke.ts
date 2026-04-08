@@ -29,7 +29,7 @@ export interface KaraokeFormProps {
 }
 
 export const PRICING = {
-  BASE_PRICE: 200, // Base karaoke setup price
+  BASE_PRICE: 480, // Base karaoke setup price
   SCREEN_RENTAL: 75, // Additional screen rental fee
   OUTDOOR_SETUP: 50, // Additional outdoor setup fee
 };

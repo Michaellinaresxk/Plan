@@ -4,19 +4,83 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useReservation } from '@/context/BookingContext';
 import {
-  Leaf,
-  Star,
   ArrowRight,
+  Clock,
+  Star,
+  Users,
   Shield,
-  Heart,
   CheckCircle,
-  Sparkles,
-  Play,
+  Check,
+  Quote,
+  AlertTriangle,
 } from 'lucide-react';
 import MassageConfigModal from '../massage/MassageConfigModal';
 import FilterBar from '../massage/FilterBar';
 import MassageCard from '../massage/MassageCard';
 import { useTranslation } from '@/lib/i18n/client';
+
+// ─── Animation ────────────────────────────────────────────────────────────────
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const INCLUDED = [
+  'Licensed massage therapist',
+  'Premium organic oils',
+  'Customized pressure',
+  'At your location',
+  'Flexible scheduling',
+  'Post-session guidance',
+] as const;
+
+const TESTIMONIALS = [
+  {
+    quote:
+      'The best massage experience we had on vacation. Professional and perfectly tailored.',
+    author: 'Maria L.',
+    result: 'Couples deep tissue session',
+  },
+  {
+    quote:
+      'Having a licensed therapist come to our villa was incredibly convenient and relaxing.',
+    author: 'David R.',
+    result: 'Swedish massage at villa',
+  },
+] as const;
+
+const GALLERY = [
+  {
+    src: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=800&auto=format&fit=crop',
+    alt: 'Swedish massage',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=800&auto=format&fit=crop',
+    alt: 'Deep tissue therapy',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?q=80&w=800&auto=format&fit=crop',
+    alt: 'Aromatherapy session',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=800&auto=format&fit=crop',
+    alt: 'Thai massage',
+  },
+] as const;
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const MassageServiceView = () => {
   const router = useRouter();
@@ -41,10 +105,10 @@ const MassageServiceView = () => {
           id: 'swedish',
           name: t('services.standard.massageView.massages.swedish.name'),
           description: t(
-            'services.standard.massageView.massages.swedish.description'
+            'services.standard.massageView.massages.swedish.description',
           ),
           longDescription: t(
-            'services.standard.massageView.massages.swedish.longDescription'
+            'services.standard.massageView.massages.swedish.longDescription',
           ),
           category: 'relaxation',
           durations: [
@@ -60,33 +124,33 @@ const MassageServiceView = () => {
           benefits: [
             t('services.standard.massageView.massages.swedish.benefits.stress'),
             t(
-              'services.standard.massageView.massages.swedish.benefits.circulation'
+              'services.standard.massageView.massages.swedish.benefits.circulation',
             ),
             t('services.standard.massageView.massages.swedish.benefits.sleep'),
             t(
-              'services.standard.massageView.massages.swedish.benefits.relaxation'
+              'services.standard.massageView.massages.swedish.benefits.relaxation',
             ),
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.swedish.perfectFor.firstTime'
+              'services.standard.massageView.massages.swedish.perfectFor.firstTime',
             ),
             t(
-              'services.standard.massageView.massages.swedish.perfectFor.stress'
+              'services.standard.massageView.massages.swedish.perfectFor.stress',
             ),
             t(
-              'services.standard.massageView.massages.swedish.perfectFor.wellness'
+              'services.standard.massageView.massages.swedish.perfectFor.wellness',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.swedish.techniques.strokes'
+              'services.standard.massageView.massages.swedish.techniques.strokes',
             ),
             t(
-              'services.standard.massageView.massages.swedish.techniques.kneading'
+              'services.standard.massageView.massages.swedish.techniques.kneading',
             ),
             t(
-              'services.standard.massageView.massages.swedish.techniques.aromatherapy'
+              'services.standard.massageView.massages.swedish.techniques.aromatherapy',
             ),
           ],
         },
@@ -94,10 +158,10 @@ const MassageServiceView = () => {
           id: 'deep-tissue',
           name: t('services.standard.massageView.massages.deepTissue.name'),
           description: t(
-            'services.standard.massageView.massages.deepTissue.description'
+            'services.standard.massageView.massages.deepTissue.description',
           ),
           longDescription: t(
-            'services.standard.massageView.massages.deepTissue.longDescription'
+            'services.standard.massageView.massages.deepTissue.longDescription',
           ),
           category: 'therapeutic',
           durations: [
@@ -112,38 +176,38 @@ const MassageServiceView = () => {
             'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800',
           benefits: [
             t(
-              'services.standard.massageView.massages.deepTissue.benefits.pain'
+              'services.standard.massageView.massages.deepTissue.benefits.pain',
             ),
             t(
-              'services.standard.massageView.massages.deepTissue.benefits.tension'
+              'services.standard.massageView.massages.deepTissue.benefits.tension',
             ),
             t(
-              'services.standard.massageView.massages.deepTissue.benefits.mobility'
+              'services.standard.massageView.massages.deepTissue.benefits.mobility',
             ),
             t(
-              'services.standard.massageView.massages.deepTissue.benefits.recovery'
+              'services.standard.massageView.massages.deepTissue.benefits.recovery',
             ),
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.deepTissue.perfectFor.athletes'
+              'services.standard.massageView.massages.deepTissue.perfectFor.athletes',
             ),
             t(
-              'services.standard.massageView.massages.deepTissue.perfectFor.pain'
+              'services.standard.massageView.massages.deepTissue.perfectFor.pain',
             ),
             t(
-              'services.standard.massageView.massages.deepTissue.perfectFor.injury'
+              'services.standard.massageView.massages.deepTissue.perfectFor.injury',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.deepTissue.techniques.pressure'
+              'services.standard.massageView.massages.deepTissue.techniques.pressure',
             ),
             t(
-              'services.standard.massageView.massages.deepTissue.techniques.trigger'
+              'services.standard.massageView.massages.deepTissue.techniques.trigger',
             ),
             t(
-              'services.standard.massageView.massages.deepTissue.techniques.myofascial'
+              'services.standard.massageView.massages.deepTissue.techniques.myofascial',
             ),
           ],
         },
@@ -151,10 +215,10 @@ const MassageServiceView = () => {
           id: 'hot-stone',
           name: t('services.standard.massageView.massages.hotStone.name'),
           description: t(
-            'services.standard.massageView.massages.hotStone.description'
+            'services.standard.massageView.massages.hotStone.description',
           ),
           longDescription: t(
-            'services.standard.massageView.massages.hotStone.longDescription'
+            'services.standard.massageView.massages.hotStone.longDescription',
           ),
           category: 'signature',
           durations: [{ duration: 90, price: 200, popular: true }],
@@ -166,36 +230,36 @@ const MassageServiceView = () => {
             'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800',
           benefits: [
             t(
-              'services.standard.massageView.massages.hotStone.benefits.relaxation'
+              'services.standard.massageView.massages.hotStone.benefits.relaxation',
             ),
             t('services.standard.massageView.massages.hotStone.benefits.blood'),
             t(
-              'services.standard.massageView.massages.hotStone.benefits.tension'
+              'services.standard.massageView.massages.hotStone.benefits.tension',
             ),
             t(
-              'services.standard.massageView.massages.hotStone.benefits.spiritual'
+              'services.standard.massageView.massages.hotStone.benefits.spiritual',
             ),
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.hotStone.perfectFor.relaxation'
+              'services.standard.massageView.massages.hotStone.perfectFor.relaxation',
             ),
             t(
-              'services.standard.massageView.massages.hotStone.perfectFor.weather'
+              'services.standard.massageView.massages.hotStone.perfectFor.weather',
             ),
             t(
-              'services.standard.massageView.massages.hotStone.perfectFor.spiritual'
+              'services.standard.massageView.massages.hotStone.perfectFor.spiritual',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.hotStone.techniques.placement'
+              'services.standard.massageView.massages.hotStone.techniques.placement',
             ),
             t(
-              'services.standard.massageView.massages.hotStone.techniques.massage'
+              'services.standard.massageView.massages.hotStone.techniques.massage',
             ),
             t(
-              'services.standard.massageView.massages.hotStone.techniques.energy'
+              'services.standard.massageView.massages.hotStone.techniques.energy',
             ),
           ],
         },
@@ -203,10 +267,10 @@ const MassageServiceView = () => {
           id: 'aromatherapy',
           name: t('services.standard.massageView.massages.aromatherapy.name'),
           description: t(
-            'services.standard.massageView.massages.aromatherapy.description'
+            'services.standard.massageView.massages.aromatherapy.description',
           ),
           longDescription: t(
-            'services.standard.massageView.massages.aromatherapy.longDescription'
+            'services.standard.massageView.massages.aromatherapy.longDescription',
           ),
           category: 'relaxation',
           durations: [
@@ -221,38 +285,38 @@ const MassageServiceView = () => {
             'https://images.unsplash.com/photo-1596178065887-1198b6148b2b?w=800',
           benefits: [
             t(
-              'services.standard.massageView.massages.aromatherapy.benefits.clarity'
+              'services.standard.massageView.massages.aromatherapy.benefits.clarity',
             ),
             t(
-              'services.standard.massageView.massages.aromatherapy.benefits.balance'
+              'services.standard.massageView.massages.aromatherapy.benefits.balance',
             ),
             t(
-              'services.standard.massageView.massages.aromatherapy.benefits.stress'
+              'services.standard.massageView.massages.aromatherapy.benefits.stress',
             ),
             t(
-              'services.standard.massageView.massages.aromatherapy.benefits.mood'
+              'services.standard.massageView.massages.aromatherapy.benefits.mood',
             ),
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.aromatherapy.perfectFor.emotional'
+              'services.standard.massageView.massages.aromatherapy.perfectFor.emotional',
             ),
             t(
-              'services.standard.massageView.massages.aromatherapy.perfectFor.lovers'
+              'services.standard.massageView.massages.aromatherapy.perfectFor.lovers',
             ),
             t(
-              'services.standard.massageView.massages.aromatherapy.perfectFor.holistic'
+              'services.standard.massageView.massages.aromatherapy.perfectFor.holistic',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.aromatherapy.techniques.blending'
+              'services.standard.massageView.massages.aromatherapy.techniques.blending',
             ),
             t(
-              'services.standard.massageView.massages.aromatherapy.techniques.lymphatic'
+              'services.standard.massageView.massages.aromatherapy.techniques.lymphatic',
             ),
             t(
-              'services.standard.massageView.massages.aromatherapy.techniques.chakra'
+              'services.standard.massageView.massages.aromatherapy.techniques.chakra',
             ),
           ],
         },
@@ -260,10 +324,10 @@ const MassageServiceView = () => {
           id: 'prenatal',
           name: t('services.standard.massageView.massages.prenatal.name'),
           description: t(
-            'services.standard.massageView.massages.prenatal.description'
+            'services.standard.massageView.massages.prenatal.description',
           ),
           longDescription: t(
-            'standard.massageView.massages.prenatal.longDescription'
+            'standard.massageView.massages.prenatal.longDescription',
           ),
           category: 'therapeutic',
           durations: [{ duration: 60, price: 150, popular: true }],
@@ -275,34 +339,34 @@ const MassageServiceView = () => {
             'https://images.unsplash.com/photo-1527196850338-c9e2cfac4d5a?w=800',
           benefits: [
             t(
-              'services.standard.massageView.massages.prenatal.benefits.comfort'
+              'services.standard.massageView.massages.prenatal.benefits.comfort',
             ),
             t(
-              'services.standard.massageView.massages.prenatal.benefits.swelling'
+              'services.standard.massageView.massages.prenatal.benefits.swelling',
             ),
             t('services.standard.massageView.massages.prenatal.benefits.pain'),
             t('services.standard.massageView.massages.prenatal.benefits.sleep'),
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.prenatal.perfectFor.pregnant'
+              'services.standard.massageView.massages.prenatal.perfectFor.pregnant',
             ),
             t(
-              'services.standard.massageView.massages.prenatal.perfectFor.pain'
+              'services.standard.massageView.massages.prenatal.perfectFor.pain',
             ),
             t(
-              'services.standard.massageView.massages.prenatal.perfectFor.support'
+              'services.standard.massageView.massages.prenatal.perfectFor.support',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.prenatal.techniques.positioning'
+              'services.standard.massageView.massages.prenatal.techniques.positioning',
             ),
             t(
-              'services.standard.massageView.massages.prenatal.techniques.pressure'
+              'services.standard.massageView.massages.prenatal.techniques.pressure',
             ),
             t(
-              'services.standard.massageView.massages.prenatal.techniques.safe'
+              'services.standard.massageView.massages.prenatal.techniques.safe',
             ),
           ],
         },
@@ -310,10 +374,10 @@ const MassageServiceView = () => {
           id: 'sports',
           name: t('services.standard.massageView.massages.sports.name'),
           description: t(
-            'services.standard.massageView.massages.sports.description'
+            'services.standard.massageView.massages.sports.description',
           ),
           longDescription: t(
-            'services.standard.massageView.massages.sports.longDescription'
+            'services.standard.massageView.massages.sports.longDescription',
           ),
           category: 'therapeutic',
           durations: [
@@ -328,38 +392,38 @@ const MassageServiceView = () => {
             'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
           benefits: [
             t(
-              'services.standard.massageView.massages.sports.benefits.performance'
+              'services.standard.massageView.massages.sports.benefits.performance',
             ),
             t(
-              'services.standard.massageView.massages.sports.benefits.prevention'
+              'services.standard.massageView.massages.sports.benefits.prevention',
             ),
             t(
-              'services.standard.massageView.massages.sports.benefits.recovery'
+              'services.standard.massageView.massages.sports.benefits.recovery',
             ),
             t(
-              'services.standard.massageView.massages.sports.benefits.flexibility'
+              'services.standard.massageView.massages.sports.benefits.flexibility',
             ),
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.sports.perfectFor.athletes'
+              'services.standard.massageView.massages.sports.perfectFor.athletes',
             ),
             t(
-              'services.standard.massageView.massages.sports.perfectFor.active'
+              'services.standard.massageView.massages.sports.perfectFor.active',
             ),
             t(
-              'services.standard.massageView.massages.sports.perfectFor.performance'
+              'services.standard.massageView.massages.sports.perfectFor.performance',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.sports.techniques.massage'
+              'services.standard.massageView.massages.sports.techniques.massage',
             ),
             t(
-              'services.standard.massageView.massages.sports.techniques.stretching'
+              'services.standard.massageView.massages.sports.techniques.stretching',
             ),
             t(
-              'services.standard.massageView.massages.sports.techniques.compression'
+              'services.standard.massageView.massages.sports.techniques.compression',
             ),
           ],
         },
@@ -368,7 +432,7 @@ const MassageServiceView = () => {
           name: t('standard.massageView.massages.couples.name'),
           description: t('standard.massageView.massages.couples.description'),
           longDescription: t(
-            'services.standard.massageView.massages.couples.longDescription'
+            'services.standard.massageView.massages.couples.longDescription',
           ),
           category: 'signature',
           durations: [
@@ -383,34 +447,34 @@ const MassageServiceView = () => {
             'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=800',
           benefits: [
             t(
-              'services.standard.massageView.massages.couples.benefits.romantic'
+              'services.standard.massageView.massages.couples.benefits.romantic',
             ),
             t('services.standard.massageView.massages.couples.benefits.shared'),
             t(
-              'services.standard.massageView.massages.couples.benefits.bonding'
+              'services.standard.massageView.massages.couples.benefits.bonding',
             ),
             t('services.standard.massageView.massages.couples.benefits.stress'),
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.couples.perfectFor.couples'
+              'services.standard.massageView.massages.couples.perfectFor.couples',
             ),
             t(
-              'services.standard.massageView.massages.couples.perfectFor.anniversaries'
+              'services.standard.massageView.massages.couples.perfectFor.anniversaries',
             ),
             t(
-              'services.standard.massageView.massages.couples.perfectFor.dates'
+              'services.standard.massageView.massages.couples.perfectFor.dates',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.couples.techniques.synchronized'
+              'services.standard.massageView.massages.couples.techniques.synchronized',
             ),
             t(
-              'services.standard.massageView.massages.couples.techniques.aromatherapy'
+              'services.standard.massageView.massages.couples.techniques.aromatherapy',
             ),
             t(
-              'services.standard.massageView.massages.couples.techniques.ambiance'
+              'services.standard.massageView.massages.couples.techniques.ambiance',
             ),
           ],
         },
@@ -418,10 +482,10 @@ const MassageServiceView = () => {
           id: 'thai',
           name: t('services.standard.massageView.massages.thai.name'),
           description: t(
-            'services.standard.massageView.massages.thai.description'
+            'services.standard.massageView.massages.thai.description',
           ),
           longDescription: t(
-            'services.standard.massageView.massages.thai.longDescription'
+            'services.standard.massageView.massages.thai.longDescription',
           ),
           category: 'signature',
           durations: [
@@ -436,7 +500,7 @@ const MassageServiceView = () => {
             'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=800',
           benefits: [
             t(
-              'services.standard.massageView.massages.thai.benefits.flexibility'
+              'services.standard.massageView.massages.thai.benefits.flexibility',
             ),
             t('services.standard.massageView.massages.thai.benefits.energy'),
             t('services.standard.massageView.massages.thai.benefits.stress'),
@@ -444,26 +508,26 @@ const MassageServiceView = () => {
           ],
           perfectFor: [
             t(
-              'services.standard.massageView.massages.thai.perfectFor.flexibility'
+              'services.standard.massageView.massages.thai.perfectFor.flexibility',
             ),
             t('services.standard.massageView.massages.thai.perfectFor.energy'),
             t(
-              'services.standard.massageView.massages.thai.perfectFor.traditional'
+              'services.standard.massageView.massages.thai.perfectFor.traditional',
             ),
           ],
           techniques: [
             t(
-              'services.standard.massageView.massages.thai.techniques.stretching'
+              'services.standard.massageView.massages.thai.techniques.stretching',
             ),
             t(
-              'services.standard.massageView.massages.thai.techniques.pressure'
+              'services.standard.massageView.massages.thai.techniques.pressure',
             ),
             t('services.standard.massageView.massages.thai.techniques.energy'),
           ],
         },
       ],
     }),
-    [t]
+    [t],
   );
 
   const filteredMassages = useMemo(() => {
@@ -539,230 +603,231 @@ const MassageServiceView = () => {
         alert(t('services.standard.massageView.errors.booking'));
       }
     },
-    [setReservationData, router, t]
+    [setReservationData, router, t],
   );
 
   const totalFilteredCount = filteredMassages.length;
   const totalMassagesCount = SPA_SERVICES.massages.length;
 
   return (
-    <div className='min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 relative'>
-      {/* Hero Section */}
-      <section className='relative h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden'>
-        <div className='absolute inset-0 z-0'>
-          <Image
-            src='https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=2000'
-            alt='Serene Spa Experience'
-            fill
-            className='object-cover'
-            priority
-          />
-          <div className='absolute inset-0 bg-gradient-to-br from-emerald-900/80 via-emerald-800/60 to-teal-900/80' />
-          <div className='absolute inset-0 bg-black/20' />
+    <div className='min-h-screen bg-stone-50'>
+      {/* ── Hero — full bleed, matching PersonalTrainerServiceView ── */}
+      <motion.section
+        className='relative w-full h-[55vh] sm:h-[60vh] lg:h-[70vh]'
+        initial='hidden'
+        animate='visible'
+        variants={fadeIn}
+      >
+        <Image
+          src='https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1400&auto=format&fit=crop'
+          alt='Massage therapy'
+          fill
+          className='object-cover'
+          priority
+        />
+        <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent' />
+
+        <div className='relative z-10 h-full flex items-end'>
+          <div className='w-full px-5 sm:px-8 lg:px-12 pb-10 sm:pb-14 lg:pb-16'>
+            <div className='max-w-3xl'>
+              <p className='text-amber-300 uppercase tracking-[0.3em] text-[11px] sm:text-xs font-medium mb-3'>
+                Massage Therapy
+              </p>
+              <h1 className='text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white leading-[1.1] tracking-tight mb-3'>
+                {t('services.standard.massageView.hero.title.line1')}
+                <br />
+                <span className='font-semibold'>
+                  {t('services.standard.massageView.hero.title.line2')}
+                </span>
+              </h1>
+              <p className='text-white/55 text-sm sm:text-base max-w-md leading-relaxed font-light mb-5'>
+                {t('services.standard.massageView.hero.subtitle', {
+                  count: totalMassagesCount,
+                })}
+              </p>
+
+              <div className='flex flex-wrap gap-5 mb-7'>
+                {[
+                  {
+                    icon: Shield,
+                    text: t(
+                      'services.standard.massageView.hero.features.licensed',
+                    ),
+                  },
+                  { icon: Clock, text: '60–120 min' },
+                  {
+                    icon: Star,
+                    text: t(
+                      'services.standard.massageView.hero.features.premium',
+                    ),
+                  },
+                  {
+                    icon: Users,
+                    text: t('services.standard.massageView.hero.features.home'),
+                  },
+                ].map(({ icon: Icon, text }) => (
+                  <span
+                    key={text}
+                    className='flex items-center gap-1.5 text-white/45 text-xs'
+                  >
+                    <Icon className='w-3.5 h-3.5' />
+                    {text}
+                  </span>
+                ))}
+              </div>
+
+              <button
+                onClick={() =>
+                  document
+                    .getElementById('massage-services')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
+                className='group inline-flex items-center gap-2.5 bg-white text-stone-900 px-6 py-3 text-xs font-medium tracking-wide uppercase hover:bg-amber-50 transition-colors duration-300'
+              >
+                Browse Treatments
+                <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+              </button>
+            </div>
+          </div>
         </div>
+      </motion.section>
 
-        <div className='absolute inset-0 overflow-hidden'>
-          <div className='absolute top-20 left-10 w-32 h-32 border border-white/10 rounded-full'></div>
-          <div className='absolute top-40 right-20 w-20 h-20 border border-white/10 rounded-full'></div>
-          <div className='absolute bottom-32 left-1/4 w-24 h-24 border border-white/10 rounded-full'></div>
-        </div>
-
-        <div className='relative z-20 text-center max-w-5xl'>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className='inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8 shadow-lg'
-          >
-            <Leaf className='w-5 h-5 text-emerald-300 mr-3' />
-            <span className='text-white font-medium'>
-              {t('services.standard.massageView.hero.badge.title')}
-            </span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className='text-4xl sm:text-6xl lg:text-7xl font-light text-white mb-6 leading-tight'
-          >
-            {t('services.standard.massageView.hero.title.line1')}
-            <span className='block text-emerald-300 font-normal'>
-              {t('services.standard.massageView.hero.title.line2')}
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className='text-xl sm:text-2xl text-white/90 mb-12 leading-relaxed font-light max-w-3xl mx-auto'
-          >
-            {t('services.standard.massageView.hero.subtitle', {
-              count: totalMassagesCount,
-            })}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className='flex flex-wrap justify-center gap-8 text-white/80 text-sm'
-          >
-            <div className='flex items-center gap-2'>
-              <Shield className='w-4 h-4 text-emerald-300' />
-              <span>
-                {t('services.standard.massageView.hero.features.licensed')}
-              </span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Heart className='w-4 h-4 text-rose-300' />
-              <span>
-                {t('services.standard.massageView.hero.features.home')}
-              </span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Star className='w-4 h-4 text-amber-300' />
-              <span>
-                {t('services.standard.massageView.hero.features.premium')}
-              </span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <CheckCircle className='w-4 h-4 text-green-300' />
-              <span>
-                {t('services.standard.massageView.hero.features.guaranteed')}
-              </span>
-            </div>
-          </motion.div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className='absolute bottom-8 left-1/2 transform -translate-x-1/2'
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className='w-6 h-10 border-2 border-white/50 rounded-full flex justify-center'
-          >
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className='w-1 h-3 bg-white/70 rounded-full mt-2'
-            />
-          </motion.div>
+      {/* ── Gallery — compact grid ──────────────────────────────── */}
+      <motion.section
+        className='px-5 sm:px-8 lg:px-12 py-14 sm:py-18 lg:py-20'
+        initial='hidden'
+        whileInView='visible'
+        viewport={{ once: true, margin: '-60px' }}
+        variants={stagger}
+      >
+        <motion.div className='mb-8' variants={fadeIn}>
+          <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+            Gallery
+          </p>
+          <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight'>
+            Our <span className='font-semibold'>Sessions</span>
+          </h2>
         </motion.div>
-      </section>
 
-      {/* Inspirational Quote Section */}
-      <section className='py-20 px-4 sm:px-6 relative overflow-hidden bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50'>
-        <div className='absolute inset-0 opacity-10'>
-          <div className='absolute top-10 left-10 w-64 h-64 bg-emerald-300 rounded-full blur-3xl'></div>
-          <div className='absolute bottom-10 right-10 w-96 h-96 bg-teal-300 rounded-full blur-3xl'></div>
-        </div>
-
-        <div className='max-w-4xl mx-auto text-center relative z-10'>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className='mb-8'
-          >
-            <div className='text-6xl text-emerald-600 mb-6'>
-              {t('services.standard.massageView.quote.emoji')}
-            </div>
-            <blockquote className='text-3xl lg:text-4xl font-light text-gray-800 leading-relaxed mb-8 italic'>
-              {t('services.standard.massageView.quote.text')}
-            </blockquote>
-            <div className='w-24 h-1 bg-gradient-to-r from-emerald-400 to-teal-400 mx-auto rounded-full'></div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className='grid grid-cols-2 md:grid-cols-3 gap-8 mt-16'
-          >
-            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
-              <div className='text-emerald-600 text-4xl font-bold mb-2'>
-                {t('services.standard.massageView.quote.stats.sessions.count')}
-              </div>
-              <div className='text-gray-600 font-medium'>
-                {t('services.standard.massageView.quote.stats.sessions.label')}
-              </div>
-              <div className='text-sm text-gray-500 mt-2'>
-                {t(
-                  'services.standard.massageView.quote.stats.sessions.description'
-                )}
-              </div>
-            </div>
-
-            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
-              <div className='text-emerald-600 text-4xl font-bold mb-2'>
-                {t(
-                  'services.standard.massageView.quote.stats.satisfaction.count'
-                )}
-              </div>
-              <div className='text-gray-600 font-medium'>
-                {t(
-                  'services.standard.massageView.quote.stats.satisfaction.label'
-                )}
-              </div>
-              <div className='text-sm text-gray-500 mt-2'>
-                {t(
-                  'services.standard.massageView.quote.stats.satisfaction.description'
-                )}
-              </div>
-            </div>
-
-            <div className='bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100 shadow-lg'>
-              <div className='text-emerald-600 text-4xl font-bold mb-2'>
-                {t(
-                  'services.standard.massageView.quote.stats.availability.count'
-                )}
-              </div>
-              <div className='text-gray-600 font-medium'>
-                {t(
-                  'services.standard.massageView.quote.stats.availability.label'
-                )}
-              </div>
-              <div className='text-sm text-gray-500 mt-2'>
-                {t(
-                  'services.standard.massageView.quote.stats.availability.description'
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Main Services Content */}
-      <section id='massage-services' className='py-20 px-4 sm:px-6 relative'>
-        <div className='max-w-7xl mx-auto'>
-          <div className='text-center mb-16'>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className='text-4xl lg:text-5xl font-light text-gray-900 mb-6'
+        <div className='grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2'>
+          {GALLERY.map((img, i) => (
+            <motion.div
+              key={i}
+              className='relative aspect-square overflow-hidden group'
+              variants={fadeIn}
             >
-              {t('services.standard.massageView.services.title.line1')}
-              <span className='text-emerald-600 block'>
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                className='object-cover transition-transform duration-700 group-hover:scale-105'
+              />
+              <div className='absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500' />
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ── Details — included + testimonials ───────────────────── */}
+      <motion.section
+        className='px-5 sm:px-8 lg:px-12 pb-14 sm:pb-18 lg:pb-20'
+        initial='hidden'
+        whileInView='visible'
+        viewport={{ once: true, margin: '-60px' }}
+        variants={stagger}
+      >
+        <motion.div className='mb-10' variants={fadeIn}>
+          <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+            Details
+          </p>
+          <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight'>
+            What You <span className='font-semibold'>Get</span>
+          </h2>
+        </motion.div>
+
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+          {/* Included */}
+          <motion.div
+            className='border border-stone-200 bg-white p-6'
+            variants={fadeIn}
+          >
+            <div className='flex items-center gap-2 mb-5'>
+              <CheckCircle className='w-3.5 h-3.5 text-emerald-600' />
+              <h3 className='text-xs font-semibold text-stone-900 uppercase tracking-[0.1em]'>
+                Each Session Includes
+              </h3>
+            </div>
+            <div className='space-y-2.5'>
+              {INCLUDED.map((item, i) => (
+                <div key={i} className='flex items-start gap-2.5'>
+                  <Check className='w-3 h-3 text-emerald-500 mt-0.5 flex-shrink-0' />
+                  <span className='text-stone-600 text-xs leading-relaxed'>
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Testimonials */}
+          <motion.div
+            className='border border-stone-200 bg-white p-6'
+            variants={fadeIn}
+          >
+            <h3 className='text-xs font-semibold text-stone-900 uppercase tracking-[0.1em] mb-5'>
+              Client Stories
+            </h3>
+            <div className='space-y-5'>
+              {TESTIMONIALS.map((testimonial, i) => (
+                <div
+                  key={i}
+                  className={i > 0 ? 'pt-5 border-t border-stone-100' : ''}
+                >
+                  <Quote className='w-4 h-4 text-stone-200 mb-2' />
+                  <p className='text-stone-500 text-xs leading-relaxed mb-3'>
+                    {testimonial.quote}
+                  </p>
+                  <div>
+                    <p className='text-stone-900 text-xs font-medium'>
+                      {testimonial.author}
+                    </p>
+                    <p className='text-amber-600 text-[11px]'>
+                      {testimonial.result}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* ── Services Grid ──────────────────────────────────────── */}
+      <section
+        id='massage-services'
+        className='px-5 sm:px-8 lg:px-12 pb-14 sm:pb-18 lg:pb-20'
+      >
+        <div className='max-w-7xl mx-auto'>
+          <motion.div
+            className='mb-10'
+            initial='hidden'
+            whileInView='visible'
+            viewport={{ once: true }}
+            variants={fadeIn}
+          >
+            <p className='text-amber-600 uppercase tracking-[0.25em] text-[11px] font-medium mb-2'>
+              Treatments
+            </p>
+            <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-stone-900 tracking-tight mb-3'>
+              {t('services.standard.massageView.services.title.line1')}{' '}
+              <span className='font-semibold'>
                 {t('services.standard.massageView.services.title.line2')}
               </span>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'
-            >
+            </h2>
+            <p className='text-stone-500 text-sm max-w-xl leading-relaxed'>
               {t('services.standard.massageView.services.subtitle')}
-            </motion.p>
-          </div>
+            </p>
+          </motion.div>
 
           <FilterBar
             filters={filters}
@@ -770,15 +835,15 @@ const MassageServiceView = () => {
             onClearFilters={handleClearFilters}
           />
 
-          <div className='mb-8'>
-            <p className='text-gray-600 text-lg'>
+          <div className='mb-6'>
+            <p className='text-stone-500 text-sm'>
               {t('services.standard.massageView.services.count.available', {
                 count: totalFilteredCount,
               })}
               {totalFilteredCount !== totalMassagesCount && (
                 <button
                   onClick={handleClearFilters}
-                  className='ml-3 text-emerald-600 hover:text-emerald-700 underline font-medium'
+                  className='ml-2 text-stone-900 hover:text-amber-600 underline text-sm font-medium'
                 >
                   {t('services.standard.massageView.services.count.viewAll')}
                 </button>
@@ -787,13 +852,13 @@ const MassageServiceView = () => {
           </div>
 
           {totalFilteredCount > 0 ? (
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16'>
               {filteredMassages.map((massage, index) => (
                 <motion.div
                   key={massage.id}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.06 }}
                 >
                   <MassageCard
                     massage={massage}
@@ -809,20 +874,17 @@ const MassageServiceView = () => {
               animate={{ opacity: 1 }}
               className='text-center py-16'
             >
-              <div className='text-8xl mb-6'>
-                {t('services.standard.massageView.services.noResults.emoji')}
-              </div>
-              <h3 className='text-2xl font-semibold text-gray-800 mb-4'>
+              <h3 className='text-xl font-light text-stone-800 mb-3'>
                 {t('services.standard.massageView.services.noResults.title')}
               </h3>
-              <p className='text-gray-600 mb-8 text-lg'>
+              <p className='text-stone-500 mb-6 text-sm'>
                 {t(
-                  'services.standard.massageView.services.noResults.description'
+                  'services.standard.massageView.services.noResults.description',
                 )}
               </p>
               <button
                 onClick={handleClearFilters}
-                className='px-8 py-4 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-colors font-semibold text-lg shadow-lg'
+                className='px-6 py-3 bg-stone-900 text-white text-xs font-medium tracking-wide uppercase hover:bg-stone-800 transition-colors'
               >
                 {t('services.standard.massageView.services.noResults.button')}
               </button>
@@ -831,169 +893,57 @@ const MassageServiceView = () => {
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className='py-20 px-4 sm:px-6 relative'>
-        <div className='max-w-6xl mx-auto'>
-          <div className='bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-12 relative overflow-hidden shadow-2xl'>
-            <div className='absolute inset-0 opacity-20'>
-              <div className='absolute top-0 left-0 w-full h-full bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")]'></div>
-            </div>
+      {/* ── CTA Banner — full bleed image ──────────────────────── */}
+      <motion.section
+        className='relative w-full'
+        initial='hidden'
+        whileInView='visible'
+        viewport={{ once: true, margin: '-60px' }}
+        variants={fadeIn}
+      >
+        <Image
+          src='https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1400&auto=format&fit=crop'
+          alt='Spa experience'
+          fill
+          className='object-cover'
+        />
+        <div className='absolute inset-0 bg-stone-900/85' />
+        <div className='relative z-10 py-14 sm:py-18 lg:py-22 px-5 sm:px-8 lg:px-12 text-center'>
+          <p className='text-amber-400 uppercase tracking-[0.3em] text-[11px] font-medium mb-4'>
+            {t('services.standard.massageView.cta.title.line1')}
+          </p>
+          <h2 className='text-2xl sm:text-3xl lg:text-4xl font-light text-white mb-4 tracking-tight'>
+            {t('services.standard.massageView.cta.title.line2')}
+          </h2>
+          <p className='text-white/40 text-sm max-w-md mx-auto leading-relaxed mb-8'>
+            {t('services.standard.massageView.cta.description')}
+          </p>
+          <button
+            onClick={() =>
+              document
+                .getElementById('massage-services')
+                ?.scrollIntoView({ behavior: 'smooth' })
+            }
+            className='group inline-flex items-center gap-2.5 bg-white text-stone-900 px-8 py-3.5 text-xs font-medium tracking-wide uppercase hover:bg-amber-50 transition-colors duration-300'
+          >
+            Browse Treatments
+            <ArrowRight className='w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform' />
+          </button>
+        </div>
+      </motion.section>
 
-            <div className='relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-              <div>
-                <motion.div
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                >
-                  <h3 className='text-4xl lg:text-5xl font-light text-white mb-6 leading-tight'>
-                    {t('services.standard.massageView.cta.title.line1')}
-                    <span className='block text-emerald-200 font-normal'>
-                      {t('services.standard.massageView.cta.title.line2')}
-                    </span>
-                  </h3>
-
-                  <p className='text-xl text-emerald-100 mb-8 leading-relaxed'>
-                    {t('services.standard.massageView.cta.description')}
-                  </p>
-
-                  <div className='space-y-4 mb-8'>
-                    <div className='flex items-center gap-4 text-emerald-100'>
-                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
-                        <CheckCircle className='w-5 h-5 text-white' />
-                      </div>
-                      <span>
-                        {t(
-                          'services.standard.massageView.cta.features.therapists'
-                        )}
-                      </span>
-                    </div>
-                    <div className='flex items-center gap-4 text-emerald-100'>
-                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
-                        <Heart className='w-5 h-5 text-white' />
-                      </div>
-                      <span>
-                        {t(
-                          'services.standard.massageView.cta.features.premium'
-                        )}
-                      </span>
-                    </div>
-                    <div className='flex items-center gap-4 text-emerald-100'>
-                      <div className='w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center'>
-                        <Sparkles className='w-5 h-5 text-white' />
-                      </div>
-                      <span>
-                        {t(
-                          'services.standard.massageView.cta.features.customized'
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() =>
-                      document
-                        .getElementById('massage-services')
-                        .scrollIntoView({ behavior: 'smooth' })
-                    }
-                    className='bg-white text-emerald-600 px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3'
-                  >
-                    <Play className='w-5 h-5' />
-                    {t('services.standard.massageView.cta.button')}
-                    <ArrowRight className='w-5 h-5' />
-                  </motion.button>
-                </motion.div>
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className='relative'
-              >
-                <div className='grid grid-cols-2 gap-6'>
-                  <div className='space-y-6'>
-                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
-                      <div className='text-3xl mb-3'>
-                        {t(
-                          'services.standard.massageView.cta.cards.mindBalance.emoji'
-                        )}
-                      </div>
-                      <h4 className='text-white font-semibold mb-2'>
-                        {t(
-                          'services.standard.massageView.cta.cards.mindBalance.title'
-                        )}
-                      </h4>
-                      <p className='text-emerald-100 text-sm'>
-                        {t(
-                          'services.standard.massageView.cta.cards.mindBalance.description'
-                        )}
-                      </p>
-                    </div>
-                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
-                      <div className='text-3xl mb-3'>
-                        {t(
-                          'services.standard.massageView.cta.cards.bodyRenewal.emoji'
-                        )}
-                      </div>
-                      <h4 className='text-white font-semibold mb-2'>
-                        {t(
-                          'services.standard.massageView.cta.cards.bodyRenewal.title'
-                        )}
-                      </h4>
-                      <p className='text-emerald-100 text-sm'>
-                        {t(
-                          'services.standard.massageView.cta.cards.bodyRenewal.description'
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className='space-y-6 mt-12'>
-                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
-                      <div className='text-3xl mb-3'>
-                        {t(
-                          'services.standard.massageView.cta.cards.naturalHealing.emoji'
-                        )}
-                      </div>
-                      <h4 className='text-white font-semibold mb-2'>
-                        {t(
-                          'services.standard.massageView.cta.cards.naturalHealing.title'
-                        )}
-                      </h4>
-                      <p className='text-emerald-100 text-sm'>
-                        {t(
-                          'services.standard.massageView.cta.cards.naturalHealing.description'
-                        )}
-                      </p>
-                    </div>
-                    <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
-                      <div className='text-3xl mb-3'>
-                        {t(
-                          'services.standard.massageView.cta.cards.homeComfort.emoji'
-                        )}
-                      </div>
-                      <h4 className='text-white font-semibold mb-2'>
-                        {t(
-                          'services.standard.massageView.cta.cards.homeComfort.title'
-                        )}
-                      </h4>
-                      <p className='text-emerald-100 text-sm'>
-                        {t(
-                          'services.standard.massageView.cta.cards.homeComfort.description'
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
+      {/* ── Disclaimer ─────────────────────────────────────────── */}
+      <section className='px-5 sm:px-8 lg:px-12 py-5 bg-amber-50/50 border-t border-amber-200/40'>
+        <div className='max-w-3xl mx-auto flex items-center gap-2.5'>
+          <AlertTriangle className='w-3.5 h-3.5 text-amber-500 flex-shrink-0' />
+          <p className='text-[11px] text-amber-700'>
+            Please inform your therapist about any medical conditions, injuries,
+            or allergies before the session begins.
+          </p>
         </div>
       </section>
 
-      {/* Modal */}
+      {/* ── Modal ──────────────────────────────────────────────── */}
       <AnimatePresence>
         {showModal && currentMassage && (
           <MassageConfigModal

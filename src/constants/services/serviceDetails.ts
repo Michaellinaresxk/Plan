@@ -639,7 +639,7 @@ const SERVICE_EXTENDED_DETAILS: Record<ServiceId, ServiceExtendedDetails> = {
     titleKey: 'services.standard.personalTraining.name',
     descriptionKey: 'services.standard.personalTraining.short',
     fullDescriptionKey: 'services.standard.personalTraining.full',
-    basePrice: 80,
+    basePrice: 40,
     priceUnit: 'services.priceUnits.perSession',
     category: 'wellness',
     packageType: ['standard'],

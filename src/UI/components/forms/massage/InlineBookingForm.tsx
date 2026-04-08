@@ -16,7 +16,8 @@ import {
   MapPin,
   CheckCircle,
 } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useMemo } from 'react';
+import { calculatePriceWithTax } from '@/utils/priceCalculator';
 
 interface MassageServiceViewProps {
   service: Service;
@@ -34,6 +35,8 @@ const LOCATION_OPTIONS = [
   { id: 'uvero-alto', name: 'Uvero Alto' },
   { id: 'macao', name: 'Macao' },
 ] as const;
+
+const TAX_RATE = 5; // 5% processing fee
 
 const InlineBookingForm = ({
   selectedMassage,
@@ -53,12 +56,11 @@ const InlineBookingForm = ({
     '18:00',
   ];
 
-  // ✅ Updated state with location as ID instead of free text
   const [formData, setFormData] = useState({
     selectedDuration: selectedMassage.durations[0],
     date: '',
     time: '',
-    location: '', // Now stores location ID
+    location: '',
     persons: 1,
     specialNeeds: '',
   });
@@ -66,7 +68,6 @@ const InlineBookingForm = ({
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Helper function to update form fields
   const updateFormField = useCallback(
     (field, value) => {
       setFormData((prev) => ({
@@ -74,7 +75,6 @@ const InlineBookingForm = ({
         [field]: value,
       }));
 
-      // Clear specific error when user corrects it
       if (errors[field]) {
         setErrors((prev) => {
           const newErrors = { ...prev };
@@ -83,18 +83,16 @@ const InlineBookingForm = ({
         });
       }
     },
-    [errors]
+    [errors],
   );
 
-  // ✅ Handle location selection - similar to other forms
   const handleLocationSelect = useCallback(
     (locationId) => {
       updateFormField('location', locationId);
     },
-    [updateFormField]
+    [updateFormField],
   );
 
-  // ✅ Updated validation for location ID
   const validateForm = useCallback(() => {
     const newErrors = {};
 
@@ -114,23 +112,31 @@ const InlineBookingForm = ({
     return Object.keys(newErrors).length === 0;
   }, [formData.date, formData.time, formData.location]);
 
-  // ✅ Derived calculations
-  const totalPrice = formData.selectedDuration.price * formData.persons;
+  // ✅ Pricing with tax
+  const basePrice = useMemo(
+    () => formData.selectedDuration.price * formData.persons,
+    [formData.selectedDuration.price, formData.persons],
+  );
+
+  const priceWithTax = useMemo(
+    () => calculatePriceWithTax(basePrice, TAX_RATE),
+    [basePrice],
+  );
+
+  const totalPrice = priceWithTax.total;
+
   const isFormValid = formData.date && formData.time && formData.location;
 
-  // ✅ Updated submit handler to include location name
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      // Get selected location name
       const selectedLocation = LOCATION_OPTIONS.find(
-        (loc) => loc.id === formData.location
+        (loc) => loc.id === formData.location,
       );
 
-      // Structure exactly as expected by confirmation page
       const reservationData = {
         service: selectedMassage,
         formData: {
@@ -140,15 +146,19 @@ const InlineBookingForm = ({
           duration: formData.selectedDuration.duration,
           date: formData.date,
           time: formData.time,
-          location: formData.location, // Location ID
-          locationName: selectedLocation?.name || formData.location, // Location name for display
+          location: formData.location,
+          locationName: selectedLocation?.name || formData.location,
           persons: formData.persons,
           specialNeeds: formData.specialNeeds,
           calculatedPrice: totalPrice,
+          // ✅ Tax info
+          basePrice,
+          subtotal: priceWithTax.subtotal,
+          tax: priceWithTax.tax,
+          taxRate: TAX_RATE,
         },
-        totalPrice: totalPrice,
+        totalPrice,
         bookingDate: new Date(),
-        // ✅ Add massage specific data similar to other forms
         massageSpecifics: {
           duration: formData.selectedDuration.duration,
           location: formData.location,
@@ -157,14 +167,20 @@ const InlineBookingForm = ({
           specialNeeds: formData.specialNeeds,
           massageType: selectedMassage.name,
           intensity: selectedMassage.intensity,
+          pricing: {
+            basePrice,
+            subtotal: priceWithTax.subtotal,
+            tax: priceWithTax.tax,
+            taxRate: TAX_RATE,
+            totalPrice,
+          },
         },
       };
 
       console.log(
         'InlineBookingForm sending reservationData:',
-        reservationData
+        reservationData,
       );
-      console.log('📍 Selected location:', selectedLocation);
       await onConfirm(reservationData);
     } catch (error) {
       console.error('Booking error:', error);
@@ -172,7 +188,15 @@ const InlineBookingForm = ({
     } finally {
       setIsSubmitting(false);
     }
-  }, [validateForm, selectedMassage, formData, totalPrice, onConfirm]);
+  }, [
+    validateForm,
+    selectedMassage,
+    formData,
+    totalPrice,
+    basePrice,
+    priceWithTax,
+    onConfirm,
+  ]);
 
   return (
     <motion.div
@@ -217,8 +241,8 @@ const InlineBookingForm = ({
               selectedMassage.durations.length === 1
                 ? 'grid-cols-1 max-w-sm'
                 : selectedMassage.durations.length === 2
-                ? 'grid-cols-2'
-                : 'grid-cols-3'
+                  ? 'grid-cols-2'
+                  : 'grid-cols-3'
             }`}
           >
             {selectedMassage.durations.map((option, index) => (
@@ -226,34 +250,34 @@ const InlineBookingForm = ({
                 key={option.duration}
                 type='button'
                 onClick={() => updateFormField('selectedDuration', option)}
-                className={`p-4 rounded-xl border-2 transition-all text-left ${
+                className={`relative p-5 rounded-xl border-2 transition-all text-left ${
                   formData.selectedDuration.duration === option.duration
-                    ? 'border-stone-800 bg-stone-50'
+                    ? 'border-stone-800 bg-stone-50 shadow-md'
                     : 'border-stone-200 hover:border-stone-300'
                 }`}
               >
-                <div className='font-semibold text-stone-800'>
-                  {option.duration} minutes
-                </div>
-                <div className='text-xl font-bold text-stone-800 mt-1'>
-                  ${option.price}
-                </div>
-                {formData.persons > 1 && (
-                  <div className='text-sm text-stone-500 mt-1'>
-                    ${option.price * formData.persons} total
+                {index === 0 && selectedMassage.durations.length > 1 && (
+                  <div className='absolute -top-3 left-1/2 transform -translate-x-1/2 bg-stone-800 text-white px-3 py-0.5 rounded-full text-xs'>
+                    Popular
                   </div>
                 )}
+                <div className='font-semibold text-stone-800 text-lg'>
+                  {option.duration} min
+                </div>
+                <div className='text-2xl font-bold text-stone-800 mt-1'>
+                  ${option.price}
+                </div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Date & Time */}
+        {/* Date & Time Selection */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <div>
             <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
               <Calendar className='w-5 h-5 text-green-800' />
-              Date
+              Select Date
             </label>
             <input
               type='date'
@@ -261,9 +285,7 @@ const InlineBookingForm = ({
               onChange={(e) => updateFormField('date', e.target.value)}
               min={new Date().toISOString().split('T')[0]}
               className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
-                errors.date
-                  ? 'border-red-300 bg-red-50 focus:border-red-400'
-                  : 'border-stone-300'
+                errors.date ? 'border-red-300 bg-red-50' : 'border-stone-300'
               }`}
             />
             {errors.date && (
@@ -274,15 +296,13 @@ const InlineBookingForm = ({
           <div>
             <label className='block text-lg font-semibold text-stone-800 mb-3 flex items-center gap-2'>
               <Clock className='w-5 h-5 text-green-800' />
-              Time
+              Select Time
             </label>
             <select
               value={formData.time}
               onChange={(e) => updateFormField('time', e.target.value)}
               className={`w-full p-4 border-2 rounded-xl focus:ring-2 focus:ring-stone-500 focus:border-transparent text-lg transition-colors ${
-                errors.time
-                  ? 'border-red-300 bg-red-50 focus:border-red-400'
-                  : 'border-stone-300'
+                errors.time ? 'border-red-300 bg-red-50' : 'border-stone-300'
               }`}
             >
               <option value=''>Select time</option>
@@ -395,7 +415,7 @@ const InlineBookingForm = ({
                 onClick={() =>
                   updateFormField(
                     'persons',
-                    Math.min(selectedMassage.maxPersons, formData.persons + 1)
+                    Math.min(selectedMassage.maxPersons, formData.persons + 1),
                   )
                 }
                 className='w-10 h-10 rounded-full bg-white border-2 border-stone-300 flex items-center justify-center hover:bg-stone-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
@@ -432,9 +452,9 @@ const InlineBookingForm = ({
           </div>
         </div>
 
-        {/* Price Summary */}
+        {/* ✅ Price Summary — with tax breakdown */}
         <div className='bg-gradient-to-r from-stone-800 to-stone-900 text-white rounded-2xl p-6'>
-          <div className='flex justify-between items-center'>
+          <div className='flex justify-between items-start'>
             <div>
               <h4 className='text-xl font-semibold mb-2'>Booking Summary</h4>
               <div className='space-y-1 text-stone-300'>
@@ -458,7 +478,7 @@ const InlineBookingForm = ({
                     <MapPin className='w-3 h-3 mr-1' />
                     {
                       LOCATION_OPTIONS.find(
-                        (loc) => loc.id === formData.location
+                        (loc) => loc.id === formData.location,
                       )?.name
                     }
                   </div>
@@ -466,8 +486,22 @@ const InlineBookingForm = ({
               </div>
             </div>
             <div className='text-right'>
-              <div className='text-3xl font-bold'>${totalPrice}</div>
-              <div className='text-stone-300'>Total Price</div>
+              <div className='text-3xl font-bold'>${totalPrice.toFixed(2)}</div>
+              <div className='text-stone-300 text-sm'>Total Price</div>
+
+              {/* ✅ Tax breakdown */}
+              <div className='text-xs text-stone-400 mt-2 space-y-0.5 text-right'>
+                <div>
+                  ${formData.selectedDuration.price} × {formData.persons}{' '}
+                  {formData.persons === 1 ? 'person' : 'people'}
+                </div>
+                <div className='border-t border-stone-700 pt-1 mt-1'>
+                  <div>Subtotal: ${priceWithTax.subtotal.toFixed(2)}</div>
+                  <div className='text-amber-400'>
+                    Processing fee ({TAX_RATE}%): ${priceWithTax.tax.toFixed(2)}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
