@@ -45,13 +45,13 @@ This file contains the `SERVICE_METADATA` record — one entry per service.
 
 ### Rules for a good entry
 
-| Field | Rule |
-|---|---|
-| `title` | Under 60 characters before the pipe `\|`. End with `\| Luxe Punta Cana` |
-| `description` | 140–160 characters. Describe the experience, not just the name |
-| `image` | Must be a full absolute URL (`https://...`). Ideal size: 1200×630 px |
-| `imageAlt` | Describe what's in the photo for screen readers and crawlers |
-| `keywords` | 4–6 specific phrases people actually search for |
+| Field         | Rule                                                                    |
+| ------------- | ----------------------------------------------------------------------- |
+| `title`       | Under 60 characters before the pipe `\|`. End with `\| Luxe Punta Cana` |
+| `description` | 140–160 characters. Describe the experience, not just the name          |
+| `image`       | Must be a full absolute URL (`https://...`). Ideal size: 1200×630 px    |
+| `imageAlt`    | Describe what's in the photo for screen readers and crawlers            |
+| `keywords`    | 4–6 specific phrases people actually search for                         |
 
 ---
 
@@ -59,43 +59,43 @@ This file contains the `SERVICE_METADATA` record — one entry per service.
 
 ### Standard Package — `/standard-package/{id}`
 
-| Service | URL slug | In metadata |
-|---|---|---|
-| Airport Transfers | `airport-transfers` | ✅ |
-| Point-to-Point Transfers | `point-to-point-transfers` | ✅ |
-| Golf Cart Rentals | `golf-cart-rentals` | ✅ |
-| Bike Rentals | `bike-rentals` | ✅ |
-| Yoga Sessions | `yoga-standard` | ✅ |
-| Personal Training | `personal-training` | ✅ |
-| Standard Massage | `standard-massage` | ✅ |
-| Private Chef | `private-chef` | ✅ |
-| Babysitter | `babysitter` | ✅ |
-| Catamaran Trips | `catamaran-trips` | ✅ |
-| Saona Island Tour | `saona-island-tour` | ✅ |
-| Horseback Riding | `horseback-riding` | ✅ |
-| Horseback Sunset | `horseback-sunset` | ✅ |
-| ATV Excursions | `atv-excursions` | ✅ |
-| Adventure Excursions | `adventure-excursions` | ✅ |
-| Deep-Sea Fishing | `deep-sea-fishing` | ✅ |
-| Private Fishing Trip | `private-fishing-trip` | ✅ |
-| Karaoke | `karaoke` | ✅ |
-| Live Music | `live-music` | ✅ |
-| Custom Decorations | `custom-decorations` | ✅ |
+| Service                  | URL slug                   | In metadata |
+| ------------------------ | -------------------------- | ----------- |
+| Airport Transfers        | `airport-transfers`        | ✅          |
+| Point-to-Point Transfers | `point-to-point-transfers` | ✅          |
+| Golf Cart Rentals        | `golf-cart-rentals`        | ✅          |
+| Bike Rentals             | `bike-rentals`             | ✅          |
+| Yoga Sessions            | `yoga-standard`            | ✅          |
+| Personal Training        | `personal-training`        | ✅          |
+| Standard Massage         | `standard-massage`         | ✅          |
+| Private Chef             | `private-chef`             | ✅          |
+| Babysitter               | `babysitter`               | ✅          |
+| Catamaran Trips          | `catamaran-trips`          | ✅          |
+| Saona Island Tour        | `saona-island-tour`        | ✅          |
+| Horseback Riding         | `horseback-riding`         | ✅          |
+| Horseback Sunset         | `horseback-sunset`         | ✅          |
+| ATV Excursions           | `atv-excursions`           | ✅          |
+| Adventure Excursions     | `adventure-excursions`     | ✅          |
+| Deep-Sea Fishing         | `deep-sea-fishing`         | ✅          |
+| Private Fishing Trip     | `private-fishing-trip`     | ✅          |
+| Karaoke                  | `karaoke`                  | ✅          |
+| Live Music               | `live-music`               | ✅          |
+| Custom Decorations       | `custom-decorations`       | ✅          |
 
 ### Premium Package — `/premium-package/{id}`
 
-| Service | URL slug | In metadata |
-|---|---|---|
-| Luxe Golf Cart | `luxe-golf-cart` | ✅ |
-| Luxe Yoga | `luxe-yoga` | ✅ |
-| Luxe Fitness | `luxe-fitness` | ✅ |
-| Luxe E-Bikes | `luxe-e-bikes` | ✅ |
-| Luxe Yacht | `luxe-yacht` | ✅ |
-| Private Yacht Experience | `private-yacht-experience` | ✅ |
-| Private Catamaran | `private-catamaran` | ✅ |
-| Luxe Culinary | `luxe-culinary` | ✅ |
-| Luxe Masseuse | `luxe-masseuse` | ✅ |
-| Luxe Arrival | `luxe-arrival` | ✅ |
+| Service                  | URL slug                   | In metadata |
+| ------------------------ | -------------------------- | ----------- |
+| Luxe Golf Cart           | `luxe-golf-cart`           | ✅          |
+| Luxe Yoga                | `luxe-yoga`                | ✅          |
+| Luxe Fitness             | `luxe-fitness`             | ✅          |
+| Luxe E-Bikes             | `luxe-e-bikes`             | ✅          |
+| Luxe Yacht               | `luxe-yacht`               | ✅          |
+| Private Yacht Experience | `private-yacht-experience` | ✅          |
+| Private Catamaran        | `private-catamaran`        | ✅          |
+| Luxe Culinary            | `luxe-culinary`            | ✅          |
+| Luxe Masseuse            | `luxe-masseuse`            | ✅          |
+| Luxe Arrival             | `luxe-arrival`             | ✅          |
 
 ---
 
@@ -107,6 +107,7 @@ This file contains the `SERVICE_METADATA` record — one entry per service.
 4. Done — the page automatically picks it up
 
 Example:
+
 ```ts
 'new-service-id': {
   id: 'new-service-id',
@@ -135,23 +136,29 @@ The page regenerates the metadata on the next build (or on-demand in production 
 The `image` field must be a **full absolute URL**. Options:
 
 ### Use a Cloudinary image (best)
+
 ```ts
 image: 'https://res.cloudinary.com/ddg92xar5/image/upload/v1234567/my-image.jpg',
 ```
 
 ### Use a local public image
+
 Files in `/public/img/` are accessible at `https://luxpuntacana.com/img/filename.jpg`:
+
 ```ts
 image: 'https://luxpuntacana.com/img/yacht.jpg',
 ```
 
 ### Use Unsplash or Pexels
+
 Both allow hotlinking and work with OG crawlers:
+
 ```ts
 image: 'https://images.unsplash.com/photo-xxx?q=80&w=1200&auto=format&fit=crop',
 ```
 
 ### Available local images in `/public/img/`
+
 ```
 /img/beach-bg.jpg
 /img/beach.jpg
@@ -180,6 +187,7 @@ src/app/premium-package/[id]/page.tsx    ← generateMetadata()
 ```
 
 Both files:
+
 1. Call `getServiceMetadata(id)` from `Servicemetadata.ts`
 2. If found → use the human-written title, description and image
 3. If not found → generate a generic fallback automatically
@@ -193,15 +201,16 @@ You never need to edit these files to update SEO — only edit `Servicemetadata.
 
 After deploying, test how your links look when shared:
 
-| Tool | What it checks |
-|---|---|
-| [Facebook Debugger](https://developers.facebook.com/tools/debug/) | Facebook & WhatsApp previews |
-| [Twitter Card Validator](https://cards-dev.twitter.com/validator) | Twitter/X previews |
-| [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) | LinkedIn previews |
-| [Google Rich Results Test](https://search.google.com/test/rich-results) | Schema.org structured data |
-| [Open Graph Check](https://www.opengraph.xyz/) | Quick preview of all OG tags |
+| Tool                                                                    | What it checks               |
+| ----------------------------------------------------------------------- | ---------------------------- |
+| [Facebook Debugger](https://developers.facebook.com/tools/debug/)       | Facebook & WhatsApp previews |
+| [Twitter Card Validator](https://cards-dev.twitter.com/validator)       | Twitter/X previews           |
+| [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/)     | LinkedIn previews            |
+| [Google Rich Results Test](https://search.google.com/test/rich-results) | Schema.org structured data   |
+| [Open Graph Check](https://www.opengraph.xyz/)                          | Quick preview of all OG tags |
 
 Paste any service URL like `https://luxpuntacana.com/standard-package/saona-island-tour` and verify:
+
 - The correct image appears (not bike.jpg or a generic photo)
 - The title and description are readable and relevant
 - No missing tag warnings
@@ -211,13 +220,17 @@ Paste any service URL like `https://luxpuntacana.com/standard-package/saona-isla
 ## SEO Best Practices for This Site
 
 ### Title format
+
 ```
 {Specific Service} {Location} | {Hook} | Luxe Punta Cana
 ```
+
 Example: `Saona Island Tour Punta Cana | Full-Day Paradise | Luxe Punta Cana`
 
 ### Description format
+
 Write for a person, not a crawler. Mention:
+
 - What they get
 - What's included or notable
 - One compelling detail
@@ -226,11 +239,14 @@ Bad: `Saona Island tour service in Punta Cana Dominican Republic`
 Good: `Visit Saona Island — one of the most beautiful islands in the Caribbean. White sand beaches, crystal water, open bar, fresh seafood lunch and natural starfish pools included.`
 
 ### Keywords
+
 Use phrases people actually type, not single words:
+
 - `saona island tour punta cana` ✅
 - `tour` ❌
 - `best day trip from punta cana` ✅
 - `excursion` ❌
 
 ### Image size
+
 OG images must be at least `1200 × 630 px`. Smaller images are ignored by most platforms.

@@ -20,11 +20,14 @@ export class Payment {
     public readonly clientSecret: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
-    public readonly metadata?: Record<string, any>
+    public readonly metadata?: Record<string, any>,
   ) {}
 
   static create(
-    properties: Omit<PaymentProperties, 'paymentId' | 'createdAt' | 'updatedAt'>
+    properties: Omit<
+      PaymentProperties,
+      'paymentId' | 'createdAt' | 'updatedAt'
+    >,
   ): Payment {
     const paymentId = `payment_${Date.now()}_${Math.random()
       .toString(36)
@@ -43,14 +46,14 @@ export class Payment {
       properties.clientSecret,
       now,
       now,
-      properties.metadata
+      properties.metadata,
     );
   }
 
   static fromProperties(properties: PaymentProperties): Payment {
     if (!properties.paymentId) {
       throw new Error(
-        'PaymentId is required when creating from existing properties'
+        'PaymentId is required when creating from existing properties',
       );
     }
 
@@ -65,7 +68,7 @@ export class Payment {
       properties.clientSecret,
       properties.createdAt,
       properties.updatedAt,
-      properties.metadata
+      properties.metadata,
     );
   }
 }

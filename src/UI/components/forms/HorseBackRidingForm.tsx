@@ -84,7 +84,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTimeSlotOpen, setIsTimeSlotOpen] = useState(false);
 
-  const { fieldRefs, scrollToFirstError } = useScrollToError(errors);
+  const { fieldRefs, scrollToFirstError } = useScrollToError({});
 
   const TAX_RATE = 5; // 5%
 
@@ -126,7 +126,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
       const { name, value } = e.target;
       updateFormField(name, value);
     },
-    [updateFormField]
+    [updateFormField],
   );
 
   const createCounterHandler = (field: keyof FormData, min = 0, max = 999) => ({
@@ -151,13 +151,13 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
     if (!formData.date) {
       newErrors.date = t(
-        'services.standard.horsebackRidingForm.fields.date.required'
+        'services.standard.horsebackRidingForm.fields.date.required',
       );
     }
 
     if (!formData.timeSlot) {
       newErrors.timeSlot = t(
-        'services.standard.horsebackRidingForm.fields.timeSlot.required'
+        'services.standard.horsebackRidingForm.fields.timeSlot.required',
       );
     }
 
@@ -242,7 +242,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
 
       console.log(
         '🐎 HorseBackForm - Reservation data created:',
-        reservationData
+        reservationData,
       );
 
       setReservationData(reservationData);
@@ -322,7 +322,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
           <FormHeader
             title={t('services.standard.horsebackRidingForm.header.title')}
             subtitle={t(
-              'services.standard.horsebackRidingForm.header.subtitle'
+              'services.standard.horsebackRidingForm.header.subtitle',
             )}
             icon={Mountain}
             isPremium={false}
@@ -342,7 +342,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                 <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                   <Calendar className='w-4 h-4 mr-2 text-amber-600' />
                   {t(
-                    'services.standard.horsebackRidingForm.fields.date.label'
+                    'services.standard.horsebackRidingForm.fields.date.label',
                   )}{' '}
                   *
                 </label>
@@ -375,7 +375,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                       <div className='text-left'>
                         <h4 className='text-base font-medium text-gray-800'>
                           {t(
-                            'services.standard.horsebackRidingForm.fields.timeSlot.label'
+                            'services.standard.horsebackRidingForm.fields.timeSlot.label',
                           )}{' '}
                           *
                         </h4>
@@ -443,7 +443,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                   <User className='w-5 h-5 text-amber-600 mr-3' />
                   <h4 className='text-base font-medium text-gray-800'>
                     {t(
-                      'services.standard.horsebackRidingForm.sections.participants'
+                      'services.standard.horsebackRidingForm.sections.participants',
                     )}{' '}
                     *
                     {errors.participants && (
@@ -486,7 +486,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                       <ParticipantCounter
                         label='Children'
                         sublabel={`5 to 10 years • $${CHILD_PRICE.toFixed(
-                          2
+                          2,
                         )} (50% off)`}
                         value={formData.children}
                         onIncrement={childrenCounter.increment}
@@ -545,31 +545,31 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                     <li>
                       •{' '}
                       {t(
-                        'services.standard.horsebackRidingForm.safety.requirement2'
+                        'services.standard.horsebackRidingForm.safety.requirement2',
                       )}
                     </li>
                     <li>
                       •{' '}
                       {t(
-                        'services.standard.horsebackRidingForm.safety.requirement3'
+                        'services.standard.horsebackRidingForm.safety.requirement3',
                       )}
                     </li>
                     <li>
                       •{' '}
                       {t(
-                        'services.standard.horsebackRidingForm.safety.requirement4'
+                        'services.standard.horsebackRidingForm.safety.requirement4',
                       )}
                     </li>
                     <li>
                       •{' '}
                       {t(
-                        'services.standard.horsebackRidingForm.safety.requirement5'
+                        'services.standard.horsebackRidingForm.safety.requirement5',
                       )}
                     </li>
                     <li>
                       •{' '}
                       {t(
-                        'services.standard.horsebackRidingForm.safety.requirement6'
+                        'services.standard.horsebackRidingForm.safety.requirement6',
                       )}
                     </li>
                   </ul>
@@ -653,7 +653,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                     <div className='text-amber-400 pt-2'>
                       🕒{' '}
                       {t(
-                        'services.standard.horsebackRidingForm.fields.timeSlot.label'
+                        'services.standard.horsebackRidingForm.fields.timeSlot.label',
                       )}
                       :{' '}
                       {
@@ -669,7 +669,7 @@ const HorseBackRidingForm: React.FC<HorseBackRidingFormProps> = ({
                   <div className='flex items-center justify-between'>
                     <span className='text-gray-400 text-sm uppercase tracking-wide'>
                       {t(
-                        'services.standard.horsebackRidingForm.pricing.totalPrice'
+                        'services.standard.horsebackRidingForm.pricing.totalPrice',
                       )}
                     </span>
                     <div className='flex items-center'>
