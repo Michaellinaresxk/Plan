@@ -134,7 +134,7 @@ const useIntersectionObserver = (options = {}) => {
           setIsVisible(true);
         }
       },
-      { threshold: 0.1, ...options }
+      { threshold: 0.1, ...options },
     );
 
     if (elementRef.current) {
@@ -235,7 +235,8 @@ const VideoPlayer: React.FC<{
           onTimeUpdate={() => {
             if (videoRef.current) {
               setProgress(
-                (videoRef.current.currentTime / videoRef.current.duration) * 100
+                (videoRef.current.currentTime / videoRef.current.duration) *
+                  100,
               );
             }
           }}

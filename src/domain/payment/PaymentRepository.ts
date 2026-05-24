@@ -40,7 +40,7 @@ export default interface PaymentRepository {
   updatePaymentStatus(
     paymentId: string,
     status: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, any>,
   ): Promise<void>;
 
   /**
@@ -49,7 +49,7 @@ export default interface PaymentRepository {
   refundPayment(
     paymentId: string,
     amount?: number,
-    reason?: string
+    reason?: string,
   ): Promise<void>;
 
   /**

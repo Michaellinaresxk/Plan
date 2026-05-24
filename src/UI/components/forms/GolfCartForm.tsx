@@ -148,7 +148,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const totalCarts = useMemo(() => {
     return Object.values(formData.selectedCarts).reduce(
       (sum, quantity) => sum + quantity,
-      0
+      0,
     );
   }, [formData.selectedCarts]);
 
@@ -167,7 +167,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const priceWithTax = useMemo(() => {
     const baseTotal = selectedCartsDetails.reduce(
       (sum, item) => sum + item.subtotal,
-      0
+      0,
     );
     const subtotal = baseTotal * rentalDays;
     return calculatePriceWithTax(subtotal, TAX_RATE);
@@ -224,19 +224,19 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
 
     if (totalCarts === 0) {
       newErrors.selectedCarts = t(
-        'services.standard.golfCartForm.validation.noCartsSelected'
+        'services.standard.golfCartForm.validation.noCartsSelected',
       );
     }
 
     if (!formData.startDate) {
       newErrors.startDate = t(
-        'services.standard.golfCartForm.fields.startDate.required'
+        'services.standard.golfCartForm.fields.startDate.required',
       );
     }
 
     if (!formData.endDate) {
       newErrors.endDate = t(
-        'services.standard.golfCartForm.fields.returnDate.required'
+        'services.standard.golfCartForm.fields.returnDate.required',
       );
     }
 
@@ -251,30 +251,30 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
       !formData.specificAddress.trim()
     ) {
       newErrors.specificAddress = t(
-        'services.standard.golfCartForm.fields.specificAddress.required'
+        'services.standard.golfCartForm.fields.specificAddress.required',
       );
     }
     if (!isEndDateValid()) {
       newErrors.endDate = t(
-        'services.standard.golfCartForm.validation.endDateInvalid'
+        'services.standard.golfCartForm.validation.endDateInvalid',
       );
     }
 
     if (!formData.driverLicense) {
       newErrors.driverLicense = t(
-        'services.standard.golfCartForm.validation.driverLicenseRequired'
+        'services.standard.golfCartForm.validation.driverLicenseRequired',
       );
     }
 
     if (!formData.ageConfirmation) {
       newErrors.ageConfirmation = t(
-        'services.standard.golfCartForm.validation.ageRequired'
+        'services.standard.golfCartForm.validation.ageRequired',
       );
     }
 
     if (!formData.termsAccepted) {
       newErrors.termsAccepted = t(
-        'services.standard.golfCartForm.validation.termsRequired'
+        'services.standard.golfCartForm.validation.termsRequired',
       );
     }
 
@@ -300,7 +300,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
       if (isSameDay(formData.startDate)) {
         if (
           !window.confirm(
-            t('services.standard.golfCartForm.warnings.sameDayConfirm')
+            t('services.standard.golfCartForm.warnings.sameDayConfirm'),
           )
         ) {
           setIsSubmitting(false);
@@ -323,7 +323,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
         return {
           id: `golf-cart-${item.cart.id}`,
           name: `${t(
-            `services.standard.golfCartForm.carts.${cartKey}.name`
+            `services.standard.golfCartForm.carts.${cartKey}.name`,
           )} (x${item.quantity})`,
           quantity: item.quantity,
           price: item.cart.basePrice,
@@ -387,7 +387,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
 
       console.log(
         '🚗 GolfCartForm - Reservation data created:',
-        reservationData
+        reservationData,
       );
 
       setReservationData(reservationData);
@@ -416,7 +416,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value, type } = e.target;
 
@@ -502,7 +502,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                 <img
                   src={cart.image}
                   alt={t(
-                    `services.standard.golfCartForm.carts.${cartKey}.name`
+                    `services.standard.golfCartForm.carts.${cartKey}.name`,
                   )}
                   className='w-full h-full object-cover transition-transform duration-300 hover:scale-105'
                 />
@@ -580,7 +580,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                 <li key={num}>
                   •{' '}
                   {t(
-                    `services.standard.golfCartForm.requirements.requirement${num}`
+                    `services.standard.golfCartForm.requirements.requirement${num}`,
                   )}
                 </li>
               ))}
@@ -600,7 +600,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
               <strong>
                 {
                   t('services.standard.golfCartForm.disclaimer.text').split(
-                    '.'
+                    '.',
                   )[0]
                 }
                 .
@@ -719,7 +719,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                     <Calendar className='w-4 h-4 mr-2 text-blue-700' />
                     {t(
-                      'services.standard.golfCartForm.fields.startDate.label'
+                      'services.standard.golfCartForm.fields.startDate.label',
                     )}{' '}
                     *
                   </label>
@@ -751,7 +751,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                   <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                     <Calendar className='w-4 h-4 mr-2 text-blue-700' />
                     {t(
-                      'services.standard.golfCartForm.fields.returnDate.label'
+                      'services.standard.golfCartForm.fields.returnDate.label',
                     )}{' '}
                     *
                   </label>
@@ -786,7 +786,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                     <div className='text-sm text-amber-800'>
                       <strong>
                         {t(
-                          'services.standard.golfCartForm.warnings.sameDayBooking'
+                          'services.standard.golfCartForm.warnings.sameDayBooking',
                         )}
                       </strong>
                     </div>
@@ -797,7 +797,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                     <div className='text-sm text-amber-800'>
                       <strong>
                         {t(
-                          'services.standard.golfCartForm.warnings.advance12Hours'
+                          'services.standard.golfCartForm.warnings.advance12Hours',
                         )}
                       </strong>
                     </div>
@@ -833,7 +833,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
               <label className='flex items-center text-sm font-medium text-gray-700 mb-2'>
                 <Info className='w-4 h-4 mr-2 text-blue-700' />
                 {t(
-                  'services.standard.golfCartForm.fields.specialRequests.label'
+                  'services.standard.golfCartForm.fields.specialRequests.label',
                 )}
               </label>
               <textarea
@@ -843,7 +843,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                 rows={3}
                 className='w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-50'
                 placeholder={t(
-                  'services.standard.golfCartForm.fields.specialRequests.placeholder'
+                  'services.standard.golfCartForm.fields.specialRequests.placeholder',
                 )}
               />
             </div>
@@ -877,10 +877,10 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                     {totalCarts}{' '}
                     {totalCarts > 1
                       ? t(
-                          'services.standard.golfCartForm.pricing.cartsSelected'
+                          'services.standard.golfCartForm.pricing.cartsSelected',
                         )
                       : t(
-                          'services.standard.golfCartForm.pricing.cartSelected'
+                          'services.standard.golfCartForm.pricing.cartSelected',
                         )}
                   </div>
                   {selectedCartsDetails.map((item) => {
@@ -890,7 +890,7 @@ const GolfCartForm: React.FC<GolfCartFormProps> = ({
                       <div key={item.cart.id}>
                         {item.quantity}x{' '}
                         {t(
-                          `services.standard.golfCartForm.carts.${cartKey}.name`
+                          `services.standard.golfCartForm.carts.${cartKey}.name`,
                         )}
                         : ${item.cart.basePrice}/
                         {t('services.standard.golfCartForm.pricing.night')} ×{' '}

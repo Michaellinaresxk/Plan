@@ -117,11 +117,13 @@ src/app/api/webhooks/square/route.ts   ← Square webhook handler
 ## Adding Stripe (when credentials arrive)
 
 1. Install the Stripe backend package:
+
    ```bash
    npm install stripe
    ```
 
 2. Fill in `.env.local`:
+
    ```env
    STRIPE_SECRET_KEY=sk_live_...
    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
