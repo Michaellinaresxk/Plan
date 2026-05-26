@@ -22,14 +22,14 @@ export default function ReviewPage() {
         />
 
         <h1 className='text-2xl md:text-3xl font-bold text-amber-200 tracking-wide uppercase mb-6'>
-          Leave a Review
+          Share Your Experience
         </h1>
 
         <p className='max-w-xl text-gray-400 leading-relaxed mb-10'>
-          We'd love to hear about your experience! Your review helps other
-          travelers discover Lux Punta Cana and inspires us to keep creating
-          unforgettable moments. Scan the QR code below to leave your feedback
-          on Google — bonus points if you include a photo!
+          We'd love to hear from you! Your review helps other travelers discover
+          Lux Punta Cana and inspires us to keep creating unforgettable moments.
+          Scan the QR code below to leave your feedback on Google — bonus points
+          if you include a photo!
         </p>
 
         <div className='bg-white p-5 rounded-xl'>
