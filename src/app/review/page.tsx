@@ -28,8 +28,7 @@ export default function ReviewPage() {
         <p className='max-w-xl text-gray-400 leading-relaxed mb-10'>
           We'd love to hear from you! Your review helps other travelers discover
           Lux Punta Cana and inspires us to keep creating unforgettable moments.
-          Scan the QR code below to leave your feedback on Google — bonus points
-          if you include a photo!
+          Scan the QR code below to leave your feedback.
         </p>
 
         <div className='bg-white p-5 rounded-xl'>
