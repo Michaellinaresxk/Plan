@@ -28,7 +28,7 @@ const Footer = () => {
     const subject = 'Inquiry about your services';
     const body = 'Hello! I would like to know more about your services.';
     const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
-      subject
+      subject,
     )}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
   };
