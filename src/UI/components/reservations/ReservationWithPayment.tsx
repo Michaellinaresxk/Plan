@@ -7,6 +7,7 @@ import { CreditCard, Check, AlertCircle } from 'lucide-react';
 import CheckoutModal from '@/UI/components/payment/CheckoutModal';
 import { useReservation } from '@/context/BookingContext';
 import type { ReservationData } from '@/context/BookingContext';
+import { PAYMENT_PROVIDER } from '@/config/paymentConfig';
 
 interface ReservationWithPaymentProps {
   reservationData: ReservationData;
@@ -160,8 +161,9 @@ You will receive a confirmation email shortly.`;
             </h4>
             <p className='text-sm text-blue-700'>
               To complete your reservation, we need to process your payment
-              securely through Square. Your card information is encrypted and
-              never stored on our servers.
+              securely through{' '}
+              {PAYMENT_PROVIDER === 'stripe' ? 'Stripe' : 'Square'}. Your card
+              information is encrypted and never stored on our servers.
             </p>
           </div>
         </div>

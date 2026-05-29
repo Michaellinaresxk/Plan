@@ -31,11 +31,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const stripeKey = useStripeKey();
 
-  const isLoading = PAYMENT_PROVIDER === 'stripe' && stripeKey === null;
+  // undefined = still fetching, null = fetched but missing, string = ready
+  const isLoading = PAYMENT_PROVIDER === 'stripe' && stripeKey === undefined;
 
   const isConfigured =
     PAYMENT_PROVIDER === 'stripe'
-      ? !!stripeKey
+      ? typeof stripeKey === 'string' && stripeKey.length > 0
       : !!(
           process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID &&
           process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID
