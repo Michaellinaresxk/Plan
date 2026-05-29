@@ -1,49 +1,58 @@
 // src/app/api/payments/create-intent/route.ts
+// Creates a PaymentIntent without confirming it — returns clientSecret to the frontend.
+// Used by TestApi and any flow that needs client-side confirmation.
 import { NextRequest, NextResponse } from 'next/server';
-import { paymentService } from '@/primary/payment'; // Usar el servicio
+import Stripe from 'stripe';
 
 export async function POST(request: NextRequest) {
-  console.log('🎯 Payment Intent API called');
+  console.log('🎯 Create Payment Intent API called');
 
   try {
     const body = await request.json();
-    console.log('📥 Request body:', body);
-
     const { reservationId, amount, currency, metadata } = body;
 
-    // Validation
     if (!reservationId || !amount || !currency) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
+        { error: 'Missing required fields: reservationId, amount, currency' },
+        { status: 400 },
       );
     }
 
     if (amount <= 0) {
       return NextResponse.json(
         { error: 'Amount must be greater than 0' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    console.log('📄 Creating payment intent with service...');
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured' },
+        { status: 500 },
+      );
+    }
 
-    const result = await paymentService.createPaymentIntent({
-      reservationId,
+    const stripe = new Stripe(secretKey);
+
+    const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount),
       currency: currency.toLowerCase(),
-      metadata,
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        reservationId,
+        ...(metadata ?? {}),
+      },
     });
 
-    console.log('✅ Payment intent created:', result.paymentIntentId);
+    console.log('✅ PaymentIntent created:', paymentIntent.id);
 
     return NextResponse.json({
-      clientSecret: result.clientSecret,
-      paymentIntentId: result.paymentIntentId,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
     });
   } catch (error: any) {
-    console.error('❌ Payment intent error:', error);
-
+    console.error('❌ Create payment intent error:', error);
     return NextResponse.json(
       {
         error: 'Failed to create payment intent',
@@ -51,7 +60,7 @@ export async function POST(request: NextRequest) {
         details:
           process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

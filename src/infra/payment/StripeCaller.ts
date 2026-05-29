@@ -58,6 +58,8 @@ export class StripeCaller {
     paymentId: string;
     status: string;
     receiptUrl?: string;
+    requiresAction?: boolean;
+    clientSecret?: string;
   }> {
     try {
       console.log(
@@ -81,10 +83,8 @@ export class StripeCaller {
           currency: data.currency.toLowerCase(),
           payment_method: data.paymentMethodId,
           confirm: true,
-          // allow_redirects: 'never' ensures we never get a redirect-based 3DS challenge
           automatic_payment_methods: {
             enabled: true,
-            allow_redirects: 'never',
           },
           metadata: {
             reservationId: data.reservationId,
@@ -93,6 +93,17 @@ export class StripeCaller {
         },
         { idempotencyKey: randomUUID() },
       );
+
+      // 3D Secure: the card requires additional authentication
+      if (paymentIntent.status === 'requires_action') {
+        console.log('🔐 Payment requires 3D Secure authentication');
+        return {
+          paymentId: paymentIntent.id,
+          status: paymentIntent.status,
+          requiresAction: true,
+          clientSecret: paymentIntent.client_secret ?? undefined,
+        };
+      }
 
       if (paymentIntent.status !== 'succeeded') {
         throw new Error(`Payment failed with status: ${paymentIntent.status}`);
@@ -114,6 +125,7 @@ export class StripeCaller {
         paymentId: paymentIntent.id,
         status: paymentIntent.status,
         receiptUrl,
+        requiresAction: false,
       };
     } catch (error) {
       console.error('❌ Error creating Stripe payment:', error);

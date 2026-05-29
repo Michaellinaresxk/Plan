@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
 
     if (PAYMENT_PROVIDER === 'stripe') {
       // ── STRIPE ──────────────────────────────────────────────
-      const { paymentMethodId } = body;
+      const { paymentMethodId, confirmedPaymentIntentId } = body;
 
       if (!paymentMethodId) {
         return NextResponse.json(
@@ -147,32 +147,55 @@ export async function POST(request: NextRequest) {
       console.log('💳 Creating payment with Stripe...');
       const stripeCaller = new StripeCaller();
 
-      const stripeResult = await stripeCaller.createPayment({
-        paymentMethodId,
-        reservationId: `temp_${Date.now()}`,
-        amount,
-        currency,
-        metadata: {
-          serviceName: reservationData.service.name,
-          clientEmail: reservationData.clientInfo.email,
-          clientName: reservationData.clientInfo.name,
-          timestamp: new Date().toISOString(),
-        },
-      });
+      if (confirmedPaymentIntentId) {
+        // 3DS was completed on the frontend — verify the intent and proceed to reservation
+        console.log('🔐 3DS confirmed — retrieving PaymentIntent:', confirmedPaymentIntentId);
+        const confirmedIntent = await stripeCaller.getPayment(confirmedPaymentIntentId);
+        if (confirmedIntent.status !== 'succeeded') {
+          throw new Error(`PaymentIntent status after 3DS: ${confirmedIntent.status}`);
+        }
+        payment = {
+          paymentId: confirmedIntent.id,
+          status: confirmedIntent.status,
+        };
+      } else {
+        // Standard flow: create and confirm the PaymentIntent server-side
+        const stripeResult = await stripeCaller.createPayment({
+          paymentMethodId,
+          reservationId: `temp_${Date.now()}`,
+          amount,
+          currency,
+          metadata: {
+            serviceName: reservationData.service.name,
+            clientEmail: reservationData.clientInfo.email,
+            clientName: reservationData.clientInfo.name,
+            timestamp: new Date().toISOString(),
+          },
+        });
 
-      if (stripeResult.status !== 'succeeded') {
-        throw new Error(
-          `Stripe payment failed with status: ${stripeResult.status}`,
-        );
+        // Card requires 3D Secure — return clientSecret so the frontend can authenticate
+        if (stripeResult.requiresAction) {
+          return NextResponse.json({
+            requiresAction: true,
+            clientSecret: stripeResult.clientSecret,
+            paymentIntentId: stripeResult.paymentId,
+          });
+        }
+
+        if (stripeResult.status !== 'succeeded') {
+          throw new Error(
+            `Stripe payment failed with status: ${stripeResult.status}`,
+          );
+        }
+
+        console.log('✅ Stripe payment succeeded:', stripeResult.paymentId);
+
+        payment = {
+          paymentId: stripeResult.paymentId,
+          status: stripeResult.status,
+          receiptUrl: stripeResult.receiptUrl,
+        };
       }
-
-      console.log('✅ Stripe payment succeeded:', stripeResult.paymentId);
-
-      payment = {
-        paymentId: stripeResult.paymentId,
-        status: stripeResult.status,
-        receiptUrl: stripeResult.receiptUrl,
-      };
     } else {
       // ── SQUARE ──────────────────────────────────────────────
       const { sourceId } = body;

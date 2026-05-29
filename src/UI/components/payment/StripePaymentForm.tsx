@@ -262,6 +262,43 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
         throw new Error(result.error || result.message || 'Payment failed');
       }
 
+      // 3D Secure: complete authentication then re-submit with confirmed paymentIntentId
+      if (result.requiresAction && result.clientSecret) {
+        console.log('🔐 3D Secure authentication required...');
+        const { error: confirmError, paymentIntent } =
+          await stripeRef.current.confirmCardPayment(result.clientSecret);
+
+        if (confirmError) {
+          throw new Error(confirmError.message || '3D Secure authentication failed');
+        }
+
+        if (paymentIntent?.status !== 'succeeded') {
+          throw new Error('Payment was not completed after 3D Secure');
+        }
+
+        // Re-call the API to create the reservation now that payment is confirmed
+        const confirmedResponse = await fetch('/api/payments/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paymentMethodId: paymentMethod.id,
+            confirmedPaymentIntentId: paymentIntent.id,
+            reservationData,
+            amount: Math.round(reservationData.totalPrice * 100),
+            currency: 'USD',
+          }),
+        });
+
+        const confirmedResult = await confirmedResponse.json();
+        if (!confirmedResponse.ok || !confirmedResult.success) {
+          throw new Error(confirmedResult.error || 'Failed to create reservation after 3D Secure');
+        }
+
+        setCurrentStep('success');
+        setTimeout(() => onSuccess(confirmedResult.reservation), 1500);
+        return;
+      }
+
       if (result.success) {
         console.log('✅ Payment and reservation created successfully');
         if (isProduction) {
