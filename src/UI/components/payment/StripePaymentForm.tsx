@@ -79,7 +79,11 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
   // LOAD STRIPE.JS SDK
   // ========================
   useEffect(() => {
-    if (!publishableKey) {
+    // undefined = still loading from /api/config — wait silently
+    if (publishableKey === undefined) return;
+
+    // null = fetch completed but key is missing — show configuration error
+    if (publishableKey === null) {
       setPaymentError('Stripe configuration is missing');
       return;
     }
@@ -337,7 +341,8 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
     return null;
   }
 
-  if (!publishableKey) {
+  // Still fetching the publishable key — show spinner without setting any error
+  if (publishableKey === undefined) {
     return (
       <div className='flex items-center justify-center p-8'>
         <Loader2 className='w-8 h-8 animate-spin text-blue-600' />
