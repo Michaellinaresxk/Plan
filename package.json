@@ -20,7 +20,7 @@
     "framer-motion": "^12.12.1",
     "i": "^0.3.7",
     "lucide-react": "^0.488.0",
-    "next": "^16.2.3",
+    "next": "^16.2.6",
     "next-sitemap": "^4.2.3",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.1",
