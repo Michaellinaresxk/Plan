@@ -317,6 +317,7 @@ const CustomDecorationForm: React.FC<CustomDecorationFormProps> = ({
         // ── Store reservation data ──
         const reservationData = {
           service,
+          isInquiry: true,
           totalPrice: estimatedPrice,
           formData: {
             ...form,

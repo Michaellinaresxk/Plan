@@ -431,6 +431,7 @@ const LuxCatamaranForm: React.FC<LuxCatamaranFormProps> = ({
 
       const reservationData = {
         service: service,
+        isInquiry: true,
         formData: {
           ...formData,
           serviceType: 'catamaran-tour',

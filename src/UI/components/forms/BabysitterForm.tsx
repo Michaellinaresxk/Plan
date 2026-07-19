@@ -187,6 +187,7 @@ const BabysitterForm: React.FC<BabysitterFormProps> = ({
 
         const reservationData = {
           service,
+          isInquiry: true,
           totalPrice: priceBreakdown.total,
           formData: {
             serviceId: service.id,

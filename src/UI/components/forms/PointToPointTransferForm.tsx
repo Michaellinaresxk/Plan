@@ -393,25 +393,26 @@ const PointToPointTransferForm: React.FC<Props> = ({
         // ── Reservation ──
         setReservationData({
           service,
+          isInquiry: true,
           totalPrice,
           formData: {
             ...form,
             serviceType: 'point-to-point-transfer',
             pickupLocationAreaName: pickupName,
             destinationZoneName: destName,
+            pointToPointSpecifics: {
+              pickupLocationArea: form.pickupLocationArea,
+              destinationZone: form.destinationZone,
+              pickupLocationAreaName: pickupName,
+              destinationZoneName: destName,
+              vehicleType: form.vehicleType,
+              totalPassengers,
+              carSeats: form.carSeatCount,
+              isRoundTrip: form.isRoundTrip,
+            },
           },
           bookingDate: new Date(`${form.pickupDate}T${form.pickupTime}`),
           clientInfo: { name: form.name, email: form.email, phone: form.phone },
-          pointToPointSpecifics: {
-            pickupLocationArea: form.pickupLocationArea,
-            destinationZone: form.destinationZone,
-            pickupLocationAreaName: pickupName,
-            destinationZoneName: destName,
-            vehicleType: form.vehicleType,
-            totalPassengers,
-            carSeats: form.carSeatCount,
-            isRoundTrip: form.isRoundTrip,
-          },
         });
 
         router.push('/reservation-confirmation');
