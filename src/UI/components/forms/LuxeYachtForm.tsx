@@ -242,6 +242,7 @@ const LuxeYachtForm: React.FC<LuxeYachtFormProps> = ({
             price: yacht?.price || defaultYacht.price,
             packageType: yacht?.isPremium ? 'premium' : 'standard',
           },
+          isInquiry: true,
           formData: {
             ...formData,
             serviceType: 'yacht',

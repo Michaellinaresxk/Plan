@@ -408,6 +408,7 @@ const AirportTransferForm: React.FC<AirportTransferFormProps> = ({
         // ── Reservation data ──
         const reservationData = {
           service,
+          isInquiry: true,
           totalPrice,
           formData: {
             ...form,

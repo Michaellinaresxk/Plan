@@ -35,6 +35,7 @@ export interface ReservationData {
   formData: Record<string, any>;
   totalPrice: number;
   bookingDate: Date;
+  isInquiry?: boolean;
   clientInfo?: {
     name: string;
     email: string;

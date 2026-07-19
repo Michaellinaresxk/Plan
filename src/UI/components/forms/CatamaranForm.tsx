@@ -379,6 +379,7 @@ const CatamaranForm: React.FC<CatamaranFormProps> = ({
 
       const reservationData = {
         service: service,
+        isInquiry: true,
         formData: {
           ...formData,
           serviceType: 'catamaran-tour',
